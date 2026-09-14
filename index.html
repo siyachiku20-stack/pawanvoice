@@ -1,166 +1,331 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PawanVoice</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PawanVoice</title>
 
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
-<style>
-body{margin:0;font-family:Arial;background:#0f172a;color:white;text-align:center}
-#join{padding-top:80px}
-input{padding:15px;width:80%;max-width:320px;border:0;border-radius:10px;margin:15px}
-button{padding:13px 20px;border:0;border-radius:25px;background:#2563eb;color:white;font-size:16px;margin:5px}
-#room{display:none}
-#status{color:#94a3b8}
-</style>
+  <style>
+    body {
+      margin: 0;
+      padding: 30px 15px;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    input {
+      width: 85%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 13px 20px;
+      margin: 6px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    #status {
+      margin-top: 25px;
+      color: #bbb;
+    }
+
+    #users {
+      margin-top: 20px;
+    }
+  </style>
 </head>
 
 <body>
 
-<div id="join">
 <h1>🎙️ PawanVoice</h1>
-<p>Free Voice Group</p>
-<input id="name" placeholder="Apna naam likho">
-<br>
-<button onclick="start()">Join Voice Room</button>
-</div>
 
-<div id="room">
-<h2>🎙️ PawanVoice</h2>
-<p id="status">Connecting...</p>
-<button onclick="toggleMic()">🎤 Mic ON/OFF</button>
-<button onclick="location.reload()">🚪 Leave</button>
+<input id="name" type="text" placeholder="Apna naam likho">
+
+<br>
+
+<button onclick="joinRoom()">Join Room</button>
+<button onclick="toggleMic()">Mic ON/OFF</button>
+<button onclick="leaveRoom()">Leave</button>
+
+<div id="status">Room join nahi hua</div>
+
+<div id="users"></div>
+
 <div id="audios"></div>
-</div>
+
 
 <script>
 
-const firebaseConfig={
-  apiKey:"AIzaSyDnlTdeqGyG5aPHrUIV6kTYnM521GtbrrE",
-  authDomain:"pawanvoice-68c5e.firebaseapp.com",
-  databaseURL:"https://pawanvoice-68c5e-default-rtdb.firebaseio.com",
-  projectId:"pawanvoice-68c5e",
-  storageBucket:"pawanvoice-68c5e.firebasestorage.app",
-  messagingSenderId:"148446327241"
-  appId: "1:148446327241:web:6bac9cb9ad0fb530cbb818",
-  measurementId: "G-S98P3GBNCK"
+const firebaseConfig = {
+  apiKey: "AIzaSyDnlTdeqGyG5aPHrUIV6kTYnM521GtbrrE",
+  authDomain: "pawanvoice-68c5e.firebaseapp.com",
+  databaseURL: "https://pawanvoice-68c5e-default-rtdb.firebaseio.com",
+  projectId: "pawanvoice-68c5e",
+  storageBucket: "pawanvoice-68c5e.firebasestorage.app",
+  messagingSenderId: "148446327241",
+  appId: "1:148446327241:web:6bac9cb9ad0fb530cbb818"
 };
 
 firebase.initializeApp(firebaseConfig);
-const db=firebase.database();
 
-let peer;
-let stream;
-let myId;
-const roomId="PawanVoiceRoom2026";
+const db = firebase.database();
 
-async function start(){
+const ROOM = "PawanVoiceRoom2026";
 
- const name=document.getElementById("name").value.trim();
+let peer = null;
+let myStream = null;
+let myPeerId = "";
+let myName = "";
+let micOn = true;
+let connectedPeers = {};
 
- if(!name){
-   alert("Apna naam likho");
-   return;
- }
 
- document.getElementById("join").style.display="none";
- document.getElementById("room").style.display="block";
+async function joinRoom() {
 
- try{
+  myName = document.getElementById("name").value.trim();
 
-  stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  if (!myName) {
+    alert("Pehle apna naam likho");
+    return;
+  }
 
-  peer=new Peer();
+  document.getElementById("status").innerText =
+    "Microphone permission mang raha hai...";
 
-  peer.on("open",async id=>{
+  try {
 
-   myId=id;
+    myStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: false
+    });
 
-   document.getElementById("status").innerText=
-     "Voice Room connected";
+  } catch (error) {
 
-   await db.ref("voiceRooms/"+roomId+"/"+id).set({
-     name:name,
-     peerId:id
-   });
+    console.log(error);
 
-   db.ref("voiceRooms/"+roomId).on("child_added",snap=>{
+    alert("Microphone permission nahi mili");
 
-     const user=snap.val();
+    document.getElementById("status").innerText =
+      "Microphone permission required";
 
-     if(user.peerId!==myId){
-       callUser(user.peerId);
-     }
+    return;
+  }
 
-   });
+
+  peer = new Peer();
+
+
+  peer.on("open", function(id) {
+
+    myPeerId = id;
+
+    db.ref("voiceRooms/" + ROOM + "/" + myPeerId).set({
+      name: myName,
+      peerId: myPeerId
+    });
+
+    document.getElementById("status").innerText =
+      "✅ Room Joined";
+
+    document.getElementById("users").innerText =
+      "Naam: " + myName;
+
+    listenForUsers();
 
   });
 
-  peer.on("call",call=>{
 
-   call.answer(stream);
-   receiveCall(call);
+  peer.on("call", function(call) {
+
+    call.answer(myStream);
+
+    call.on("stream", function(remoteStream) {
+
+      addRemoteAudio(call.peer, remoteStream);
+
+    });
 
   });
 
-  peer.on("error",err=>{
-   document.getElementById("status").innerText=
-     "Connection error";
-   console.log(err);
+
+  peer.on("error", function(error) {
+
+    console.log("Peer error:", error);
+
+    document.getElementById("status").innerText =
+      "Connection error";
+
   });
 
- }catch(e){
+}
 
-  alert("Microphone permission Allow karo.");
-  console.log(e);
 
- }
+function listenForUsers() {
+
+  db.ref("voiceRooms/" + ROOM).on("child_added", function(snapshot) {
+
+    const user = snapshot.val();
+
+    if (!user) return;
+
+    if (user.peerId === myPeerId) return;
+
+    if (connectedPeers[user.peerId]) return;
+
+    connectedPeers[user.peerId] = true;
+
+
+    const call = peer.call(
+      user.peerId,
+      myStream
+    );
+
+
+    if (!call) return;
+
+
+    call.on("stream", function(remoteStream) {
+
+      addRemoteAudio(
+        user.peerId,
+        remoteStream
+      );
+
+    });
+
+  });
 
 }
 
-function callUser(id){
 
- const call=peer.call(id,stream);
+function addRemoteAudio(id, stream) {
 
- if(call){
-   receiveCall(call);
- }
+  const oldAudio =
+    document.getElementById("audio-" + id);
 
-}
+  if (oldAudio) return;
 
-function receiveCall(call){
 
- call.on("stream",remoteStream=>{
+  const audio =
+    document.createElement("audio");
 
-   const audio=document.createElement("audio");
+  audio.id = "audio-" + id;
 
-   audio.autoplay=true;
-   audio.srcObject=remoteStream;
+  audio.autoplay = true;
 
-   document.getElementById("audios").appendChild(audio);
+  audio.playsInline = true;
 
- });
+  audio.srcObject = stream;
 
-}
-
-function toggleMic(){
-
- if(!stream)return;
-
- const track=stream.getAudioTracks()[0];
-
- track.enabled=!track.enabled;
+  document
+    .getElementById("audios")
+    .appendChild(audio);
 
 }
 
-window.addEventListener("beforeunload",()=>{
 
- if(myId){
-   db.ref("voiceRooms/"+roomId+"/"+myId).remove();
- }
+function toggleMic() {
+
+  if (!myStream) {
+
+    alert("Pehle Join Room karo");
+
+    return;
+  }
+
+
+  micOn = !micOn;
+
+
+  myStream
+    .getAudioTracks()
+    .forEach(function(track) {
+
+      track.enabled = micOn;
+
+    });
+
+
+  document.getElementById("status").innerText =
+    micOn ? "🎙️ Mic ON" : "🔇 Mic OFF";
+
+}
+
+
+function leaveRoom() {
+
+  if (myPeerId) {
+
+    db.ref(
+      "voiceRooms/" +
+      ROOM +
+      "/" +
+      myPeerId
+    ).remove();
+
+  }
+
+
+  if (myStream) {
+
+    myStream
+      .getTracks()
+      .forEach(function(track) {
+
+        track.stop();
+
+      });
+
+  }
+
+
+  if (peer) {
+
+    peer.destroy();
+
+  }
+
+
+  document.getElementById("status").innerText =
+    "Room se bahar aa gaye";
+
+  document.getElementById("users").innerText = "";
+
+  document.getElementById("audios").innerHTML = "";
+
+  myPeerId = "";
+
+}
+
+
+window.addEventListener("beforeunload", function() {
+
+  if (myPeerId) {
+
+    db.ref(
+      "voiceRooms/" +
+      ROOM +
+      "/" +
+      myPeerId
+    ).remove();
+
+  }
 
 });
 
