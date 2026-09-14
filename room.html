@@ -1,1 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PawanVoice Room</title>
 
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  padding:20px;
+  background:#111;
+  color:white;
+  font-family:Arial;
+  text-align:center;
+}
+
+.box{
+  background:#222;
+  padding:20px;
+  margin:15px auto;
+  border-radius:12px;
+  max-width:450px;
+}
+
+button{
+  padding:13px 20px;
+  margin:7px;
+  border:0;
+  border-radius:8px;
+  font-size:16px;
+}
+
+#users{
+  line-height:2;
+  margin-top:15px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎙️ PawanVoice</h1>
+
+<div class="box">
+
+<h2 id="roomName">Room</h2>
+
+<p id="status">Connecting...</p>
+
+<button onclick="toggleMic()">🎙️ Mic ON/OFF</button>
+
+<button onclick="leaveRoom()">🚪 Leave Room</button>
+
+</div>
+
+
+<div class="box">
+
+<h3>👥 People in Room</h3>
+
+<div id="users">
+Loading...
+</div>
+
+</div>
+
+
+<div id="audioContainer"></div>
+
+
+<script>
+
+const firebaseConfig={
+
+apiKey:"AIzaSyDnlTdeqGyG5aPHrUIV6kTYnM521GtbrrE",
+
+authDomain:"pawanvoice-68c5e.firebaseapp.com",
+
+databaseURL:"https://pawanvoice-68c5e-default-rtdb.firebaseio.com",
+
+projectId:"pawanvoice-68c5e",
+
+storageBucket:"pawanvoice-68c5e.firebasestorage.app",
+
+messagingSenderId:"148446327241",
+
+appId:"1:148446327241:web:6bac9cb9ad0fb530cbb818"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db=firebase.database();
+
+const params=new URLSearchParams(location.search);
+
+const roomId=params.get("id");
+
+let myName=localStorage.getItem("pawanName") || "Guest";
+
+let myId="";
+
+let peer=null;
+
+let stream=null;
+
+let micOn=true;
+
+let calls={};
+
+
+if(!roomId){
+
+document.getElementById("status").innerText=
+"Room ID nahi mila";
+
+}else{
+
+startRoom();
+
+}
+
+
+async function startRoom(){
+
+const roomSnap=
+await db.ref("rooms/"+roomId).once("value");
+
+const room=roomSnap.val();
+
+
+if(!room){
+
+document.getElementById("status").innerText=
+"Room nahi mila";
+
+return;
+
+}
+
+
+document.getElementById("roomName").innerText=
+"🎙️ "+room.name;
+
+
+try{
+
+stream=
+await navigator.mediaDevices.getUserMedia({
+audio:true
+});
+
+}catch(e){
+
+document.getElementById("status").innerText=
+"Microphone permission nahi mili";
+
+return;
+
+}
+
+
+peer=new Peer();
+
+
+peer.on("open",function(id){
+
+myId=id;
+
+
+db.ref(
+"rooms/"+roomId+"/members/"+myId
+).set({
+
+name:myName,
+peerId:myId
+
+});
+
+
+document.getElementById("status").innerText=
+"✅ Room Joined";
+
+
+listenMembers();
+
+});
+
+
+peer.on("call",function(call){
+
+call.answer(stream);
+
+
+call.on("stream",function(remoteStream){
+
+addAudio(call.peer,remoteStream);
+
+});
+
+});
+
+}
+
+
+function listenMembers(){
+
+db.ref(
+"rooms/"+roomId+"/members"
+).on("value",function(snapshot){
+
+const data=snapshot.val() || {};
+
+const box=document.getElementById("users");
+
+box.innerHTML="";
+
+
+Object.keys(data).forEach(function(id){
+
+const div=document.createElement("div");
+
+div.innerText=
+"🟢 "+data[id].name+
+(id===myId ? " (You)" : "");
+
+box.appendChild(div);
+
+});
+
+
+Object.keys(data).forEach(function(id){
+
+if(id===myId) return;
+
+if(calls[id]) return;
+
+calls[id]=true;
+
+
+const call=peer.call(
+data[id].peerId,
+stream
+);
+
+
+if(!call) return;
+
+
+call.on("stream",function(remoteStream){
+
+addAudio(
+data[id].peerId,
+remoteStream
+);
+
+});
+
+});
+
+});
+
+}
+
+
+function addAudio(id,remoteStream){
+
+if(
+document.getElementById("audio-"+id)
+) return;
+
+
+const audio=document.createElement("audio");
+
+audio.id="audio-"+id;
+
+audio.autoplay=true;
+
+audio.playsInline=true;
+
+audio.srcObject=remoteStream;
+
+
+document
+.getElementById("audioContainer")
+.appendChild(audio);
+
+}
+
+
+function toggleMic(){
+
+if(!stream){
+
+alert("Microphone connected nahi hai");
+
+return;
+
+}
+
+
+micOn=!micOn;
+
+
+stream
+.getAudioTracks()
+.forEach(function(track){
+
+track.enabled=micOn;
+
+});
+
+
+document.getElementById("status").innerText=
+micOn ? "🎙️ Mic ON" : "🔇 Mic OFF";
+
+}
+
+
+function leaveRoom(){
+
+if(myId){
+
+db.ref(
+"rooms/"+roomId+"/members/"+myId
+).remove();
+
+}
+
+
+if(stream){
+
+stream
+.getTracks()
+.forEach(function(track){
+
+track.stop();
+
+});
+
+}
+
+
+if(peer){
+
+peer.destroy();
+
+}
+
+
+location.href="index.html";
+
+}
+
+</script>
+
+</body>
+</html>
