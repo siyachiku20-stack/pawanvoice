@@ -1,205 +1,202 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PawanVoice</title>
-  <script src="https://meet.jit.si/external_api.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PawanVoice</title>
+<script src="https://meet.jit.si/external_api.js"></script>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:#0f172a;
+  color:white;
+  font-family:Arial;
+  overflow:hidden;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #101828;
-      color: white;
-    }
+#login{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
 
-    #top {
-      height: 60px;
-      background: #172554;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 15px;
-    }
+.logo{
+  font-size:32px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
 
-    #title {
-      font-size: 22px;
-      font-weight: bold;
-    }
+input{
+  width:80%;
+  max-width:320px;
+  padding:15px;
+  border:0;
+  border-radius:12px;
+  margin:15px 0;
+  font-size:16px;
+}
 
-    #roomName {
-      font-size: 13px;
-      color: #cbd5e1;
-    }
+button{
+  border:0;
+  border-radius:25px;
+  padding:13px 22px;
+  font-size:16px;
+  color:white;
+  background:#2563eb;
+}
 
-    #meet {
-      height: calc(100vh - 130px);
-      width: 100%;
-    }
+#app{
+  display:none;
+  height:100vh;
+}
 
-    #controls {
-      height: 70px;
-      background: #172554;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-    }
+#header{
+  height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#1e3a8a;
+  font-size:21px;
+  font-weight:bold;
+}
 
-    button {
-      border: none;
-      border-radius: 25px;
-      padding: 12px 18px;
-      font-size: 15px;
-      color: white;
-      background: #2563eb;
-    }
+#meet{
+  height:calc(100vh - 130px);
+}
 
-    #leave {
-      background: #dc2626;
-    }
+#controls{
+  height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  background:#1e3a8a;
+}
 
-    #join {
-      background: #16a34a;
-    }
+.control{
+  padding:12px 18px;
+}
 
-    #nameBox {
-      position: fixed;
-      inset: 0;
-      background: #101828;
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 25px;
-    }
-
-    #nameBox h1 {
-      font-size: 30px;
-      margin-bottom: 10px;
-    }
-
-    input {
-      width: 100%;
-      max-width: 350px;
-      padding: 15px;
-      border-radius: 10px;
-      border: none;
-      margin: 10px 0;
-      font-size: 16px;
-    }
-  </style>
+.leave{
+  background:#dc2626;
+}
+</style>
 </head>
 
 <body>
 
-<div id="nameBox">
-  <h1>🎙️ PawanVoice</h1>
-  <p>Voice Group me join karein</p>
+<div id="login">
+  <div class="logo">🎙️ PawanVoice</div>
+  <div>Free Voice Group</div>
 
-  <input id="nameInput" placeholder="Apna naam likho">
+  <input id="name" placeholder="Apna naam likho">
 
-  <button id="join" onclick="joinRoom()">Join Voice Room</button>
+  <button onclick="joinRoom()">Join Voice Room</button>
 </div>
 
-<div id="top">
-  <div id="title">🎙️ PawanVoice</div>
-  <div id="roomName">Voice Room</div>
-</div>
+<div id="app">
 
-<div id="meet"></div>
+  <div id="header">
+    🎙️ PawanVoice
+  </div>
 
-<div id="controls">
-  <button onclick="toggleMic()">🎤 Mic</button>
-  <button onclick="shareRoom()">🔗 Share</button>
-  <button id="leave" onclick="leaveRoom()">🚪 Leave</button>
+  <div id="meet"></div>
+
+  <div id="controls">
+    <button class="control" onclick="mic()">🎤 Mic</button>
+    <button class="control" onclick="share()">🔗 Share</button>
+    <button class="control leave" onclick="leave()">🚪 Leave</button>
+  </div>
+
 </div>
 
 <script>
 
-let api = null;
+let api;
 
-const roomName = "PawanVoiceRoom2026";
+const room = "PawanVoiceRoom2026";
 
-function joinRoom() {
+function joinRoom(){
 
-  let name = document.getElementById("nameInput").value.trim();
+  const name =
+    document.getElementById("name").value.trim();
 
-  if (name === "") {
-    alert("Pehle apna naam likho");
+  if(!name){
+    alert("Apna naam likho");
     return;
   }
 
-  document.getElementById("nameBox").style.display = "none";
+  document.getElementById("login").style.display="none";
+  document.getElementById("app").style.display="block";
 
-  api = new JitsiMeetExternalAPI("meet.jit.si", {
+  api = new JitsiMeetExternalAPI("meet.jit.si",{
 
-    roomName: roomName,
+    roomName:room,
 
-    parentNode: document.querySelector("#meet"),
+    parentNode:document.getElementById("meet"),
 
-    width: "100%",
-    height: "100%",
+    width:"100%",
+    height:"100%",
 
-    userInfo: {
-      displayName: name
+    userInfo:{
+      displayName:name
     },
 
-    configOverwrite: {
-      startWithAudioMuted: false,
-      startWithVideoMuted: true
+    configOverwrite:{
+      startWithAudioMuted:false,
+      startWithVideoMuted:true
     },
 
-    interfaceConfigOverwrite: {
-      SHOW_JITSI_WATERMARK: false,
-      SHOW_WATERMARK_FOR_GUESTS: false
+    interfaceConfigOverwrite:{
+      SHOW_JITSI_WATERMARK:false,
+      SHOW_WATERMARK_FOR_GUESTS:false,
+      SHOW_BRAND_WATERMARK:false,
+      MOBILE_APP_PROMO:false
     }
+
   });
 
 }
 
-function toggleMic() {
+function mic(){
 
-  if (api) {
+  if(api){
     api.executeCommand("toggleAudio");
   }
 
 }
 
-function leaveRoom() {
+function leave(){
 
-  if (api) {
+  if(api){
     api.executeCommand("hangup");
   }
 
-  document.getElementById("nameBox").style.display = "flex";
+  location.reload();
 
 }
 
-function shareRoom() {
+function share(){
 
-  let link =
+  const link =
     window.location.origin +
-    window.location.pathname +
-    "?room=" +
-    roomName;
+    window.location.pathname;
 
-  if (navigator.share) {
+  if(navigator.share){
 
     navigator.share({
-      title: "PawanVoice",
-      text: "PawanVoice Voice Room me join karo",
-      url: link
+      title:"PawanVoice",
+      text:"PawanVoice Voice Group join karo",
+      url:link
     });
 
-  } else {
+  }else{
 
     navigator.clipboard.writeText(link);
-    alert("Room link copy ho gaya");
+    alert("PawanVoice link copy ho gaya");
 
   }
 
