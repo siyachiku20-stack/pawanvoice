@@ -1,192 +1,168 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PawanVoice</title>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#0f172a;
-  color:white;
-  text-align:center;
-}
-#join{
-  padding-top:80px;
-}
-input{
-  padding:15px;
-  width:80%;
-  max-width:300px;
-  border:0;
-  border-radius:10px;
-  margin:15px;
-}
-button{
-  padding:13px 20px;
-  border:0;
-  border-radius:25px;
-  background:#2563eb;
-  color:white;
-  font-size:16px;
-}
-#room{
-  display:none;
-}
-audio{
-  width:90%;
-  margin:10px;
-}
+body{margin:0;font-family:Arial;background:#0f172a;color:white;text-align:center}
+#join{padding-top:80px}
+input{padding:15px;width:80%;max-width:320px;border:0;border-radius:10px;margin:15px}
+button{padding:13px 20px;border:0;border-radius:25px;background:#2563eb;color:white;font-size:16px;margin:5px}
+#room{display:none}
+#status{color:#94a3b8}
 </style>
 </head>
 
 <body>
 
 <div id="join">
-  <h1>🎙️ PawanVoice</h1>
-  <p>Free Voice Group</p>
-
-  <input id="name" placeholder="Apna naam likho">
-
-  <br>
-
-  <button onclick="start()">Join Voice Room</button>
+<h1>🎙️ PawanVoice</h1>
+<p>Free Voice Group</p>
+<input id="name" placeholder="Apna naam likho">
+<br>
+<button onclick="start()">Join Voice Room</button>
 </div>
 
 <div id="room">
-
-  <h2>🎙️ PawanVoice</h2>
-
-  <p id="status">Connecting...</p>
-
-  <button onclick="toggleMic()">🎤 Mic ON/OFF</button>
-
-  <button onclick="location.reload()">🚪 Leave</button>
-
-  <div id="audios"></div>
-
+<h2>🎙️ PawanVoice</h2>
+<p id="status">Connecting...</p>
+<button onclick="toggleMic()">🎤 Mic ON/OFF</button>
+<button onclick="location.reload()">🚪 Leave</button>
+<div id="audios"></div>
 </div>
 
 <script>
 
+const firebaseConfig={
+  apiKey:"AIzaSyDnlTdeqGyG5aPHrUIV6kTYnM521GtbrrE",
+  authDomain:"pawanvoice-68c5e.firebaseapp.com",
+  databaseURL:"https://pawanvoice-68c5e-default-rtdb.firebaseio.com",
+  projectId:"pawanvoice-68c5e",
+  storageBucket:"pawanvoice-68c5e.firebasestorage.app",
+  messagingSenderId:"148446327241"
+  appId: "1:148446327241:web:6bac9cb9ad0fb530cbb818",
+  measurementId: "G-S98P3GBNCK"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
+
 let peer;
-let localStream;
-let calls = [];
+let stream;
+let myId;
+const roomId="PawanVoiceRoom2026";
 
 async function start(){
 
-  const name =
-    document.getElementById("name").value.trim();
+ const name=document.getElementById("name").value.trim();
 
-  if(!name){
-    alert("Apna naam likho");
-    return;
-  }
+ if(!name){
+   alert("Apna naam likho");
+   return;
+ }
 
-  document.getElementById("join").style.display="none";
-  document.getElementById("room").style.display="block";
+ document.getElementById("join").style.display="none";
+ document.getElementById("room").style.display="block";
 
-  try{
+ try{
 
-    localStream =
-      await navigator.mediaDevices.getUserMedia({
-        audio:true,
-        video:false
-      });
+  stream=await navigator.mediaDevices.getUserMedia({audio:true});
 
-    peer = new Peer();
+  peer=new Peer();
 
-    peer.on("open", function(id){
+  peer.on("open",async id=>{
 
-      document.getElementById("status").innerText =
-        "Voice Room connected";
+   myId=id;
 
-      console.log("My Peer ID:", id);
+   document.getElementById("status").innerText=
+     "Voice Room connected";
 
-      /*
-       Demo room:
-       Sab users ko ek hi room host ID se connect
-       karna hoga.
-      */
+   await db.ref("voiceRooms/"+roomId+"/"+id).set({
+     name:name,
+     peerId:id
+   });
 
-      const hostId = "PAWANVOICE_HOST";
+   db.ref("voiceRooms/"+roomId).on("child_added",snap=>{
 
-      if(id !== hostId){
+     const user=snap.val();
 
-        const call =
-          peer.call(hostId, localStream);
+     if(user.peerId!==myId){
+       callUser(user.peerId);
+     }
 
-        if(call){
-          setupCall(call);
-        }
+   });
 
-      }
+  });
 
-    });
+  peer.on("call",call=>{
 
-    peer.on("call", function(call){
+   call.answer(stream);
+   receiveCall(call);
 
-      call.answer(localStream);
+  });
 
-      setupCall(call);
+  peer.on("error",err=>{
+   document.getElementById("status").innerText=
+     "Connection error";
+   console.log(err);
+  });
 
-    });
+ }catch(e){
 
-    peer.on("error", function(error){
+  alert("Microphone permission Allow karo.");
+  console.log(e);
 
-      document.getElementById("status").innerText =
-        "Connection error";
-
-      console.log(error);
-
-    });
-
-  }catch(error){
-
-    alert(
-      "Microphone permission allow karo."
-    );
-
-    console.log(error);
-
-  }
+ }
 
 }
 
-function setupCall(call){
+function callUser(id){
 
-  calls.push(call);
+ const call=peer.call(id,stream);
 
-  call.on("stream", function(remoteStream){
+ if(call){
+   receiveCall(call);
+ }
 
-    const audio =
-      document.createElement("audio");
+}
 
-    audio.autoplay = true;
-    audio.controls = false;
+function receiveCall(call){
 
-    audio.srcObject = remoteStream;
+ call.on("stream",remoteStream=>{
 
-    document.getElementById("audios")
-      .appendChild(audio);
+   const audio=document.createElement("audio");
 
-  });
+   audio.autoplay=true;
+   audio.srcObject=remoteStream;
+
+   document.getElementById("audios").appendChild(audio);
+
+ });
 
 }
 
 function toggleMic(){
 
-  if(!localStream) return;
+ if(!stream)return;
 
-  const track =
-    localStream.getAudioTracks()[0];
+ const track=stream.getAudioTracks()[0];
 
-  track.enabled = !track.enabled;
+ track.enabled=!track.enabled;
 
 }
+
+window.addEventListener("beforeunload",()=>{
+
+ if(myId){
+   db.ref("voiceRooms/"+roomId+"/"+myId).remove();
+ }
+
+});
 
 </script>
 
