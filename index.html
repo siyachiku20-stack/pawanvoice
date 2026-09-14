@@ -3,11 +3,56 @@
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PawanVoice</title>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
 <style>
-body{margin:0;padding:25px;background:#111;color:white;font-family:Arial;text-align:center}
-.box{background:#222;padding:20px;margin:15px auto;border-radius:12px;max-width:400px}
-input{width:90%;padding:14px;border:0;border-radius:8px;font-size:16px}
-button{padding:13px 18px;margin:7px 3px;border:0;border-radius:8px;font-size:15px}
+body{
+  margin:0;
+  padding:20px;
+  background:#111;
+  color:white;
+  font-family:Arial;
+}
+
+h1{text-align:center}
+
+.box{
+  background:#222;
+  padding:18px;
+  margin:15px 0;
+  border-radius:12px;
+}
+
+input{
+  width:100%;
+  box-sizing:border-box;
+  padding:14px;
+  border:0;
+  border-radius:8px;
+  margin:7px 0;
+  font-size:16px;
+}
+
+button{
+  padding:12px 18px;
+  margin:5px 2px;
+  border:0;
+  border-radius:8px;
+  font-size:15px;
+}
+
+.room{
+  background:#333;
+  padding:15px;
+  margin:10px 0;
+  border-radius:10px;
+}
+
+.join{
+  background:#fff;
+}
 </style>
 </head>
 
@@ -16,128 +61,153 @@ button{padding:13px 18px;margin:7px 3px;border:0;border-radius:8px;font-size:15p
 <h1>🎙️ PawanVoice</h1>
 
 <div class="box">
-<h2>🏠 Room</h2>
-<p><b>PawanVoiceRoom2026</b></p>
+
+<h3>➕ Create Room</h3>
+
+<input id="roomName" placeholder="Room ka naam">
+
+<button onclick="createRoom()">Create Room</button>
+
 </div>
+
 
 <div class="box">
-<input id="name" placeholder="Apna naam likho">
-<br><br>
-<button onclick="join()">Join Room</button>
-<button onclick="mic()">🎙️ Mic ON/OFF</button>
-<button onclick="leave()">🚪 Leave Room</button>
-<p id="status">Room join nahi hua</p>
+
+<h3>🏠 Voice Rooms</h3>
+
+<div id="rooms">
+Rooms load ho rahe hain...
 </div>
 
-<div class="box">
-<h3>👥 Connected Users</h3>
-<div id="users">Koi user nahi</div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
+
 const firebaseConfig={
+
 apiKey:"AIzaSyDnlTdeqGyG5aPHrUIV6kTYnM521GtbrrE",
+
 authDomain:"pawanvoice-68c5e.firebaseapp.com",
+
 databaseURL:"https://pawanvoice-68c5e-default-rtdb.firebaseio.com",
+
 projectId:"pawanvoice-68c5e",
+
 storageBucket:"pawanvoice-68c5e.firebasestorage.app",
+
 messagingSenderId:"148446327241",
+
 appId:"1:148446327241:web:6bac9cb9ad0fb530cbb818"
+
 };
 
 firebase.initializeApp(firebaseConfig);
 
 const db=firebase.database();
-const room="PawanVoiceRoom2026";
 
-let stream=null;
-let myId="";
-let micOn=true;
 
-async function join(){
+function createRoom(){
 
-let name=document.getElementById("name").value.trim();
+let name=document
+.getElementById("roomName")
+.value
+.trim();
 
 if(!name){
-alert("Apna naam likho");
+
+alert("Room ka naam likho");
+
 return;
+
 }
 
-try{
-stream=await navigator.mediaDevices.getUserMedia({audio:true});
-}catch(e){
-alert("Microphone permission nahi mili");
-return;
-}
+let id=Date.now().toString();
 
-myId=Date.now().toString();
+db.ref("rooms/"+id).set({
 
-await db.ref("voiceRooms/"+room+"/"+myId).set({
-name:name
+name:name,
+
+users:0,
+
+createdAt:Date.now()
+
 });
 
-document.getElementById("status").innerText="✅ Room Joined";
+document.getElementById("roomName").value="";
 
-showUsers();
+alert("Room create ho gaya");
+
 }
 
-function showUsers(){
 
-db.ref("voiceRooms/"+room).on("value",function(s){
+function loadRooms(){
 
-let data=s.val()||{};
-let box=document.getElementById("users");
+db.ref("rooms").on("value",function(snapshot){
+
+let data=snapshot.val()||{};
+
+let box=document.getElementById("rooms");
 
 box.innerHTML="";
 
-Object.keys(data).forEach(function(id){
+
+let ids=Object.keys(data);
+
+
+if(ids.length===0){
+
+box.innerHTML="Abhi koi room nahi hai";
+
+return;
+
+}
+
+
+ids.forEach(function(id){
+
+let room=data[id];
 
 let div=document.createElement("div");
 
-div.innerText="🟢 "+data[id].name+
-(id===myId?" (You)":"");
+div.className="room";
+
+
+div.innerHTML=
+
+"<b>🎙️ "+room.name+"</b>"+
+
+"<br><br>"+
+
+"👥 "+(room.users||0)+" Users"+
+
+"<br>"+
+
+"<button class='join' onclick=\"joinRoom('"+
+id+"')\">Join Room</button>";
+
 
 box.appendChild(div);
 
 });
 
-if(Object.keys(data).length===0)
-box.innerText="Koi user nahi";
-
-});
-}
-
-function mic(){
-
-if(!stream){
-alert("Pehle Join Room karo");
-return;
-}
-
-micOn=!micOn;
-
-stream.getAudioTracks().forEach(function(t){
-t.enabled=micOn;
 });
 
-document.getElementById("status").innerText=
-micOn?"🎙️ Mic ON":"🔇 Mic OFF";
 }
 
-function leave(){
 
-if(myId)
-db.ref("voiceRooms/"+room+"/"+myId).remove();
+function joinRoom(id){
 
-if(stream)
-stream.getTracks().forEach(function(t){t.stop()});
+localStorage.setItem("selectedRoom",id);
 
-document.getElementById("status").innerText="Room se bahar aa gaye";
-document.getElementById("users").innerText="Koi user nahi";
+window.location.href=
+"room.html?id="+id;
+
 }
+
+
+loadRooms();
+
 </script>
 
 </body>
