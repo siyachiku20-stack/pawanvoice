@@ -15,16 +15,13 @@ body{
   color:white;
   font-family:Arial;
 }
-
 h1{text-align:center}
-
 .box{
   background:#222;
   padding:18px;
   margin:15px 0;
   border-radius:12px;
 }
-
 input{
   width:100%;
   box-sizing:border-box;
@@ -34,7 +31,6 @@ input{
   margin:7px 0;
   font-size:16px;
 }
-
 button{
   padding:12px 18px;
   margin:5px 2px;
@@ -42,14 +38,12 @@ button{
   border-radius:8px;
   font-size:15px;
 }
-
 .room{
   background:#333;
   padding:15px;
   margin:10px 0;
   border-radius:10px;
 }
-
 .join{
   background:#fff;
 }
@@ -62,6 +56,14 @@ button{
 
 <div class="box">
 
+<h3>👤 आपका नाम</h3>
+
+<input id="userName" placeholder="अपना नाम लिखें">
+
+</div>
+
+<div class="box">
+
 <h3>➕ Create Room</h3>
 
 <input id="roomName" placeholder="Room ka naam">
@@ -69,7 +71,6 @@ button{
 <button onclick="createRoom()">Create Room</button>
 
 </div>
-
 
 <div class="box">
 
@@ -80,7 +81,6 @@ Rooms load ho rahe hain...
 </div>
 
 </div>
-
 
 <script>
 
@@ -114,6 +114,19 @@ let name=document
 .value
 .trim();
 
+let userName=document
+.getElementById("userName")
+.value
+.trim();
+
+if(!userName){
+
+alert("Pehle apna naam likho");
+
+return;
+
+}
+
 if(!name){
 
 alert("Room ka naam likho");
@@ -121,6 +134,8 @@ alert("Room ka naam likho");
 return;
 
 }
+
+localStorage.setItem("pawanName",userName);
 
 let id=Date.now().toString();
 
@@ -141,6 +156,28 @@ alert("Room create ho gaya");
 }
 
 
+function joinRoom(id){
+
+let userName=document
+.getElementById("userName")
+.value
+.trim();
+
+if(!userName){
+
+alert("Pehle apna naam likho");
+
+return;
+
+}
+
+localStorage.setItem("pawanName",userName);
+
+location.href="room.html?id="+id;
+
+}
+
+
 function loadRooms(){
 
 db.ref("rooms").on("value",function(snapshot){
@@ -151,9 +188,7 @@ let box=document.getElementById("rooms");
 
 box.innerHTML="";
 
-
 let ids=Object.keys(data);
-
 
 if(ids.length===0){
 
@@ -163,7 +198,6 @@ return;
 
 }
 
-
 ids.forEach(function(id){
 
 let room=data[id];
@@ -172,36 +206,20 @@ let div=document.createElement("div");
 
 div.className="room";
 
-
 div.innerHTML=
 
 "<b>🎙️ "+room.name+"</b>"+
 
 "<br><br>"+
 
-"👥 "+(room.users||0)+" Users"+
-
-"<br>"+
-
 "<button class='join' onclick=\"joinRoom('"+
 id+"')\">Join Room</button>";
-
 
 box.appendChild(div);
 
 });
 
 });
-
-}
-
-
-function joinRoom(id){
-
-localStorage.setItem("selectedRoom",id);
-
-window.location.href=
-"room.html?id="+id;
 
 }
 
