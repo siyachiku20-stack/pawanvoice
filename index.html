@@ -11,7 +11,7 @@
   <style>
     body {
       margin: 0;
-      padding: 30px 15px;
+      padding: 25px 15px;
       font-family: Arial, sans-serif;
       background: #111;
       color: white;
@@ -19,34 +19,42 @@
     }
 
     h1 {
-      margin-bottom: 30px;
+      margin-bottom: 25px;
+    }
+
+    .box {
+      background: #222;
+      border-radius: 12px;
+      padding: 18px;
+      margin: 12px auto;
+      max-width: 400px;
     }
 
     input {
-      width: 85%;
+      width: 90%;
       padding: 14px;
       border: none;
       border-radius: 8px;
       font-size: 16px;
-      margin-bottom: 15px;
       box-sizing: border-box;
     }
 
     button {
       padding: 13px 20px;
-      margin: 6px;
+      margin: 7px 3px;
       border: none;
       border-radius: 8px;
       font-size: 16px;
     }
 
     #status {
-      margin-top: 25px;
+      margin-top: 15px;
       color: #bbb;
     }
 
     #users {
-      margin-top: 20px;
+      margin-top: 12px;
+      line-height: 1.8;
     }
   </style>
 </head>
@@ -55,20 +63,29 @@
 
 <h1>🎙️ PawanVoice</h1>
 
-<input id="name" type="text" placeholder="Apna naam likho">
+<div class="box">
+  <div>🏠 <b>Room</b></div>
+  <div>PawanVoiceRoom2026</div>
+</div>
 
-<br>
+<div class="box">
+  <input id="name" type="text" placeholder="Apna naam likho">
 
-<button onclick="joinRoom()">Join Room</button>
-<button onclick="toggleMic()">Mic ON/OFF</button>
-<button onclick="leaveRoom()">Leave</button>
+  <br><br>
 
-<div id="status">Room join nahi hua</div>
+  <button onclick="joinRoom()">Join Room</button>
+  <button onclick="toggleMic()">🎙️ Mic ON/OFF</button>
+  <button onclick="leaveRoom()">🚪 Leave Room</button>
 
-<div id="users"></div>
+  <div id="status">Room join nahi hua</div>
+</div>
+
+<div class="box">
+  <b>👥 Connected Users</b>
+  <div id="users">Koi user nahi</div>
+</div>
 
 <div id="audios"></div>
-
 
 <script>
 
@@ -95,7 +112,6 @@ let myName = "";
 let micOn = true;
 let connectedPeers = {};
 
-
 async function joinRoom() {
 
   myName = document.getElementById("name").value.trim();
@@ -117,19 +133,11 @@ async function joinRoom() {
 
   } catch (error) {
 
-    console.log(error);
-
     alert("Microphone permission nahi mili");
-
-    document.getElementById("status").innerText =
-      "Microphone permission required";
-
     return;
   }
 
-
   peer = new Peer();
-
 
   peer.on("open", function(id) {
 
@@ -143,40 +151,56 @@ async function joinRoom() {
     document.getElementById("status").innerText =
       "✅ Room Joined";
 
-    document.getElementById("users").innerText =
-      "Naam: " + myName;
-
     listenForUsers();
-
   });
-
 
   peer.on("call", function(call) {
 
     call.answer(myStream);
 
     call.on("stream", function(remoteStream) {
-
       addRemoteAudio(call.peer, remoteStream);
-
     });
 
   });
 
-
   peer.on("error", function(error) {
-
-    console.log("Peer error:", error);
-
+    console.log(error);
     document.getElementById("status").innerText =
       "Connection error";
-
   });
-
 }
 
-
 function listenForUsers() {
+
+  db.ref("voiceRooms/" + ROOM).on("value", function(snapshot) {
+
+    const data = snapshot.val() || {};
+    const usersDiv = document.getElementById("users");
+
+    usersDiv.innerHTML = "";
+
+    Object.keys(data).forEach(function(id) {
+
+      const user = data[id];
+
+      const line = document.createElement("div");
+
+      if (id === myPeerId) {
+        line.innerText = "🟢 " + user.name + " (You)";
+      } else {
+        line.innerText = "🟢 " + user.name;
+      }
+
+      usersDiv.appendChild(line);
+
+    });
+
+    if (Object.keys(data).length === 0) {
+      usersDiv.innerText = "Koi user nahi";
+    }
+
+  });
 
   db.ref("voiceRooms/" + ROOM).on("child_added", function(snapshot) {
 
@@ -190,144 +214,73 @@ function listenForUsers() {
 
     connectedPeers[user.peerId] = true;
 
-
-    const call = peer.call(
-      user.peerId,
-      myStream
-    );
-
+    const call = peer.call(user.peerId, myStream);
 
     if (!call) return;
 
-
     call.on("stream", function(remoteStream) {
-
-      addRemoteAudio(
-        user.peerId,
-        remoteStream
-      );
-
+      addRemoteAudio(user.peerId, remoteStream);
     });
 
   });
-
 }
-
 
 function addRemoteAudio(id, stream) {
 
-  const oldAudio =
-    document.getElementById("audio-" + id);
+  if (document.getElementById("audio-" + id)) return;
 
-  if (oldAudio) return;
-
-
-  const audio =
-    document.createElement("audio");
+  const audio = document.createElement("audio");
 
   audio.id = "audio-" + id;
-
   audio.autoplay = true;
-
   audio.playsInline = true;
-
   audio.srcObject = stream;
 
-  document
-    .getElementById("audios")
-    .appendChild(audio);
-
+  document.getElementById("audios").appendChild(audio);
 }
-
 
 function toggleMic() {
 
   if (!myStream) {
-
     alert("Pehle Join Room karo");
-
     return;
   }
 
-
   micOn = !micOn;
 
-
-  myStream
-    .getAudioTracks()
-    .forEach(function(track) {
-
-      track.enabled = micOn;
-
-    });
-
+  myStream.getAudioTracks().forEach(function(track) {
+    track.enabled = micOn;
+  });
 
   document.getElementById("status").innerText =
     micOn ? "🎙️ Mic ON" : "🔇 Mic OFF";
-
 }
-
 
 function leaveRoom() {
 
   if (myPeerId) {
-
-    db.ref(
-      "voiceRooms/" +
-      ROOM +
-      "/" +
-      myPeerId
-    ).remove();
-
+    db.ref("voiceRooms/" + ROOM + "/" + myPeerId).remove();
   }
-
 
   if (myStream) {
-
-    myStream
-      .getTracks()
-      .forEach(function(track) {
-
-        track.stop();
-
-      });
-
+    myStream.getTracks().forEach(function(track) {
+      track.stop();
+    });
   }
-
 
   if (peer) {
-
     peer.destroy();
-
   }
-
 
   document.getElementById("status").innerText =
     "Room se bahar aa gaye";
 
-  document.getElementById("users").innerText = "";
+  document.getElementById("users").innerHTML = "";
 
   document.getElementById("audios").innerHTML = "";
 
   myPeerId = "";
-
 }
-
-
-window.addEventListener("beforeunload", function() {
-
-  if (myPeerId) {
-
-    db.ref(
-      "voiceRooms/" +
-      ROOM +
-      "/" +
-      myPeerId
-    ).remove();
-
-  }
-
-});
 
 </script>
 
