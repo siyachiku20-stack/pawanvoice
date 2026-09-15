@@ -288,22 +288,29 @@ box.innerHTML = "";
 
 const seats = document.querySelectorAll(".seat");
 
+document.querySelectorAll(".seat-name").forEach(function(el){
+  el.remove();
+});
+
 Object.keys(data).forEach(function(id, index){
 
   if(index >= 9) return;
 
   const seat = seats[index];
 
-  seat.innerHTML = "";
+  seat.innerHTML = "🎙️";
 
-  const profile = document.createElement("div");
-  profile.innerText = "🎙️";
+  const nameBox = document.createElement("div");
 
-  const name = document.createElement("div");
-  name.innerText = data[id].name + (id === myId ? " (You)" : "");
+  nameBox.innerText =
+    data[id].name + (id === myId ? " (You)" : "");
 
-  seat.appendChild(profile);
-  seat.appendChild(name);
+  nameBox.className = "seat-name";
+
+  seat.parentNode.insertBefore(
+    nameBox,
+    seat.nextSibling
+  );
 
 });
 
