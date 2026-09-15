@@ -283,20 +283,27 @@ db.ref(
 
 const data=snapshot.val() || {};
 
-const box=document.getElementById("users");
+  const box = document.getElementById("users");
+box.innerHTML = "";
 
-box.innerHTML="";
+const seats = document.querySelectorAll(".seat");
 
+Object.keys(data).forEach(function(id, index){
 
-Object.keys(data).forEach(function(id){
+  if(index >= 9) return;
 
-const div=document.createElement("div");
+  const seat = seats[index];
 
-div.innerText=
-"🟢 "+data[id].name+
-(id===myId ? " (You)" : "");
+  seat.innerHTML = "";
 
-box.appendChild(div);
+  const profile = document.createElement("div");
+  profile.innerText = "🎙️";
+
+  const name = document.createElement("div");
+  name.innerText = data[id].name + (id === myId ? " (You)" : "");
+
+  seat.appendChild(profile);
+  seat.appendChild(name);
 
 });
 
