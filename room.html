@@ -155,8 +155,22 @@ const params=new URLSearchParams(location.search);
 const roomId=params.get("id");
 
 let myName=localStorage.getItem("pawanName") || "Guest";
-
-let myId="";
+let isOwner = false;
+  let ownerName = "";
+  if (roomId) {
+  firebase.database().ref("rooms/" + roomId + "/owner").once("value")
+    .then(snapshot => {
+      if (!snapshot.exists()) {
+        firebase.database().ref("rooms/" + roomId + "/owner").set(myName);
+        isOwner = true;
+        ownerName = myName;
+      } else {
+        ownerName = snapshot.val();
+        isOwner = (ownerName === myName);
+      }
+    });
+  }
+  let myId="";
 
 let peer=null;
 
