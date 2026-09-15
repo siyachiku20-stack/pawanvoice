@@ -286,34 +286,43 @@ const data=snapshot.val() || {};
   const box = document.getElementById("users");
 box.innerHTML = "";
 
-const seats = document.querySelectorAll(".seat");
+Object.keys(data).forEach(function(id){
 
-document.querySelectorAll(".seat-name").forEach(function(el){
-  el.remove();
+  const div = document.createElement("div");
+
+  div.innerText =
+    "🟢 " + data[id].name +
+    (id === myId ? " (You)" : "");
+
+  box.appendChild(div);
+
 });
 
-Object.keys(data).forEach(function(id, index){
+Object.keys(data).forEach(function(id){
 
-  if(index >= 9) return;
+  if(id === myId) return;
 
-  const seat = seats[index];
+  if(calls[id]) return;
 
-  seat.innerHTML = "🎙️";
+  calls[id] = true;
 
-  const nameBox = document.createElement("div");
-
-  nameBox.innerText =
-    data[id].name + (id === myId ? " (You)" : "");
-
-  nameBox.className = "seat-name";
-
-  seat.parentNode.insertBefore(
-    nameBox,
-    seat.nextSibling
+  const call = peer.call(
+    data[id].peerId,
+    stream
   );
 
-});
+  if(!call) return;
 
+  call.on("stream", function(remoteStream){
+
+    addAudio(
+      data[id].peerId,
+      remoteStream
+    );
+
+  });
+
+});
 
 Object.keys(data).forEach(function(id){
 
