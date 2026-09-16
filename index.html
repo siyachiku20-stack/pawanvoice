@@ -6,7 +6,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <style>
 body{
   margin:0;
@@ -54,11 +54,15 @@ button{
 
 <h1>🎙️ PawanVoice</h1>
 
-<div class="box">
+<div class="box" id="loginBox">
 
-<h3>👤 आपका नाम</h3>
+<h2>Welcome to PawanVoice</h2>
 
-<input id="userName" placeholder="अपना नाम लिखें">
+<p>Google account se login karein</p>
+
+<button onclick="googleLogin()">
+  🔵 Continue with Google
+</button>
 
 </div>
 
@@ -226,6 +230,31 @@ box.appendChild(div);
 loadRooms();
 
 </script>
+firebase.initializeApp(firebaseConfig);
 
+const auth = firebase.auth();
+
+function googleLogin(){
+
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  auth.signInWithPopup(provider)
+    .then(function(result){
+
+      const user = result.user;
+
+      localStorage.setItem("pawanName", user.displayName || "User");
+      localStorage.setItem("pawanEmail", user.email || "");
+
+      alert("Google Login Successful");
+
+    })
+    .catch(function(error){
+
+      alert("Login Error: " + error.message);
+
+    });
+
+}
 </body>
 </html>
