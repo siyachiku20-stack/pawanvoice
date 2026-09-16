@@ -3,19 +3,23 @@
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PawanVoice Room</title>
-const roomDPInput = document.getElementById("roomDPInput");
-const roomDP = document.getElementById("roomDP");
+function showRoomDP(event){
 
-roomDPInput.onchange = function(){
-
-  const file = roomDPInput.files[0];
+  const file = event.target.files[0];
 
   if(!file) return;
 
-  const imageURL = URL.createObjectURL(file);
+  const reader = new FileReader();
 
-  roomDP.src = imageURL;
-};
+  reader.onload = function(e){
+
+    document.getElementById("roomDP").src =
+      e.target.result;
+
+  };
+
+  reader.readAsDataURL(file);
+}
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -69,8 +73,9 @@ button{
   <br><br>
 
   <input type="file"
-         id="roomDPInput"
-         accept="image/*">
+       id="roomDPInput"
+       accept="image/*"
+       onchange="showRoomDP(event)">
 
   <br><br>
 
