@@ -48,7 +48,29 @@ button{
 <div class="box">
 
 <h2 id="roomName">Room</h2>
+<div class="room-profile">
 
+  <img id="roomDP"
+       src="https://via.placeholder.com/100"
+       style="width:100px;height:100px;border-radius:50%;object-fit:cover;">
+
+  <br><br>
+
+  <input type="file"
+         id="roomDPInput"
+         accept="image/*">
+
+  <br><br>
+
+  <input type="text"
+         id="newRoomName"
+         placeholder="Room ka naam">
+
+  <button onclick="changeRoomName()">
+    ✏️ Room Name Change
+  </button>
+
+</div>
 <p id="status">Connecting...</p>
 
 <button onclick="toggleMic()">🎙️ Mic ON/OFF</button>
@@ -410,7 +432,24 @@ micOn ? "🎙️ Mic ON" : "🔇 Mic OFF";
 
 }
 
+function changeRoomName(){
 
+  const newName =
+    document.getElementById("newRoomName").value.trim();
+
+  if(!newName){
+    alert("Pehle room ka naam likho");
+    return;
+  }
+
+  db.ref("rooms/"+roomId+"/name").set(newName);
+
+  document.getElementById("roomName").innerText =
+    "🎙️ " + newName;
+
+  document.getElementById("newRoomName").value = "";
+
+}
 function leaveRoom(){
 
 if(myId){
