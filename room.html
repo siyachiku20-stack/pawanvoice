@@ -93,7 +93,25 @@ button{
 <button onclick="toggleMic()">🎙️ Mic ON/OFF</button>
 
 <button onclick="leaveRoom()">🚪 Leave Room</button>
+<div class="chat-box">
 
+  <h3>💬 Room Chat</h3>
+
+  <div id="chatMessages">
+    No messages yet...
+  </div>
+
+  <input
+    type="text"
+    id="chatInput"
+    placeholder="Message likho..."
+  >
+
+  <button onclick="sendMessage()">
+    📤 Send
+  </button>
+
+</div>
 </div>
 
 
@@ -467,6 +485,42 @@ function changeRoomName(){
   document.getElementById("newRoomName").value = "";
 
 }
+  function sendMessage(){
+
+  const input = document.getElementById("chatInput");
+  const message = input.value.trim();
+
+  if(!message) return;
+
+  db.ref("rooms/"+roomId+"/messages").push({
+    name: myName,
+    text: message,
+    time: Date.now()
+  });
+
+  input.value = "";
+}
+
+db.ref("rooms/"+roomId+"/messages").on("value", function(snapshot){
+
+  const box = document.getElementById("chatMessages");
+
+  box.innerHTML = "";
+
+  const data = snapshot.val() || {};
+
+  Object.values(data).forEach(function(msg){
+
+    const div = document.createElement("div");
+
+    div.innerText =
+      "👤 " + msg.name + ": " + msg.text;
+
+    box.appendChild(div);
+
+  });
+
+});
 function leaveRoom(){
 
 if(myId){
