@@ -1,376 +1,313 @@
-```html
-<!DOCTYPE html>
-<html>
+\<!DOCTYPE html>
+\<html>
+\<head>
+\<meta name="viewport" content="width=device-width,initial-scale=1">
+\<title>PawanVoice\</title>
 
-<head>
-
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>PawanVoice</title>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-<style>
-
+\<script src="[https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js](https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js)">\</script>
+\<script src="[https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js](https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js)">\</script>
+\<script src="[https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js](https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js)">\</script>
+\<style>
 body{
-  margin:0;
-  padding:20px;
-  padding-bottom:80px;
-  background:#111;
-  color:white;
-  font-family:Arial;
+  margin:0;
+  padding:20px;
+  background:#111;
+  color\:white;
+  font-family\:Arial;
 }
-
-h1{
-  text-align:center;
-}
-
+h1{text-align\:center}
 .box{
-  background:#222;
-  padding:18px;
-  margin:15px 0;
-  border-radius:12px;
+  background:#222;
+  padding:18px;
+  margin:15px 0;
+  border-radius:12px;
 }
-
 input{
-  width:100%;
-  box-sizing:border-box;
-  padding:14px;
-  border:0;
-  border-radius:8px;
-  margin:7px 0;
-  font-size:16px;
+  width:100%;
+  box-sizing\:border-box;
+  padding:14px;
+  border:0;
+  border-radius:8px;
+  margin:7px 0;
+  font-size:16px;
 }
-
 button{
-  padding:12px 18px;
-  margin:5px 2px;
-  border:0;
-  border-radius:8px;
-  font-size:15px;
+  padding:12px 18px;
+  margin:5px 2px;
+  border:0;
+  border-radius:8px;
+  font-size:15px;
 }
-
 .room{
-  background:#333;
-  padding:15px;
-  margin:10px 0;
-  border-radius:10px;
+  background:#333;
+  padding:15px;
+  margin:10px 0;
+  border-radius:10px;
 }
-
 .join{
-  display:inline-block;
-  background:white;
-  color:black;
-  padding:10px 15px;
-  border-radius:8px;
-  text-decoration:none;
+  background:#fff;
 }
+\</style>
+\</head>
 
-.bottom-nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:#222;
-  display:flex;
-  justify-content:space-around;
-  padding:10px 0;
-  z-index:9999;
-}
+\<body>
 
-.bottom-nav button{
-  background:none;
-  color:white;
-  font-size:15px;
-  margin:0;
-}
+\<h1>🎙️ PawanVoice\</h1>
 
-</style>
+\<div class="box" id="loginBox">
 
-</head>
+\<h2>Welcome to PawanVoice\</h2>
 
-<body>
+\<p>Google account se login karein\</p>
 
-<h1>🎙️ PawanVoice</h1>
+\<button onclick="googleLogin()">
+  🔵 Continue with Google
+\</button>
+\<div class="box" id="genderBox" style="display\:none;">
 
+  \<h2>👤 Select Gender\</h2>
 
-<div class="box">
+  \<button onclick="selectGender('Male')">
+    👨 Male
+  \</button>
 
-<h3>👤 Apna Naam</h3>
+  \<button onclick="selectGender('Female')">
+    👩 Female
+  \</button>
 
-<input id="userName" placeholder="Apna naam likho">
+\</div>
+\</div>
+\<div class="box" id="profileBox" style="display\:none;">
 
-</div>
+  \<h2>👤 My Profile\</h2>
 
+  \<p>🖼️ Profile Photo\</p>
+  \<input type="file" id="profilePhoto" accept="image/\*">
 
-<div class="box" id="genderBox">
+  \<p>👤 Name\</p>
+  \<input type="text" id="profileName" placeholder="अपना नाम">
 
-<h3>🚻 Select Gender</h3>
+  \<p>🆔 ID Number\</p>
+  \<p id="profileId">Loading...\</p>
 
-<button onclick="selectGender('Male')">
-👨 Male
-</button>
+  \<p>⭐ Level: 1\</p>
 
-<button onclick="selectGender('Female')">
-👩 Female
-</button>
+  \<p>🏅 Medal: None\</p>
 
-<p id="selectedGender">
-Gender: Not Selected
-</p>
+  \<p>🚻 Gender: \<span id="profileGender">Not Selected\</span>\</p>
 
-</div>
+\</div>
+\<div class="box">
 
+\<h3>➕ Create Room\</h3>
 
-<div class="box">
+\<input id="roomName" placeholder="Room ka naam">
 
-<h3>➕ Create Room</h3>
+\<button onclick="createRoom()">Create Room\</button>
 
-<input id="roomName" placeholder="Room ka naam">
+\</div>
 
-<button onclick="createRoom()">
-Create Room
-</button>
+\<div class="box">
 
-</div>
+\<h3>🏠 Voice Rooms\</h3>
 
-
-<div class="box">
-
-<h3>🏠 Voice Rooms</h3>
-
-<div id="rooms">
+\<div id="rooms">
 Rooms load ho rahe hain...
-</div>
+\</div>
 
-</div>
+\</div>
 
+\<script>
+ const firebaseConfig={
 
-<script>
+apiKey:"AIzaSyDnlTdeqGyG5aPHrUIV6kTYnM521GtbrrE",
 
-const firebaseConfig = {
+authDomain:"pawanvoice-68c5e.firebaseapp.com",
 
-  apiKey: "AIzaSyDnlTdeqG5aPHrUIV6kTYnM521GtbrrE",
+databaseURL:"[https://pawanvoice-68c5e-default-rtdb.firebaseio.com](https://pawanvoice-68c5e-default-rtdb.firebaseio.com)",
 
-  authDomain: "pawanvoice-68c5e.firebaseapp.com",
+projectId:"pawanvoice-68c5e",
 
-  databaseURL: "https://pawanvoice-68c5e-default-rtdb.firebaseio.com",
+storageBucket:"pawanvoice-68c5e.firebasestorage.app",
 
-  projectId: "pawanvoice-68c5e",
+messagingSenderId:"148446327241",
 
-  storageBucket: "pawanvoice-68c5e.firebasestorage.app",
-
-  messagingSenderId: "148446327241",
-
-  appId: "1:148446327241:web:6bac9cb9ad0fb530cbb818"
+appId:"1:148446327241\:web:6bac9cb9ad0fb530cbb818"
 
 };
 
-
 firebase.initializeApp(firebaseConfig);
 
-const db = firebase.database();
+const db=firebase.database();
 
-
-function selectGender(gender){
-
-  localStorage.setItem("pawanGender", gender);
-
-  document.getElementById("selectedGender").innerText =
-    "Gender: " + gender;
-
-}
 
 
 function createRoom(){
 
-  let name = document
-    .getElementById("roomName")
-    .value
-    .trim();
+let name=document
+.getElementById("roomName")
+.value
+.trim();
 
-  let userName = document
-    .getElementById("userName")
-    .value
-    .trim();
+let userName=document
+.getElementById("userName")
+.value
+.trim();
 
+if(!userName){
 
-  if(!userName){
+alert("Pehle apna naam likho");
 
-    alert("Pehle apna naam likho");
-
-    return;
-
-  }
-
-
-  if(!name){
-
-    alert("Room ka naam likho");
-
-    return;
-
-  }
-
-
-  localStorage.setItem("pawanName", userName);
-
-
-  let id = Date.now().toString();
-
-
-  db.ref("rooms/" + id).set({
-
-    name: name,
-
-    owner: userName,
-
-    users: 0,
-
-    createdAt: Date.now()
-
-  })
-  .then(function(){
-
-    document.getElementById("roomName").value = "";
-
-    alert("Room create ho gaya");
-
-    location.href = "room.html?id=" + id;
-
-  })
-  .catch(function(error){
-
-    alert("Room create nahi hua: " + error.message);
-
-  });
+return;
 
 }
+
+if(!name){
+
+alert("Room ka naam likho");
+
+return;
+
+}
+
+localStorage.setItem("pawanName",userName);
+
+let id=Date.now().toString();
+
+db.ref("rooms/"+id).set({
+
+name\:name,
+
+users:0,
+
+createdAt\:Date.now()
+
+});
+
+document.getElementById("roomName").value="";
+
+alert("Room create ho gaya");
+
+}
+
 
 
 function joinRoom(id){
 
-  let userName = document
-    .getElementById("userName")
-    .value
-    .trim();
+let userName=document
+.getElementById("userName")
+.value
+.trim();
 
+if(!userName){
 
-  if(!userName){
+alert("Pehle apna naam likho");
 
-    alert("Pehle apna naam likho");
-
-    return;
-
-  }
-
-
-  localStorage.setItem("pawanName", userName);
-
-  location.href = "room.html?id=" + id;
+return;
 
 }
 
+localStorage.setItem("pawanName",userName);
 
-function loadRooms(){
-
-  const box = document.getElementById("rooms");
-
-
-  db.ref("rooms").on("value", function(snapshot){
-
-    box.innerHTML = "";
-
-
-    if(!snapshot.exists()){
-
-      box.innerHTML = "Abhi koi room nahi hai.";
-
-      return;
-
-    }
-
-
-    snapshot.forEach(function(child){
-
-      let id = child.key;
-
-      let room = child.val();
-
-
-      let div = document.createElement("div");
-
-      div.className = "room";
-
-
-      div.innerHTML =
-        "<b>🎙️ " + room.name + "</b>" +
-        "<br>" +
-        "👤 Owner: " + (room.owner || "User") +
-        "<br><br>" +
-        "<button onclick=\"joinRoom('" + id + "')\">" +
-        "Join Room" +
-        "</button>";
-
-
-      box.appendChild(div);
-
-    });
-
-  });
+location.href="room.html?id="+id;
 
 }
-
-
-function showPage(page){
-
-  if(page === "room"){
-
-    alert("🏠 Room");
-
-  }
-
-
-  if(page === "inbox"){
-
-    alert("💬 Inbox");
-
-  }
-
-
-  if(page === "me"){
-
-    alert("👤 My Profile");
-
-  }
-
-}
+  </script>
 
 
 loadRooms();
 
-</script>
+firebase.initializeApp(firebaseConfig);
 
+const auth = firebase.auth();
+
+function googleLogin(){
+
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  auth.signInWithPopup(provider)
+    .then(function(result){
+
+      const user = result.user;
+
+      localStorage.setItem("pawanName", user.displayName || "User");
+      localStorage.setItem("pawanEmail", user.email || "");
+
+      alert("Google Login Successful");
+
+    })
+    .catch(function(error){
+
+      alert("Login Error: " + error.message);
+
+    });
+
+}
+
+function selectGender(gender){
+
+  localStorage.setItem("pawanGender", gender);
+
+  document.getElementById("genderBox").style.display = "none";
+
+  alert("Gender selected: " + gender);
+
+}
+
+function showPage(page){
+
+  if(page === "room"){
+    alert("🏠 Room खुल रहा है");
+  }
+
+  if(page === "inbox"){
+    alert("💬 Inbox खुल रहा है");
+  }
+
+  if(page === "me"){
+    alert("👤 My Profile खुल रहा है");
+  }
+
+}
+</script>
 
 <div class="bottom-nav">
 
-  <button onclick="showPage('room')">
-    🏠<br>Room
-  </button>
+  <button onclick="showPage('room')">
+    🏠<br>Room
+  </button>
 
-  <button onclick="showPage('inbox')">
-    💬<br>Inbox
-  </button>
+  <button onclick="showPage('inbox')">
+    💬<br>Inbox
+  </button>
 
-  <button onclick="showPage('me')">
-    👤<br>Me
-  </button>
+  <button onclick="showPage('me')">
+    👤<br>Me
+  </button>
 
 </div>
 
+<style>
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#222;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0;
+  z-index:9999;
+}
+
+.bottom-nav button{
+  background:none;
+  color:white;
+  font-size:15px;
+  margin:0;
+}
+</style>
 
 </body>
-
 </html>
-```
+ 
