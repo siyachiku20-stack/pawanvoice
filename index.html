@@ -146,7 +146,7 @@ Rooms load ho rahe hain...
 <div class="box">
 
 <h2>👤 My Profile</h2>
-
+<button onclick="showFollow()">➕ Follow</button>
 <p>👤 Name: <span id="profileName"></span></p>
 <p>🆔 ID: <span id="profileId"></span></p>
 <p>⭐ Level: 1</p>
@@ -438,7 +438,33 @@ document.getElementById("mePage").classList.add("active");
 
 
 loadRooms();
+function showFollow(){
 
+  let userId=prompt("जिस User को Follow करना है उसकी ID डालो");
+
+  if(!userId){
+    return;
+  }
+
+  if(userId===myId){
+    alert("खुद को Follow नहीं कर सकते");
+    return;
+  }
+
+  db.ref("follows/"+userId+"/"+myId).set({
+    userId:myId,
+    time:Date.now()
+  }).then(function(){
+
+    alert("Follow request भेज दी गई");
+
+  }).catch(function(error){
+
+    alert("Follow नहीं हुआ: "+error.message);
+
+  });
+
+}
 </script>
 <div class="box">
   <h2>💬 Private Chat</h2>
