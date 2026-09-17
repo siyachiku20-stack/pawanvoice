@@ -439,6 +439,7 @@ document.getElementById("mePage").classList.add("active");
 
 
 loadRooms();
+loadFollowRequests();
 function showFollow(){
 
   let userId=prompt("जिस User को Follow करना है उसकी ID डालो");
@@ -472,6 +473,30 @@ function showFollow(){
   db.ref("friends/"+userId+"/"+myId).set(true);
 
   alert("Friend बन गया ✅");
+  }
+  function loadFollowRequests(){
+
+  db.ref("follows/"+myId).on("value",function(snapshot){
+
+    let html="";
+
+    snapshot.forEach(function(child){
+
+      let userId=child.key;
+
+      html+=`
+        <div>
+          User ID: ${userId}
+          <button onclick="acceptFollow('${userId}')">Accept</button>
+        </div>
+      `;
+
+    });
+
+    document.getElementById("followRequests").innerHTML=html;
+
+  });
+
   }
 </script>
 <div class="box">
