@@ -544,29 +544,36 @@ function sendPrivateMessage(){
     return;
   }
 
-  db.ref("friends/"+myId+"/"+to).once("value").then(function(snap){
+  db.ref("privateChats/"+myId+"/"+to).once("value").then(function(snapshot){
 
-  if(!snap.exists()){
-    alert("पहले Friend बनना जरूरी है");
-    return;
-  }
-  db.ref("privateChats/"+myId+"/"+to).push({
-    from:myId,
-    to:to,
-    text:text,
-    time:Date.now()
+    let messages=snapshot.val() || {};
+    let sentCount=Object.keys(messages).length;
+
+    return db.ref("privateReplies/"+myId+"/"+to).once("value").then(function(replySnap){
+
+      if(sentCount >= 2 && !replySnap.exists()){
+        alert("पहले सामने वाला User reply करे");
+        return;
+      }
+
+      let data={
+        from:myId,
+        to:to,
+        text:text,
+        time:Date.now()
+      };
+
+      db.ref("privateChats/"+myId+"/"+to).push(data);
+      db.ref("privateChats/"+to+"/"+myId).push(data);
+
+      document.getElementById("privateMessage").value="";
+
+      alert("Message sent ✅");
+
+    });
+
   });
 
-  db.ref("privateChats/"+to+"/"+myId).push({
-    from:myId,
-    to:to,
-    text:text,
-    time:Date.now()
-  });
-
-  document.getElementById("privateMessage").value="";
-
-  alert("Message sent");
 }
 </script>
 </body>
