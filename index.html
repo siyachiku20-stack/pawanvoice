@@ -479,22 +479,24 @@ function showFollow(){
 
   db.ref("follows/"+myId).on("value",function(snapshot){
 
-    let html="";
+    let box=document.getElementById("followRequests");
+
+    box.innerHTML="";
+
+    if(!snapshot.exists()){
+      box.innerHTML="<p>कोई Follow Request नहीं है</p>";
+      return;
+    }
 
     snapshot.forEach(function(child){
 
       let userId=child.key;
 
-      html+=`
-        <div>
-          User ID: ${userId}
-          <button onclick="acceptFollow('${userId}')">Accept</button>
-        </div>
-      `;
+      box.innerHTML+=
+        "<p>User ID: "+userId+
+        ' <button onclick="acceptFollow(\''+userId+'\')">Accept</button></p>';
 
     });
-
-    document.getElementById("followRequests").innerHTML=html;
 
   });
 
