@@ -410,6 +410,47 @@ document.getElementById("mePage").classList.add("active");
 loadRooms();
 
 </script>
+<div class="box">
+  <h2>💬 Private Chat</h2>
 
+  <input id="chatUserId" placeholder="जिस User से chat करनी है उसकी ID">
+
+  <input id="privateMessage" placeholder="Message लिखो">
+
+  <button onclick="sendPrivateMessage()">Send</button>
+
+  <div id="privateMessages"></div>
+</div>
+
+<script>
+function sendPrivateMessage(){
+
+  let to=document.getElementById("chatUserId").value.trim();
+  let text=document.getElementById("privateMessage").value.trim();
+
+  if(!to || !text){
+    alert("User ID और message लिखो");
+    return;
+  }
+
+  db.ref("privateChats/"+myId+"/"+to).push({
+    from:myId,
+    to:to,
+    text:text,
+    time:Date.now()
+  });
+
+  db.ref("privateChats/"+to+"/"+myId).push({
+    from:myId,
+    to:to,
+    text:text,
+    time:Date.now()
+  });
+
+  document.getElementById("privateMessage").value="";
+
+  alert("Message sent");
+}
+</script>
 </body>
 </html>
