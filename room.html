@@ -1,214 +1,290 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>PawanVoice Room</title>
-<style>
-.chat-box{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:#111;
-  padding:10px;
-  z-index:9999;
-  display:flex;
-  gap:6px;
-}
-
-#chatInput{
-  flex:1;
-  padding:10px;
-  border-radius:20px;
-  border:1px solid #555;
-}
-
-.chat-box button{
-  padding:10px 14px;
-  border-radius:20px;
-}
-</style>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <style>
+
 body{
   margin:0;
-  padding:20px;
+  padding:15px;
+  padding-bottom:20px;
   background:#111;
   color:white;
   font-family:Arial;
-  text-align:center;
 }
 
-.box{
+.header{
   background:#222;
-  padding:20px;
-  margin:15px auto;
+  padding:15px;
   border-radius:12px;
-  max-width:450px;
+  margin-bottom:12px;
+}
+
+.room-name{
+  font-size:20px;
+  font-weight:bold;
+}
+
+.members{
+  color:#bbb;
+  margin-top:5px;
+}
+
+.seats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:15px;
+}
+
+.seat{
+  background:#222;
+  border-radius:14px;
+  min-height:110px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border:2px solid #333;
+}
+
+.avatar{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:#444;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  margin-bottom:6px;
+}
+
+.empty{
+  color:#777;
+  font-size:13px;
+}
+
+.name{
+  font-size:14px;
+  max-width:90px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.owner{
+  color:#ffd700;
+  font-size:11px;
+}
+
+.mic{
+  font-size:16px;
+  margin-top:4px;
+}
+
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin:15px 0;
+  flex-wrap:wrap;
 }
 
 button{
-  padding:13px 20px;
-  margin:7px;
   border:0;
-  border-radius:8px;
-  font-size:16px;
+  border-radius:10px;
+  padding:12px 18px;
+  font-size:15px;
 }
 
-#users{
-  line-height:2;
+.micButton{
+  background:#20a050;
+  color:white;
+}
+
+.leaveButton{
+  background:#d33;
+  color:white;
+}
+
+.chat{
+  background:#222;
+  border-radius:12px;
+  padding:12px;
   margin-top:15px;
 }
+
+.chatMessages{
+  height:180px;
+  overflow-y:auto;
+  background:#151515;
+  border-radius:8px;
+  padding:8px;
+}
+
+.message{
+  margin:7px 0;
+  padding:7px;
+  background:#292929;
+  border-radius:7px;
+}
+
+.messageName{
+  color:#6ab7ff;
+  font-size:12px;
+}
+
+.chatInput{
+  display:flex;
+  gap:6px;
+  margin-top:8px;
+}
+
+.chatInput input{
+  flex:1;
+  padding:12px;
+  border:0;
+  border-radius:8px;
+  font-size:15px;
+}
+
+.chatInput button{
+  background:#267cff;
+  color:white;
+}
+
+.status{
+  text-align:center;
+  color:#aaa;
+  font-size:13px;
+  margin-top:8px;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<h1>🎙️ PawanVoice</h1>
-<div class="profile-box">
-  <h2>👤 My Profile</h2>
+<div class="header">
 
-  <p id="profileName">Name: Guest</p>
-  <p id="profileId">ID: Loading...</p>
-<input type="file" id="profileDPInput" accept="image/*">
-
-<br><br>
-
-<img id="profileDP"
-src="https://via.placeholder.com/100"
-style="width:100px;height:100px;border-radius:50%;object-fit:cover;">
+<div class="room-name" id="roomName">
+🎙️ PawanVoice Room
 </div>
-<div class="box">
 
-<h2 id="roomName">Room</h2>
-<div class="room-profile">
-
-  <img id="roomDP"
-       src="https://via.placeholder.com/100"
-       style="width:100px;height:100px;border-radius:50%;object-fit:cover;">
-
-  <br><br>
-
-  <input type="file"
-       id="roomDPInput"
-       accept="image/*"
-       onchange="showRoomDP(event)">
-
-  <br><br>
-
-  <input type="text"
-         id="newRoomName"
-         placeholder="Room ka naam">
-
-  <button onclick="changeRoomName()">
-    ✏️ Room Name Change
-  </button>
-
+<div class="members">
+👥 Members: <span id="memberCount">0</span>/9
 </div>
-<p id="status">Connecting...</p>
 
-<button onclick="toggleMic()">🎙️ Mic ON/OFF</button>
-
-<button onclick="leaveRoom()">🚪 Leave Room</button>
-<div class="chat-box">
-
-  <h3>💬 Room Chat</h3>
-
-  <div id="chatMessages">
-    No messages yet...
-  </div>
-
-  <input
-    type="text"
-    id="chatInput"
-    placeholder="Message likho..."
-  >
-
-  <button onclick="sendMessage()">
-    📤 Send
-  </button>
-
+<div class="status" id="voiceStatus">
+Voice connecting...
 </div>
+
 </div>
 
 
-<div class="box">
+<div class="seats" id="seats">
 
-<h3>👥 People in Room</h3>
-
-<div id="users">
-Loading...
-</div>
-<div class="seats">
-  <div class="row owner">
-    <div class="seat">👑 Owner</div>
-  </div>
-
-  <div class="row">
-    <div class="seat">🎙️ Seat 2</div>
-    <div class="seat">🎙️ Seat 3</div>
-    <div class="seat">🎙️ Seat 4</div>
-    <div class="seat">🎙️ Seat 5</div>
-  </div>
-
-  <div class="row">
-    <div class="seat">🎙️ Seat 6</div>
-    <div class="seat">🎙️ Seat 7</div>
-    <div class="seat">🎙️ Seat 8</div>
-    <div class="seat">🎙️ Seat 9</div>
-  </div>
-</div>
+<div class="seat" id="seat1">
+<div class="avatar">👑</div>
+<div class="empty">Seat 1</div>
 </div>
 
+<div class="seat" id="seat2">
+<div class="avatar">🎤</div>
+<div class="empty">Seat 2</div>
+</div>
 
-<div id="audioContainer"></div>
+<div class="seat" id="seat3">
+<div class="avatar">🎤</div>
+<div class="empty">Seat 3</div>
+</div>
 
-<style>
-.seats {
-  margin: 20px auto;
-  max-width: 400px;
-}
+<div class="seat" id="seat4">
+<div class="avatar">🎤</div>
+<div class="empty">Seat 4</div>
+</div>
 
-.row {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 12px 0;
-}
+<div class="seat" id="seat5">
+<div class="avatar">🎤</div>
+<div class="empty">Seat 5</div>
+</div>
 
-.owner {
-  margin-bottom: 20px;
-}
+<div class="seat" id="seat6">
+<div class="avatar">🎤</div>
+<div class="empty">Seat 6</div>
+</div>
 
-.seat {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  background: #222;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 12px;
-  border: 2px solid #00bfff;
-}
+<div class="seat" id="seat7">
+<div class="avatar">🎤</div>
+<div class="empty">Seat 7</div>
+</div>
 
-.owner .seat {
-  width: 80px;
-  height: 80px;
-  border-color: gold;
-}
-</style>
+<div class="seat" id="seat8">
+<div class="avatar">🎤</div>
+<div class="empty">Seat 8</div>
+</div>
+
+<div class="seat" id="seat9">
+<div class="avatar">🎤</div>
+<div class="empty">Seat 9</div>
+</div>
+
+</div>
+
+
+<div class="controls">
+
+<button class="micButton" id="micButton" onclick="toggleMic()">
+🎤 Mic On
+</button>
+
+<button class="leaveButton" onclick="leaveRoom()">
+🚪 Leave Room
+</button>
+
+</div>
+
+
+<div class="chat">
+
+<h3>💬 Room Chat</h3>
+
+<div class="chatMessages" id="chatMessages">
+</div>
+
+<div class="chatInput">
+
+<input
+id="chatInput"
+placeholder="Message likho..."
+>
+
+<button onclick="sendMessage()">
+Send
+</button>
+
+</div>
+
+</div>
+
+
 <script>
 
 const firebaseConfig={
 
-apiKey:"AIzaSyDnlTdeqGyG5aPHrUIV6kTYnM521GtbrrE",
+apiKey:"AIzaSyDnlTdeG5aPHrUIV6kTYnM521GtbrrE",
 
 authDomain:"pawanvoice-68c5e.firebaseapp.com",
 
@@ -223,363 +299,525 @@ messagingSenderId:"148446327241",
 appId:"1:148446327241:web:6bac9cb9ad0fb530cbb818"
 
 };
-alert("ROOM JS CHAL RAHA HAI");
+
 firebase.initializeApp(firebaseConfig);
-alert("FIREBASE CODE START");
+
 const db=firebase.database();
 
+
+/* ROOM ID */
+
 const params=new URLSearchParams(location.search);
-alert("URL = " + location.href);
+
 const roomId=params.get("id");
 
-let myName=localStorage.getItem("pawanName") || "Guest";
-let isOwner = false;
-  let ownerName = "";
-  if (roomId) {
-  firebase.database().ref("rooms/" + roomId + "/owner").once("value")
-    .then(snapshot => {
-      if (!snapshot.exists()) {
-        firebase.database().ref("rooms/" + roomId + "/owner").set(myName);
-        isOwner = true;
-        ownerName = myName;
-      } else {
-        ownerName = snapshot.val();
-        isOwner = (ownerName === myName);
-      }
-    });
-  }
-  let myId="";
+if(!roomId){
+
+alert("Room ID nahi mila");
+
+location.href="index.html";
+
+}
+
+
+/* USER */
+
+let myId=localStorage.getItem("pawanId");
+
+let myName=localStorage.getItem("pawanName") || "User";
+
+
+if(!myId){
+
+myId="PW"+Date.now().toString().slice(-8);
+
+localStorage.setItem("pawanId",myId);
+
+}
+
+
+/* ROOM */
+
+let roomData=null;
+
+let mySeat=null;
+
+let micOn=false;
+
+let localStream=null;
 
 let peer=null;
-
-let stream=null;
-
-let micOn=true;
 
 let calls={};
 
 
+/* FIREBASE ROOM */
 
-  if(!roomId){
+db.ref("rooms/"+roomId).once("value").then(function(snapshot){
 
-document.getElementById("status").innerText=
-"Room ID nahi mila: " + location.href;
-}else{
-  document.getElementById("status").innerText = "Room ID mil gaya";
-  alert("STARTROOM CALL");
-  startRoom();
+if(!snapshot.exists()){
+
+alert("Room nahi mila");
+
+location.href="index.html";
+
+return;
+
 }
 
+roomData=snapshot.val();
 
-async function startRoom(){
-document.getElementById("status").innerText = "START OK";
-const roomSnap=
-await db.ref("rooms/"+roomId).once("value");
-document.getElementById("status").innerText="FIREBASE OK";
-const room=roomSnap.val();
-document.getElementById("status").innerText = "Room data mil gaya";
+document.getElementById("roomName").innerText=
+"🎙️ "+(roomData.name || "PawanVoice Room");
 
-if(!room){
+enterRoom();
 
-document.getElementById("status").innerText=
-"Room nahi mila";
+});
+
+
+/* ENTER ROOM */
+
+function enterRoom(){
+
+db.ref("rooms/"+roomId+"/members").once("value").then(function(snapshot){
+
+let members=snapshot.val() || {};
+
+let ids=Object.keys(members);
+
+if(ids.length>=9 && !members[myId]){
+
+alert("Room full hai");
+
+location.href="index.html";
 
 return;
 
 }
 
 
-document.getElementById("roomName").innerText=
-"🎙️ "+room.name;
+/* EXISTING MEMBER */
 
+if(members[myId]){
+
+mySeat=members[myId].seat;
+
+}else{
+
+let used=[];
+
+ids.forEach(function(id){
+
+if(members[id].seat){
+
+used.push(Number(members[id].seat));
+
+}
+
+});
+
+for(let i=1;i<=9;i++){
+
+if(!used.includes(i)){
+
+mySeat=i;
+
+break;
+
+}
+
+}
+
+
+db.ref("rooms/"+roomId+"/members/"+myId).set({
+
+name:myName,
+
+userId:myId,
+
+seat:mySeat,
+
+peerId:"",
+
+mic:false,
+
+joinedAt:Date.now()
+
+});
+
+}
+
+updateMembers();
+
+startVoice();
+
+});
+
+}
+
+
+/* MEMBERS */
+
+function updateMembers(){
+
+db.ref("rooms/"+roomId+"/members").on("value",function(snapshot){
+
+let members=snapshot.val() || {};
+
+let ids=Object.keys(members);
+
+document.getElementById("memberCount").innerText=ids.length;
+
+for(let i=1;i<=9;i++){
+
+let seat=document.getElementById("seat"+i);
+
+let found=null;
+
+ids.forEach(function(id){
+
+if(Number(members[id].seat)===i){
+
+found=members[id];
+
+}
+
+});
+
+if(found){
+
+let owner="";
+
+if(roomData && found.userId===roomData.ownerId){
+
+owner='<div class="owner">👑 Owner</div>';
+
+}
+
+let mic=found.mic ?
+'<div class="mic">🎤</div>' :
+'<div class="mic">🔇</div>';
+
+seat.innerHTML=
+'<div class="avatar">👤</div>'+
+'<div class="name">'+escapeHtml(found.name)+'</div>'+
+owner+
+mic;
+
+}else{
+
+seat.innerHTML=
+'<div class="avatar">🎤</div>'+
+'<div class="empty">Seat '+i+'</div>';
+
+}
+
+}
+
+});
+
+}
+
+
+/* LIVE VOICE */
+
+async function startVoice(){
 
 try{
 
-stream=
-await navigator.mediaDevices.getUserMedia({
+localStream=await navigator.mediaDevices.getUserMedia({
+
 audio:true
+
 });
 
-}catch(e){
+localStream.getAudioTracks().forEach(function(track){
 
-document.getElementById("status").innerText=
-"Microphone permission nahi mili";
+track.enabled=false;
 
-return;
+});
+
+micOn=false;
+
+document.getElementById("voiceStatus").innerText=
+"🎙️ Voice ready";
+
+createPeer();
+
+}catch(error){
+
+console.log(error);
+
+document.getElementById("voiceStatus").innerText=
+"🎙️ Mic permission required";
+
+}
 
 }
 
 
-peer=new Peer();
-document.getElementById("status").innerText = "Peer start ho raha hai...";
+/* PEER */
+
+function createPeer(){
+
+let peerId=roomId+"_"+myId;
+
+peer=new Peer(peerId);
 
 peer.on("open",function(id){
 
-myId=id;
-document.getElementById("profileName").innerText = "Name: " + myName;
-document.getElementById("profileId").innerText = "ID: " + myId;
+db.ref("rooms/"+roomId+"/members/"+myId).update({
 
-db.ref(
-"rooms/"+roomId+"/members/"+myId
-).set({
-
-name:myName,
-peerId:myId
+peerId:id
 
 });
 
+document.getElementById("voiceStatus").innerText=
+"🟢 Live Voice Connected";
 
-document.getElementById("status").innerText=
-"✅ Room Joined";
-
-
-listenMembers();
+connectToMembers();
 
 });
 
 
 peer.on("call",function(call){
 
-call.answer(stream);
-
-
-call.on("stream",function(remoteStream){
-
-addAudio(call.peer,remoteStream);
-
-});
-
-});
-
-}
-
-
-function listenMembers(){
-
-db.ref(
-"rooms/"+roomId+"/members"
-).on("value",function(snapshot){
-
-const data=snapshot.val() || {};
-
-  const box = document.getElementById("users");
-box.innerHTML = "";
-
-Object.keys(data).forEach(function(id){
-
-  const div = document.createElement("div");
-
-  div.innerText =
-    "🟢 " + data[id].name +
-    (id === myId ? " (You)" : "");
-
-  box.appendChild(div);
-
-});
-
-Object.keys(data).forEach(function(id){
-
-  if(id === myId) return;
-
-  if(calls[id]) return;
-
-  calls[id] = true;
-
-  const call = peer.call(
-    data[id].peerId,
-    stream
-  );
-
-  if(!call) return;
-
-  call.on("stream", function(remoteStream){
-
-    addAudio(
-      data[id].peerId,
-      remoteStream
-    );
-
-  });
-
-});
-
-Object.keys(data).forEach(function(id){
-
-if(id===myId) return;
-
-if(calls[id]) return;
-
-calls[id]=true;
-
-
-const call=peer.call(
-data[id].peerId,
-stream
-);
-
-
-if(!call) return;
-
-
-call.on("stream",function(remoteStream){
-
-addAudio(
-data[id].peerId,
-remoteStream
-);
-
-});
-
-});
-
-});
-
-}
-
-
-function addAudio(id,remoteStream){
-
-if(
-document.getElementById("audio-"+id)
-) return;
-
-
-const audio=document.createElement("audio");
-
-audio.id="audio-"+id;
-
-audio.autoplay=true;
-
-audio.playsInline=true;
-
-audio.srcObject=remoteStream;
-
-
-document
-.getElementById("audioContainer")
-.appendChild(audio);
-
-}
-
-
-function toggleMic(){
-
-if(!stream){
-
-alert("Microphone connected nahi hai");
+if(!localStream){
 
 return;
 
 }
 
+call.answer(localStream);
+
+calls[call.peer]=call;
+
+call.on("stream",function(stream){
+
+playRemoteStream(call.peer,stream);
+
+});
+
+});
+
+peer.on("error",function(error){
+
+console.log("Peer error",error);
+
+});
+
+}
+
+
+/* CONNECT USERS */
+
+function connectToMembers(){
+
+db.ref("rooms/"+roomId+"/members").once("value").then(function(snapshot){
+
+let members=snapshot.val() || {};
+
+Object.keys(members).forEach(function(id){
+
+let member=members[id];
+
+if(id!==myId && member.peerId){
+
+callUser(member.peerId);
+
+}
+
+});
+
+});
+
+}
+
+
+/* CALL USER */
+
+function callUser(peerId){
+
+if(!localStream || !peer){
+
+return;
+
+}
+
+if(calls[peerId]){
+
+return;
+
+}
+
+let call=peer.call(peerId,localStream);
+
+if(!call){
+
+return;
+
+}
+
+calls[peerId]=call;
+
+call.on("stream",function(stream){
+
+playRemoteStream(peerId,stream);
+
+});
+
+call.on("close",function(){
+
+delete calls[peerId];
+
+});
+
+}
+
+
+/* AUDIO */
+
+function playRemoteStream(peerId,stream){
+
+let old=document.getElementById("audio_"+safeId(peerId));
+
+if(old){
+
+old.srcObject=stream;
+
+return;
+
+}
+
+let audio=document.createElement("audio");
+
+audio.id="audio_"+safeId(peerId);
+
+audio.autoplay=true;
+
+audio.playsInline=true;
+
+audio.srcObject=stream;
+
+document.body.appendChild(audio);
+
+}
+
+
+/* MIC */
+
+function toggleMic(){
+
+if(!localStream){
+
+alert("Mic permission nahi mili");
+
+return;
+
+}
 
 micOn=!micOn;
 
-
-stream
-.getAudioTracks()
-.forEach(function(track){
+localStream.getAudioTracks().forEach(function(track){
 
 track.enabled=micOn;
 
 });
 
+document.getElementById("micButton").innerText=
+micOn ? "🔇 Mic Off" : "🎤 Mic On";
 
-document.getElementById("status").innerText=
-micOn ? "🎙️ Mic ON" : "🔇 Mic OFF";
+db.ref("rooms/"+roomId+"/members/"+myId).update({
 
-}
-
-function changeRoomName(){
-
-  const newName =
-    document.getElementById("newRoomName").value.trim();
-
-  if(!newName){
-    alert("Pehle room ka naam likho");
-    return;
-  }
-
-  db.ref("rooms/"+roomId+"/name").set(newName);
-
-  document.getElementById("roomName").innerText =
-    "🎙️ " + newName;
-
-  document.getElementById("newRoomName").value = "";
-
-}
-  function sendMessage(){
-
-  const input = document.getElementById("chatInput");
-  const message = input.value.trim();
-
-  if(!message) return;
-
-  db.ref("rooms/"+roomId+"/messages").push({
-    name: myName,
-    text: message,
-    time: Date.now()
-  });
-
-  input.value = "";
-}
-
-db.ref("rooms/"+roomId+"/messages").on("value", function(snapshot){
-
-  const box = document.getElementById("chatMessages");
-
-  box.innerHTML = "";
-
-  const data = snapshot.val() || {};
-
-  Object.values(data).forEach(function(msg){
-
-    const div = document.createElement("div");
-
-    div.innerText =
-      "👤 " + msg.name + ": " + msg.text;
-
-    box.appendChild(div);
-
-  });
+mic:micOn
 
 });
-  function showProfileDP(event){
 
-  const file = event.target.files[0];
-
-  if(!file) return;
-
-  const reader = new FileReader();
-
-  reader.onload = function(e){
-
-    document.getElementById("profileDP").src =
-      e.target.result;
-
-  };
-
-  reader.readAsDataURL(file);
 }
 
-document.getElementById("profileDPInput")
-.addEventListener("change", showProfileDP);
+
+/* CHAT */
+
+function sendMessage(){
+
+let input=document.getElementById("chatInput");
+
+let text=input.value.trim();
+
+if(!text){
+
+return;
+
+}
+
+db.ref("rooms/"+roomId+"/messages").push({
+
+name:myName,
+
+userId:myId,
+
+text:text,
+
+time:Date.now()
+
+});
+
+input.value="";
+
+}
+
+
+/* LOAD CHAT */
+
+db.ref("rooms/"+roomId+"/messages").limitToLast(100).on("value",function(snapshot){
+
+let box=document.getElementById("chatMessages");
+
+box.innerHTML="";
+
+snapshot.forEach(function(child){
+
+let msg=child.val();
+
+let div=document.createElement("div");
+
+div.className="message";
+
+div.innerHTML=
+'<div class="messageName">'+
+escapeHtml(msg.name || "User")+
+'</div>'+
+escapeHtml(msg.text || "");
+
+box.appendChild(div);
+
+});
+
+box.scrollTop=box.scrollHeight;
+
+});
+
+
+/* LEAVE */
+
 function leaveRoom(){
 
-if(myId){
+if(confirm("Room se bahar jana hai?")){
 
-db.ref(
-"rooms/"+roomId+"/members/"+myId
-).remove();
+removeMe();
+
+}
 
 }
 
 
-if(stream){
+/* REMOVE MEMBER */
 
-stream
-.getTracks()
-.forEach(function(track){
+function removeMe(){
+
+if(localStream){
+
+localStream.getTracks().forEach(function(track){
 
 track.stop();
 
@@ -587,24 +825,66 @@ track.stop();
 
 }
 
+Object.keys(calls).forEach(function(id){
+
+try{
+
+calls[id].close();
+
+}catch(e){}
+
+});
 
 if(peer){
 
+try{
+
 peer.destroy();
+
+}catch(e){}
 
 }
 
+db.ref("rooms/"+roomId+"/members/"+myId).remove().then(function(){
 
 location.href="index.html";
 
-}
-<script>
-document.getElementById("profileName").innerText =
-  "Name: " + myName;
+});
 
-document.getElementById("profileId").innerText =
-  "ID: " + myId;
-</script>
+}
+
+
+/* PAGE CLOSE */
+
+window.addEventListener("beforeunload",function(){
+
+db.ref("rooms/"+roomId+"/members/"+myId).remove();
+
+});
+
+
+/* ESCAPE HTML */
+
+function escapeHtml(text){
+
+return String(text)
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/* SAFE ID */
+
+function safeId(text){
+
+return String(text).replace(/[^a-zA-Z0-9_-]/g,"_");
+
+}
+
 </script>
 
 </body>
