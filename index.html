@@ -202,11 +202,41 @@ const db=firebase.database();
 
 let myId=localStorage.getItem("pawanId");
 
+function createUserId(){
+
+  return db.ref("system/nextUserId").transaction(function(current){
+
+    if(current===null){
+      return 1000031;
+    }
+
+    return Number(current)+1;
+
+  }).then(function(result){
+
+    if(result.committed){
+
+      myId=String(result.snapshot.val());
+
+      localStorage.setItem("pawanId",myId);
+
+      document.getElementById("myId").innerText=myId;
+      document.getElementById("profileId").innerText=myId;
+
+    }
+
+  });
+
+}
+
 if(!myId){
 
-myId="PW"+Date.now().toString().slice(-8);
+  createUserId();
 
-localStorage.setItem("pawanId",myId);
+}else{
+
+  document.getElementById("myId").innerText=myId;
+  document.getElementById("profileId").innerText=myId;
 
 }
 
