@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
 <head>
 
@@ -6,6 +7,7 @@
 <title>PawanVoice</title>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
@@ -100,8 +102,7 @@ button{
 <p>🏅 Medal: None</p>
 <p>🚻 Gender: <span id="myGender">Not Selected</span></p>
 
-<button onclick="selectGender('Male')">👨 Male</button>
-<button onclick="selectGender('Female')">👩 Female</button>
+<button onclick="selectGender('Male')">👨 Male</button> <button onclick="selectGender('Female')">👩 Female</button>
 
 </div>
 
@@ -127,65 +128,77 @@ Rooms load ho rahe hain...
 
 </div>
 
-
 <div id="inboxPage" class="page">
 
-  <div class="box">
+<div class="box">
 
-    <h2>💬 Inbox</h2>
+<h2>💬 Inbox</h2>
 
-    <div id="inboxMessages">
-  <p>कोई message नहीं है।</p>
+<div id="inboxMessages">
+<p>कोई message नहीं है।</p>
 </div>
 
 <div id="privateChatBox" style="display:none;">
-  <h3 id="chatWithUser"></h3>
-  <button onclick="closePrivateChat()">← Back</button>
-  <div id="chatMessages"></div>
-  <input id="chatText" placeholder="Message लिखो">
-  <button onclick="sendChatMessage()">Send</button>
+
+<h3 id="chatWithUser"></h3>
+
+<button onclick="closePrivateChat()">← Back</button>
+
+<div id="chatMessages"></div>
+
+<input id="chatText" placeholder="Message लिखो">
+
+<button onclick="sendChatMessage()">Send</button>
+
 </div>
 
-  </div>
-
 </div>
 
+</div>
 
 <div id="mePage" class="page">
 
 <div class="box">
 
 <h2>👤 My Profile</h2>
-<div style="text-align:center;">
 
-  <img id="profileDP"
-       src=""
-       style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid #ccc;display:none;">
-
-  <br>
-
-  <input type="file" id="profilePhoto" accept="image/*">
-
-  <br><br>
-
-  <button onclick="saveProfilePhoto()">💾 Save DP</button>
-
-</div>
 <button onclick="showFollow()">➕ Follow</button>
+
 <h3>Follow Requests</h3>
+
 <div id="followRequests"></div>
+
 <h3>My Friends</h3>
+
 <div id="friendsList"></div>
+
 <p>👤 Name: <span id="profileName"></span></p>
+
 <p>🆔 ID: <span id="profileId"></span></p>
+
 <p>⭐ Level: 1</p>
+
 <p>🏅 Medal: None</p>
+
 <p>🚻 Gender: <span id="profileGender"></span></p>
 
 </div>
 
 </div>
 
+<div class="box">
+
+<h2>💬 Private Chat</h2>
+
+<input id="chatUserId" placeholder="जिस User से chat करनी है उसकी ID">
+
+<input id="privateMessage" placeholder="Message लिखो">
+
+<button onclick="sendPrivateMessage()">Send</button>
+
+<div id="privateMessages"></div>
+
+</div>
 
 <div class="bottom-nav">
 
@@ -202,7 +215,6 @@ Rooms load ho rahe hain...
 </button>
 
 </div>
-
 
 <script>
 
@@ -231,6 +243,7 @@ const db=firebase.database();
 
 let myId=localStorage.getItem("pawanId");
 
+
 function createUserId(){
 
   return db.ref("system/nextUserId").transaction(function(current){
@@ -258,20 +271,35 @@ function createUserId(){
 
 }
 
-if(!myId){
 
-  createUserId();
+function setMyId(){
 
-}else{
-
-  document.getElementById("myId").innerText=myId;
-  document.getElementById("profileId").innerText=myId;
+  document.getElementById("myId").innerText=myId || "";
+  document.getElementById("profileId").innerText=myId || "";
 
 }
 
-document.getElementById("myId").innerText=myId;
 
-document.getElementById("profileId").innerText=myId;
+if(!myId){
+
+  createUserId().then(function(){
+
+    setMyId();
+    loadFollowRequests();
+    loadFriends();
+    loadInbox();
+
+  });
+
+}else{
+
+  setMyId();
+
+  loadFollowRequests();
+  loadFriends();
+  loadInbox();
+
+}
 
 
 let savedName=localStorage.getItem("pawanName") || "";
@@ -289,211 +317,181 @@ document.getElementById("profileGender").innerText=savedGender;
 
 
 function saveProfile(){
-function saveProfilePhoto(){
 
-  const file = document.getElementById("profilePhoto").files[0];
+  let name=document.getElementById("userName").value.trim();
 
-  if(!file){
-    alert("Pehle photo select karo");
+  if(!name){
+
+    alert("Apna naam likho");
+
     return;
+
   }
 
-  const reader = new FileReader();
+  localStorage.setItem("pawanName",name);
 
-  reader.onload = function(e){
+  db.ref("users/"+myId+"/name").set(name);
 
-    const photo = e.target.result;
+  document.getElementById("profileName").innerText=name;
 
-    localStorage.setItem("pawanPhoto", photo);
-
-    const dp = document.getElementById("profileDP");
-
-    dp.src = photo;
-    dp.style.display = "inline-block";
-
-    alert("DP Save ho gayi ✅");
-  };
-
-  reader.readAsDataURL(file);
-
-let name=document.getElementById("userName").value.trim();
-
-if(!name){
-
-alert("Apna naam likho");
-
-return;
-
-}
-
-localStorage.setItem("pawanName",name);
-db.ref("users/"+myId+"/name").set(name);
-document.getElementById("profileName").innerText=name;
-
-alert("Profile save ho gaya");
+  alert("Profile save ho gaya");
 
 }
 
 
 function selectGender(gender){
 
-localStorage.setItem("pawanGender",gender);
+  localStorage.setItem("pawanGender",gender);
 
-document.getElementById("myGender").innerText=gender;
+  document.getElementById("myGender").innerText=gender;
 
-document.getElementById("profileGender").innerText=gender;
+  document.getElementById("profileGender").innerText=gender;
 
-alert("Gender selected: "+gender);
+  alert("Gender selected: "+gender);
 
 }
 
 
 function createRoom(){
 
-let name=document.getElementById("roomName").value.trim();
+  let name=document.getElementById("roomName").value.trim();
 
-let userName=document.getElementById("userName").value.trim();
+  let userName=document.getElementById("userName").value.trim();
 
-if(!userName){
+  if(!userName){
 
-alert("Pehle apna naam likho");
+    alert("Pehle apna naam likho");
 
-return;
+    return;
 
-}
+  }
 
-if(!name){
+  if(!name){
 
-alert("Room ka naam likho");
+    alert("Room ka naam likho");
 
-return;
+    return;
 
-}
+  }
 
-localStorage.setItem("pawanName",userName);
+  localStorage.setItem("pawanName",userName);
 
-let id=Date.now().toString();
+  let id=Date.now().toString();
 
-db.ref("rooms/"+id).set({
+  db.ref("rooms/"+id).set({
 
-name:name,
+    name:name,
+    owner:userName,
+    ownerId:myId,
+    users:0,
+    createdAt:Date.now()
 
-owner:userName,
+  }).then(function(){
 
-ownerId:myId,
+    location.href="room.html?id="+id;
 
-users:0,
+  }).catch(function(error){
 
-createdAt:Date.now()
+    alert("Room create nahi hua: "+error.message);
 
-}).then(function(){
-
-location.href="room.html?id="+id;
-
-}).catch(function(error){
-
-alert("Room create nahi hua: "+error.message);
-
-});
+  });
 
 }
 
 
 function loadRooms(){
 
-const box=document.getElementById("rooms");
+  const box=document.getElementById("rooms");
 
-db.ref("rooms").on("value",function(snapshot){
+  db.ref("rooms").on("value",function(snapshot){
 
-box.innerHTML="";
+    box.innerHTML="";
 
-if(!snapshot.exists()){
+    if(!snapshot.exists()){
 
-box.innerHTML="Abhi koi room nahi hai.";
+      box.innerHTML="Abhi koi room nahi hai.";
 
-return;
+      return;
 
-}
+    }
 
-snapshot.forEach(function(child){
+    snapshot.forEach(function(child){
 
-let id=child.key;
+      let id=child.key;
 
-let room=child.val();
+      let room=child.val();
 
-let div=document.createElement("div");
+      let div=document.createElement("div");
 
-div.className="room";
+      div.className="room";
 
-div.innerHTML=
+      div.innerHTML=
 
-"<h3>🎙️ "+(room.name||"Room")+"</h3>"+
+      "<h3>🎙️ "+(room.name||"Room")+"</h3>"+
 
-"<p>👤 Owner: "+(room.owner||"User")+"</p>"+
+      "<p>👤 Owner: "+(room.owner||"User")+"</p>"+
 
-"<p>👥 Members: "+(room.users||0)+"/9</p>"+
+      "<p>👥 Members: "+(room.users||0)+"/9</p>"+
 
-"<button onclick=\"joinRoom('"+id+"')\">🚪 Join Room</button>";
+      "<button onclick=\"joinRoom('"+id+"')\">🚪 Join Room</button>";
 
-box.appendChild(div);
+      box.appendChild(div);
 
-});
+    });
 
-});
+  });
 
 }
 
 
 function joinRoom(id){
 
-let name=document.getElementById("userName").value.trim();
+  let name=document.getElementById("userName").value.trim();
 
-if(!name){
+  if(!name){
 
-alert("Pehle apna naam likho");
+    alert("Pehle apna naam likho");
 
-return;
+    return;
 
-}
+  }
 
-localStorage.setItem("pawanName",name);
+  localStorage.setItem("pawanName",name);
 
-location.href="room.html?id="+id;
+  location.href="room.html?id="+id;
 
 }
 
 
 function showPage(page){
 
-document.getElementById("roomPage").classList.remove("active");
+  document.getElementById("roomPage").classList.remove("active");
 
-document.getElementById("inboxPage").classList.remove("active");
+  document.getElementById("inboxPage").classList.remove("active");
 
-document.getElementById("mePage").classList.remove("active");
+  document.getElementById("mePage").classList.remove("active");
 
-if(page==="room"){
+  if(page==="room"){
 
-document.getElementById("roomPage").classList.add("active");
+    document.getElementById("roomPage").classList.add("active");
+
+  }
+
+  if(page==="inbox"){
+
+    document.getElementById("inboxPage").classList.add("active");
+
+  }
+
+  if(page==="me"){
+
+    document.getElementById("mePage").classList.add("active");
+
+  }
 
 }
 
-if(page==="inbox"){
 
-document.getElementById("inboxPage").classList.add("active");
-
-}
-
-if(page==="me"){
-
-document.getElementById("mePage").classList.add("active");
-
-}
-
-}
-
-
-loadRooms();
-loadFollowRequests();
 function showFollow(){
 
   let userId=prompt("जिस User को Follow करना है उसकी ID डालो");
@@ -503,13 +501,18 @@ function showFollow(){
   }
 
   if(userId===myId){
+
     alert("खुद को Follow नहीं कर सकते");
+
     return;
+
   }
 
   db.ref("follows/"+userId+"/"+myId).set({
+
     userId:myId,
     time:Date.now()
+
   }).then(function(){
 
     alert("Follow request भेज दी गई");
@@ -521,14 +524,24 @@ function showFollow(){
   });
 
 }
-  function acceptFollow(userId){
+
+
+function acceptFollow(userId){
 
   db.ref("friends/"+myId+"/"+userId).set(true);
+
   db.ref("friends/"+userId+"/"+myId).set(true);
 
   alert("Friend बन गया ✅");
+
+}
+
+
+function loadFollowRequests(){
+
+  if(!myId){
+    return;
   }
-  function loadFollowRequests(){
 
   db.ref("follows/"+myId).on("value",function(snapshot){
 
@@ -537,8 +550,11 @@ function showFollow(){
     box.innerHTML="";
 
     if(!snapshot.exists()){
+
       box.innerHTML="<p>कोई Follow Request नहीं है</p>";
+
       return;
+
     }
 
     snapshot.forEach(function(child){
@@ -546,75 +562,84 @@ function showFollow(){
       let userId=child.key;
 
       box.innerHTML+=
+
         "<p>User ID: "+userId+
+
         ' <button onclick="acceptFollow(\''+userId+'\')">Accept</button></p>';
 
     });
 
   });
 
-  }
+}
+
+
 function loadFriends(){
+
+  if(!myId){
+    return;
+  }
 
   db.ref("friends/"+myId).on("value",function(snapshot){
 
     let box=document.getElementById("friendsList");
+
     box.innerHTML="";
 
     snapshot.forEach(function(child){
 
       box.innerHTML +=
+
         "<p>Friend ID: "+child.key+"</p>";
 
     });
 
   });
 
-  }
-</script>
-<div class="box">
-  <h2>💬 Private Chat</h2>
+}
 
-  <input id="chatUserId" placeholder="जिस User से chat करनी है उसकी ID">
 
-  <input id="privateMessage" placeholder="Message लिखो">
-
-  <button onclick="sendPrivateMessage()">Send</button>
-
-  <div id="privateMessages"></div>
-</div>
-
-<script>
 function sendPrivateMessage(){
 
   let to=document.getElementById("chatUserId").value.trim();
+
   let text=document.getElementById("privateMessage").value.trim();
 
   if(!to || !text){
+
     alert("User ID और message लिखो");
+
     return;
+
   }
 
   db.ref("privateChats/"+myId+"/"+to).once("value").then(function(snapshot){
 
     let messages=snapshot.val() || {};
+
     let sentCount=Object.keys(messages).length;
 
     return db.ref("privateReplies/"+myId+"/"+to).once("value").then(function(replySnap){
 
-      if(sentCount >= 2 && !replySnap.exists()){
+      if(sentCount>=2 && !replySnap.exists()){
+
         alert("पहले सामने वाला User reply करे");
+
         return;
+
       }
 
       let data={
+
         from:myId,
         to:to,
         text:text,
         time:Date.now()
+
       };
 
       db.ref("privateChats/"+myId+"/"+to).push(data);
+
       db.ref("privateChats/"+to+"/"+myId).push(data);
 
       document.getElementById("privateMessage").value="";
@@ -626,6 +651,7 @@ function sendPrivateMessage(){
   });
 
 }
+
 
 function openPrivateChat(userId){
 
@@ -664,6 +690,7 @@ function loadPrivateMessages(userId){
       if(data.from===myId){
 
         box.innerHTML +=
+
           "<p style='text-align:right'><b>You:</b> "+
           data.text+"</p>";
 
@@ -674,6 +701,7 @@ function loadPrivateMessages(userId){
           let userName=nameSnap.val() || data.from;
 
           box.innerHTML +=
+
             "<p><b>"+userName+":</b> "+
             data.text+"</p>";
 
@@ -687,11 +715,14 @@ function loadPrivateMessages(userId){
 
 }
 
+
 function closePrivateChat(){
 
   document.getElementById("privateChatBox").style.display="none";
 
 }
+
+
 function sendChatMessage(){
 
   let box=document.getElementById("privateChatBox");
@@ -703,30 +734,40 @@ function sendChatMessage(){
   let text=input.value.trim();
 
   if(!to || !text){
+
     alert("Message लिखो");
+
     return;
+
   }
 
   db.ref("privateChats/"+myId+"/"+to).once("value").then(function(snapshot){
 
     let messages=snapshot.val() || {};
+
     let sentCount=Object.keys(messages).length;
 
     return db.ref("privateReplies/"+myId+"/"+to).once("value").then(function(replySnap){
 
-      if(sentCount >= 2 && !replySnap.exists()){
+      if(sentCount>=2 && !replySnap.exists()){
+
         alert("पहले सामने वाला User reply करे");
+
         return;
+
       }
 
       let data={
+
         from:myId,
         to:to,
         text:text,
         time:Date.now()
+
       };
 
       db.ref("privateChats/"+myId+"/"+to).push(data);
+
       db.ref("privateChats/"+to+"/"+myId).push(data);
 
       input.value="";
@@ -739,6 +780,10 @@ function sendChatMessage(){
 
 
 function loadInbox(){
+
+  if(!myId){
+    return;
+  }
 
   db.ref("privateChats/"+myId).on("value",function(snapshot){
 
@@ -757,7 +802,9 @@ function loadInbox(){
         let data=message.val();
 
         if(data.from!==myId){
+
           lastMessage=data;
+
         }
 
       });
@@ -769,10 +816,15 @@ function loadInbox(){
           let userName=nameSnap.val() || lastMessage.from;
 
           box.innerHTML +=
+
             "<p><b>"+userName+"</b>: "+
+
             lastMessage.text+
+
             " <button onclick=\"openPrivateChat('"+
+
             lastMessage.from+
+
             "')\">Chat</button></p>";
 
         });
@@ -795,18 +847,23 @@ function replyUser(userId){
   }
 
   let data={
+
     from:myId,
     to:userId,
     text:text,
     time:Date.now()
+
   };
 
   db.ref("privateChats/"+myId+"/"+userId).push(data);
+
   db.ref("privateChats/"+userId+"/"+myId).push(data);
 
   db.ref("privateReplies/"+userId+"/"+myId).set({
+
     repliedBy:myId,
     time:Date.now()
+
   });
 
   alert("Reply sent ✅");
@@ -814,8 +871,9 @@ function replyUser(userId){
 }
 
 
-loadInbox();
-      
+loadRooms();
+
 </script>
+
 </body>
 </html>
