@@ -584,7 +584,34 @@ function sendPrivateMessage(){
   });
 
 }
+function loadPrivateMessages(userId){
 
+  db.ref("privateChats/"+myId+"/"+userId).on("value",function(snapshot){
+
+    let box=document.getElementById("chatMessages");
+    box.innerHTML="";
+
+    snapshot.forEach(function(message){
+
+      let data=message.val();
+
+      if(data.from===myId){
+
+        box.innerHTML +=
+          "<p style='text-align:right'><b>You:</b> "+data.text+"</p>";
+
+      }else{
+
+        box.innerHTML +=
+          "<p><b>"+data.from+":</b> "+data.text+"</p>";
+
+      }
+
+    });
+
+  });
+
+}
 function loadInbox(){
 
   db.ref("privateChats/"+myId).on("value",function(snapshot){
@@ -615,8 +642,6 @@ function loadInbox(){
   });
 
 }
-
-loadInbox();
 
 loadInbox();
 
