@@ -369,16 +369,31 @@ function loadRooms(){
 
   const box=document.getElementById("rooms");
   const search=document.getElementById("roomSearch");
- 
-  search.addEventListener("input",function(){
+  const categoryFilter=document.getElementById("categoryFilter");
+  
+function filterRooms(){
+
   let q=search.value.toLowerCase().trim();
+  let category=categoryFilter.value;
 
   document.querySelectorAll(".room").forEach(function(room){
-    room.style.display=room.innerText.toLowerCase().includes(q)
-      ? "block"
-      : "none";
+
+    let text=room.innerText.toLowerCase();
+
+    let searchOK=text.includes(q);
+
+    let categoryOK=
+      category==="All" ||
+      text.includes("category: "+category.toLowerCase());
+
+    room.style.display=
+      searchOK && categoryOK ? "block" : "none";
+
   });
-});
+}
+
+search.addEventListener("input",filterRooms);
+categoryFilter.addEventListener("change",filterRooms);
  
   db.ref("rooms").on("value",function(snapshot){
 
