@@ -584,11 +584,30 @@ function sendPrivateMessage(){
   });
 
 }
+
+
+function openPrivateChat(userId){
+
+  document.getElementById("privateChatBox").style.display="block";
+
+  document.getElementById("chatWithUser").innerText=
+    "Chat with: "+userId;
+
+  document.getElementById("privateChatBox").setAttribute(
+    "data-user",userId
+  );
+
+  loadPrivateMessages(userId);
+
+}
+
+
 function loadPrivateMessages(userId){
 
   db.ref("privateChats/"+myId+"/"+userId).on("value",function(snapshot){
 
     let box=document.getElementById("chatMessages");
+
     box.innerHTML="";
 
     snapshot.forEach(function(message){
@@ -598,12 +617,14 @@ function loadPrivateMessages(userId){
       if(data.from===myId){
 
         box.innerHTML +=
-          "<p style='text-align:right'><b>You:</b> "+data.text+"</p>";
+          "<p style='text-align:right'><b>You:</b> "+
+          data.text+"</p>";
 
       }else{
 
         box.innerHTML +=
-          "<p><b>"+data.from+":</b> "+data.text+"</p>";
+          "<p><b>"+data.from+":</b> "+
+          data.text+"</p>";
 
       }
 
@@ -612,30 +633,46 @@ function loadPrivateMessages(userId){
   });
 
 }
-function loadInbox(){
 
-  db.ref("privateChats/"+myId).on("value",function(snapshot){
 
-    let box=document.getElementById("inboxMessages");
-    box.innerHTML="";
+function sendChatMessage(){
 
-    snapshot.forEach(function(chat){
+  let box=document.getElementById("privateChatBox");
 
-      let userId=chat.key;
+  let to=box.getAttribute("data-user");
 
-      chat.forEach(function(message){
+  let input=document.getElementById("chatText");
 
-        let data=message.val();
+  let text=input.value.trim();
 
-        if(data.from!==myId){
+  if(!to || !text){
+    alert("Message लिखो");
+    return;
+  }
 
-          box.innerHTML +=
-            "<p><b>"+data.from+"</b>: "+data.text+
-            " <button onclick=\"openPrivateChat('"+data.from+"')\">Chat</button></p>";
+  db.ref("privateChats/"+myId+"/"+to).once("value").then(function(snapshot){
 
-        }
+    let messages=snapshot.val() || {};
+    let sentCount=Object.keys(messages).length;
 
-      });
+    return db.ref("privateReplies/"+myId+"/"+to).once("value").then(function(replySnap){
+
+      if(sentCount >= 2 && !replySnap.exists()){
+        alert("पहले सामने वाला User reply करे");
+        return;
+      }
+
+      let data={
+        from:myId,
+        to:to,
+        text:text,
+        time:Date.now()
+      };
+
+      db.ref("privateChats/"+myId+"/"+to).push(data);
+      db.ref("privateChats/"+to+"/"+myId).push(data);
+
+      input.value="";
 
     });
 
@@ -643,7 +680,48 @@ function loadInbox(){
 
 }
 
-loadInbox();
+
+function loadInbox(){
+
+  db.ref("privateChats/"+myId).on("value",function(snapshot){
+
+    let box=document.getElementById("inboxMessages");
+
+    box.innerHTML="";
+
+    snapshot.forEach(function(chat){
+
+      let userId=chat.key;
+
+      let lastMessage=null;
+
+      chat.forEach(function(message){
+
+        let data=message.val();
+
+        if(data.from!==myId){
+          lastMessage=data;
+        }
+
+      });
+
+      if(lastMessage){
+
+        box.innerHTML +=
+          "<p><b>"+lastMessage.from+"</b>: "+
+          lastMessage.text+
+          " <button onclick=\"openPrivateChat('"+
+          lastMessage.from+
+          "')\">Chat</button></p>";
+
+      }
+
+    });
+
+  });
+
+}
+
 
 function replyUser(userId){
 
@@ -669,7 +747,12 @@ function replyUser(userId){
   });
 
   alert("Reply sent ✅");
-} 
+
+}
+
+
+loadInbox();
+      
 </script>
 </body>
 </html>
