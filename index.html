@@ -590,12 +590,18 @@ function openPrivateChat(userId){
 
   document.getElementById("privateChatBox").style.display="block";
 
-  document.getElementById("chatWithUser").innerText=
-    "Chat with: "+userId;
-
   document.getElementById("privateChatBox").setAttribute(
     "data-user",userId
   );
+
+  db.ref("users/"+userId+"/name").once("value").then(function(snapshot){
+
+    let userName=snapshot.val() || userId;
+
+    document.getElementById("chatWithUser").innerText=
+      "Chat with: "+userName;
+
+  });
 
   loadPrivateMessages(userId);
 
@@ -622,9 +628,15 @@ function loadPrivateMessages(userId){
 
       }else{
 
-        box.innerHTML +=
-          "<p><b>"+data.from+":</b> "+
-          data.text+"</p>";
+        db.ref("users/"+data.from+"/name").once("value").then(function(nameSnap){
+
+          let userName=nameSnap.val() || data.from;
+
+          box.innerHTML +=
+            "<p><b>"+userName+":</b> "+
+            data.text+"</p>";
+
+        });
 
       }
 
