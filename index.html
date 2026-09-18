@@ -707,12 +707,18 @@ function loadInbox(){
 
       if(lastMessage){
 
-        box.innerHTML +=
-          "<p><b>"+lastMessage.from+"</b>: "+
-          lastMessage.text+
-          " <button onclick=\"openPrivateChat('"+
-          lastMessage.from+
-          "')\">Chat</button></p>";
+        db.ref("users/"+lastMessage.from+"/name").once("value").then(function(nameSnap){
+
+          let userName=nameSnap.val() || lastMessage.from;
+
+          box.innerHTML +=
+            "<p><b>"+userName+"</b>: "+
+            lastMessage.text+
+            " <button onclick=\"openPrivateChat('"+
+            lastMessage.from+
+            "')\">Chat</button></p>";
+
+        });
 
       }
 
