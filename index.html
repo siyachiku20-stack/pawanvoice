@@ -577,7 +577,7 @@ function sendPrivateMessage(){
   });
 
 }
-  function loadInbox(){
+function loadInbox(){
 
   db.ref("privateChats/"+myId).on("value",function(snapshot){
 
@@ -604,7 +604,37 @@ function sendPrivateMessage(){
 
     });
 
- 
+  });
+
+}
+
+loadInbox();
+
+function replyUser(userId){
+
+  let text=prompt("Reply लिखो");
+
+  if(!text){
+    return;
+  }
+
+  let data={
+    from:myId,
+    to:userId,
+    text:text,
+    time:Date.now()
+  };
+
+  db.ref("privateChats/"+myId+"/"+userId).push(data);
+  db.ref("privateChats/"+userId+"/"+myId).push(data);
+
+  db.ref("privateReplies/"+userId+"/"+myId).set({
+    repliedBy:myId,
+    time:Date.now()
+  });
+
+  alert("Reply sent ✅");
+} 
 </script>
 </body>
 </html>
