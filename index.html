@@ -577,6 +577,34 @@ function sendPrivateMessage(){
   });
 
 }
+  function loadInbox(){
+
+  db.ref("privateChats/"+myId).on("value",function(snapshot){
+
+    let box=document.getElementById("inboxMessages");
+    box.innerHTML="";
+
+    snapshot.forEach(function(chat){
+
+      let userId=chat.key;
+
+      chat.forEach(function(message){
+
+        let data=message.val();
+
+        if(data.from!==myId){
+
+          box.innerHTML +=
+            "<p><b>"+data.from+"</b>: "+data.text+
+            " <button onclick=\"replyUser('"+data.from+"')\">Reply</button></p>";
+
+        }
+
+      });
+
+    });
+
+ 
 </script>
 </body>
 </html>
