@@ -565,26 +565,20 @@ function checkKicked(){
     return;
   }
 
-  let wasMember=false;
-
   db.ref("rooms/"+roomId+"/members/"+myId).on("value",function(snapshot){
 
-    // पहली बार member नहीं मिला तो कुछ मत करो
-    if(!snapshot.exists()){
-
-      if(wasMember){
-
-        alert("आपको Owner ने Room से Kick कर दिया है");
-
-        location.href="index.html";
-
-      }
-
+    if(snapshot.exists()){
       return;
     }
 
-    // User Room में मौजूद है
-    wasMember=true;
+    if(sessionStorage.getItem("normalLeave")==="yes"){
+      sessionStorage.removeItem("normalLeave");
+      return;
+    }
+
+    alert("आपको Owner ने Room से Kick कर दिया है");
+
+    location.href="index.html";
 
   });
 
