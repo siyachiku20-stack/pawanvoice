@@ -621,7 +621,27 @@ seat.innerHTML=
 
 }
 
+function kickUser(userId){
 
+  if(!roomData || myId!==roomData.ownerId){
+    alert("सिर्फ Owner ही User को Kick कर सकता है");
+    return;
+  }
+
+  if(!confirm("इस User को Room से Kick करना है?")){
+    return;
+  }
+
+  db.ref("rooms/"+roomId+"/members/"+userId).remove()
+  .then(function(){
+    alert("User को Room से Kick कर दिया गया ✅");
+  })
+  .catch(function(error){
+    alert("Kick नहीं हुआ: "+error.message);
+  });
+
+}
+  
 /* LIVE VOICE */
 
 async function startVoice(){
