@@ -565,20 +565,16 @@ function checkKicked(){
     return;
   }
 
-  db.ref("rooms/"+roomId+"/members/"+myId).on("value",function(snapshot){
+  db.ref("rooms/"+roomId+"/kicked/"+myId).on("value",function(snapshot){
 
-    if(snapshot.exists()){
-      return;
+    if(snapshot.exists() && snapshot.val()===true){
+
+      db.ref("rooms/"+roomId+"/kicked/"+myId).remove();
+
+      alert("आपको Owner ने Room से Kick कर दिया है");
+
+      location.href="index.html";
     }
-
-    if(sessionStorage.getItem("normalLeave")==="yes"){
-      sessionStorage.removeItem("normalLeave");
-      return;
-    }
-
-    alert("आपको Owner ने Room से Kick कर दिया है");
-
-    location.href="index.html";
 
   });
 
