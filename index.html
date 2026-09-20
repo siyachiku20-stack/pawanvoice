@@ -875,41 +875,45 @@ function loadInbox(){
 
     box.innerHTML="";
 
+    if(!snapshot.exists()){
+      box.innerHTML="<p>💬 अभी कोई chat नहीं है।</p>";
+      return;
+    }
+
     snapshot.forEach(function(chat){
 
       let userId=chat.key;
-
       let lastMessage=null;
 
       chat.forEach(function(message){
 
         let data=message.val();
 
-        if(data.from!==myId){
-
+        if(!lastMessage || data.time > lastMessage.time){
           lastMessage=data;
-
         }
 
       });
 
       if(lastMessage){
 
-        db.ref("users/"+lastMessage.from+"/name").once("value").then(function(nameSnap){
+        db.ref("users/"+userId+"/name").once("value").then(function(nameSnap){
 
-          let userName=nameSnap.val() || lastMessage.from;
+          let userName=nameSnap.val() || userId;
 
           box.innerHTML +=
+            "<div class='inboxChat' onclick=\"openPrivateChat('"+
+            userId+
+            "')\">"+
 
-            "<p><b>"+userName+"</b>: "+
+            "<div class='inboxAvatar'>👤</div>"+
 
-            lastMessage.text+
+            "<div class='inboxInfo'>"+
+            "<b>"+userName+"</b>"+
+            "<p>"+lastMessage.text+"</p>"+
+            "</div>"+
 
-            " <button onclick=\"openPrivateChat('"+
-
-            lastMessage.from+
-
-            "')\">Chat</button></p>";
+            "</div>";
 
         });
 
