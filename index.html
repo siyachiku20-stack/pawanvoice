@@ -1,57 +1,37 @@
 <!DOCTYPE html>
-
 <html>
 <head>
 
 <meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>PawanVoice</title>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-<script>
-function showPage(page){
-
-  var pages = ["roomPage","inboxPage","mePage"];
-
-  pages.forEach(function(id){
-
-    var box = document.getElementById(id);
-
-    if(box){
-      box.classList.remove("active");
-    }
-
-  });
-
-  var target = document.getElementById(page + "Page");
-
-  if(target){
-    target.classList.add("active");
-  }
-}
-</script>
-  
 <style>
+
 body{
   margin:0;
-  padding:18px;
+  padding:15px;
   padding-bottom:80px;
   background:#111;
   color:white;
-  font-family:Arial;
+  font-family:Arial,sans-serif;
 }
 
-h1{text-align:center}
+h1{
+  text-align:center;
+}
 
 .box{
   background:#222;
-  padding:16px;
+  padding:15px;
   margin:12px 0;
-  border-radius:12px;
+  border-radius:14px;
 }
 
-input{
+input,select{
   width:100%;
   box-sizing:border-box;
   padding:13px;
@@ -62,19 +42,195 @@ input{
 }
 
 button{
-  padding:11px 16px;
+  padding:11px 15px;
   margin:5px;
   border:0;
-  border-radius:8px;
+  border-radius:9px;
   font-size:15px;
 }
 
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+/* HOME */
+
+.liveRoomsBox{
+  background:#181818;
+  border-radius:16px;
+  padding:14px;
+}
+
+.liveTitle{
+  margin:0 0 12px;
+  font-size:20px;
+}
+
+.homeTabs{
+  display:flex;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.homeTab{
+  background:#292929;
+  color:#ddd;
+  border-radius:20px;
+  padding:9px 18px;
+}
+
+.homeTab.active{
+  background:#ff9800;
+  color:#111;
+  font-weight:bold;
+}
+
+.roomTabs{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  margin-bottom:14px;
+}
+
+.roomTab{
+  background:#292929;
+  color:#ddd;
+  border-radius:20px;
+  white-space:nowrap;
+}
+
+.roomTab.active{
+  background:#ff9800;
+  color:#111;
+}
+
+.roomCards{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
 .room{
+  background:#242424;
+  border-radius:15px;
+  padding:10px;
+  border:1px solid #363636;
+}
+
+.roomCover{
+  height:80px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#ff9800,#ff5722);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:40px;
+  margin-bottom:8px;
+}
+
+.room h3{
+  margin:5px 0;
+  font-size:15px;
+}
+
+.room p{
+  margin:4px 0;
+  color:#aaa;
+  font-size:12px;
+}
+
+.room button{
+  width:100%;
+  background:#ff9800;
+  color:#111;
+  font-weight:bold;
+}
+
+/* INBOX */
+
+.inboxChat{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px;
+  margin:8px 0;
+  background:#292929;
+  border-radius:12px;
+}
+
+.inboxAvatar{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  background:#444;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+}
+
+.inboxInfo{
+  flex:1;
+  min-width:0;
+}
+
+.inboxInfo b{
+  font-size:15px;
+}
+
+.inboxInfo p{
+  margin:5px 0 0;
+  color:#aaa;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* CHAT */
+
+.chatMessage{
+  padding:9px;
+  margin:6px 0;
+  border-radius:10px;
+  background:#292929;
+}
+
+.myMessage{
+  text-align:right;
+  background:#ff9800;
+  color:#111;
+}
+
+/* PROFILE */
+
+.profileTop{
+  text-align:center;
+}
+
+.profileAvatar{
+  width:90px;
+  height:90px;
+  border-radius:50%;
   background:#333;
-  padding:15px;
-  margin:10px 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:45px;
+  margin:15px auto;
+}
+
+.profileRow{
+  background:#292929;
+  padding:12px;
+  margin:7px 0;
   border-radius:10px;
 }
+
+/* BOTTOM */
 
 .bottom-nav{
   position:fixed;
@@ -91,184 +247,18 @@ button{
 .bottom-nav button{
   background:none;
   color:white;
+  font-size:25px;
   margin:0;
 }
 
-.page{
-  display:none;
-}
-
-.page.active{
-  display:block;
-}
-
-.room{
-  background:#292929;
-  padding:15px;
-  margin:10px 0;
-  border-radius:12px;
-  border:1px solid #444;
-}
-
-.room h3{
-  margin-top:0;
-}
-
-.room button{
-  background:#ff9800;
-  color:white;
-  font-weight:bold;
-}
-
-  .room button{
-  width:100%;
-  font-size:16px;
-  padding:13px;
-}
-
-  #roomSearch{
-  background:#222;
-  color:white;
-  border:1px solid #555;
-}
-
-#roomSearch::placeholder{
-  color:#aaa;
-}  
-.liveRoomsBox{
-  background:#181818;
-  border-radius:16px;
-  padding:14px;
-}
-
-.liveTitle{
-  margin:0 0 12px;
-  font-size:20px;
-  color:#fff;
-}
-
-.roomTabs{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  margin-bottom:14px;
-}
-
-.roomTab{
-  background:#292929;
-  color:#ddd;
-  border:none;
-  border-radius:20px;
-  padding:9px 15px;
-  white-space:nowrap;
-  font-size:13px;
-}
-
-.roomTab.active{
-  background:#ff9f00;
-  color:#111;
-  font-weight:bold;
-}
-.roomCards{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-}
-
-.room{
-  background:#242424;
-  border-radius:15px;
-  padding:10px;
-  border:1px solid #363636;
-  overflow:hidden;
-}
-
-.room h3{
-  margin:0 0 7px;
-  color:#fff;
-  font-size:15px;
-}
-
-.room p{
-  margin:4px 0;
-  color:#aaa;
-  font-size:12px;
-}
-
-.room button{
-  width:100%;
-  margin-top:8px;
-  border:none;
-  border-radius:10px;
-  padding:9px;
-  background:#ff9f00;
-  color:#111;
-  font-weight:bold;
-}
-
-.roomCover{
-  height:90px;
-  border-radius:12px;
-  background:linear-gradient(135deg,#ff9800,#ff5722);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:42px;
-  margin-bottom:8px;
- } 
-
-  .inboxChat{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:12px;
-  margin:8px 0;
-  background:#292929;
-  border-radius:12px;
-  cursor:pointer;
-}
-
-.inboxAvatar{
-  width:45px;
-  height:45px;
-  border-radius:50%;
-  background:#444;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:24px;
-  flex-shrink:0;
-}
-
-.inboxInfo{
-  flex:1;
-  min-width:0;
-}
-
-.inboxInfo b{
-  color:white;
-  font-size:15px;
-}
-
-.inboxInfo p{
-  margin:5px 0 0;
-  color:#aaa;
-  font-size:13px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-  
 @media(max-width:500px){
+
   .roomCards{
     grid-template-columns:repeat(2,1fr);
-    gap:9px;
   }
 
-  .room{
-    padding:8px;
-  }
-  }
+}
+
 </style>
 
 </head>
@@ -277,129 +267,343 @@ button{
 
 <h1>🎙️ PawanVoice</h1>
 
+
+<!-- ================= HOME ================= -->
+
 <div id="roomPage" class="page active">
 
-<div class="box">
-<h2>🎙️ PawanVoice</h2>
+  <div class="box">
 
-<input id="userName" placeholder="अपना नाम लिखो">
+    <h2>🎙️ PawanVoice</h2>
 
-<button onclick="saveProfile()">Save Profile</button>
+    <input id="userName" placeholder="अपना नाम लिखो">
 
-<p>🆔 ID: <span id="myId"></span></p>
-<p>⭐ Level: 1</p>
-<p>🏅 Medal: None</p>
-<p>🚻 Gender: <span id="myGender">Not Selected</span></p>
+    <button onclick="saveProfile()">Save Profile</button>
 
-<button onclick="selectGender('Male')">👨 Male</button>
-<button onclick="selectGender('Female')">👩 Female</button>
-</div>
+    <p>🆔 ID: <span id="myId"></span></p>
 
-<div class="box">
-<input id="roomSearch" placeholder="🔍 Room search...">
-<div id="roomSearchResults"></div>
-<select id="categoryFilter">
-  <option value="All">📂 All</option>
-  <option value="General">🎙️ General</option>
-  <option value="Music">🎵 Music</option>
-  <option value="Chat">💬 Chat</option>
-  <option value="Games">🎮 Games</option>
-</select>
-</div>
+    <p>⭐ Level: 1</p>
 
-<div class="box liveRoomsBox">
+    <p>🏅 Medal: None</p>
 
-  <h3 class="liveTitle">🔥 Live Voice Rooms</h3>
+    <p>🚻 Gender: <span id="myGender">Not Selected</span></p>
 
-  <div class="homeTabs">
+    <button onclick="selectGender('Male')">👨 Male</button>
 
-    <button class="homeTab active" onclick="showHomeTab('popular')">
-      🔥 Popular
+    <button onclick="selectGender('Female')">👩 Female</button>
+
+  </div>
+
+
+  <div class="box">
+
+    <input id="roomSearch" placeholder="🔍 Room search...">
+
+    <select id="categoryFilter">
+
+      <option value="All">📂 All</option>
+
+      <option value="General">🎙️ General</option>
+
+      <option value="Music">🎵 Music</option>
+
+      <option value="Chat">💬 Chat</option>
+
+      <option value="Games">🎮 Games</option>
+
+    </select>
+
+  </div>
+
+
+  <div class="box liveRoomsBox">
+
+    <h3 class="liveTitle">🔥 Live Voice Rooms</h3>
+
+
+    <div class="homeTabs">
+
+      <button
+        id="popularTab"
+        class="homeTab active"
+        onclick="showHomeTab('popular')">
+
+        🔥 Popular
+
+      </button>
+
+
+      <button
+        id="meTab"
+        class="homeTab"
+        onclick="showHomeTab('me')">
+
+        👤 Me
+
+      </button>
+
+    </div>
+
+
+    <div class="roomTabs">
+
+      <button class="roomTab active">
+        🔥 Hot
+      </button>
+
+      <button class="roomTab">
+        ✨ New
+      </button>
+
+      <button class="roomTab">
+        👥 Friends
+      </button>
+
+      <button class="roomTab">
+        🎤 Voice
+      </button>
+
+    </div>
+
+
+    <div id="rooms" class="roomCards">
+
+      Rooms load ho rahe hain...
+
+    </div>
+
+  </div>
+
+
+  <!-- CREATE ROOM -->
+
+  <div class="box">
+
+    <h3>➕ Create Voice Room</h3>
+
+    <input
+      id="roomName"
+      placeholder="Room ka naam">
+
+    <select id="roomCategory">
+
+      <option value="General">
+        🎙️ General
+      </option>
+
+      <option value="Music">
+        🎵 Music
+      </option>
+
+      <option value="Chat">
+        💬 Chat
+      </option>
+
+      <option value="Games">
+        🎮 Games
+      </option>
+
+    </select>
+
+
+    <button onclick="createRoom()">
+      🎙️ Create Room
     </button>
 
-    <button class="homeTab" onclick="showHomeTab('me')">
-      👤 Me
+  </div>
+
+</div>
+
+
+<!-- ================= INBOX ================= -->
+
+<div id="inboxPage" class="page">
+
+  <div class="box">
+
+    <h2>💬 Inbox</h2>
+
+    <div id="inboxMessages">
+
+      <p>💬 अभी कोई chat नहीं है।</p>
+
+    </div>
+
+  </div>
+
+
+  <div
+    id="privateChatBox"
+    class="box"
+    style="display:none;">
+
+    <h3 id="chatWithUser">
+      Private Chat
+    </h3>
+
+    <button onclick="closePrivateChat()">
+      ← Back
+    </button>
+
+    <div id="chatMessages"></div>
+
+    <input
+      id="chatText"
+      placeholder="Message लिखो">
+
+    <button onclick="sendChatMessage()">
+      Send
     </button>
 
   </div>
-  
-  <div class="roomTabs">
-    <button class="roomTab active">🔥 Hot</button>
-    <button class="roomTab">✨ New</button>
-    <button class="roomTab">👥 Friends</button>
-    <button class="roomTab">🎤 Voice</button>
+
+</div>
+
+
+<!-- ================= PROFILE ================= -->
+
+<div id="mePage" class="page">
+
+  <div class="box profileTop">
+
+    <h2>👤 My Profile</h2>
+
+    <div class="profileAvatar">
+      👤
+    </div>
+
+    <h3 id="profileName">
+      User
+    </h3>
+
   </div>
 
-  <div id="rooms" class="roomCards">
-    Rooms load ho rahe hain...
+
+  <div class="box">
+
+    <div class="profileRow">
+      🆔 ID:
+      <span id="profileId"></span>
+    </div>
+
+    <div class="profileRow">
+      🚻 Gender:
+      <span id="profileGender"></span>
+    </div>
+
+    <div class="profileRow">
+      ⭐ Level:
+      <span id="profileLevel">1</span>
+    </div>
+
+    <div class="profileRow">
+      📈 EXP:
+      <span id="profileExp">0</span>
+    </div>
+
+    <div class="profileRow">
+      🏅 Medal:
+      <span id="profileMedal">None</span>
+    </div>
+
+    <div class="profileRow">
+      🪙 Coins:
+      <span id="profileCoins">0</span>
+    </div>
+
   </div>
 
 </div>
-  
-<div class="box">
-<h3>➕ Create Voice Room</h3>
 
-<input id="roomName" placeholder="Room ka naam">
 
-<select id="roomCategory">
-  <option value="General">🎙️ General</option>
-  <option value="Music">🎵 Music</option>
-  <option value="Chat">💬 Chat</option>
-  <option value="Games">🎮 Games</option>
-</select>
-  
-<button onclick="createRoom()">🎙️ Create Room</button>
+<!-- ================= BOTTOM NAV ================= -->
+
+<div class="bottom-nav">
+
+  <button onclick="showPage('room')">
+    🏠
+  </button>
+
+  <button onclick="showPage('inbox')">
+    💬
+  </button>
+
+  <button onclick="showPage('me')">
+    👤
+  </button>
+
 </div>
 
-</div>
 
 <script>
 
+/* ================= FIREBASE ================= */
+
 const firebaseConfig = {
-  apiKey: "AIzaSyDnlTdeqG5aPHrUIV6kTYnM521GtbrrE",
-  authDomain: "pawanvoice-68c5e.firebaseapp.com",
-  databaseURL: "https://pawanvoice-68c5e-default-rtdb.firebaseio.com/",
-  projectId: "pawanvoice-68c5e",
-  storageBucket: "pawanvoice-68c5e.firebasestorage.app",
-  messagingSenderId: "148446327241",
-  appId: "1:148446327241:web:6bac9cb9ad0fb530cbb818"
+
+  apiKey:
+  "AIzaSyDnlTdeq5G5aPHrUIV6kTYnM521GtbrrE",
+
+  authDomain:
+  "pawanvoice-68c5e.firebaseapp.com",
+
+  databaseURL:
+  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com/",
+
+  projectId:
+  "pawanvoice-68c5e",
+
+  storageBucket:
+  "pawanvoice-68c5e.firebasestorage.app",
+
+  messagingSenderId:
+  "148446327241",
+
+  appId:
+  "1:148446327241:web:6bac9cb9ad0fb530cbb818"
+
 };
 
+
 firebase.initializeApp(firebaseConfig);
+
 const db = firebase.database();
 
-loadRooms();
-  
-let myId=localStorage.getItem("pawanId");
-if(!myId || !/^\d+$/.test(myId)){
-  createUserId();
-}
+
+/* ================= USER ID ================= */
+
+let myId =
+localStorage.getItem("pawanId");
+
 
 function createUserId(){
 
-  return db.ref("system/nextUserId").transaction(function(current){
+  return db.ref("system/nextUserId")
+  .transaction(function(current){
 
-    if(current===null){
+    if(current === null){
+
       return 1000031;
+
     }
 
-    return Number(current)+1;
+    return Number(current) + 1;
 
-  }).then(function(result){
+  })
+  .then(function(result){
 
     if(result.committed){
 
-      myId=String(result.snapshot.val());
+      myId =
+      String(result.snapshot.val());
 
-      localStorage.setItem("pawanId",myId);
+      localStorage.setItem(
+        "pawanId",
+        myId
+      );
 
-      if(document.getElementById("myId")){
-        document.getElementById("myId").innerText=myId;
-      }
+      updateProfile();
 
-     if(document.getElementById("profileId")){
-       document.getElementById("profileId").innerText=myId;
-     }
     }
 
   });
@@ -407,66 +611,67 @@ function createUserId(){
 }
 
 
-function setMyId(){
+if(!myId || !/^\d+$/.test(myId)){
 
-  let myIdBox=document.getElementById("myId");
+  localStorage.removeItem("pawanId");
 
-  if(myIdBox){
-    myIdBox.innerText=myId || "";
-  }
-
-  let profileIdBox=document.getElementById("profileId");
-
-  if(profileIdBox){
-    profileIdBox.innerText=myId || "";
-  }
-
-}
-
-if(!myId){
-
-  createUserId().then(function(){
-
-    setMyId();
-    loadFollowRequests();
-    loadFriends();
-    loadInbox();
-
-  });
-
-}else{
-
-  setMyId();
-
-  loadFollowRequests();
-  loadFriends();
-  loadInbox();
+  createUserId();
 
 }
 
 
-let savedName=localStorage.getItem("pawanName") || "";
+/* ================= PROFILE ================= */
 
-document.getElementById("userName").value=savedName;
+function updateProfile(){
 
-document.getElementById("profileName").innerText=savedName;
+  let name =
+  localStorage.getItem("pawanName") || "";
+
+  let gender =
+  localStorage.getItem("pawanGender")
+  || "Not Selected";
 
 
-let savedId=localStorage.getItem("pawanId") || "";
+  document.getElementById(
+    "myId"
+  ).innerText = myId || "";
 
-document.getElementById("profileId").innerText=savedId;
 
-  
-let savedGender=localStorage.getItem("pawanGender") || "Not Selected";
+  document.getElementById(
+    "profileId"
+  ).innerText = myId || "";
 
-document.getElementById("myGender").innerText=savedGender;
 
-document.getElementById("profileGender").innerText=savedGender;
+  document.getElementById(
+    "userName"
+  ).value = name;
+
+
+  document.getElementById(
+    "profileName"
+  ).innerText =
+  name || "User";
+
+
+  document.getElementById(
+    "myGender"
+  ).innerText = gender;
+
+
+  document.getElementById(
+    "profileGender"
+  ).innerText = gender;
+
+}
 
 
 function saveProfile(){
 
-  let name=document.getElementById("userName").value.trim();
+  let name =
+  document.getElementById(
+    "userName"
+  ).value.trim();
+
 
   if(!name){
 
@@ -476,35 +681,160 @@ function saveProfile(){
 
   }
 
-  localStorage.setItem("pawanName",name);
 
-  db.ref("users/"+myId+"/name").set(name);
+  localStorage.setItem(
+    "pawanName",
+    name
+  );
 
-  document.getElementById("profileName").innerText=name;
 
-  alert("Profile save ho gaya");
+  db.ref(
+    "users/" + myId
+  ).update({
+
+    name:name,
+    userId:myId
+
+  });
+
+
+  updateProfile();
+
+
+  alert("Profile save ho gaya ✅");
 
 }
 
 
 function selectGender(gender){
 
-  localStorage.setItem("pawanGender",gender);
+  localStorage.setItem(
+    "pawanGender",
+    gender
+  );
 
-  document.getElementById("myGender").innerText=gender;
 
-  document.getElementById("profileGender").innerText=gender;
+  db.ref(
+    "users/" + myId + "/gender"
+  ).set(gender);
 
-  alert("Gender selected: "+gender);
+
+  updateProfile();
+
+
+  alert(
+    "Gender selected: " + gender
+  );
 
 }
 
 
+/* ================= HOME TABS ================= */
+
+function showHomeTab(tab){
+
+  document
+  .getElementById("popularTab")
+  .classList.remove("active");
+
+  document
+  .getElementById("meTab")
+  .classList.remove("active");
+
+
+  if(tab === "popular"){
+
+    document
+    .getElementById("popularTab")
+    .classList.add("active");
+
+    loadRooms();
+
+  }
+
+
+  if(tab === "me"){
+
+    document
+    .getElementById("meTab")
+    .classList.add("active");
+
+    loadRooms();
+
+  }
+
+}
+
+
+/* ================= PAGE NAVIGATION ================= */
+
+function showPage(page){
+
+  document
+  .getElementById("roomPage")
+  .classList.remove("active");
+
+  document
+  .getElementById("inboxPage")
+  .classList.remove("active");
+
+  document
+  .getElementById("mePage")
+  .classList.remove("active");
+
+
+  if(page === "room"){
+
+    document
+    .getElementById("roomPage")
+    .classList.add("active");
+
+  }
+
+
+  if(page === "inbox"){
+
+    document
+    .getElementById("inboxPage")
+    .classList.add("active");
+
+  }
+
+
+  if(page === "me"){
+
+    document
+    .getElementById("mePage")
+    .classList.add("active");
+
+  }
+
+}
+
+
+/* ================= CREATE ROOM ================= */
+
 function createRoom(){
 
-  let name=document.getElementById("roomName").value.trim();
-  let category=document.getElementById("roomCategory").value;
-  let userName=document.getElementById("userName").value.trim();
+  let name =
+  document
+  .getElementById("roomName")
+  .value
+  .trim();
+
+
+  let category =
+  document
+  .getElementById("roomCategory")
+  .value;
+
+
+  let userName =
+  document
+  .getElementById("userName")
+  .value
+  .trim();
+
 
   if(!userName){
 
@@ -514,6 +844,7 @@ function createRoom(){
 
   }
 
+
   if(!name){
 
     alert("Room ka naam likho");
@@ -522,98 +853,134 @@ function createRoom(){
 
   }
 
-  localStorage.setItem("pawanName",userName);
 
-  let id=Date.now().toString();
+  localStorage.setItem(
+    "pawanName",
+    userName
+  );
 
-  db.ref("rooms/"+id).set({
+
+  let id =
+  Date.now().toString();
+
+
+  db.ref(
+    "rooms/" + id
+  )
+  .set({
 
     name:name,
+
     owner:userName,
+
     ownerId:myId,
+
     category:category,
+
     users:0,
+
     createdAt:Date.now()
 
-  }).then(function(){
+  })
+  .then(function(){
 
-    location.href="room.html?id="+id;
+    location.href =
+    "room.html?id=" + id;
 
-  }).catch(function(error){
+  })
+  .catch(function(error){
 
-    alert("Room create nahi hua: "+error.message);
+    alert(
+      "Room create nahi hua: "
+      + error.message
+    );
 
   });
 
 }
 
 
+/* ================= LOAD ROOMS ================= */
+
 function loadRooms(){
 
-  const box=document.getElementById("rooms");
-  const search=document.getElementById("roomSearch");
-  const categoryFilter=document.getElementById("categoryFilter");
+  let box =
+  document.getElementById("rooms");
 
-  function filterRooms(){
 
-    let q=search.value.toLowerCase().trim();
-    let category=categoryFilter.value;
+  if(!box){
 
-    document.querySelectorAll(".room").forEach(function(room){
-
-      let text=room.innerText.toLowerCase();
-
-      let searchOK=text.includes(q);
-
-      let categoryOK=
-        category==="All" ||
-        text.includes("category: "+category.toLowerCase());
-
-      room.style.display=
-        searchOK && categoryOK ? "block" : "none";
-
-    });
+    return;
 
   }
 
-  search.addEventListener("input",filterRooms);
-  categoryFilter.addEventListener("change",filterRooms);
 
-  db.ref("rooms").on("value",function(snapshot){
-    
-    box.innerHTML="";
+  db.ref("rooms")
+  .on("value",function(snapshot){
+
+    box.innerHTML = "";
+
 
     if(!snapshot.exists()){
 
-      box.innerHTML="Abhi koi room nahi hai.";
+      box.innerHTML =
+      "<p>Abhi koi room nahi hai.</p>";
 
       return;
 
     }
 
+
     snapshot.forEach(function(child){
 
-      let id=child.key;
-      let room=child.val();
+      let id =
+      child.key;
 
-      let div=document.createElement("div");
 
-      div.className="room";
+      let room =
+      child.val();
 
-      div.innerHTML=
-        "<div class='roomCover'>🎙️</div>"+
-        "<h3>🎙️ "+(room.name||"Room")+"</h3>"+
-        "<p>👑 Owner: "+(room.owner||"User")+"</p>"+
-        "<p>👥 "+(room.users||0)+"/9 Members</p>"+
-        "<p>🟢 Live Now</p>"+
-        "<p>📂 "+(room.category||"General")+"</p>"+
-        "<button onclick=\"joinRoom('"+id+"')\">🚪 Join Room</button>";
-      
+
+      let div =
+      document.createElement("div");
+
+
+      div.className =
+      "room";
+
+
+      div.innerHTML =
+
+      "<div class='roomCover'>🎙️</div>" +
+
+      "<h3>🎙️ " +
+      (room.name || "Room") +
+      "</h3>" +
+
+      "<p>👑 Owner: " +
+      (room.owner || "User") +
+      "</p>" +
+
+      "<p>👥 " +
+      (room.users || 0) +
+      "/9 Members</p>" +
+
+      "<p>🟢 Live Now</p>" +
+
+      "<p>📂 " +
+      (room.category || "General") +
+      "</p>" +
+
+      "<button onclick=\"joinRoom('" +
+      id +
+      "')\">🚪 Join Room</button>";
+
+
       box.appendChild(div);
 
     });
 
-    /* SEARCH + CATEGORY APPLY */
+
     filterRooms();
 
   });
@@ -621,319 +988,170 @@ function loadRooms(){
 }
 
 
+/* ================= ROOM SEARCH ================= */
+
+function filterRooms(){
+
+  let search =
+  document
+  .getElementById("roomSearch")
+  .value
+  .toLowerCase()
+  .trim();
+
+
+  let category =
+  document
+  .getElementById("categoryFilter")
+  .value;
+
+
+  document
+  .querySelectorAll(".room")
+  .forEach(function(room){
+
+    let text =
+    room.innerText.toLowerCase();
+
+
+    let searchOK =
+    text.includes(search);
+
+
+    let categoryOK =
+    category === "All"
+    ||
+    text.includes(
+      category.toLowerCase()
+    );
+
+
+    room.style.display =
+    searchOK && categoryOK
+    ? "block"
+    : "none";
+
+  });
+
+}
+
+
+document
+.getElementById("roomSearch")
+.addEventListener(
+  "input",
+  filterRooms
+);
+
+
+document
+.getElementById("categoryFilter")
+.addEventListener(
+  "change",
+  filterRooms
+);
+
+
+/* ================= JOIN ROOM ================= */
+
 function joinRoom(id){
 
-  let name=document.getElementById("userName").value.trim();
+  let name =
+  document
+  .getElementById("userName")
+  .value
+  .trim();
+
 
   if(!name){
 
-    alert("Pehle apna naam likho");
+    alert(
+      "Pehle apna naam likho"
+    );
 
     return;
 
   }
 
-  localStorage.setItem("pawanName",name);
 
-  location.href="room.html?id="+id;
+  localStorage.setItem(
+    "pawanName",
+    name
+  );
 
-}
 
-function showPage(page){
-
-  document.getElementById("roomPage").classList.remove("active");
-  document.getElementById("inboxPage").classList.remove("active");
-  document.getElementById("mePage").classList.remove("active");
-
-  if(page==="room"){
-    document.getElementById("roomPage").classList.add("active");
-  }
-
-  if(page==="inbox"){
-    document.getElementById("inboxPage").classList.add("active");
-  }
-
-  if(page==="me"){
-    document.getElementById("mePage").classList.add("active");
-  }
-
-}  
-  
-function showPage(page){
-
-  var room = document.getElementById("roomPage");
-  var inbox = document.getElementById("inboxPage");
-  var me = document.getElementById("mePage");
-
-  if(room){
-    room.style.display = "none";
-  }
-
-  if(inbox){
-    inbox.style.display = "none";
-  }
-
-  if(me){
-    me.style.display = "none";
-  }
-
-  if(page === "room" && room){
-    room.style.display = "block";
-  }
-
-  if(page === "inbox" && inbox){
-    inbox.style.display = "block";
-  }
-
-  if(page === "me" && me){
-    me.style.display = "block";
-  }
-
-}
-  
-  function showFollow(){
-
-  let userId=prompt("जिस User को Follow करना है उसकी ID डालो");
-
-  if(!userId){
-    return;
-  }
-
-  if(userId===myId){
-
-    alert("खुद को Follow नहीं कर सकते");
-
-    return;
-
-  }
-
-  db.ref("follows/"+userId+"/"+myId).set({
-
-    userId:myId,
-    time:Date.now()
-
-  }).then(function(){
-
-    alert("Follow request भेज दी गई");
-
-  }).catch(function(error){
-
-    alert("Follow नहीं हुआ: "+error.message);
-
-  });
+  location.href =
+  "room.html?id=" + id;
 
 }
 
 
-function acceptFollow(userId){
-
-  db.ref("friends/"+myId+"/"+userId).set(true);
-
-  db.ref("friends/"+userId+"/"+myId).set(true);
-
-  alert("Friend बन गया ✅");
-
-}
-
-
-function loadFollowRequests(){
-
-  if(!myId){
-    return;
-  } 
-
-  db.ref("follows/"+myId).on("value",function(snapshot){
-
-    let box=document.getElementById("followRequests");
-
-   if(!box){
-   return;
-   }
-
-   box.innerHTML="";
-    if(!snapshot.exists()){
-
-      box.innerHTML="<p>कोई Follow Request नहीं है</p>";
-
-      return;
-
-    }
-
-    snapshot.forEach(function(child){
-
-      let userId=child.key;
-
-      box.innerHTML+=
-
-        "<p>User ID: "+userId+
-
-        ' <button onclick="acceptFollow(\''+userId+'\')">Accept</button></p>';
-
-    });
-
-  });
-
-}
-
-
-function loadFriends(){
-
-  if(!myId){
-    return;
-  }
-
-  db.ref("friends/"+myId).on("value",function(snapshot){
-
-    let box=document.getElementById("friendsList");
-
-    box.innerHTML="";
-
-    snapshot.forEach(function(child){
-
-      box.innerHTML +=
-
-        "<p>Friend ID: "+child.key+"</p>";
-
-    });
-
-  });
-
-}
-
-
-function sendPrivateMessage(){
-
-  let to=document.getElementById("chatUserId").value.trim();
-
-  let text=document.getElementById("privateMessage").value.trim();
-
-  if(!to || !text){
-
-    alert("User ID और message लिखो");
-
-    return;
-
-  }
-
-  db.ref("privateChats/"+myId+"/"+to).once("value").then(function(snapshot){
-
-    let messages=snapshot.val() || {};
-
-    let sentCount=Object.keys(messages).length;
-
-    return db.ref("privateReplies/"+myId+"/"+to).once("value").then(function(replySnap){
-
-      if(sentCount>=2 && !replySnap.exists()){
-
-        alert("पहले सामने वाला User reply करे");
-
-        return;
-
-      }
-
-      let data={
-
-        from:myId,
-        to:to,
-        text:text,
-        time:Date.now()
-
-      };
-
-      db.ref("privateChats/"+myId+"/"+to).push(data);
-
-      db.ref("privateChats/"+to+"/"+myId).push(data);
-
-      document.getElementById("privateMessage").value="";
-
-      alert("Message sent ✅");
-
-    });
-
-  });
-
-}
-
+/* ================= PRIVATE CHAT ================= */
 
 function openPrivateChat(userId){
 
-  document.getElementById("privateChatBox").style.display="block";
-
-  document.getElementById("privateChatBox").setAttribute(
-    "data-user",userId
+  let chat =
+  document.getElementById(
+    "privateChatBox"
   );
 
-  db.ref("users/"+userId+"/name").once("value").then(function(snapshot){
 
-    let userName=snapshot.val() || userId;
-
-    document.getElementById("chatWithUser").innerText=
-      "Chat with: "+userName;
-
-  });
-
-  loadPrivateMessages(userId);
-
-}
+  chat.style.display =
+  "block";
 
 
-function loadPrivateMessages(userId){
+  chat.setAttribute(
+    "data-user",
+    userId
+  );
 
-  db.ref("privateChats/"+myId+"/"+userId).on("value",function(snapshot){
 
-    let box=document.getElementById("chatMessages");
+  document.getElementById(
+    "chatWithUser"
+  ).innerText =
+  "Chat with: " + userId;
 
-    box.innerHTML="";
 
-    snapshot.forEach(function(message){
-
-      let data=message.val();
-
-      if(data.from===myId){
-
-        box.innerHTML +=
-
-          "<p style='text-align:right'><b>You:</b> "+
-          data.text+"</p>";
-
-      }else{
-
-        db.ref("users/"+data.from+"/name").once("value").then(function(nameSnap){
-
-          let userName=nameSnap.val() || data.from;
-
-          box.innerHTML +=
-
-            "<p><b>"+userName+":</b> "+
-            data.text+"</p>";
-
-        });
-
-      }
-
-    });
-
-  });
+  loadPrivateMessages(
+    userId
+  );
 
 }
 
 
 function closePrivateChat(){
 
-  document.getElementById("privateChatBox").style.display="none";
+  document.getElementById(
+    "privateChatBox"
+  ).style.display =
+  "none";
 
 }
 
 
 function sendChatMessage(){
 
-  let box=document.getElementById("privateChatBox");
+  let box =
+  document.getElementById(
+    "privateChatBox"
+  );
 
-  let to=box.getAttribute("data-user");
 
-  let input=document.getElementById("chatText");
+  let to =
+  box.getAttribute(
+    "data-user"
+  );
 
-  let text=input.value.trim();
+
+  let input =
+  document.getElementById(
+    "chatText"
+  );
+
+
+  let text =
+  input.value.trim();
+
 
   if(!to || !text){
 
@@ -943,203 +1161,235 @@ function sendChatMessage(){
 
   }
 
-  db.ref("privateChats/"+myId+"/"+to).once("value").then(function(snapshot){
 
-    let messages=snapshot.val() || {};
-
-    let sentCount=Object.keys(messages).length;
-
-    return db.ref("privateReplies/"+myId+"/"+to).once("value").then(function(replySnap){
-
-      if(sentCount>=2 && !replySnap.exists()){
-
-        alert("पहले सामने वाला User reply करे");
-
-        return;
-
-      }
-
-      let data={
-
-        from:myId,
-        to:to,
-        text:text,
-        time:Date.now()
-
-      };
-
-      db.ref("privateChats/"+myId+"/"+to).push(data);
-
-      db.ref("privateChats/"+to+"/"+myId).push(data);
-
-      input.value="";
-
-    });
-
-  });
-
-}
-
-
-function loadInbox(){
-
-  if(!myId){
-    return;
-  }
-
-  db.ref("privateChats/"+myId).on("value",function(snapshot){
-
-    let box=document.getElementById("inboxMessages");
-
-    box.innerHTML="";
-
-    if(!snapshot.exists()){
-      box.innerHTML="<p>💬 अभी कोई chat नहीं है।</p>";
-      return;
-    }
-
-    snapshot.forEach(function(chat){
-
-      let userId=chat.key;
-      let lastMessage=null;
-
-      chat.forEach(function(message){
-
-        let data=message.val();
-
-        if(!lastMessage || data.time > lastMessage.time){
-          lastMessage=data;
-        }
-
-      });
-
-      if(lastMessage){
-
-        db.ref("users/"+userId+"/name").once("value").then(function(nameSnap){
-
-          let userName=nameSnap.val() || userId;
-
-          box.innerHTML +=
-            "<div class='inboxChat' onclick=\"openPrivateChat('"+
-            userId+
-            "')\">"+
-
-            "<div class='inboxAvatar'>👤</div>"+
-
-            "<div class='inboxInfo'>"+
-            "<b>"+userName+"</b>"+
-            "<p>"+lastMessage.text+"</p>"+
-            "</div>"+
-
-            "</div>";
-
-        });
-
-      }
-
-    });
-
-  });
-
-}
-
-
-function replyUser(userId){
-
-  let text=prompt("Reply लिखो");
-
-  if(!text){
-    return;
-  }
-
-  let data={
+  let data = {
 
     from:myId,
-    to:userId,
+
+    to:to,
+
     text:text,
+
     time:Date.now()
 
   };
 
-  db.ref("privateChats/"+myId+"/"+userId).push(data);
 
-  db.ref("privateChats/"+userId+"/"+myId).push(data);
+  db.ref(
+    "privateChats/"
+    + myId +
+    "/" +
+    to
+  ).push(data);
 
-  db.ref("privateReplies/"+userId+"/"+myId).set({
 
-    repliedBy:myId,
-    time:Date.now()
+  db.ref(
+    "privateChats/"
+    + to +
+    "/" +
+    myId
+  ).push(data);
+
+
+  input.value = "";
+
+}
+
+
+function loadPrivateMessages(userId){
+
+  db.ref(
+    "privateChats/"
+    + myId +
+    "/" +
+    userId
+  )
+  .on("value",function(snapshot){
+
+    let box =
+    document.getElementById(
+      "chatMessages"
+    );
+
+
+    box.innerHTML = "";
+
+
+    snapshot.forEach(
+      function(child){
+
+        let data =
+        child.val();
+
+
+        let div =
+        document.createElement(
+          "div"
+        );
+
+
+        div.className =
+        "chatMessage";
+
+
+        if(data.from === myId){
+
+          div.className +=
+          " myMessage";
+
+          div.innerText =
+          "You: " + data.text;
+
+        }else{
+
+          div.innerText =
+          data.from +
+          ": " +
+          data.text;
+
+        }
+
+
+        box.appendChild(div);
+
+      }
+    );
 
   });
 
-  alert("Reply sent ✅");
+}
+
+
+/* ================= INBOX ================= */
+
+function loadInbox(){
+
+  let box =
+  document.getElementById(
+    "inboxMessages"
+  );
+
+
+  if(!box || !myId){
+
+    return;
+
+  }
+
+
+  db.ref(
+    "privateChats/" + myId
+  )
+  .on("value",function(snapshot){
+
+    box.innerHTML = "";
+
+
+    if(!snapshot.exists()){
+
+      box.innerHTML =
+      "<p>💬 अभी कोई chat नहीं है।</p>";
+
+      return;
+
+    }
+
+
+    snapshot.forEach(
+      function(chat){
+
+        let userId =
+        chat.key;
+
+
+        let lastMessage =
+        null;
+
+
+        chat.forEach(
+          function(message){
+
+            let data =
+            message.val();
+
+
+            if(
+              !lastMessage
+              ||
+              data.time >
+              lastMessage.time
+            ){
+
+              lastMessage =
+              data;
+
+            }
+
+          }
+        );
+
+
+        if(!lastMessage){
+
+          return;
+
+        }
+
+
+        let div =
+        document.createElement(
+          "div"
+        );
+
+
+        div.className =
+        "inboxChat";
+
+
+        div.innerHTML =
+
+        "<div class='inboxAvatar'>👤</div>" +
+
+        "<div class='inboxInfo'>" +
+
+        "<b>User " +
+        userId +
+        "</b>" +
+
+        "<p>" +
+        lastMessage.text +
+        "</p>" +
+
+        "</div>";
+
+
+        div.onclick =
+        function(){
+
+          openPrivateChat(
+            userId
+          );
+
+        };
+
+
+        box.appendChild(div);
+
+      }
+    );
+
+  });
 
 }
 
 
-</script>
+/* ================= START ================= */
 
-<div class="bottom-nav">
+updateProfile();
 
-  <button type="button" onclick="showPage('room')">
-    🏠
-  </button>
+loadRooms();
 
-  <button type="button" onclick="showPage('inbox')">
-    💬
-  </button>
-
-  <button type="button" onclick="showPage('me')">
-    👤
-  </button>
-
-</div>
-
-<div id="mePage" class="page">
-
-  <div class="box">
-
-    <h2>👤 My Profile</h2>
-
-    <div style="font-size:55px;text-align:center;margin:15px;">
-      👤
-    </div>
-
-    <p>📝 Name: <span id="profileName"></span></p>
-
-    <p>🆔 ID: <span id="profileId"></span></p>
-
-    <p>🚻 Gender: <span id="profileGender"></span></p>
-
-    <p>⭐ Level: <span id="profileLevel">1</span></p>
-
-    <p>📈 EXP: <span id="profileExp">0</span></p>
-
-    <p>🏅 Medal: <span id="profileMedal">None</span></p>
-
-    <p>🪙 Coins: <span id="profileCoins">0</span></p>
-
-  </div>
-
-</div>
-
-<script>
-
-let profileSavedName = localStorage.getItem("pawanName") || "";
-let profileSavedId = localStorage.getItem("pawanId") || "";
-let profileSavedGender = localStorage.getItem("pawanGender") || "Not Selected";
-
-if(document.getElementById("profileName")){
-  document.getElementById("profileName").innerText = profileSavedName;
-}
-
-if(document.getElementById("profileId")){
-  document.getElementById("profileId").innerText = profileSavedId;
-}
-
-if(document.getElementById("profileGender")){
-  document.getElementById("profileGender").innerText = profileSavedGender;
-}
+loadInbox();
 
 </script>
 
