@@ -1,383 +1,271 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PawanVoice Room</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+}
 
 body{
-  font-family:Arial,sans-serif;
-  background:#120c20;
-  color:#fff;
+  background:#101010;
+  color:white;
 }
 
 .room{
+  max-width:480px;
   min-height:100vh;
-  background:linear-gradient(180deg,#2b1745 0%,#160d27 60%,#0e0918 100%);
-  padding-bottom:78px;
-  position:relative;
-  overflow:hidden;
+  margin:auto;
+  background:linear-gradient(#171717,#101010);
+  padding:12px;
 }
 
-/* TOP */
-.top{
+/* HEADER */
+.header{
   display:flex;
   align-items:center;
   gap:10px;
-  padding:12px 10px 4px;
 }
 
 .room-dp{
   width:58px;
   height:58px;
   border-radius:50%;
-  border:2px solid #ffd45c;
-  background:#503064;
+  background:#333;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:28px;
-  flex:none;
+  border:2px solid #777;
 }
 
 .room-info{
-  min-width:0;
   flex:1;
 }
 
 .room-name{
   font-size:18px;
   font-weight:bold;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
 }
 
 .room-number{
+  font-size:13px;
+  color:#bbb;
   margin-top:4px;
-  color:#c8bbd3;
-  font-size:12px;
 }
 
 .host{
+  font-size:12px;
+  color:#ddd;
   margin-top:3px;
-  color:#eee;
-  font-size:11px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
 }
 
-.top-actions{
+.header-buttons{
   display:flex;
   gap:5px;
 }
 
-.top-btn{
-  width:34px;
-  height:34px;
-  border:0;
-  border-radius:50%;
-  background:#402754;
+.header-buttons button{
+  background:#292929;
   color:white;
-  font-size:16px;
+  border:0;
+  border-radius:10px;
+  width:38px;
+  height:38px;
+  font-size:17px;
 }
 
-.room-stats{
+/* STATS */
+.stats{
   display:flex;
-  align-items:center;
-  gap:14px;
-  padding:7px 14px;
-  color:#c9bdd4;
+  justify-content:space-between;
+  padding:13px 3px;
+  color:#ccc;
   font-size:12px;
 }
 
 /* SEATS */
 .seats{
-  padding:8px 10px;
-}
-
-.owner-row{
-  display:flex;
-  justify-content:center;
-  margin:4px 0 22px;
-}
-
-.seat-row{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:6px;
-  margin-bottom:24px;
+  gap:18px 8px;
+  margin-top:8px;
 }
 
-.seat-box{
+.owner{
+  grid-column:1/5;
   text-align:center;
-  min-width:0;
+  margin-bottom:5px;
 }
 
-.seat{
-  width:62px;
-  height:62px;
-  margin:auto;
+.avatar{
+  width:58px;
+  height:58px;
   border-radius:50%;
-  border:2px solid #684d78;
-  background:linear-gradient(145deg,#4a315d,#21162d);
+  margin:auto;
+  background:#292929;
+  border:2px solid #555;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:27px;
-  position:relative;
-  cursor:pointer;
+  font-size:25px;
 }
 
-.owner .seat{
-  border-color:#ffd45c;
+.owner .avatar{
+  width:72px;
+  height:72px;
+  border-color:#e0ad32;
 }
 
-.crown{
-  position:absolute;
-  top:-19px;
-  font-size:18px;
-}
-
-.seat-name{
-  margin-top:7px;
-  font-size:12px;
-  color:#eee;
+.user-name{
+  font-size:11px;
+  color:#ddd;
+  margin-top:6px;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
 }
 
 /* INVITE */
-.invite-row{
+.invite{
   display:flex;
   justify-content:flex-end;
-  padding:0 12px;
+  margin-top:15px;
 }
 
-.invite{
-  border:0;
-  border-radius:20px;
-  background:#3d2850;
+.invite button{
+  background:#292929;
   color:white;
-  padding:9px 14px;
-  font-size:12px;
+  border:0;
+  padding:10px 14px;
+  border-radius:12px;
 }
 
 /* BOTTOM */
 .bottom{
-  position:absolute;
-  left:0;
-  right:0;
+  position:sticky;
   bottom:0;
-  padding:9px 7px 12px;
-  background:rgba(12,7,20,.98);
-  border-top:1px solid #382946;
-}
-
-.message-row{
-  display:flex;
-  align-items:center;
-  gap:5px;
+  background:#191919;
+  padding:10px 4px;
+  margin-top:25px;
 }
 
 .message{
-  min-width:0;
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+
+.message input{
   flex:1;
-  height:42px;
-  border:0;
-  outline:0;
-  border-radius:22px;
-  background:#2b2037;
+  background:#292929;
   color:white;
-  padding:0 14px;
-  font-size:14px;
+  border:0;
+  outline:none;
+  padding:12px;
+  border-radius:12px;
 }
 
-.message::placeholder{color:#998ca5}
-
-.action{
-  width:40px;
-  height:40px;
-  flex:none;
-  border:0;
-  border-radius:50%;
-  background:#30213e;
+.send{
+  background:#7b35d6;
   color:white;
-  font-size:19px;
+  border:0;
+  border-radius:12px;
+  padding:0 15px;
 }
 
-.gift-btn{background:#87355f}
+.controls{
+  display:flex;
+  justify-content:space-around;
+}
+
+.controls button{
+  background:none;
+  color:white;
+  border:0;
+  font-size:21px;
+  padding:5px;
+}
+
+.controls small{
+  display:block;
+  color:#aaa;
+  font-size:9px;
+  margin-top:3px;
+}
 
 /* PANELS */
 .panel{
   display:none;
-  position:absolute;
-  z-index:20;
-  bottom:70px;
-  background:#24172f;
-  border:1px solid #4b3659;
-  border-radius:15px;
-  padding:10px;
+  background:#292929;
+  border-radius:14px;
+  padding:12px;
+  margin-top:8px;
 }
 
-.emoji-panel{
-  left:7px;
-  right:7px;
-  grid-template-columns:repeat(8,1fr);
-  gap:7px;
-  max-height:220px;
-  overflow:auto;
+.panel.active{
+  display:block;
 }
 
-.emoji-panel button{
+.emoji-list{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+}
+
+.emoji-list button{
+  background:#383838;
   border:0;
-  background:none;
-  font-size:24px;
-  padding:5px;
+  border-radius:8px;
+  font-size:22px;
+  padding:6px;
 }
 
-.gift-panel{
-  right:7px;
-  width:280px;
+.gifts{
+  display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:7px;
+  gap:8px;
 }
 
 .gift{
-  border:0;
-  background:#33223f;
-  color:white;
+  background:#383838;
+  padding:9px 4px;
   border-radius:10px;
-  padding:8px 3px;
-  font-size:10px;
+  text-align:center;
+  font-size:12px;
 }
 
 .gift span{
   display:block;
-  font-size:23px;
+  font-size:25px;
   margin-bottom:4px;
-}
-
-.more-panel{
-  right:48px;
-  width:175px;
-}
-
-.more-item{
-  display:block;
-  width:100%;
-  border:0;
-  background:none;
-  color:white;
-  text-align:left;
-  padding:11px;
-  border-radius:8px;
-}
-
-/* USER ACTION MENU */
-.user-menu{
-  display:none;
-  position:absolute;
-  z-index:30;
-  left:50%;
-  top:180px;
-  transform:translateX(-50%);
-  width:245px;
-  background:#261831;
-  border:1px solid #594264;
-  border-radius:16px;
-  padding:14px;
-  box-shadow:0 10px 35px rgba(0,0,0,.5);
-}
-
-.user-title{
-  font-weight:bold;
-  margin-bottom:4px;
-}
-
-.user-id{
-  color:#b9a9c5;
-  font-size:11px;
-  margin-bottom:12px;
-}
-
-.user-action{
-  width:100%;
-  border:0;
-  border-radius:9px;
-  background:#382449;
-  color:white;
-  padding:11px;
-  margin-top:6px;
-  text-align:left;
-}
-
-.user-action.kick{background:#55283d}
-
-/* SETTING */
-.settings{
-  display:none;
-  position:absolute;
-  z-index:31;
-  right:10px;
-  top:65px;
-  width:235px;
-  background:#261831;
-  border:1px solid #594264;
-  border-radius:15px;
-  padding:12px;
-}
-
-.settings h3{
-  font-size:15px;
-  margin-bottom:10px;
-}
-
-.setting-btn{
-  width:100%;
-  border:0;
-  border-radius:9px;
-  background:#382449;
-  color:white;
-  padding:10px;
-  margin-top:6px;
-  text-align:left;
-}
-
-/* MOBILE */
-@media(max-width:370px){
-  .room-name{font-size:16px}
-  .room-dp{width:52px;height:52px}
-  .seat{width:55px;height:55px}
-  .action{width:36px;height:36px;font-size:17px}
-  .message{font-size:13px}
 }
 </style>
 </head>
 
 <body>
 
-<div class="room" id="room">
+<div class="room">
 
-  <!-- TOP -->
-  <div class="top">
+  <!-- HEADER -->
+  <div class="header">
 
-    <div class="room-dp" id="roomDP">
-      🖼️
+    <div class="room-dp">
+      🎙️
     </div>
 
     <div class="room-info">
-      <div class="room-name" id="roomName">
+      <div class="room-name">
         Rajput Room p.s77
       </div>
 
-      <div class="room-number" id="roomNumber">
+      <div class="room-number">
         🆔 1000032
       </div>
 
@@ -386,17 +274,18 @@ body{
       </div>
     </div>
 
-    <div class="top-actions">
-      <button class="top-btn" type="button">👥</button>
-      <button class="top-btn" type="button" id="settingBtn">⚙️</button>
-      <button class="top-btn" type="button">⏻</button>
+    <div class="header-buttons">
+      <button>👥</button>
+      <button id="settingsBtn">⚙️</button>
+      <button>⏻</button>
     </div>
 
   </div>
 
-  <div class="room-stats">
-    <span>👥 1/9</span>
-    <span>• General</span>
+
+  <!-- STATS -->
+  <div class="stats">
+    <span>👥 1/9 · General</span>
     <span>🏆 23.8K</span>
   </div>
 
@@ -404,189 +293,164 @@ body{
   <!-- SEATS -->
   <div class="seats">
 
-    <div class="owner-row">
-      <div class="seat-box owner">
-        <button class="seat" type="button" data-name="SINGH RAJPUT Suriya" data-id="1000032">
-          <span class="crown">👑</span>
-          🎙️
-        </button>
-        <div class="seat-name">SINGH RAJPUT Suriya</div>
+    <!-- OWNER -->
+    <div class="owner">
+      <div class="avatar">👑</div>
+      <div class="user-name">
+        SINGH RAJPUT Suriya
       </div>
     </div>
 
-    <div class="seat-row">
-
-      <div class="seat-box">
-        <button class="seat" type="button" data-name="Seat 2 User" data-id="1000033">🪑</button>
-        <div class="seat-name">Seat 2</div>
-      </div>
-
-      <div class="seat-box">
-        <button class="seat" type="button" data-name="Seat 3 User" data-id="1000034">🪑</button>
-        <div class="seat-name">Seat 3</div>
-      </div>
-
-      <div class="seat-box">
-        <button class="seat" type="button" data-name="Seat 4 User" data-id="1000035">🪑</button>
-        <div class="seat-name">Seat 4</div>
-      </div>
-
-      <div class="seat-box">
-        <button class="seat" type="button" data-name="Seat 5 User" data-id="1000036">🪑</button>
-        <div class="seat-name">Seat 5</div>
-      </div>
-
+    <!-- SEAT 2 -->
+    <div>
+      <div class="avatar">👤</div>
+      <div class="user-name">Seat 2</div>
     </div>
 
-    <div class="seat-row">
+    <!-- SEAT 3 -->
+    <div>
+      <div class="avatar">👤</div>
+      <div class="user-name">Seat 3</div>
+    </div>
 
-      <div class="seat-box">
-        <button class="seat" type="button" data-name="Seat 6 User" data-id="1000037">🪑</button>
-        <div class="seat-name">Seat 6</div>
-      </div>
+    <!-- SEAT 4 -->
+    <div>
+      <div class="avatar">👤</div>
+      <div class="user-name">Seat 4</div>
+    </div>
 
-      <div class="seat-box">
-        <button class="seat" type="button" data-name="Seat 7 User" data-id="1000038">🪑</button>
-        <div class="seat-name">Seat 7</div>
-      </div>
+    <!-- SEAT 5 -->
+    <div>
+      <div class="avatar">👤</div>
+      <div class="user-name">Seat 5</div>
+    </div>
 
-      <div class="seat-box">
-        <button class="seat" type="button" data-name="Seat 8 User" data-id="1000039">🪑</button>
-        <div class="seat-name">Seat 8</div>
-      </div>
+    <!-- SEAT 6 -->
+    <div>
+      <div class="avatar">👤</div>
+      <div class="user-name">Seat 6</div>
+    </div>
 
-      <div class="seat-box">
-        <button class="seat" type="button" data-name="Seat 9 User" data-id="1000040">🪑</button>
-        <div class="seat-name">Seat 9</div>
-      </div>
+    <!-- SEAT 7 -->
+    <div>
+      <div class="avatar">👤</div>
+      <div class="user-name">Seat 7</div>
+    </div>
 
+    <!-- SEAT 8 -->
+    <div>
+      <div class="avatar">👤</div>
+      <div class="user-name">Seat 8</div>
+    </div>
+
+    <!-- SEAT 9 -->
+    <div>
+      <div class="avatar">👤</div>
+      <div class="user-name">Seat 9</div>
     </div>
 
   </div>
 
 
   <!-- ROOM INVITE -->
-  <div class="invite-row">
-    <button class="invite" type="button" id="inviteBtn">
-      💌 Room Invite
-    </button>
+  <div class="invite">
+    <button>📨 Room Invite</button>
   </div>
 
 
-  <!-- USER MENU -->
-  <div class="user-menu" id="userMenu">
+  <!-- SETTINGS PANEL -->
+  <div id="settingsPanel" class="panel">
 
-    <div class="user-title" id="selectedUser">
-      User
-    </div>
+    <b>⚙️ Room Setting</b>
 
-    <div class="user-id" id="selectedId">
-      ID: -
-    </div>
-
-    <button class="user-action" type="button" id="adminBtn">
-      👑 Make Admin
-    </button>
-
-    <button class="user-action" type="button" id="muteBtn">
-      🔇 Mute User
-    </button>
-
-    <button class="user-action kick" type="button" id="kickBtn">
-      🚫 Kick User
-    </button>
-
-    <button class="user-action" type="button" id="closeUser">
-      Cancel
-    </button>
-
-  </div>
-
-
-  <!-- SETTINGS -->
-  <div class="settings" id="settings">
-
-    <h3>⚙️ Room Setting</h3>
-
-    <button class="setting-btn" type="button" id="changeName">
-      ✏️ Change Room Name
-    </button>
-
-    <button class="setting-btn" type="button" id="changeNumber">
-      🆔 Change Room Number
-    </button>
-
-    <button class="setting-btn" type="button" id="adminManage">
-      👑 Admin Management
-    </button>
-
-    <button class="setting-btn" type="button">
-      🔒 Room Permission
-    </button>
+    <p style="margin-top:12px;">Change Room Name</p>
+    <p style="margin-top:8px;">Change Room Number</p>
+    <p style="margin-top:8px;">👑 Admin Management</p>
+    <p style="margin-top:8px;">🔒 Room Permission</p>
 
   </div>
 
 
   <!-- EMOJI PANEL -->
-  <div class="panel emoji-panel" id="emojiPanel">
+  <div id="emojiPanel" class="panel">
 
-    <button type="button">😠</button>
-    <button type="button">😢</button>
-    <button type="button">😵</button>
-    <button type="button">🔨</button>
-    <button type="button">😊</button>
-    <button type="button">😘</button>
-    <button type="button">💋</button>
-    <button type="button">😂</button>
-    <button type="button">😴</button>
-    <button type="button">😧</button>
-    <button type="button">😁</button>
-    <button type="button">👻</button>
-    <button type="button">😀</button>
-    <button type="button">🥵</button>
-    <button type="button">🤗</button>
-    <button type="button">❤️</button>
-    <button type="button">💰</button>
-    <button type="button">🥳</button>
-    <button type="button">🥺</button>
-    <button type="button">😡</button>
-    <button type="button">❓</button>
-    <button type="button">🙄</button>
-    <button type="button">🤣</button>
-    <button type="button">😎</button>
-    <button type="button">🤔</button>
-    <button type="button">👍</button>
-    <button type="button">👏</button>
-    <button type="button">🔥</button>
-    <button type="button">🎉</button>
-    <button type="button">😍</button>
+    <div class="emoji-list">
+
+      <button>😠</button>
+      <button>😢</button>
+      <button>😵</button>
+      <button>🔨</button>
+      <button>😊</button>
+      <button>😘</button>
+      <button>💋</button>
+
+      <button>😂</button>
+      <button>😴</button>
+      <button>😧</button>
+      <button>😁</button>
+      <button>👻</button>
+      <button>😀</button>
+      <button>🥵</button>
+
+      <button>🤗</button>
+      <button>❤️</button>
+      <button>💰</button>
+      <button>🥳</button>
+      <button>🥺</button>
+      <button>😡</button>
+      <button>❓</button>
+
+      <button>🙄</button>
+      <button>🤣</button>
+      <button>😎</button>
+      <button>🤔</button>
+      <button>👍</button>
+      <button>👏</button>
+      <button>🔥</button>
+
+    </div>
 
   </div>
 
 
   <!-- GIFT PANEL -->
-  <div class="panel gift-panel" id="giftPanel">
+  <div id="giftPanel" class="panel">
 
-    <button class="gift" type="button"><span>🎁</span>Lucky Gift</button>
-    <button class="gift" type="button"><span>💖</span>Love Gift</button>
-    <button class="gift" type="button"><span>💑</span>CP Gift</button>
-    <button class="gift" type="button"><span>🌹</span>Rose</button>
-    <button class="gift" type="button"><span>💎</span>Diamond</button>
-    <button class="gift" type="button"><span>👑</span>Crown</button>
-    <button class="gift" type="button"><span>🚀</span>Rocket</button>
-    <button class="gift" type="button"><span>🎂</span>Cake</button>
+    <div class="gifts">
 
-  </div>
+      <div class="gift">
+        <span>🌹</span>Rose
+      </div>
 
+      <div class="gift">
+        <span>💎</span>Diamond
+      </div>
 
-  <!-- MORE -->
-  <div class="panel more-panel" id="morePanel">
+      <div class="gift">
+        <span>👑</span>Crown
+      </div>
 
-    <button class="more-item" type="button">↗️ Share</button>
-    <button class="more-item" type="button">👜 Bag</button>
-    <button class="more-item" type="button">👗 Dress</button>
-    <button class="more-item" type="button">🧧 Lucky Packet</button>
-    <button class="more-item" type="button">✨ Effect</button>
+      <div class="gift">
+        <span>🚀</span>Rocket
+      </div>
+
+      <div class="gift">
+        <span>🎂</span>Cake
+      </div>
+
+      <div class="gift">
+        <span>🎁</span>Lucky Gift
+      </div>
+
+      <div class="gift">
+        <span>❤️</span>Love Gift
+      </div>
+
+      <div class="gift">
+        <span>💝</span>CP Gift
+      </div>
+
+    </div>
 
   </div>
 
@@ -594,26 +458,53 @@ body{
   <!-- BOTTOM -->
   <div class="bottom">
 
-    <div class="message-row">
+    <div class="message">
 
       <input
-        class="message"
-        id="message"
         type="text"
+        id="messageInput"
         placeholder="Message..."
       >
 
-      <button class="action" type="button" id="emojiBtn">😄</button>
+      <button class="send">
+        ➤
+      </button>
 
-      <button class="action" type="button" id="speakerBtn">🔊</button>
+    </div>
 
-      <button class="action" type="button" id="micBtn">🎙️</button>
 
-      <button class="action" type="button" id="inboxBtn">📥</button>
+    <div class="controls">
 
-      <button class="action" type="button" id="moreBtn">⋯</button>
+      <!-- ONLY ONE EMOJI -->
+      <button id="emojiBtn">
+        😄
+        <small>Emoji</small>
+      </button>
 
-      <button class="action gift-btn" type="button" id="giftBtn">🎁</button>
+      <button id="speakerBtn">
+        🔊
+        <small>Speaker</small>
+      </button>
+
+      <button id="micBtn">
+        🎙️
+        <small>Mic</small>
+      </button>
+
+      <button>
+        📥
+        <small>Inbox</small>
+      </button>
+
+      <button>
+        ⋯
+        <small>More</small>
+      </button>
+
+      <button id="giftBtn">
+        🎁
+        <small>Gift</small>
+      </button>
 
     </div>
 
@@ -623,166 +514,95 @@ body{
 
 
 <script>
-const emojiPanel = document.getElementById("emojiPanel");
-const giftPanel = document.getElementById("giftPanel");
-const morePanel = document.getElementById("morePanel");
-const settings = document.getElementById("settings");
-const userMenu = document.getElementById("userMenu");
 
-function closePanels(){
-  emojiPanel.style.display="none";
-  giftPanel.style.display="none";
-  morePanel.style.display="none";
-}
+const emojiBtn =
+document.getElementById("emojiBtn");
 
-document.getElementById("emojiBtn").addEventListener("click",()=>{
-  closePanels();
-  emojiPanel.style.display =
-    emojiPanel.style.display==="grid" ? "none" : "grid";
-});
+const emojiPanel =
+document.getElementById("emojiPanel");
 
-document.getElementById("giftBtn").addEventListener("click",()=>{
-  closePanels();
-  giftPanel.style.display =
-    giftPanel.style.display==="grid" ? "none" : "grid";
-});
+const giftBtn =
+document.getElementById("giftBtn");
 
-document.getElementById("moreBtn").addEventListener("click",()=>{
-  closePanels();
-  morePanel.style.display =
-    morePanel.style.display==="block" ? "none" : "block";
-});
+const giftPanel =
+document.getElementById("giftPanel");
 
-document.getElementById("speakerBtn").addEventListener("click",e=>{
-  e.currentTarget.textContent =
-    e.currentTarget.textContent==="🔊" ? "🔇" : "🔊";
-});
+const settingsBtn =
+document.getElementById("settingsBtn");
 
-document.getElementById("micBtn").addEventListener("click",e=>{
-  e.currentTarget.textContent =
-    e.currentTarget.textContent==="🎙️" ? "🔇" : "🎙️";
-});
+const settingsPanel =
+document.getElementById("settingsPanel");
+
+const micBtn =
+document.getElementById("micBtn");
+
+const speakerBtn =
+document.getElementById("speakerBtn");
 
 
-/* USER CLICK = ADMIN/KICK */
-document.querySelectorAll(".seat").forEach(seat=>{
-  seat.addEventListener("click",()=>{
+emojiBtn.onclick = function(){
 
-    document.getElementById("selectedUser").textContent =
-      seat.dataset.name;
+  emojiPanel.classList.toggle("active");
 
-    document.getElementById("selectedId").textContent =
-      "🆔 ID: "+seat.dataset.id;
+  giftPanel.classList.remove("active");
 
-    userMenu.style.display="block";
-    settings.style.display="none";
-    closePanels();
-  });
-});
+  settingsPanel.classList.remove("active");
 
-document.getElementById("closeUser").addEventListener("click",()=>{
-  userMenu.style.display="none";
-});
-
-document.getElementById("adminBtn").addEventListener("click",()=>{
-  alert(
-    document.getElementById("selectedUser").textContent+
-    " ko Admin banaya gaya."
-  );
-  userMenu.style.display="none";
-});
-
-document.getElementById("muteBtn").addEventListener("click",()=>{
-  alert(
-    document.getElementById("selectedUser").textContent+
-    " mute kiya gaya."
-  );
-});
-
-document.getElementById("kickBtn").addEventListener("click",()=>{
-  alert(
-    document.getElementById("selectedUser").textContent+
-    " ko room se Kick kiya gaya."
-  );
-  userMenu.style.display="none";
-});
+};
 
 
-/* ROOM SETTING */
-document.getElementById("settingBtn").addEventListener("click",()=>{
-  closePanels();
-  userMenu.style.display="none";
+giftBtn.onclick = function(){
 
-  settings.style.display =
-    settings.style.display==="block" ? "none" : "block";
-});
+  giftPanel.classList.toggle("active");
 
-document.getElementById("changeName").addEventListener("click",()=>{
-  const name=prompt(
-    "New Room Name",
-    document.getElementById("roomName").textContent.trim()
-  );
+  emojiPanel.classList.remove("active");
 
-  if(name && name.trim()){
-    document.getElementById("roomName").textContent=name.trim();
+  settingsPanel.classList.remove("active");
+
+};
+
+
+settingsBtn.onclick = function(){
+
+  settingsPanel.classList.toggle("active");
+
+  emojiPanel.classList.remove("active");
+
+  giftPanel.classList.remove("active");
+
+};
+
+
+micBtn.onclick = function(){
+
+  if(micBtn.innerText.includes("🎙️")){
+
+    micBtn.innerHTML = "🔇<small>Mic OFF</small>";
+
+  }else{
+
+    micBtn.innerHTML = "🎙️<small>Mic</small>";
+
   }
-});
 
-document.getElementById("changeNumber").addEventListener("click",()=>{
-  const number=prompt("New Room Number");
+};
 
-  if(number && number.trim()){
-    document.getElementById("roomNumber").textContent =
-      "🆔 "+number.trim();
+
+speakerBtn.onclick = function(){
+
+  if(speakerBtn.innerText.includes("🔊")){
+
+    speakerBtn.innerHTML = "🔇<small>Speaker OFF</small>";
+
+  }else{
+
+    speakerBtn.innerHTML = "🔊<small>Speaker</small>";
+
   }
-});
 
-document.getElementById("adminManage").addEventListener("click",()=>{
-  alert("Admin Management: user select karke Make Admin / Remove Admin.");
-});
+};
 
-
-/* INVITE */
-document.getElementById("inviteBtn").addEventListener("click",()=>{
-  alert("Room Invite link yahan share hoga.");
-});
-
-
-/* INBOX */
-document.getElementById("inboxBtn").addEventListener("click",()=>{
-  alert("Inbox opened.");
-});
-
-
-/* EMOJI */
-document.querySelectorAll(".emoji-panel button").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    const emoji=btn.textContent;
-    const input=document.getElementById("message");
-
-    input.value += emoji;
-    input.focus();
-
-    emojiPanel.style.display="none";
-  });
-});
-
-
-/* MESSAGE */
-document.getElementById("message").addEventListener("keydown",e=>{
-  if(e.key==="Enter"){
-
-    const text=e.currentTarget.value.trim();
-
-    if(!text) return;
-
-    alert("Message sent: "+text);
-
-    e.currentTarget.value="";
-  }
-});
 </script>
 
 </body>
 </html>
-```
