@@ -921,6 +921,19 @@ input,select,textarea{
 
    <div
     class="menuItem"
+    onclick="openDetail('entryDetail')">
+
+    <span>✨</span>
+
+    <small>
+     Entry Effect
+    </small>
+
+   </div>
+
+
+   <div
+    class="menuItem"
     onclick="openDetail('giftDetail')">
 
     <span>
@@ -1176,7 +1189,7 @@ input,select,textarea{
 
    <p style="color:#aaa">
 
-    CP Level 1 से 30 तक हर level पर reward मिलेगा।
+    CP Level 1 से 100 तक milestone rewards मिलेंगे। Level 2 = 1 लाख, Level 3 = 3 लाख, Level 5 = 5 लाख + Frame + Entry + VIP.
     जिस level का reward unlock होगा, वहाँ Claim दिखाई देगा।
 
    </p>
@@ -1215,15 +1228,7 @@ input,select,textarea{
    </p>
 
    <div id="bagItems">
-
-    🎁 Gifts: 0
-    <br><br>
-
-    🖼️ Frames: 0
-    <br><br>
-
-    ✨ Effects: 0
-
+    Loading inventory...
    </div>
 
   </div>
@@ -1473,6 +1478,36 @@ input,select,textarea{
 
 
  <!-- GIFTS -->
+
+ <div
+  id="entryDetail"
+  class="detail">
+
+  <button
+   class="back"
+   onclick="closeDetails()">
+   ← Profile
+  </button>
+
+  <div class="card">
+   <h2>✨ Entry Effect</h2>
+   <p style="color:#aaa">CP reward से मिली Entry यहाँ चुनें।</p>
+
+   <button class="btn" onclick="selectEntry('Level 5 Entry')">
+    ✨ Level 5 Entry
+   </button>
+
+   <button class="gray" onclick="selectEntry('Level 10 Entry')">
+    ✨ Level 10 Entry
+   </button>
+
+   <button class="gold" onclick="selectEntry('Royal Entry')">
+    👑 Royal Entry
+   </button>
+
+   <p id="entryStatus"></p>
+  </div>
+ </div>
 
  <div
   id="giftDetail"
@@ -2034,6 +2069,23 @@ function showPage(id){
 /* =====================================================
  PROFILE DETAIL
 ===================================================== */
+
+function renderInventory(){
+ const box = document.getElementById("bagItems");
+ if(!box){ return; }
+
+ const inv = getInventory();
+
+ box.innerHTML = `
+  🖼️ <b>Frames:</b> ${inv.frames.length ? inv.frames.map(escapeHTML).join(", ") : "0"}
+  <br><br>
+  ✨ <b>Entry:</b> ${inv.entries.length ? inv.entries.map(escapeHTML).join(", ") : "0"}
+  <br><br>
+  👑 <b>VIP Rewards:</b> ${inv.vipLevels.length ? inv.vipLevels.join(", ") : "0"}
+  <br><br>
+  🎁 <b>Gifts:</b> 0
+ `;
+}
 
 function openDetail(id){
 
@@ -2799,50 +2851,58 @@ function joinRoom(roomId){
  CP REWARDS
 ===================================================== */
 
-const cpRewards = [
-
- {level:1,reward:"🪙 100 Coins"},
- {level:2,reward:"🎁 Small Gift"},
- {level:3,reward:"🖼️ Basic Frame"},
- {level:4,reward:"🪙 200 Coins"},
- {level:5,reward:"✨ Entry Effect"},
-
- {level:6,reward:"🎁 Love Gift"},
- {level:7,reward:"🪙 300 Coins"},
- {level:8,reward:"🖼️ Heart Frame"},
- {level:9,reward:"🎁 Premium Gift"},
- {level:10,reward:"✨ Entry Effect"},
-
- {level:11,reward:"🪙 400 Coins"},
- {level:12,reward:"🎁 Rose Gift"},
- {level:13,reward:"🖼️ Silver Frame"},
- {level:14,reward:"🪙 500 Coins"},
- {level:15,reward:"✨ Special Entry"},
-
- {level:16,reward:"🎁 Diamond Gift"},
- {level:17,reward:"🪙 600 Coins"},
- {level:18,reward:"🖼️ Diamond Frame"},
- {level:19,reward:"🎁 Crown Gift"},
- {level:20,reward:"✨ Royal Entry"},
-
- {level:21,reward:"🪙 800 Coins"},
- {level:22,reward:"🎁 Luxury Gift"},
- {level:23,reward:"🖼️ Royal Frame"},
- {level:24,reward:"🪙 1000 Coins"},
- {level:25,reward:"✨ Royal Effect"},
-
- {level:26,reward:"🎁 Rare Gift"},
- {level:27,reward:"🪙 1500 Coins"},
- {level:28,reward:"🖼️ Rare Frame"},
- {level:29,reward:"🚀 Special Entry"},
- {level:30,reward:"👑 CP Level 30 Special Reward"}
-
+const cpRewardMilestones = [
+  {level:1,  coins:0,       extras:"🎁 Starter Reward"},
+  {level:2,  coins:100000,  extras:"🪙 1 Lakh Coins"},
+  {level:3,  coins:300000,  extras:"🪙 3 Lakh Coins"},
+  {level:5,  coins:500000,  extras:"🖼️ Frame + ✨ Entry + 👑 VIP"},
+  {level:8,  coins:800000,  extras:"🎁 Special Gift"},
+  {level:10, coins:1000000, extras:"🖼️ Premium Frame + ✨ Entry + 👑 VIP"},
+  {level:12, coins:1200000, extras:"🎁 Premium Gift"},
+  {level:15, coins:1500000, extras:"🖼️ Royal Frame + ✨ Royal Entry + 👑 VIP"},
+  {level:17, coins:1700000, extras:"🎁 Diamond Gift"},
+  {level:20, coins:2000000, extras:"🖼️ Diamond Frame + ✨ Entry + 👑 VIP"},
+  {level:23, coins:2300000, extras:"🎁 Crown Gift"},
+  {level:25, coins:2500000, extras:"🖼️ Royal Frame + ✨ Royal Entry + 👑 VIP"},
+  {level:27, coins:2700000, extras:"🎁 Rare Gift"},
+  {level:30, coins:3000000, extras:"👑 VIP + 🖼️ Special Frame + ✨ Special Entry"},
+  {level:35, coins:3500000, extras:"🎁 Luxury Gift"},
+  {level:40, coins:4000000, extras:"🖼️ Elite Frame + ✨ Elite Entry + 👑 VIP"},
+  {level:45, coins:4500000, extras:"🎁 Diamond Gift"},
+  {level:50, coins:5000000, extras:"👑 VIP + 🖼️ Diamond Frame + ✨ Entry"},
+  {level:55, coins:5500000, extras:"🎁 Royal Gift"},
+  {level:60, coins:6000000, extras:"🖼️ Royal Frame + ✨ Royal Entry + 👑 VIP"},
+  {level:65, coins:6500000, extras:"🎁 Luxury Gift"},
+  {level:70, coins:7000000, extras:"🖼️ Elite Frame + ✨ Elite Entry + 👑 VIP"},
+  {level:75, coins:7500000, extras:"🎁 Rare Gift + 👑 VIP"},
+  {level:80, coins:8000000, extras:"🖼️ Diamond Frame + ✨ Diamond Entry + 👑 VIP"},
+  {level:85, coins:8500000, extras:"🎁 Crown Gift"},
+  {level:90, coins:9000000, extras:"🖼️ Royal Frame + ✨ Royal Entry + 👑 VIP"},
+  {level:95, coins:9500000, extras:"🎁 Special Gift + 👑 VIP"},
+  {level:100,coins:10000000,extras:"🏆 MAX LEVEL + 👑 VIP + 🖼️ Legendary Frame + ✨ Legendary Entry"}
 ];
 
+function getCPRewardForLevel(level){
+  return cpRewardMilestones.find(function(item){
+    return item.level === level;
+  }) || null;
+}
 
+function formatIndianCoins(n){
+  return Number(n || 0).toLocaleString("en-IN");
+}
+
+function getNextCPMilestone(level){
+  return cpRewardMilestones.find(function(item){
+    return item.level > level;
+  }) || null;
+}
 
 /* =====================================================
  CP LEVEL
+===================================================== */
+
+
 ===================================================== */
 
 function getCPLevel(cp){
@@ -2862,8 +2922,8 @@ function getCPLevel(cp){
  }
 
 
- if(level > 30){
-  level = 30;
+ if(level > 100){
+  level = 100;
  }
 
 
@@ -2964,7 +3024,7 @@ function renderCP(){
  let progress;
 
 
- if(level >= 30){
+ if(level >= 100){
 
   progress =
    100;
@@ -2991,7 +3051,7 @@ function renderCP(){
    "cpProgressText"
   )
   .innerText =
-   level >= 30
+   level >= 100
     ? cp +
       " CP · MAX LEVEL"
     : progress +
@@ -3053,138 +3113,46 @@ function changeCPType(type){
 
 function renderCPRewards(){
 
- const box =
-  document.getElementById(
-   "cpRewards"
-  );
+ const box = document.getElementById("cpRewards");
+ if(!box){ return; }
 
+ const currentLevel = getCPLevel(getCurrentCP());
+ box.innerHTML = "";
 
- if(!box){
-  return;
- }
+ cpRewardMilestones.forEach(function(item){
 
+  const unlocked = currentLevel >= item.level;
+  const rewardKey = cpType + "_milestone_reward_" + item.level;
+  const claimed = localProfile.claimedRewards.includes(rewardKey);
 
- const currentLevel =
-  getCPLevel(
-   getCurrentCP()
-  );
+  const row = document.createElement("div");
+  row.className = "rewardRow";
 
+  const coinText = item.coins > 0
+    ? "🪙 " + formatIndianCoins(item.coins) + " Coins"
+    : "🎁 Starter Reward";
 
- box.innerHTML =
-  "";
+  row.innerHTML = `
+   <div class="rewardLevel">${item.level}</div>
 
+   <div class="rewardInfo">
+    <b>Level ${item.level}</b>
+    <div>${coinText}</div>
+    <small>${escapeHTML(item.extras)} · ${unlocked ? "Unlocked" : "Locked"}</small>
+   </div>
 
- cpRewards.forEach(
-  function(item){
-
-   const unlocked =
-    currentLevel >=
-    item.level;
-
-
-   const rewardKey =
-    cpType +
-    "_reward_" +
-    item.level;
-
-
-   const claimed =
-    localProfile
-    .claimedRewards
-    .includes(
-     rewardKey
-    );
-
-
-   const row =
-    document.createElement(
-     "div"
-    );
-
-
-   row.className =
-    "rewardRow";
-
-
-   row.innerHTML = `
-
-    <div class="rewardLevel">
-     ${item.level}
-    </div>
-
-
-    <div class="rewardInfo">
-
-     <b>
-      ${item.reward}
-     </b>
-
-     <small>
-
-      CP Level
-      ${item.level}
-
-      ·
-
-      ${
-       unlocked
-        ? "Unlocked"
-        : "Locked"
-      }
-
-     </small>
-
-    </div>
-
-
-    ${
+   ${
      claimed
+     ? `<button class="claimed" disabled>Claimed</button>`
+     : unlocked
+     ? `<button class="green" onclick="claimCPReward(${item.level})">Claim</button>`
+     : `<button class="gray" disabled>Locked</button>`
+   }
+  `;
 
-      ? `
-       <button
-        class="claimed"
-        disabled>
-        Claimed
-       </button>
-      `
-
-      : unlocked
-
-      ? `
-       <button
-        class="green"
-        onclick="
-        claimCPReward(
-         ${item.level}
-        )">
-
-        Claim
-
-       </button>
-      `
-
-      : `
-       <button
-        class="gray"
-        disabled>
-
-        Locked
-
-       </button>
-      `
-    }
-
-   `;
-
-
-   box.appendChild(row);
-
-  }
- );
-
+  box.appendChild(row);
+ });
 }
-
-
 
 /* =====================================================
  SEND CP REQUEST
@@ -3941,135 +3909,78 @@ function openCPPartner(userId){
 
 function claimCPReward(level){
 
- const currentLevel =
-  getCPLevel(
-   getCurrentCP()
-  );
-
+ const currentLevel = getCPLevel(getCurrentCP());
 
  if(level > currentLevel){
-
-  alert(
-   "यह reward अभी locked है."
-  );
-
-  return;
-
- }
-
-
- const reward =
-  cpRewards.find(
-   function(item){
-
-    return item.level ===
-     level;
-
-   }
-  );
-
-
- if(!reward){
+  alert("यह reward अभी locked है.");
   return;
  }
 
+ const reward = getCPRewardForLevel(level);
+ if(!reward){ return; }
 
- const rewardKey =
-  cpType +
-  "_reward_" +
-  level;
+ const rewardKey = cpType + "_milestone_reward_" + level;
 
-
- if(
-  localProfile
-  .claimedRewards
-  .includes(
-   rewardKey
-  )
- ){
-
-  alert(
-   "Reward already claimed."
-  );
-
+ if(localProfile.claimedRewards.includes(rewardKey)){
+  alert("Reward already claimed.");
   return;
-
  }
 
+ localProfile.claimedRewards.push(rewardKey);
 
- localProfile
-  .claimedRewards
-  .push(
-   rewardKey
-  );
-
-
- if(
-  reward.reward
-  .includes("Coins")
- ){
-
-  const match =
-   reward.reward
-   .match(/\d+/);
-
-
-  if(match){
-
-   localProfile.coins +=
-    Number(
-     match[0]
-    );
-
-  }
-
+ if(reward.coins > 0){
+  localProfile.coins += reward.coins;
  }
 
-
- if(myId){
-
-  db.ref(
-   "users/" +
-   myId +
-   "/cpRewards/" +
-   rewardKey
-  )
-  .set({
-
-   level:
-    level,
-
-   type:
-    cpType,
-
-   reward:
-    reward.reward,
-
-   claimedAt:
-    Date.now()
-
-  });
-
- }
-
-
- saveLocal();
-
- saveUserToFirebase();
-
- updateProfileUI();
-
- renderCP();
-
-
- alert(
-  "🎁 Reward Claimed!\n\n" +
-  reward.reward
+ // Inventory flags: user can use these later in room/profile.
+ const inventory = JSON.parse(
+  localStorage.getItem("pawanInventory") || "{}"
  );
 
+ inventory.entries = inventory.entries || [];
+ inventory.frames = inventory.frames || [];
+ inventory.vipLevels = inventory.vipLevels || [];
+
+ if(reward.extras.includes("Frame")){
+  inventory.frames.push("Level " + level + " Frame");
+ }
+
+ if(reward.extras.includes("Entry")){
+  inventory.entries.push("Level " + level + " Entry");
+ }
+
+ if(reward.extras.includes("VIP")){
+  inventory.vipLevels.push(level);
+ }
+
+ localStorage.setItem("pawanInventory", JSON.stringify(inventory));
+
+ if(myId){
+  db.ref("users/" + myId + "/cpRewards/" + rewardKey).set({
+   level: level,
+   type: cpType,
+   coins: reward.coins,
+   extras: reward.extras,
+   claimedAt: Date.now()
+  });
+
+  db.ref("users/" + myId).update({
+   coins: localProfile.coins,
+   inventory: inventory
+  });
+ }
+
+ saveLocal();
+ saveUserToFirebase();
+ updateProfileUI();
+ renderCP();
+
+ alert(
+  "🎁 Reward Claimed!\\n\\n" +
+  (reward.coins > 0 ? "🪙 " + formatIndianCoins(reward.coins) + " Coins\\n" : "") +
+  reward.extras
+ );
 }
-
-
 
 /* =====================================================
  INBOX
@@ -4460,57 +4371,68 @@ function sendPrivateMessage(){
  PROFILE OPTIONS
 ===================================================== */
 
-function selectDress(name){
-
- document
-  .getElementById(
-   "dressStatus"
-  )
-  .innerText =
-   "Selected Dress: " +
-   name;
-
+function getInventory(){
+ return JSON.parse(localStorage.getItem("pawanInventory") || '{"frames":[],"entries":[],"vipLevels":[]}');
 }
 
+function saveInventory(inv){
+ localStorage.setItem("pawanInventory", JSON.stringify(inv));
+ if(myId){
+  db.ref("users/" + myId + "/inventory").set(inv);
+ }
+}
+
+function selectDress(name){
+ document.getElementById("dressStatus").innerText =
+  "Selected Dress: " + name + " ✅";
+ localStorage.setItem("pawanDress", name);
+}
 
 function selectVehicle(name){
-
- document
-  .getElementById(
-   "vehicleStatus"
-  )
-  .innerText =
-   "Selected Vehicle: " +
-   name;
-
+ document.getElementById("vehicleStatus").innerText =
+  "Selected Vehicle: " + name + " ✅";
+ localStorage.setItem("pawanVehicle", name);
 }
-
 
 function selectFrame(name){
+ const inv = getInventory();
 
- document
-  .getElementById(
-   "frameStatus"
-  )
-  .innerText =
-   "Selected Frame: " +
-   name;
+ if(name !== "Basic Frame" && !inv.frames.includes(name) && !inv.frames.some(function(x){return String(x).includes(name);})){
+  alert("यह Frame अभी आपकी Bag में unlock नहीं है। पहले CP reward Claim करें।");
+  return;
+ }
 
+ localStorage.setItem("pawanFrame", name);
+ document.getElementById("frameStatus").innerText =
+  "✅ Selected Frame: " + name + " — अब user profile पर लगेगा।";
+
+ const avatar = document.getElementById("profileAvatar");
+ if(avatar){
+  avatar.style.border = "3px solid #f59e0b";
+ }
 }
 
+function selectEntry(name){
+ const inv = getInventory();
+
+ if(!inv.entries.some(function(x){return String(x).includes(name);})){
+  alert("यह Entry अभी आपकी Bag में unlock नहीं है। पहले CP reward Claim करें।");
+  return;
+ }
+
+ localStorage.setItem("pawanEntry", name);
+
+ const status = document.getElementById("entryStatus");
+ if(status){
+  status.innerText = "✅ Selected Entry: " + name;
+ }
+}
 
 function setBadge(name){
-
- document
-  .getElementById(
-   "badgeStatus"
-  )
-  .innerText =
-   "Selected Badge: " +
-   name;
-
+ document.getElementById("badgeStatus").innerText =
+  "Selected Badge: " + name + " ✅";
+ localStorage.setItem("pawanBadge", name);
 }
-
 
 function showVIPInfo(){
 
@@ -4767,4 +4689,4 @@ loadInbox();
 </script>
 
 </body>
-    </html>
+   </html>
