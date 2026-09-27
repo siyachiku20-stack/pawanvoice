@@ -2,493 +2,368 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>PawanVoice Room</title>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
+*{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#100d1b;
-  color:#fff;
-  overflow-x:hidden;
+ margin:0;
+ background:#120d20;
+ color:#fff;
+ font-family:Arial,sans-serif;
 }
-button,input,textarea,select{
-  font:inherit;
-}
-button{
-  border:0;
-  color:#fff;
-  cursor:pointer;
-}
+button,input{font:inherit}
+button{cursor:pointer}
 .top{
-  position:sticky;
-  top:0;
-  z-index:50;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  padding:10px;
-  background:#181329;
-  border-bottom:1px solid #342c4d;
-}
-.roomHead{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  min-width:0;
-}
-.roomDp{
-  width:48px;
-  height:48px;
-  border-radius:50%;
-  object-fit:cover;
-  background:#30284a;
-  border:2px solid #8f70ff;
-}
-.roomTitle{
-  min-width:0;
-}
-.roomTitle b{
-  display:block;
-  font-size:16px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.roomTitle small{
-  display:block;
-  color:#b9b1ce;
-  margin-top:3px;
-  font-size:11px;
-}
-.headBtns{
-  display:flex;
-  gap:5px;
-}
-.iconBtn{
-  width:38px;
-  height:38px;
-  border-radius:12px;
-  background:#29213e;
-  font-size:18px;
-}
-.iconBtn:active,.bottomBtn:active,.actionBtn:active{
-  transform:scale(.94);
-}
-
-.roomBody{
-  min-height:calc(100vh - 160px);
-  padding:12px 9px 125px;
-  background:
-    radial-gradient(circle at 50% 20%,#30204f 0,#100d1b 48%);
+ padding:12px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ background:#211735;
+ border-bottom:1px solid #392750;
 }
 .roomInfo{
-  text-align:center;
-  margin-bottom:10px;
+ display:flex;
+ align-items:center;
+ gap:10px;
+ min-width:0;
 }
-.roomInfo h2{
-  margin:4px 0;
-  font-size:19px;
+.roomDp{
+ width:48px;height:48px;border-radius:50%;
+ object-fit:cover;
+ border:2px solid #e7b7ff;
 }
-.roomInfo p{
-  margin:2px;
-  color:#aaa0bd;
-  font-size:11px;
+.roomTitle{min-width:0}
+.roomTitle b{
+ display:block;
+ font-size:16px;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis;
+}
+.roomTitle span{
+ display:block;
+ color:#bcaecc;
+ font-size:11px;
+ margin-top:3px;
+}
+.topBtns{
+ display:flex;
+ gap:5px;
+}
+.topBtns button{
+ width:38px;height:38px;
+ border:0;
+ border-radius:12px;
+ background:#332348;
+ color:#fff;
 }
 
-.seats{
-  max-width:520px;
-  margin:auto;
+.main{padding:16px 10px 100px}
+
+.ownerBox{
+ text-align:center;
+ margin-bottom:20px;
 }
-.ownerRow{
-  display:flex;
-  justify-content:center;
-  margin:12px 0 20px;
+.ownerSeat{
+ margin:auto;
+ width:92px;
+ min-height:112px;
+ padding:7px;
+ border-radius:18px;
+ background:#251a38;
+ border:2px solid #d6a3ff;
 }
-.seatRow{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:9px;
-  margin-bottom:20px;
+.ownerSeat .avatar{
+ width:58px;height:58px;
+ margin:auto;
 }
-.seat{
-  min-width:0;
-  text-align:center;
-  position:relative;
+.avatar{
+ border-radius:50%;
+ background:#44315a;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:25px;
+ overflow:hidden;
+ position:relative;
 }
-.seatCircle{
-  width:66px;
-  height:66px;
-  margin:auto;
-  position:relative;
-  border-radius:50%;
-  padding:3px;
-  background:#29233c;
-  border:2px dashed #63567e;
+.avatar img{
+ width:100%;height:100%;
+ object-fit:cover;
 }
-.seatCircle img{
-  width:100%;
-  height:100%;
-  border-radius:50%;
-  object-fit:cover;
+.name{
+ margin-top:5px;
+ font-size:11px;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis;
 }
-.emptyCircle{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#837a96;
-  font-size:27px;
-}
-.owner .seatCircle{
-  width:82px;
-  height:82px;
-  border:3px solid #f0bd58;
-  box-shadow:0 0 18px #b9792e88;
-}
-.seatName{
-  margin-top:6px;
-  font-size:11px;
-  font-weight:bold;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-.seatId{
-  color:#9e96ae;
-  font-size:9px;
-  margin-top:2px;
-}
-.seatMeta{
-  font-size:9px;
-  color:#c7bdd7;
-  margin-top:2px;
+.uid{
+ font-size:9px;
+ color:#a99ab7;
 }
 .vip{
-  position:absolute;
-  right:-5px;
-  top:-4px;
-  background:#d49a25;
-  border-radius:8px;
-  padding:2px 4px;
-  font-size:8px;
-  font-weight:bold;
+ display:inline-block;
+ font-size:8px;
+ background:#d39b20;
+ color:#241500;
+ border-radius:6px;
+ padding:2px 5px;
+ margin-top:3px;
 }
 .micDot{
-  position:absolute;
-  left:-2px;
-  bottom:2px;
-  width:20px;
-  height:20px;
-  border-radius:50%;
-  background:#241d35;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:10px;
+ font-size:10px;
+ margin-top:3px;
 }
-.speaking .seatCircle{
-  box-shadow:0 0 0 3px #39df7d,0 0 22px #39df7d99;
+
+.seatGrid{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:12px 7px;
+ max-width:430px;
+ margin:auto;
 }
-.frameGold{
-  border-color:#e7b84d!important;
-  box-shadow:0 0 18px #e7b84d77;
+.seat{
+ text-align:center;
+ min-width:0;
 }
-.frameRed{
-  border-color:#ed5269!important;
-  box-shadow:0 0 18px #ed526977;
+.seatInner{
+ background:#211631;
+ border:1px solid #3b2a4d;
+ border-radius:15px;
+ padding:7px 4px;
+ min-height:92px;
 }
-.frameBlue{
-  border-color:#4e9dff!important;
-  box-shadow:0 0 18px #4e9dff77;
+.seatInner.locked{
+ border-color:#8c5555;
 }
-.framePurple{
-  border-color:#a875ff!important;
-  box-shadow:0 0 18px #a875ff77;
+.seatAvatar{
+ width:48px;height:48px;
+ margin:auto;
+}
+.empty{
+ color:#796b86;
+ font-size:25px;
+}
+.seatNo{
+ font-size:8px;
+ color:#82738f;
+ margin-top:3px;
+}
+.speaking{
+ box-shadow:0 0 0 3px #61e58b;
 }
 
 .bottom{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  z-index:60;
-  background:#171226;
-  border-top:1px solid #362d4e;
-  padding:7px 7px calc(7px + env(safe-area-inset-bottom));
+ position:fixed;
+ left:0;right:0;bottom:0;
+ padding:9px;
+ background:#1c1429;
+ border-top:1px solid #38264b;
+ z-index:20;
 }
-.chatLine{
-  display:flex;
-  gap:6px;
-  margin-bottom:7px;
+.chatRow{
+ display:flex;
+ gap:7px;
 }
-.chatInput{
-  flex:1;
-  min-width:0;
-  border:1px solid #403655;
-  background:#241d34;
-  color:white;
-  border-radius:18px;
-  padding:10px 13px;
-  outline:none;
+.chatRow input{
+ flex:1;
+ min-width:0;
+ background:#30203f;
+ color:#fff;
+ border:0;
+ border-radius:20px;
+ padding:11px 14px;
+ outline:none;
 }
-.sendBtn{
-  width:45px;
-  border-radius:17px;
-  background:#7653df;
+.iconBtn{
+ width:43px;height:43px;
+ border:0;
+ border-radius:50%;
+ background:#39264c;
+ color:#fff;
 }
-.bottomBtns{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:5px;
-}
-.bottomBtn{
-  background:#241d34;
-  border-radius:13px;
-  padding:7px 2px;
-  font-size:18px;
-}
-.bottomBtn small{
-  display:block;
-  font-size:8px;
-  color:#b9b1ca;
-  margin-top:2px;
-}
-
-.overlay{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:100;
-  background:#0009;
-  align-items:flex-end;
-}
-.sheet{
-  width:100%;
-  max-height:88vh;
-  overflow:auto;
-  background:#19142a;
-  border-radius:22px 22px 0 0;
-  padding:15px;
-  border-top:1px solid #4b4063;
-}
-.sheetHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-.sheetHead h3{
-  margin:0;
-}
-.close{
-  width:35px;
-  height:35px;
-  border-radius:50%;
-  background:#302744;
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:9px;
-}
-.actionBtn{
-  background:#28213a;
-  border-radius:15px;
-  padding:12px 5px;
-  min-height:70px;
-}
-.actionBtn .ico{
-  font-size:24px;
-  display:block;
-}
-.actionBtn small{
-  color:#c8c0d4;
-  font-size:9px;
-  display:block;
-  margin-top:5px;
-}
-.card{
-  background:#251e36;
-  border:1px solid #3b3150;
-  border-radius:15px;
-  padding:12px;
-  margin-bottom:9px;
-}
-.card b{
-  display:block;
-  margin-bottom:5px;
-}
-.row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-}
-.fullBtn{
-  width:100%;
-  padding:12px;
-  border-radius:13px;
-  background:#7350dc;
-  margin-top:8px;
-}
-.danger{
-  background:#9f3148;
-}
-input,textarea,select{
-  width:100%;
-  background:#241d35;
-  color:white;
-  border:1px solid #45395c;
-  border-radius:12px;
-  padding:11px;
-  outline:none;
-}
-textarea{
-  min-height:90px;
-  resize:none;
-}
-.chatMsg{
-  padding:8px 10px;
-  border-radius:11px;
-  background:#27203a;
-  margin:6px 0;
-  font-size:12px;
-}
-.chatMsg b{
-  color:#c29cff;
-}
-.userCard{
-  text-align:center;
-}
-.userBigDp{
-  width:82px;
-  height:82px;
-  border-radius:50%;
-  object-fit:cover;
-  border:3px solid #8060e8;
-}
-.coin{
-  color:#ffd35a;
+.iconBtn.active{
+ background:#7d42b8;
 }
 .status{
-  text-align:center;
-  font-size:11px;
-  color:#aaa1b8;
-  padding:5px;
+ text-align:center;
+ font-size:11px;
+ color:#aaa0b2;
+ margin-top:5px;
+}
+
+.panel{
+ display:none;
+ position:fixed;
+ left:10px;right:10px;
+ bottom:70px;
+ max-height:70%;
+ overflow:auto;
+ background:#21172e;
+ border:1px solid #49335c;
+ border-radius:18px;
+ padding:15px;
+ z-index:30;
+}
+.panel.show{display:block}
+.panel h3{margin:0 0 12px}
+.item{
+ padding:12px;
+ background:#30213e;
+ border-radius:12px;
+ margin-bottom:8px;
+}
+.close{
+ float:right;
+ background:#432b52;
+ border:0;
+ color:#fff;
+ border-radius:8px;
+ padding:5px 9px;
+}
+.giftGrid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:8px;
+}
+.gift{
+ padding:12px 5px;
+ text-align:center;
+ background:#30213e;
+ border:0;
+ border-radius:12px;
+ color:#fff;
+}
+.chatMsg{
+ padding:7px 0;
+ border-bottom:1px solid #352543;
+ font-size:12px;
 }
 .toast{
-  position:fixed;
-  left:50%;
-  bottom:125px;
-  transform:translateX(-50%);
-  z-index:300;
-  background:#302844;
-  padding:10px 15px;
-  border-radius:20px;
-  display:none;
-  font-size:12px;
-}
-@media(max-width:360px){
-  .grid{grid-template-columns:repeat(3,1fr)}
-  .seatCircle{width:57px;height:57px}
+ position:fixed;
+ left:50%;
+ transform:translateX(-50%);
+ top:70px;
+ background:#000d;
+ padding:10px 16px;
+ border-radius:20px;
+ display:none;
+ z-index:100;
+ font-size:12px;
 }
 </style>
 </head>
 
 <body>
 
-<header class="top">
-  <div class="roomHead">
-    <img id="roomDpImg" class="roomDp" src="" onclick="openRoomDp()">
-    <div class="roomTitle">
-      <b id="headerRoomName">PawanVoice Room</b>
-      <small id="headerRoomInfo">Room No: ------</small>
-      <small id="headerOwner">Owner: ------</small>
-    </div>
+<div class="top">
+ <div class="roomInfo">
+  <img id="roomDp" class="roomDp"
+       src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%23422b55'/%3E%3Ctext x='50' y='62' text-anchor='middle' font-size='45' fill='white'%3EP%3C/text%3E%3C/svg%3E">
+  <div class="roomTitle">
+   <b id="roomName">PawanVoice Room</b>
+   <span id="roomDetails">Room No: Loading...</span>
   </div>
+ </div>
 
-  <div class="headBtns">
-    <button class="iconBtn" onclick="openSettings()">⚙️</button>
-    <button class="iconBtn" onclick="openOnline()">👥</button>
-    <button class="iconBtn" onclick="shareRoom()">↗️</button>
-    <button class="iconBtn" onclick="copyRoomId()">📋</button>
-    <button class="iconBtn" onclick="openInfo()">ⓘ</button>
-    <button class="iconBtn" onclick="leaveRoom()">✕</button>
+ <div class="topBtns">
+  <button onclick="openPanel('usersPanel')">👥</button>
+  <button onclick="shareRoom()">↗</button>
+  <button onclick="copyRoom()">⧉</button>
+  <button onclick="openPanel('morePanel')">⋮</button>
+ </div>
+</div>
+
+<div class="main">
+
+ <div class="ownerBox">
+  <div id="ownerSeat" class="ownerSeat">
+   Loading...
   </div>
-</header>
+ </div>
 
-<main class="roomBody">
+ <div id="seatGrid" class="seatGrid"></div>
 
-  <div class="roomInfo">
-    <h2 id="roomName">PawanVoice Room</h2>
-    <p id="roomNumberText">Room Number: ------</p>
-    <p id="firebaseRoomText">Room ID: ------</p>
-    <div class="status" id="connectionStatus">Connecting...</div>
-  </div>
+</div>
 
-  <section class="seats">
+<div id="usersPanel" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h3>👥 Online Users</h3>
+ <div id="usersList">Loading...</div>
+</div>
 
-    <div class="ownerRow">
-      <div class="seat owner" id="seat-owner">
-        <div class="seatCircle emptyCircle">👑</div>
-        <div class="seatName">Owner</div>
-        <div class="seatId">Waiting...</div>
-      </div>
-    </div>
+<div id="chatPanel" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h3>💬 Room Chat</h3>
+ <div id="chatList"></div>
+</div>
 
-    <div class="seatRow" id="seatRow1"></div>
-    <div class="seatRow" id="seatRow2"></div>
+<div id="giftPanel" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h3>🎁 Gifts</h3>
+ <div class="giftGrid">
+  <button class="gift" onclick="sendGift('🌹 Rose',100)">🌹<br>100</button>
+  <button class="gift" onclick="sendGift('❤️ Heart',500)">❤️<br>500</button>
+  <button class="gift" onclick="sendGift('💎 Diamond',1000)">💎<br>1K</button>
+  <button class="gift" onclick="sendGift('👑 Crown',5000)">👑<br>5K</button>
+  <button class="gift" onclick="sendGift('🚗 Car',10000)">🚗<br>10K</button>
+  <button class="gift" onclick="sendGift('💰 Big Gift',50000)">💰<br>50K</button>
+ </div>
+</div>
 
-  </section>
+<div id="morePanel" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h3>✨ More</h3>
 
-  <div class="card">
-    <b>💬 Room Chat</b>
-    <div id="chatMessages">
-      <div class="chatMsg">PawanVoice room me welcome! 👋</div>
-    </div>
-  </div>
+ <div class="item" onclick="showFeature('⚔️ PK Battle')">⚔️ PK Battle</div>
+ <div class="item" onclick="showFeature('🎮 Games')">🎮 Games</div>
+ <div class="item" onclick="showFeature('🏆 Ranking')">🏆 Ranking</div>
+ <div class="item" onclick="showFeature('🎯 Missions')">🎯 Missions</div>
+ <div class="item" onclick="showFeature('⭐ Room Level')">⭐ Room Level</div>
+ <div class="item" onclick="showFeature('🎵 Music')">🎵 Music</div>
+ <div class="item" onclick="showFeature('✨ Decoration')">✨ Decoration</div>
+ <div class="item" onclick="showFeature('📸 Moments')">📸 Moments</div>
+ <div class="item" onclick="showFeature('📅 Events')">📅 Events</div>
+ <div class="item" onclick="showFeature('👨‍👩‍👧 Family')">👨‍👩‍👧 Family</div>
+ <div class="item" onclick="showFeature('🎤 Speaker Queue')">🎤 Speaker Queue</div>
+ <div class="item" onclick="showFeature('📝 Captions')">📝 Captions</div>
+ <div class="item" onclick="showFeature('🌐 Translation')">🌐 Translation</div>
+ <div class="item" onclick="showFeature('🛡️ Safety')">🛡️ Safety</div>
+ <div class="item" onclick="leaveRoom()">🚪 Leave Room</div>
+</div>
 
-</main>
+<div id="featurePanel" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h3 id="featureTitle">Feature</h3>
+ <p id="featureText">
+  Ye feature PawanVoice room me available hai.
+ </p>
+</div>
 
 <div class="bottom">
-  <div class="chatLine">
-    <input id="chatInput" class="chatInput" placeholder="Room me message likho...">
-    <button class="sendBtn" onclick="sendChat()">➤</button>
-  </div>
+ <div class="chatRow">
+  <button class="iconBtn" onclick="openPanel('chatPanel')">💬</button>
 
-  <div class="bottomBtns">
-    <button class="bottomBtn" onclick="openEmoji()">😊<small>Emoji</small></button>
-    <button class="bottomBtn" onclick="toggleSpeaker()">🔊<small>Speaker</small></button>
-    <button class="bottomBtn" onclick="toggleMic()">🎙️<small id="micText">Mic ON</small></button>
-    <button class="bottomBtn" onclick="openInbox()">📥<small>Inbox</small></button>
-    <button class="bottomBtn" onclick="openGifts()">🎁<small>Gift</small></button>
-    <button class="bottomBtn" onclick="openMore()">☰<small>More</small></button>
-    <button class="bottomBtn" onclick="openStats()">📊<small>Stats</small></button>
-  </div>
+  <input id="chatInput"
+         placeholder="Room me message bheje..."
+         onkeydown="if(event.key==='Enter')sendChat()">
+
+  <button class="iconBtn" onclick="toggleMic()" id="micBtn">🎙️</button>
+  <button class="iconBtn" onclick="openPanel('giftPanel')">🎁</button>
+  <button class="iconBtn" onclick="toggleSpeaker()" id="speakerBtn">🔊</button>
+ </div>
+
+ <div class="status" id="status">Room connect ho raha hai...</div>
 </div>
 
-<div class="toast" id="toast"></div>
-
-<!-- COMMON SHEET -->
-<div class="overlay" id="sheetOverlay" onclick="closeSheet(event)">
-  <div class="sheet" id="sheet">
-    <div class="sheetHead">
-      <h3 id="sheetTitle">PawanVoice</h3>
-      <button class="close" onclick="closeAll()">✕</button>
-    </div>
-    <div id="sheetContent"></div>
-  </div>
-</div>
+<div id="toast" class="toast"></div>
 
 <script>
 /* =========================
@@ -496,1705 +371,696 @@ textarea{
 ========================= */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDnlTde5qG5aPHrUIV6kTYnM521GtbrrE",
-  authDomain: "pawanvoice-68c5e.firebaseapp.com",
-  databaseURL: "https://pawanvoice-68c5e-default-rtdb.firebaseio.com/",
-  projectId: "pawanvoice-68c5e",
-  storageBucket: "pawanvoice-68c5e.firebasestorage.app",
-  messagingSenderId: "148446327241",
-  appId: "1:148446327241:web:6bac9cb9ad0fb530cbb818"
+ apiKey:"AIzaSyDnlTde5qG5aPHrUIV6kTYnM521GtbrrE",
+ authDomain:"pawanvoice-68c5e.firebaseapp.com",
+ databaseURL:"https://pawanvoice-68c5e-default-rtdb.firebaseio.com/",
+ projectId:"pawanvoice-68c5e",
+ storageBucket:"pawanvoice-68c5e.firebasestorage.app",
+ messagingSenderId:"148446327241",
+ appId:"1:148446327241:web:6bac9cb9ad0fb530cbb818"
 };
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const db=firebase.database();
 
 /* =========================
    BASIC DATA
 ========================= */
 
-const params = new URLSearchParams(location.search);
+const params=new URLSearchParams(location.search);
+const roomId=params.get("room") || localStorage.getItem("pawanRoomId");
 
-let roomId = params.get("room");
+let myId=localStorage.getItem("pawanNumericUserId");
+let myName=localStorage.getItem("pawanName") || "Pawan";
+let myDp=localStorage.getItem("pawanDP") || "";
+let myFrame=localStorage.getItem("pawanFrame") || "default";
+let myVip=localStorage.getItem("pawanVip") || "";
+let myLevel=localStorage.getItem("pawanLevel") || 1;
+
+let micOn=false;
+let speakerOn=true;
+let peer=null;
+let localStream=null;
+let calls={};
 
 if(!roomId){
-  roomId = localStorage.getItem("pawanCurrentRoom");
-}
-
-if(!roomId){
-  roomId = "room_" + Date.now();
-}
-
-localStorage.setItem("pawanCurrentRoom",roomId);
-
-let myId = localStorage.getItem("pawanNumericUserId");
-let myName = localStorage.getItem("pawanName") || "Pawan";
-let myDp = localStorage.getItem("pawanDP") || "";
-let myFrame = localStorage.getItem("pawanFrame") || "default";
-let myVip = Number(localStorage.getItem("pawanVip") || 0);
-let myLevel = Number(localStorage.getItem("pawanLevel") || 1);
-let myCpLevel = Number(localStorage.getItem("pawanCPLevel") || 1);
-
-let roomNumber = "";
-let roomName = "PawanVoice Room";
-let roomOwnerId = "";
-let roomOwnerName = "";
-let roomDp = "";
-
-let micOn = true;
-let speakerOn = true;
-let minimized = false;
-
-let peer = null;
-let localStream = null;
-let calls = {};
-
-const defaultDp =
-"data:image/svg+xml;charset=UTF-8," +
-encodeURIComponent(
-'<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">' +
-'<rect width="200" height="200" fill="#33264f"/>' +
-'<circle cx="100" cy="78" r="38" fill="#bca9d8"/>' +
-'<path d="M35 190c10-48 40-70 65-70s55 22 65 70" fill="#8b72b8"/>' +
-'</svg>'
-);
-
-/* =========================
-   UTILITIES
-========================= */
-
-function esc(v){
-  return String(v == null ? "" : v)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
-function showToast(msg){
-  const t=document.getElementById("toast");
-  t.textContent=msg;
-  t.style.display="block";
-  clearTimeout(window.toastTimer);
-  window.toastTimer=setTimeout(()=>{
-    t.style.display="none";
-  },2200);
-}
-
-function openSheet(title,html){
-  document.getElementById("sheetTitle").textContent=title;
-  document.getElementById("sheetContent").innerHTML=html;
-  document.getElementById("sheetOverlay").style.display="flex";
-}
-
-function closeAll(){
-  document.getElementById("sheetOverlay").style.display="none";
-}
-
-function closeSheet(e){
-  if(e.target.id==="sheetOverlay") closeAll();
+ showToast("Room ID nahi mila");
+ document.getElementById("status").innerText="Room ID nahi mila";
+}else{
+ localStorage.setItem("pawanRoomId",roomId);
+ startRoom();
 }
 
 /* =========================
-   NUMERIC USER ID
+   USER ID
 ========================= */
 
-function randomSix(){
-  return String(Math.floor(100000 + Math.random()*900000));
-}
+function createUserId(){
+ if(myId)return Promise.resolve(myId);
 
-async function createNumericUserId(){
-  let saved=localStorage.getItem("pawanNumericUserId");
+ const newId=String(
+  Math.floor(100000+Math.random()*900000)
+ );
 
-  if(saved && /^\d{6}$/.test(saved)){
-    return saved;
-  }
-
-  for(let i=0;i<15;i++){
-    const candidate=randomSix();
-    const ref=db.ref("users/"+candidate);
-
-    try{
-      const result=await ref.transaction(current=>{
-        if(current !== null) return;
-        return {
-          id:candidate,
-          createdAt:firebase.database.ServerValue.TIMESTAMP
-        };
-      });
-
-      if(result.committed){
-        localStorage.setItem("pawanNumericUserId",candidate);
-        return candidate;
-      }
-    }catch(err){}
-  }
-
-  return randomSix();
-}
-
-/* =========================
-   NUMERIC ROOM NUMBER
-========================= */
-
-function randomRoomNumber(){
-  return String(Math.floor(100000 + Math.random()*900000));
-}
-
-async function createOrGetRoomNumber(){
-  const ref=db.ref("rooms/"+roomId+"/roomNumber");
-
-  const snap=await ref.once("value");
-
-  if(snap.exists() && /^\d{6}$/.test(String(snap.val()))){
-    return String(snap.val());
-  }
-
-  const generated=randomRoomNumber();
-
-  await ref.transaction(current=>{
-    if(current) return current;
-    return generated;
-  });
-
-  const finalSnap=await ref.once("value");
-  return String(finalSnap.val() || generated);
-}
-
-/* =========================
-   ROOM INITIALIZE
-========================= */
-
-async function initializeRoom(){
-
-  myId=await createNumericUserId();
-
-  const roomRef=db.ref("rooms/"+roomId);
-
-  const roomSnap=await roomRef.once("value");
-
-  if(!roomSnap.exists()){
-    roomOwnerId=myId;
-    roomOwnerName=myName;
-
-    await roomRef.set({
-      roomNumber:await createOrGetRoomNumber(),
-      roomName:"PawanVoice Room",
-      ownerId:myId,
-      ownerName:myName,
-      createdAt:firebase.database.ServerValue.TIMESTAMP,
-      live:true,
-      settings:{
-        description:"Welcome to PawanVoice",
-        category:"Voice Chat",
-        language:"Hindi",
-        public:true,
-        maxUsers:9
-      }
-    });
-  }
-
-  const snap=await roomRef.once("value");
-  const data=snap.val() || {};
-
-  roomNumber=String(data.roomNumber || await createOrGetRoomNumber());
-  roomName=data.roomName || "PawanVoice Room";
-  roomOwnerId=String(data.ownerId || myId);
-  roomOwnerName=data.ownerName || myName;
-  roomDp=(data.settings && data.settings.dp) || "";
-
-  document.getElementById("roomName").textContent=roomName;
-  document.getElementById("headerRoomName").textContent=roomName;
-
-  document.getElementById("roomNumberText").textContent=
-    "Room Number: "+roomNumber;
-
-  document.getElementById("firebaseRoomText").textContent=
-    "Room ID: "+roomId;
-
-  document.getElementById("headerRoomInfo").textContent=
-    "Room No: "+roomNumber;
-
-  document.getElementById("headerOwner").textContent=
-    "Owner: "+roomOwnerName+" • ID "+roomOwnerId;
-
-  document.getElementById("roomDpImg").src=roomDp || defaultDp;
-
-  await saveMyGlobalUser();
-  await joinRoomDatabase();
-
-  listenRoom();
-  listenUsers();
-  listenChat();
-
-  setupPeer();
-
-  document.getElementById("connectionStatus").textContent=
-    "🟢 Room connected";
-}
-
-/* =========================
-   GLOBAL USER
-========================= */
-
-async function saveMyGlobalUser(){
-
-  const ref=db.ref("users/"+myId);
-
-  await ref.update({
-    id:myId,
+ return db.ref("users/"+newId).transaction(v=>{
+  if(v===null){
+   return {
+    id:newId,
     name:myName,
-    dp:myDp || "",
-    frame:myFrame,
-    vip:myVip,
-    level:myLevel,
-    cpLevel:myCpLevel,
-    updatedAt:firebase.database.ServerValue.TIMESTAMP
-  });
+    coins:1000000,
+    frame:"default",
+    entryEffect:"default",
+    level:1,
+    cpLevel:1,
+    createdAt:Date.now()
+   };
+  }
+  return;
+ }).then(result=>{
+  if(result.committed){
+   myId=newId;
+   localStorage.setItem("pawanNumericUserId",myId);
+   return myId;
+  }
+  return createUserId();
+ });
+}
+
+/* =========================
+   PROFILE SYNC
+========================= */
+
+function loadProfile(){
+ return createUserId().then(()=>{
+  return db.ref("users/"+myId).once("value");
+ }).then(snap=>{
+  const u=snap.val()||{};
+
+  myName=u.name || myName;
+  myDp=u.dp || myDp;
+  myFrame=u.frame || myFrame;
+  myVip=u.vip || "";
+  myLevel=u.level || 1;
 
   localStorage.setItem("pawanName",myName);
+  localStorage.setItem("pawanDP",myDp);
+  localStorage.setItem("pawanFrame",myFrame);
+  localStorage.setItem("pawanVip",myVip);
+  localStorage.setItem("pawanLevel",myLevel);
+ });
 }
 
 /* =========================
-   JOIN DATABASE
+   ROOM START
 ========================= */
 
-async function joinRoomDatabase(){
+async function startRoom(){
 
-  const ref=db.ref(
-    "rooms/"+roomId+"/users/"+myId
-  );
+ await loadProfile();
 
-  const userData={
-    id:myId,
-    name:myName,
-    dp:myDp || "",
-    frame:myFrame,
-    vip:myVip,
-    level:myLevel,
-    cpLevel:myCpLevel,
-    peerId:"",
-    mic:micOn,
-    joinedAt:firebase.database.ServerValue.TIMESTAMP
-  };
+ const roomSnap=await db.ref("rooms/"+roomId).once("value");
+ const room=roomSnap.val();
 
-  await ref.set(userData);
+ if(!room){
+  showToast("Room nahi mila");
+  document.getElementById("status").innerText="Room not found";
+  return;
+ }
 
-  ref.onDisconnect().remove();
+ document.getElementById("roomName").innerText=
+  room.name || "PawanVoice Room";
+
+ document.getElementById("roomDetails").innerText=
+  "Room No: "+(room.roomNumber || roomId);
+
+ if(room.settings && room.settings.dp){
+  document.getElementById("roomDp").src=room.settings.dp;
+ }
+
+ initPeer();
+
+ joinRoom();
 }
 
 /* =========================
-   ROOM LISTEN
+   PEER VOICE
 ========================= */
 
-function listenRoom(){
+function initPeer(){
 
-  db.ref("rooms/"+roomId).on("value",snap=>{
+ peer=new Peer();
 
-    const data=snap.val() || {};
+ peer.on("open",peerId=>{
+  updateRoomUser(peerId);
+ });
 
-    roomName=data.roomName || "PawanVoice Room";
-    roomOwnerId=String(data.ownerId || "");
-    roomOwnerName=data.ownerName || "";
-    roomNumber=String(data.roomNumber || roomNumber);
+ peer.on("call",call=>{
+  if(localStream){
+   call.answer(localStream);
 
-    if(data.settings && data.settings.dp){
-      roomDp=data.settings.dp;
-      document.getElementById("roomDpImg").src=roomDp;
-    }
+   call.on("stream",remote=>{
+    playRemote(call.peer,remote);
+   });
 
-    document.getElementById("roomName").textContent=roomName;
-    document.getElementById("headerRoomName").textContent=roomName;
-    document.getElementById("roomNumberText").textContent=
-      "Room Number: "+roomNumber;
-    document.getElementById("roomNumberText").textContent=
-      "Room Number: "+roomNumber;
-    document.getElementById("headerRoomInfo").textContent=
-      "Room No: "+roomNumber;
-    document.getElementById("headerOwner").textContent=
-      "Owner: "+roomOwnerName+" • ID "+roomOwnerId;
+   calls[call.peer]=call;
+  }
+ });
+
+ peer.on("error",err=>{
+  console.log(err);
+  document.getElementById("status").innerText=
+   "Voice connection issue";
+ });
+}
+
+async function getMic(){
+
+ try{
+  localStream=await navigator.mediaDevices.getUserMedia({
+   audio:{
+    echoCancellation:true,
+    noiseSuppression:true,
+    autoGainControl:true
+   },
+   video:false
   });
+
+  localStream.getAudioTracks().forEach(t=>{
+   t.enabled=micOn;
+  });
+
+ }catch(e){
+  showToast("Microphone permission allow kare");
+ }
+}
+
+async function toggleMic(){
+
+ if(!localStream){
+  await getMic();
+ }
+
+ if(!localStream)return;
+
+ micOn=!micOn;
+
+ localStream.getAudioTracks().forEach(track=>{
+  track.enabled=micOn;
+ });
+
+ document.getElementById("micBtn").innerText=
+  micOn ? "🎙️" : "🔇";
+
+ updateMic();
+
+ if(micOn){
+  showToast("Mic ON");
+ }else{
+  showToast("Mic OFF");
+ }
+}
+
+function updateMic(){
+
+ if(!myId || !roomId)return;
+
+ db.ref("rooms/"+roomId+"/users/"+myId)
+ .update({
+  mic:micOn
+ });
 }
 
 /* =========================
-   USERS
+   JOIN ROOM
+========================= */
+
+function joinRoom(){
+
+ if(!myId)return;
+
+ const userRef=
+  db.ref("rooms/"+roomId+"/users/"+myId);
+
+ userRef.set({
+  id:myId,
+  name:myName,
+  dp:myDp,
+  frame:myFrame,
+  vip:myVip,
+  level:myLevel,
+  peerId:peer ? peer.id : "",
+  mic:micOn,
+  joinedAt:firebase.database.ServerValue.TIMESTAMP
+ });
+
+ userRef.onDisconnect().remove();
+
+ showEntryEffect();
+
+ listenUsers();
+
+ document.getElementById("status").innerText=
+  "🟢 Room connected";
+}
+
+/* =========================
+   UPDATE USER
+========================= */
+
+function updateRoomUser(peerId){
+
+ if(!roomId || !myId)return;
+
+ db.ref("rooms/"+roomId+"/users/"+myId).update({
+  peerId:peerId,
+  name:myName,
+  dp:myDp,
+  frame:myFrame,
+  vip:myVip,
+  level:myLevel,
+  mic:micOn
+ });
+}
+
+/* =========================
+   USERS + SEATS
 ========================= */
 
 function listenUsers(){
 
-  db.ref("rooms/"+roomId+"/users").on("value",snap=>{
+ db.ref("rooms/"+roomId+"/users").on("value",snap=>{
 
-    const data=snap.val() || {};
-    const users=Object.values(data);
+  const data=snap.val()||{};
+  const users=Object.values(data);
 
-    renderSeats(users);
-  });
-}
+  renderSeats(users);
+  renderUsers(users);
 
-function frameClass(frame){
-  if(frame==="gold") return "frameGold";
-  if(frame==="red") return "frameRed";
-  if(frame==="blue") return "frameBlue";
-  if(frame==="purple") return "framePurple";
-  return "";
+  connectPeers(users);
+ });
 }
 
 function renderSeats(users){
 
-  const owner=
-    users.find(u=>String(u.id)===String(roomOwnerId)) ||
-    users.find(u=>String(u.id)===String(myId) && String(myId)===String(roomOwnerId));
+ const owner=users.find(u=>u.id===getOwnerId(users));
 
-  const ownerEl=document.getElementById("seat-owner");
+ const ownerBox=document.getElementById("ownerSeat");
 
-  if(owner){
-    const dp=owner.dp || defaultDp;
+ if(owner){
+  ownerBox.innerHTML=makeUserHtml(owner,"👑 Owner");
+ }else{
+  ownerBox.innerHTML="👑<div class='name'>Owner</div>";
+ }
 
-    ownerEl.innerHTML=`
-      <div class="seatCircle ${frameClass(owner.frame)} ${
-        owner.mic ? "speaking" : ""
-      }"
-      onclick="openUserPanel('${esc(owner.id)}')">
+ let html="";
 
-        <img src="${dp}" onerror="this.src='${defaultDp}'">
+ for(let seat=2;seat<=9;seat++){
 
-        ${Number(owner.vip)>0 ?
-          `<span class="vip">VIP ${esc(owner.vip)}</span>`:""}
+  const u=users[seat-2];
 
-        <span class="micDot">${owner.mic?"🎙️":"🔇"}</span>
+  if(u){
+   html+=`
+    <div class="seat">
+     <div class="seatInner ${u.mic?'speaking':''}"
+          onclick="userAction('${u.id}')">
+      <div class="seatAvatar avatar">
+       ${u.dp ? `<img src="${escapeHtml(u.dp)}">` : "👤"}
       </div>
-
-      <div class="seatName">
-        👑 ${esc(owner.name || "Owner")}
-      </div>
-
-      <div class="seatId">
-        ID ${esc(owner.id)}
-      </div>
-
-      <div class="seatMeta">
-        LV ${esc(owner.level || 1)} • CP ${esc(owner.cpLevel || 1)}
-      </div>
-    `;
+      <div class="name">${escapeHtml(u.name||"Guest")}</div>
+      <div class="uid">ID ${escapeHtml(u.id)}</div>
+      ${u.vip ? `<div class="vip">VIP ${escapeHtml(u.vip)}</div>`:""}
+      <div class="micDot">${u.mic?"🎙️":"🔇"}</div>
+      <div class="seatNo">Seat ${seat}</div>
+     </div>
+    </div>
+   `;
   }else{
-    ownerEl.innerHTML=`
-      <div class="seatCircle emptyCircle">👑</div>
-      <div class="seatName">Owner</div>
-      <div class="seatId">Waiting...</div>
-    `;
+   html+=`
+    <div class="seat">
+     <div class="seatInner">
+      <div class="seatAvatar avatar empty">＋</div>
+      <div class="name">Empty</div>
+      <div class="seatNo">Seat ${seat}</div>
+     </div>
+    </div>
+   `;
   }
+ }
 
-  const others=users
-    .filter(u=>String(u.id)!==String(roomOwnerId))
-    .slice(0,8);
+ document.getElementById("seatGrid").innerHTML=html;
+}
 
-  const row1=document.getElementById("seatRow1");
-  const row2=document.getElementById("seatRow2");
+function makeUserHtml(u,label){
 
-  row1.innerHTML="";
-  row2.innerHTML="";
+ return `
+  <div class="avatar">
+   ${u.dp ? `<img src="${escapeHtml(u.dp)}">`:"👤"}
+  </div>
+  <div class="name">${escapeHtml(u.name||"Guest")}</div>
+  <div class="uid">ID ${escapeHtml(u.id)}</div>
+  ${u.vip?`<div class="vip">VIP ${escapeHtml(u.vip)}</div>`:""}
+  <div class="micDot">${u.mic?"🎙️":"🔇"}</div>
+  <div class="seatNo">${label}</div>
+ `;
+}
 
-  for(let i=0;i<8;i++){
+function getOwnerId(users){
 
-    const user=others[i];
+ const roomOwner=localStorage.getItem("pawanRoomOwnerId");
 
-    const div=document.createElement("div");
-    div.className="seat";
+ if(roomOwner)return roomOwner;
 
-    if(user){
+ return users.length ? users[0].id : "";
+}
 
-      const dp=user.dp || defaultDp;
+function renderUsers(users){
 
-      div.innerHTML=`
-        <div class="seatCircle ${frameClass(user.frame)}"
-             onclick="openUserPanel('${esc(user.id)}')">
+ let html="";
 
-          <img src="${dp}" onerror="this.src='${defaultDp}'">
+ users.forEach(u=>{
+  html+=`
+   <div class="item">
+    <b>${escapeHtml(u.name||"Guest")}</b><br>
+    ID: ${escapeHtml(u.id)}<br>
+    ${u.mic?"🎙️ Mic ON":"🔇 Mic OFF"}
+   </div>
+  `;
+ });
 
-          ${Number(user.vip)>0 ?
-            `<span class="vip">VIP ${esc(user.vip)}</span>`:""}
-
-          <span class="micDot">
-            ${user.mic ? "🎙️":"🔇"}
-          </span>
-        </div>
-
-        <div class="seatName">
-          ${esc(user.name || "Guest")}
-          ${String(user.id)===String(myId) ? " (You)":""}
-        </div>
-
-        <div class="seatId">
-          ID ${esc(user.id)}
-        </div>
-
-        <div class="seatMeta">
-          LV ${esc(user.level || 1)} • CP ${esc(user.cpLevel || 1)}
-        </div>
-      `;
-
-    }else{
-
-      div.innerHTML=`
-        <div class="seatCircle emptyCircle">＋</div>
-        <div class="seatName">Seat ${i+2}</div>
-        <div class="seatId">Empty</div>
-      `;
-    }
-
-    if(i<4) row1.appendChild(div);
-    else row2.appendChild(div);
-  }
+ document.getElementById("usersList").innerHTML=
+  html || "No users";
 }
 
 /* =========================
-   USER PANEL
+   PEER CONNECTION
 ========================= */
 
-async function openUserPanel(id){
+function connectPeers(users){
 
-  const snap=await db.ref(
-    "rooms/"+roomId+"/users/"+id
-  ).once("value");
+ if(!peer || !localStream)return;
 
-  const u=snap.val();
+ users.forEach(u=>{
 
-  if(!u){
-    showToast("User room se chala gaya");
-    return;
-  }
+  if(!u.peerId || u.id===myId)return;
+  if(calls[u.id])return;
 
-  const isMe=String(id)===String(myId);
-  const isOwner=String(myId)===String(roomOwnerId);
+  const call=peer.call(u.peerId,localStream);
 
-  openSheet("👤 User Profile",`
+  if(!call)return;
 
-    <div class="userCard card">
-
-      <img class="userBigDp"
-           src="${u.dp || defaultDp}"
-           onerror="this.src='${defaultDp}'">
-
-      <h3>${esc(u.name || "Guest")}</h3>
-
-      <div>ID: <b>${esc(u.id)}</b></div>
-      <div>VIP: <b>${esc(u.vip || 0)}</b></div>
-      <div>User Level: <b>${esc(u.level || 1)}</b></div>
-      <div>CP Level: <b>${esc(u.cpLevel || 1)}</b></div>
-      <div>Frame: <b>${esc(u.frame || "Default")}</b></div>
-
-    </div>
-
-    <div class="grid">
-
-      <button class="actionBtn" onclick="viewProfile('${esc(u.id)}')">
-        <span class="ico">👤</span><small>Profile</small>
-      </button>
-
-      <button class="actionBtn" onclick="followUser('${esc(u.id)}')">
-        <span class="ico">❤️</span><small>Follow</small>
-      </button>
-
-      <button class="actionBtn" onclick="messageUser('${esc(u.id)}')">
-        <span class="ico">💬</span><small>Message</small>
-      </button>
-
-      <button class="actionBtn" onclick="openGifts('${esc(u.id)}')">
-        <span class="ico">🎁</span><small>Gift</small>
-      </button>
-
-      <button class="actionBtn" onclick="copyUserId('${esc(u.id)}')">
-        <span class="ico">📋</span><small>Copy ID</small>
-      </button>
-
-      <button class="actionBtn" onclick="openMission('${esc(u.id)}')">
-        <span class="ico">🎯</span><small>Mission</small>
-      </button>
-
-      <button class="actionBtn" onclick="blockUser('${esc(u.id)}')">
-        <span class="ico">🚫</span><small>Block</small>
-      </button>
-
-      <button class="actionBtn" onclick="reportUser('${esc(u.id)}')">
-        <span class="ico">⚠️</span><small>Report</small>
-      </button>
-
-    </div>
-
-    ${
-      !isMe && isOwner
-      ? `
-      <div class="card">
-        <b>👑 Owner Controls</b>
-
-        <button class="fullBtn"
-          onclick="muteUser('${esc(u.id)}')">
-          🔇 Mute / Unmute
-        </button>
-
-        <button class="fullBtn"
-          onclick="removeUser('${esc(u.id)}')">
-          🚪 Remove From Room
-        </button>
-
-        <button class="fullBtn"
-          onclick="makeAdmin('${esc(u.id)}')">
-          🛡️ Make Admin
-        </button>
-
-        <button class="fullBtn danger"
-          onclick="banUser('${esc(u.id)}')">
-          🚫 Ban User
-        </button>
-      </div>
-      `
-      :""
-    }
-  `);
-}
-
-/* =========================
-   PROFILE / SOCIAL
-========================= */
-
-function viewProfile(id){
-  closeAll();
-
-  if(String(id)===String(myId)){
-    showToast("Ye aapka profile hai");
-    return;
-  }
-
-  showToast("Profile ID "+id);
-}
-
-function followUser(id){
-  showToast("Follow request sent");
-}
-
-function messageUser(id){
-  openSheet("💬 Message",`
-    <div class="card">
-      <b>User ID ${esc(id)}</b>
-      <textarea id="privateMessage"
-        placeholder="Message likho..."></textarea>
-      <button class="fullBtn"
-        onclick="sendPrivateMessage('${esc(id)}')">
-        Send Message
-      </button>
-    </div>
-  `);
-}
-
-function sendPrivateMessage(id){
-  const el=document.getElementById("privateMessage");
-  if(!el || !el.value.trim()) return;
-  showToast("Message sent");
-  el.value="";
-}
-
-async function copyUserId(id){
-  try{
-    await navigator.clipboard.writeText(String(id));
-    showToast("User ID copied");
-  }catch(e){
-    showToast("ID: "+id);
-  }
-}
-
-function blockUser(id){
-  localStorage.setItem("blocked_"+id,"1");
-  showToast("User blocked");
-  closeAll();
-}
-
-function reportUser(id){
-  openSheet("⚠️ Report User",`
-    <div class="card">
-      <select id="reportReason">
-        <option>Spam</option>
-        <option>Abuse</option>
-        <option>Harassment</option>
-        <option>Inappropriate content</option>
-        <option>Other</option>
-      </select>
-      <button class="fullBtn"
-        onclick="submitReport('${esc(id)}')">
-        Submit Report
-      </button>
-    </div>
-  `);
-}
-
-function submitReport(id){
-  db.ref("reports").push({
-    roomId:roomId,
-    userId:id,
-    reporterId:myId,
-    reason:document.getElementById("reportReason").value,
-    createdAt:firebase.database.ServerValue.TIMESTAMP
-  });
-  showToast("Report submitted");
-  closeAll();
-}
-
-function openMission(id){
-  openSheet("🎯 Mission",`
-    <div class="card">
-      <b>Daily Mission</b>
-      <p>Room activity complete karo.</p>
-      <p>Progress: 30%</p>
-    </div>
-  `);
-}
-
-/* =========================
-   ADMIN CONTROLS
-========================= */
-
-async function muteUser(id){
-
-  await db.ref(
-    "rooms/"+roomId+"/users/"+id+"/mic"
-  ).set(false);
-
-  showToast("User muted");
-}
-
-async function removeUser(id){
-
-  if(String(myId)!==String(roomOwnerId)){
-    showToast("Only Owner");
-    return;
-  }
-
-  await db.ref(
-    "rooms/"+roomId+"/users/"+id
-  ).remove();
-
-  showToast("User removed");
-  closeAll();
-}
-
-async function makeAdmin(id){
-
-  if(String(myId)!==String(roomOwnerId)){
-    showToast("Only Owner");
-    return;
-  }
-
-  await db.ref(
-    "rooms/"+roomId+"/admins/"+id
-  ).set({
-    id:id,
-    createdAt:firebase.database.ServerValue.TIMESTAMP
+  call.on("stream",remote=>{
+   playRemote(u.id,remote);
   });
 
-  showToast("Admin added");
-}
-
-async function banUser(id){
-
-  if(String(myId)!==String(roomOwnerId)){
-    showToast("Only Owner");
-    return;
-  }
-
-  await db.ref(
-    "rooms/"+roomId+"/banned/"+id
-  ).set(true);
-
-  await removeUser(id);
-}
-
-/* =========================
-   ROOM DP
-========================= */
-
-function openRoomDp(){
-
-  const isOwner=String(myId)===String(roomOwnerId);
-
-  openSheet("🖼️ Room DP",`
-
-    <div class="card" style="text-align:center">
-
-      <img
-        src="${roomDp || defaultDp}"
-        style="width:110px;height:110px;border-radius:50%;object-fit:cover;border:3px solid #8060e8"
-      >
-
-      ${
-        isOwner
-        ? `
-          <input type="file"
-                 accept="image/*"
-                 onchange="changeRoomDp(this)">
-
-          <button class="fullBtn danger"
-                  onclick="removeRoomDp()">
-            Remove Room DP
-          </button>
-        `
-        : `
-          <p>Sirf Owner Room DP change kar sakta hai.</p>
-        `
-      }
-
-    </div>
-  `);
-}
-
-function changeRoomDp(input){
-
-  if(!input.files || !input.files[0]) return;
-
-  const file=input.files[0];
-  const reader=new FileReader();
-
-  reader.onload=function(){
-
-    const img=new Image();
-
-    img.onload=function(){
-
-      const canvas=document.createElement("canvas");
-      const max=500;
-
-      let w=img.width;
-      let h=img.height;
-
-      if(w>h){
-        if(w>max){
-          h*=max/w;
-          w=max;
-        }
-      }else{
-        if(h>max){
-          w*=max/h;
-          h=max;
-        }
-      }
-
-      canvas.width=w;
-      canvas.height=h;
-
-      const ctx=canvas.getContext("2d");
-      ctx.drawImage(img,0,0,w,h);
-
-      const data=canvas.toDataURL("image/jpeg",.72);
-
-      db.ref("rooms/"+roomId+"/settings/dp").set(data)
-      .then(()=>{
-        roomDp=data;
-        document.getElementById("roomDpImg").src=data;
-        showToast("Room DP changed");
-        closeAll();
-      });
-
-    };
-
-    img.src=reader.result;
-  };
-
-  reader.readAsDataURL(file);
-}
-
-function removeRoomDp(){
-
-  if(String(myId)!==String(roomOwnerId)) return;
-
-  db.ref("rooms/"+roomId+"/settings/dp").remove();
-
-  roomDp="";
-  document.getElementById("roomDpImg").src=defaultDp;
-
-  showToast("Room DP removed");
-  closeAll();
-}
-
-/* =========================
-   ROOM SETTINGS
-========================= */
-
-async function openSettings(){
-
-  const isOwner=String(myId)===String(roomOwnerId);
-
-  const snap=await db.ref(
-    "rooms/"+roomId
-  ).once("value");
-
-  const r=snap.val() || {};
-  const s=r.settings || {};
-
-  openSheet("⚙️ Room Settings",`
-
-    ${
-      isOwner
-      ? `
-      <div class="card">
-        <b>Room Name</b>
-        <input id="newRoomName"
-          value="${esc(r.roomName || "")}">
-
-        <b style="margin-top:10px">Description</b>
-        <textarea id="roomDescription">${esc(s.description || "")}</textarea>
-
-        <b style="margin-top:10px">Category</b>
-        <select id="roomCategory">
-          <option ${s.category==="Voice Chat"?"selected":""}>Voice Chat</option>
-          <option ${s.category==="Music"?"selected":""}>Music</option>
-          <option ${s.category==="Games"?"selected":""}>Games</option>
-          <option ${s.category==="Friends"?"selected":""}>Friends</option>
-        </select>
-
-        <b style="margin-top:10px">Language</b>
-        <select id="roomLanguage">
-          <option ${s.language==="Hindi"?"selected":""}>Hindi</option>
-          <option ${s.language==="English"?"selected":""}>English</option>
-          <option>Other</option>
-        </select>
-
-        <button class="fullBtn" onclick="saveRoomSettings()">
-          💾 Save Settings
-        </button>
-      </div>
-      `
-      : `
-      <div class="card">
-        <b>Room Settings</b>
-        <p>Room Name: ${esc(r.roomName || "")}</p>
-        <p>Category: ${esc(s.category || "Voice Chat")}</p>
-        <p>Language: ${esc(s.language || "Hindi")}</p>
-        <p>Public: ${s.public===false?"No":"Yes"}</p>
-      </div>
-      `
-    }
-
-    <div class="card">
-      <b>🔒 Room Controls</b>
-
-      <button class="fullBtn" onclick="lockRoom()">
-        🔒 Lock / Unlock Room
-      </button>
-
-      <button class="fullBtn" onclick="lockSeats()">
-        💺 Lock / Unlock Seats
-      </button>
-
-      <button class="fullBtn" onclick="muteAll()">
-        🔇 Mute All
-      </button>
-    </div>
-  `);
-}
-
-async function saveRoomSettings(){
-
-  if(String(myId)!==String(roomOwnerId)){
-    showToast("Only Owner");
-    return;
-  }
-
-  const name=document.getElementById("newRoomName").value.trim() ||
-    "PawanVoice Room";
-
-  const description=document.getElementById("roomDescription").value;
-
-  const category=document.getElementById("roomCategory").value;
-
-  const language=document.getElementById("roomLanguage").value;
-
-  await db.ref("rooms/"+roomId).update({
-    roomName:name,
-    ownerName:myName,
-    "settings/description":description,
-    "settings/category":category,
-    "settings/language":language
+  call.on("close",()=>{
+   delete calls[u.id];
   });
 
-  showToast("Room settings saved");
-  closeAll();
+  calls[u.id]=call;
+ });
 }
 
-function lockRoom(){
-  showToast("Room lock setting updated");
-}
+function playRemote(id,stream){
 
-function lockSeats(){
-  showToast("Seats lock setting updated");
-}
+ let audio=document.getElementById("audio-"+id);
 
-async function muteAll(){
+ if(!audio){
+  audio=document.createElement("audio");
+  audio.id="audio-"+id;
+  audio.autoplay=true;
+  audio.playsInline=true;
+  audio.controls=false;
+  document.body.appendChild(audio);
+ }
 
-  if(String(myId)!==String(roomOwnerId)){
-    showToast("Only Owner");
-    return;
-  }
-
-  const snap=await db.ref(
-    "rooms/"+roomId+"/users"
-  ).once("value");
-
-  const data=snap.val() || {};
-
-  const updates={};
-
-  Object.keys(data).forEach(id=>{
-    updates[id+"/mic"]=false;
-  });
-
-  await db.ref("rooms/"+roomId+"/users").update(updates);
-
-  showToast("All users muted");
-}
-
-/* =========================
-   ONLINE USERS
-========================= */
-
-async function openOnline(){
-
-  const snap=await db.ref(
-    "rooms/"+roomId+"/users"
-  ).once("value");
-
-  const users=Object.values(snap.val() || {});
-
-  let html="";
-
-  if(!users.length){
-    html='<div class="card">No users</div>';
-  }
-
-  users.forEach(u=>{
-    html+=`
-      <div class="card row"
-           onclick="openUserPanel('${esc(u.id)}')">
-
-        <div>
-          <b>${esc(u.name || "Guest")}</b>
-          <small>ID ${esc(u.id)}</small>
-        </div>
-
-        <div>
-          ${u.mic ? "🎙️":"🔇"}
-          ${Number(u.vip)>0 ? " VIP "+esc(u.vip):""}
-        </div>
-      </div>
-    `;
-  });
-
-  openSheet("👥 Online Users",html);
-}
-
-/* =========================
-   SHARE / INFO
-========================= */
-
-async function copyRoomId(){
-
-  try{
-    await navigator.clipboard.writeText(roomNumber);
-    showToast("Room Number copied");
-  }catch(e){
-    showToast("Room No: "+roomNumber);
-  }
-}
-
-async function shareRoom(){
-
-  const url=location.origin+
-    location.pathname+
-    "?room="+encodeURIComponent(roomId);
-
-  if(navigator.share){
-
-    try{
-      await navigator.share({
-        title:"PawanVoice Room",
-        text:"Join my PawanVoice Room - Room No "+roomNumber,
-        url:url
-      });
-    }catch(e){}
-
-  }else{
-
-    try{
-      await navigator.clipboard.writeText(url);
-      showToast("Room link copied");
-    }catch(e){
-      showToast(url);
-    }
-  }
-}
-
-async function openInfo(){
-
-  const snap=await db.ref(
-    "rooms/"+roomId
-  ).once("value");
-
-  const r=snap.val() || {};
-  const s=r.settings || {};
-
-  openSheet("ⓘ Room Information",`
-
-    <div class="card">
-      <b>🏠 ${esc(r.roomName || "PawanVoice Room")}</b>
-      <p>Room Number: <b>${esc(roomNumber)}</b></p>
-      <p>Room ID: <b>${esc(roomId)}</b></p>
-      <p>Owner: <b>${esc(r.ownerName || "")}</b></p>
-      <p>Owner ID: <b>${esc(r.ownerId || "")}</b></p>
-      <p>Category: ${esc(s.category || "Voice Chat")}</p>
-      <p>Language: ${esc(s.language || "Hindi")}</p>
-      <p>Description: ${esc(s.description || "")}</p>
-    </div>
-
-  `);
+ audio.srcObject=stream;
+ audio.volume=speakerOn?1:0;
+ audio.play().catch(()=>{});
 }
 
 /* =========================
    CHAT
 ========================= */
 
-function listenChat(){
+function sendChat(){
 
-  db.ref("rooms/"+roomId+"/chat")
-    .limitToLast(80)
-    .on("value",snap=>{
+ const input=document.getElementById("chatInput");
+ const text=input.value.trim();
 
-      const data=snap.val() || {};
+ if(!text)return;
 
-      let html="";
+ db.ref("rooms/"+roomId+"/chat").push({
+  id:myId,
+  name:myName,
+  text:text,
+  time:firebase.database.ServerValue.TIMESTAMP
+ });
 
-      Object.values(data).forEach(m=>{
-
-        html+=`
-          <div class="chatMsg">
-            <b>${esc(m.name || "Guest")}</b>
-            <span>: ${esc(m.text || "")}</span>
-          </div>
-        `;
-      });
-
-      document.getElementById("chatMessages").innerHTML=
-        html || '<div class="chatMsg">No messages yet.</div>';
-    });
+ input.value="";
 }
 
-async function sendChat(){
-
-  const input=document.getElementById("chatInput");
-
-  const text=input.value.trim();
-
-  if(!text) return;
-
-  await db.ref("rooms/"+roomId+"/chat").push({
-    id:myId,
-    name:myName,
-    text:text,
-    createdAt:firebase.database.ServerValue.TIMESTAMP
-  });
-
-  input.value="";
-}
-
-function openEmoji(){
-
-  openSheet("😊 Emoji",`
-
-    <div class="grid">
-
-      <button class="actionBtn" onclick="addEmoji('😀')">😀</button>
-      <button class="actionBtn" onclick="addEmoji('😂')">😂</button>
-      <button class="actionBtn" onclick="addEmoji('😍')">😍</button>
-      <button class="actionBtn" onclick="addEmoji('😘')">😘</button>
-      <button class="actionBtn" onclick="addEmoji('❤️')">❤️</button>
-      <button class="actionBtn" onclick="addEmoji('🔥')">🔥</button>
-      <button class="actionBtn" onclick="addEmoji('👏')">👏</button>
-      <button class="actionBtn" onclick="addEmoji('🎉')">🎉</button>
-      <button class="actionBtn" onclick="addEmoji('👍')">👍</button>
-      <button class="actionBtn" onclick="addEmoji('🙏')">🙏</button>
-      <button class="actionBtn" onclick="addEmoji('🥳')">🥳</button>
-      <button class="actionBtn" onclick="addEmoji('💯')">💯</button>
-
-    </div>
-  `);
-}
-
-function addEmoji(e){
-
-  document.getElementById("chatInput").value += e;
-
-  closeAll();
-}
-
-/* =========================
-   MIC / SPEAKER
-========================= */
-
-async function toggleMic(){
-
-  micOn=!micOn;
-
-  if(localStream){
-
-    localStream.getAudioTracks().forEach(track=>{
-      track.enabled=micOn;
-    });
-  }
-
-  document.getElementById("micText").textContent=
-    micOn ? "Mic ON":"Mic OFF";
-
-  await db.ref(
-    "rooms/"+roomId+"/users/"+myId+"/mic"
-  ).set(micOn);
-}
-
-function toggleSpeaker(){
-
-  speakerOn=!speakerOn;
-
-  document.querySelectorAll("audio").forEach(a=>{
-    a.muted=!speakerOn;
-  });
-
-  showToast(
-    speakerOn ? "Speaker ON":"Speaker OFF"
-  );
-}
-
-/* =========================
-   PEERJS VOICE
-========================= */
-
-function setupPeer(){
-
-  try{
-
-    peer=new Peer(
-      "pv-"+myId+"-"+Math.random().toString(36).slice(2,8),
-      {
-        debug:0
-      }
-    );
-
-    peer.on("open",async peerId=>{
-
-      await db.ref(
-        "rooms/"+roomId+"/users/"+myId+"/peerId"
-      ).set(peerId);
-
-      document.getElementById("connectionStatus").textContent=
-        "🟢 Voice connected";
-
-      startMicrophone();
-    });
-
-    peer.on("call",call=>{
-
-      if(!localStream) return;
-
-      call.answer(localStream);
-
-      call.on("stream",remoteStream=>{
-        addAudio(call.peer,remoteStream);
-      });
-
-    });
-
-    peer.on("error",err=>{
-      console.log(err);
-      document.getElementById("connectionStatus").textContent=
-        "🟡 Voice reconnect required";
-    });
-
-  }catch(e){
-
-    console.log(e);
-
-  }
-}
-
-async function startMicrophone(){
-
-  try{
-
-    localStream=await navigator.mediaDevices.getUserMedia({
-      audio:{
-        echoCancellation:true,
-        noiseSuppression:true,
-        autoGainControl:true
-      },
-      video:false
-    });
-
-    localStream.getAudioTracks().forEach(track=>{
-      track.enabled=micOn;
-    });
-
-    connectExistingUsers();
-
-  }catch(e){
-
-    document.getElementById("connectionStatus").textContent=
-      "🎙️ Microphone permission required";
-
-    showToast("Mic permission allow karo");
-  }
-}
-
-async function connectExistingUsers(){
-
-  if(!peer || !localStream) return;
-
-  const snap=await db.ref(
-    "rooms/"+roomId+"/users"
-  ).once("value");
-
-  const data=snap.val() || {};
-
-  Object.values(data).forEach(u=>{
-
-    if(String(u.id)===String(myId)) return;
-
-    if(!u.peerId) return;
-
-    if(calls[u.id]) return;
-
-    try{
-
-      const call=peer.call(
-        u.peerId,
-        localStream
-      );
-
-      calls[u.id]=call;
-
-      call.on("stream",remoteStream=>{
-        addAudio(u.id,remoteStream);
-      });
-
-      call.on("close",()=>{
-        delete calls[u.id];
-      });
-
-    }catch(e){}
-  });
-}
-
-function addAudio(id,stream){
-
-  let audio=document.getElementById(
-    "audio-"+String(id).replace(/[^a-zA-Z0-9]/g,"")
-  );
-
-  if(!audio){
-
-    audio=document.createElement("audio");
-
-    audio.id=
-      "audio-"+String(id).replace(/[^a-zA-Z0-9]/g,"");
-
-    audio.autoplay=true;
-    audio.playsInline=true;
-
-    document.body.appendChild(audio);
-  }
-
-  audio.srcObject=stream;
-  audio.muted=!speakerOn;
-
-  audio.play().catch(()=>{});
-}
+db.ref("rooms/"+roomId+"/chat").limitToLast(50).on("value",snap=>{
+
+ let html="";
+
+ snap.forEach(c=>{
+  const m=c.val();
+
+  html+=`
+   <div class="chatMsg">
+    <b>${escapeHtml(m.name||"Guest")}</b>
+    : ${escapeHtml(m.text||"")}
+   </div>
+  `;
+ });
+
+ document.getElementById("chatList").innerHTML=
+  html || "Chat empty";
+});
 
 /* =========================
    GIFTS
 ========================= */
 
-function openGifts(targetId=""){
+function sendGift(gift,price){
 
-  const gifts=[
-    ["🌹","Rose",10],
-    ["❤️","Heart",50],
-    ["💎","Diamond",100],
-    ["🎂","Cake",500],
-    ["🚗","Car",1000],
-    ["👑","Crown",5000],
-    ["🏆","Trophy",10000],
-    ["💰","Gold",50000]
-  ];
+ db.ref("rooms/"+roomId+"/gifts").push({
+  fromId:myId,
+  fromName:myName,
+  gift:gift,
+  price:price,
+  time:firebase.database.ServerValue.TIMESTAMP
+ });
 
-  let html=`
-    <div class="card">
-      <b>🪙 Your Coins</b>
-      <div class="coin">1,000,000 Coins</div>
-    </div>
-    <div class="grid">
-  `;
+ closePanels();
+ showToast("🎁 "+gift+" sent");
+}
 
-  gifts.forEach(g=>{
+/* =========================
+   USER ACTION
+========================= */
 
-    html+=`
-      <button class="actionBtn"
-              onclick="sendGift('${g[1]}',${g[2]},'${esc(targetId)}')">
-        <span class="ico">${g[0]}</span>
-        <small>${g[1]}</small>
-        <small>🪙 ${g[2]}</small>
-      </button>
-    `;
-  });
+function userAction(id){
 
-  html+=`</div>`;
+ db.ref("rooms/"+roomId+"/users/"+id).once("value")
+ .then(snap=>{
 
-  openSheet(
-    targetId ? "🎁 Send Gift":"🎁 Gifts",
-    html
+  const u=snap.val();
+
+  if(!u)return;
+
+  const action=prompt(
+   u.name+
+   "\nID: "+u.id+
+   "\n\n1 = Profile"+
+   "\n2 = Follow"+
+   "\n3 = Mute"+
+   "\n4 = Report"
   );
-}
 
-function sendGift(name,price,targetId){
+  if(action==="1"){
+   showToast("Profile ID: "+u.id);
+  }
 
-  db.ref("rooms/"+roomId+"/gifts").push({
-    from:myId,
-    fromName:myName,
-    to:targetId || roomOwnerId,
-    gift:name,
-    price:price,
-    createdAt:firebase.database.ServerValue.TIMESTAMP
-  });
+  if(action==="2"){
+   showToast("Follow request sent");
+  }
 
-  showToast(name+" sent 🎁");
-}
+  if(action==="3"){
+   showToast("User muted");
+  }
 
-/* =========================
-   MORE MENU
-========================= */
-
-function openMore(){
-
-  openSheet("☰ More Room Features",`
-
-    <div class="grid">
-
-      <button class="actionBtn" onclick="openPk()">
-        <span class="ico">⚔️</span><small>PK Battle</small>
-      </button>
-
-      <button class="actionBtn" onclick="openGames()">
-        <span class="ico">🎮</span><small>Games</small>
-      </button>
-
-      <button class="actionBtn" onclick="openRanking()">
-        <span class="ico">🏆</span><small>Ranking</small>
-      </button>
-
-      <button class="actionBtn" onclick="openMissionRoom()">
-        <span class="ico">🎯</span><small>Missions</small>
-      </button>
-
-      <button class="actionBtn" onclick="openRoomLevel()">
-        <span class="ico">⭐</span><small>Room Level</small>
-      </button>
-
-      <button class="actionBtn" onclick="openRoomDecor()">
-        <span class="ico">🎨</span><small>Decoration</small>
-      </button>
-
-      <button class="actionBtn" onclick="openMusic()">
-        <span class="ico">🎵</span><small>Music</small>
-      </button>
-
-      <button class="actionBtn" onclick="openMoments()">
-        <span class="ico">✨</span><small>Moments</small>
-      </button>
-
-      <button class="actionBtn" onclick="openEvent()">
-        <span class="ico">🎉</span><small>Events</small>
-      </button>
-
-      <button class="actionBtn" onclick="openFamily()">
-        <span class="ico">👨‍👩‍👧</span><small>Family</small>
-      </button>
-
-      <button class="actionBtn" onclick="openInvite()">
-        <span class="ico">📨</span><small>Invite</small>
-      </button>
-
-      <button class="actionBtn" onclick="openQueue()">
-        <span class="ico">📋</span><small>Speaker Queue</small>
-      </button>
-
-      <button class="actionBtn" onclick="openCaption()">
-        <span class="ico">💬</span><small>Captions</small>
-      </button>
-
-      <button class="actionBtn" onclick="openTranslation()">
-        <span class="ico">🌐</span><small>Translate</small>
-      </button>
-
-      <button class="actionBtn" onclick="openSafety()">
-        <span class="ico">🛡️</span><small>Safety</small>
-      </button>
-
-      <button class="actionBtn" onclick="openHistory()">
-        <span class="ico">🕘</span><small>History</small>
-      </button>
-
-    </div>
-  `);
+  if(action==="4"){
+   showToast("Report submitted");
+  }
+ });
 }
 
 /* =========================
-   FEATURE PAGES
+   ROOM CONTROLS
 ========================= */
 
-function simpleFeature(title,icon,text){
+function toggleSpeaker(){
 
-  openSheet(title,`
-    <div class="card" style="text-align:center">
-      <div style="font-size:48px">${icon}</div>
-      <h3>${esc(title)}</h3>
-      <p>${esc(text)}</p>
-    </div>
-  `);
+ speakerOn=!speakerOn;
+
+ document.querySelectorAll("audio").forEach(a=>{
+  a.volume=speakerOn?1:0;
+ });
+
+ document.getElementById("speakerBtn").innerText=
+  speakerOn?"🔊":"🔇";
 }
 
-function openPk(){
-  simpleFeature("⚔️ PK Battle","⚔️",
-    "1 vs 1 PK, team PK, timer, score, gifts aur likes yahan manage honge.");
+function copyRoom(){
+
+ const number=
+  document.getElementById("roomDetails").innerText;
+
+ if(navigator.clipboard){
+  navigator.clipboard.writeText(number).catch(()=>{});
+ }
+
+ showToast("Room number copied");
 }
 
-function openGames(){
-  simpleFeature("🎮 Games","🎮",
-    "Dice, wheel, cards, lucky draw aur mini games.");
+function shareRoom(){
+
+ const url=location.href;
+
+ if(navigator.share){
+  navigator.share({
+   title:"PawanVoice Room",
+   text:"PawanVoice room join karo",
+   url:url
+  }).catch(()=>{});
+ }else{
+  if(navigator.clipboard){
+   navigator.clipboard.writeText(url).catch(()=>{});
+  }
+  showToast("Room link copied");
+ }
 }
-
-function openRanking(){
-  simpleFeature("🏆 Ranking","🏆",
-    "Room, gift, contributor, speaker aur like ranking.");
-}
-
-function openMissionRoom(){
-  simpleFeature("🎯 Missions","🎯",
-    "Daily aur weekly room missions.");
-}
-
-function openRoomLevel(){
-  simpleFeature("⭐ Room Level","⭐",
-    "Likes, gifts aur activity se room XP aur level.");
-}
-
-function openRoomDecor(){
-  simpleFeature("🎨 Decoration","🎨",
-    "Room background, theme, banner aur effects.");
-}
-
-function openMusic(){
-  simpleFeature("🎵 Music","🎵",
-    "Room music, playlist aur music requests.");
-}
-
-function openMoments(){
-  simpleFeature("✨ Moments","✨",
-    "Big gifts, PK wins aur level-up moments.");
-}
-
-function openEvent(){
-  simpleFeature("🎉 Events","🎉",
-    "Daily, weekly, monthly aur special events.");
-}
-
-function openFamily(){
-  simpleFeature("👨‍👩‍👧 Family / Club","👨‍👩‍👧",
-    "Family members, club ranking aur missions.");
-}
-
-function openInvite(){
-  shareRoom();
-}
-
-function openQueue(){
-  simpleFeature("📋 Speaker Queue","📋",
-    "Users speaker queue me request kar sakte hain.");
-}
-
-function openCaption(){
-  simpleFeature("💬 Live Captions","💬",
-    "Live voice captions feature.");
-}
-
-function openTranslation(){
-  simpleFeature("🌐 Translation","🌐",
-    "Room language translation options.");
-}
-
-function openSafety(){
-  simpleFeature("🛡️ Safety","🛡️",
-    "Block, report, spam protection aur moderation.");
-}
-
-function openHistory(){
-  simpleFeature("🕘 Room History","🕘",
-    "Room activity, gifts, PK aur events history.");
-}
-
-/* =========================
-   INBOX
-========================= */
-
-function openInbox(){
-
-  openSheet("📥 Inbox",`
-
-    <div class="card">
-      <b>🔔 Notifications</b>
-      <p>Room invitations</p>
-      <p>Gift notifications</p>
-      <p>Friend requests</p>
-      <p>System messages</p>
-    </div>
-
-  `);
-}
-
-/* =========================
-   STATS
-========================= */
-
-async function openStats(){
-
-  const snap=await db.ref(
-    "rooms/"+roomId+"/users"
-  ).once("value");
-
-  const count=Object.keys(snap.val() || {}).length;
-
-  openSheet("📊 Room Statistics",`
-
-    <div class="grid">
-
-      <div class="actionBtn">
-        <span class="ico">👥</span>
-        <small>Online</small>
-        <b>${count}</b>
-      </div>
-
-      <div class="actionBtn">
-        <span class="ico">❤️</span>
-        <small>Likes</small>
-        <b id="likeCount">0</b>
-      </div>
-
-      <div class="actionBtn">
-        <span class="ico">🎁</span>
-        <small>Gifts</small>
-        <b>0</b>
-      </div>
-
-      <div class="actionBtn">
-        <span class="ico">⏱️</span>
-        <small>Live</small>
-        <b>Now</b>
-      </div>
-
-    </div>
-
-    <button class="fullBtn" onclick="sendLike()">
-      ❤️ Like Room
-    </button>
-  `);
-}
-
-async function sendLike(){
-
-  await db.ref(
-    "rooms/"+roomId+"/likes"
-  ).transaction(v=>(Number(v)||0)+1);
-
-  showToast("❤️ Like sent");
-}
-
-/* =========================
-   LEAVE / MINIMIZE
-========================= */
 
 function leaveRoom(){
 
-  openSheet("🚪 Leave Room",`
+ if(roomId && myId){
+  db.ref("rooms/"+roomId+"/users/"+myId).remove();
+ }
 
-    <div class="card" style="text-align:center">
-      <h3>Room se bahar jana hai?</h3>
+ Object.values(calls).forEach(c=>{
+  try{c.close()}catch(e){}
+ });
 
-      <button class="fullBtn"
-        onclick="confirmLeave()">
-        🚪 Leave Room
-      </button>
+ if(localStream){
+  localStream.getTracks().forEach(t=>t.stop());
+ }
 
-      <button class="fullBtn danger"
-        onclick="closeAll()">
-        Cancel
-      </button>
-    </div>
-  `);
-}
+ localStorage.removeItem("pawanRoomId");
 
-async function confirmLeave(){
-
-  try{
-    await db.ref(
-      "rooms/"+roomId+"/users/"+myId
-    ).remove();
-  }catch(e){}
-
-  if(peer){
-    try{peer.destroy();}catch(e){}
-  }
-
-  location.href="index.html";
-}
-
-function minimizeRoom(){
-
-  minimized=!minimized;
-
-  document.querySelector(".roomBody").style.display=
-    minimized ? "none":"block";
-
-  document.querySelector(".bottom").style.display=
-    minimized ? "none":"block";
-
-  showToast(
-    minimized ? "Room minimized":"Room restored"
-  );
+ location.href="index.html";
 }
 
 /* =========================
-   KEYBOARD / START
+   PANELS
 ========================= */
 
-document.getElementById("chatInput")
-.addEventListener("keydown",e=>{
-  if(e.key==="Enter"){
-    e.preventDefault();
-    sendChat();
-  }
-});
+function openPanel(id){
+
+ closePanels();
+
+ const p=document.getElementById(id);
+
+ if(p)p.classList.add("show");
+}
+
+function closePanels(){
+
+ document.querySelectorAll(".panel")
+ .forEach(p=>p.classList.remove("show"));
+}
+
+function showFeature(title){
+
+ closePanels();
+
+ document.getElementById("featureTitle").innerText=title;
+
+ document.getElementById("featureText").innerText=
+  title+
+  " ka panel PawanVoice room me ready hai. "+
+  "Is feature ki advanced Firebase functionality baad me connect ki ja sakti hai.";
+
+ openPanel("featurePanel");
+}
+
+/* =========================
+   ENTRY EFFECT
+========================= */
+
+function showEntryEffect(){
+
+ const d=document.createElement("div");
+
+ d.style.position="fixed";
+ d.style.left="50%";
+ d.style.top="40%";
+ d.style.transform="translate(-50%,-50%)";
+ d.style.zIndex="200";
+ d.style.fontSize="28px";
+ d.style.padding="20px";
+ d.style.borderRadius="20px";
+ d.style.background="#39204d";
+ d.innerText="✨ "+myName+" joined";
+
+ document.body.appendChild(d);
+
+ setTimeout(()=>{
+  d.remove();
+ },1800);
+}
+
+/* =========================
+   HELPERS
+========================= */
+
+function escapeHtml(str){
+
+ return String(str||"")
+ .replace(/&/g,"&amp;")
+ .replace(/</g,"&lt;")
+ .replace(/>/g,"&gt;")
+ .replace(/"/g,"&quot;")
+ .replace(/'/g,"&#039;");
+}
+
+function showToast(text){
+
+ const t=document.getElementById("toast");
+
+ t.innerText=text;
+ t.style.display="block";
+
+ clearTimeout(window.toastTimer);
+
+ window.toastTimer=setTimeout(()=>{
+  t.style.display="none";
+ },2200);
+}
+
+/* =========================
+   CLEAN EXIT
+========================= */
 
 window.addEventListener("beforeunload",()=>{
-  if(roomId && myId){
-    db.ref(
-      "rooms/"+roomId+"/users/"+myId
-    ).remove();
-  }
+
+ if(myId && roomId){
+  db.ref("rooms/"+roomId+"/users/"+myId)
+   .onDisconnect()
+   .remove();
+ }
 });
-
-initializeRoom();
-
 </script>
+
 </body>
-                                          </html>
+</html>
