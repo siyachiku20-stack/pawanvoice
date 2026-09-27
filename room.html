@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
 <title>PawanVoice Room</title>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -10,569 +12,872 @@
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <style>
-*{box-sizing:border-box}
-body{
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
   margin:0;
-  font-family:Arial,sans-serif;
-  background:#101018;
+  padding:0;
+  width:100%;
+  height:100%;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#090b13;
   color:#fff;
-  overflow-x:hidden;
+  overflow:hidden;
 }
-button,input,textarea,select{
-  font:inherit;
+
+button,input{
+  font-family:inherit;
 }
+
 button{
   border:0;
   cursor:pointer;
 }
-#app{
-  min-height:100vh;
-  background:
-    radial-gradient(circle at top,#29203c 0,#14131d 40%,#0c0c12 100%);
-}
 
-/* HEADER */
-.header{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px;
-  background:rgba(18,18,28,.95);
-  border-bottom:1px solid #343445;
-  position:sticky;
-  top:0;
-  z-index:20;
-}
-.roomDp{
-  width:48px;
-  height:48px;
-  border-radius:50%;
-  overflow:hidden;
-  flex:none;
-  border:2px solid #f4c95d;
-  background:#292936;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:22px;
-}
-.roomDp img{
+#app{
   width:100%;
   height:100%;
-  object-fit:cover;
-}
-.roomInfo{
-  min-width:0;
-  flex:1;
-}
-.roomName{
-  font-weight:bold;
-  font-size:16px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.roomSub{
-  color:#aaaabd;
-  font-size:11px;
-  margin-top:4px;
-}
-.headerBtns{
   display:flex;
-  gap:5px;
-  overflow-x:auto;
+  flex-direction:column;
+  background:
+    radial-gradient(circle at 50% 10%,#24213d 0,#111324 35%,#090b13 75%);
 }
-.iconBtn{
-  width:40px;
-  height:40px;
-  border-radius:12px;
-  background:#292938;
-  color:#fff;
-  font-size:18px;
+
+/* ================= HEADER ================= */
+
+.topbar{
+  min-height:74px;
+  padding:9px 10px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  background:rgba(12,14,27,.96);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  z-index:5;
+}
+
+.roomDpBox{
+  width:52px;
+  height:52px;
   flex:none;
-}
-.iconBtn:active{
-  transform:scale(.94);
-}
-
-/* ANNOUNCEMENT */
-.announcement{
-  margin:10px;
-  padding:9px 12px;
-  border-radius:12px;
-  background:#211f2c;
-  color:#e9e5f4;
-  font-size:12px;
-}
-
-/* ROOM */
-.roomArea{
-  padding:10px 10px 130px;
-}
-.sectionTitle{
-  text-align:center;
-  color:#aaaabd;
-  font-size:12px;
-  margin:8px 0 12px;
-}
-.ownerSeat{
-  display:flex;
-  justify-content:center;
-  margin-bottom:20px;
-}
-.seatRow{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
-  max-width:500px;
-  margin:0 auto 18px;
-}
-.seat{
-  text-align:center;
-  min-width:0;
-}
-.seatCircle{
-  width:66px;
-  height:66px;
-  max-width:100%;
-  margin:auto;
-  border-radius:50%;
-  background:#242432;
-  border:2px solid #3b3b4d;
+  border-radius:15px;
+  overflow:hidden;
+  border:2px solid #8c63ff;
+  background:#24283b;
   display:flex;
   align-items:center;
   justify-content:center;
   position:relative;
-  overflow:visible;
+  cursor:pointer;
 }
-.seatCircle img{
+
+.roomDpBox img{
   width:100%;
   height:100%;
-  border-radius:50%;
   object-fit:cover;
 }
-.emptyIcon{
-  color:#77778a;
-  font-size:26px;
+
+.roomDpFallback{
+  font-size:25px;
 }
-.seatName{
-  margin-top:7px;
-  font-size:12px;
+
+.roomHead{
+  min-width:0;
+  flex:1;
+}
+
+.roomName{
+  font-size:16px;
+  font-weight:800;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
-.seatId{
-  color:#88889a;
-  font-size:9px;
-  margin-top:2px;
-}
-.ownerTag{
-  position:absolute;
-  bottom:-10px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#d9a928;
-  color:#17130a;
-  border-radius:8px;
-  padding:3px 8px;
-  font-size:9px;
-  font-weight:bold;
+
+.roomMeta{
+  font-size:11px;
+  color:#aeb3ca;
+  margin-top:4px;
   white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
-.vipTag{
-  position:absolute;
-  top:-6px;
-  right:-4px;
-  background:#9a58ff;
-  border-radius:8px;
-  padding:3px 5px;
-  font-size:8px;
+
+.roomOwner{
+  font-size:11px;
+  color:#ffd66b;
+  margin-top:3px;
 }
-.micDot{
-  position:absolute;
-  bottom:0;
-  right:0;
-  width:19px;
-  height:19px;
-  border-radius:50%;
-  background:#333341;
-  border:2px solid #101018;
-  font-size:9px;
+
+.topActions{
+  display:flex;
+  gap:5px;
+  align-items:center;
+  max-width:50%;
+  overflow-x:auto;
+}
+
+.iconBtn{
+  width:39px;
+  height:39px;
+  flex:none;
+  border-radius:12px;
+  background:#1a1d31;
+  color:#fff;
+  font-size:18px;
+  border:1px solid rgba(255,255,255,.07);
+}
+
+.iconBtn:active,
+.bottomBtn:active,
+.actionBtn:active,
+.moreItem:active{
+  transform:scale(.94);
+}
+
+/* ================= ROOM BODY ================= */
+
+.roomBody{
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  padding:10px 9px 145px;
+}
+
+.roomNotice{
+  background:linear-gradient(90deg,rgba(125,82,255,.18),rgba(255,91,174,.10));
+  border:1px solid rgba(150,115,255,.18);
+  border-radius:14px;
+  padding:9px 11px;
+  margin-bottom:10px;
+  font-size:12px;
+  color:#dddaf4;
+}
+
+.roomTitleLine{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:3px 3px 8px;
+}
+
+.roomTitleLine b{
+  font-size:13px;
+}
+
+.liveDot{
+  color:#67e69a;
+  font-size:11px;
+}
+
+/* ================= OWNER ================= */
+
+.ownerArea{
+  display:flex;
+  justify-content:center;
+  margin:8px 0 17px;
+}
+
+.seat.ownerSeat{
+  width:115px;
+}
+
+/* ================= SEATS ================= */
+
+.seatRows{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:19px;
+}
+
+.seatRow{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
+}
+
+.seat{
+  min-width:0;
+  text-align:center;
+  position:relative;
+}
+
+.avatarWrap{
+  width:61px;
+  height:61px;
+  margin:auto;
+  border-radius:20px;
+  padding:3px;
+  position:relative;
+  background:linear-gradient(135deg,#5e48ff,#d950a7);
+}
+
+.avatarWrap.frame-gold{
+  background:linear-gradient(135deg,#ffe37d,#ff9f35,#fff1a8);
+}
+
+.avatarWrap.frame-blue{
+  background:linear-gradient(135deg,#5ad8ff,#526bff,#9e7cff);
+}
+
+.avatarWrap.frame-green{
+  background:linear-gradient(135deg,#67efb1,#22a6a0,#a7ffdd);
+}
+
+.avatarWrap.frame-red{
+  background:linear-gradient(135deg,#ff5d78,#ff9d43,#ff477f);
+}
+
+.avatar{
+  width:100%;
+  height:100%;
+  border-radius:17px;
+  background:#25283a;
   display:flex;
   align-items:center;
   justify-content:center;
-}
-.micOn{
-  background:#23bd72;
-}
-.speaking{
-  box-shadow:0 0 0 3px rgba(67,211,137,.4);
+  overflow:hidden;
+  border:2px solid #101321;
+  font-size:25px;
+  font-weight:800;
 }
 
-/* STATS */
+.avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.micDot{
+  position:absolute;
+  right:-3px;
+  bottom:0;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:#282c3e;
+  border:2px solid #0c0f1c;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:10px;
+}
+
+.micDot.on{
+  background:#24c77a;
+}
+
+.micDot.off{
+  background:#e34d63;
+}
+
+.vipBadge{
+  position:absolute;
+  left:-7px;
+  top:-7px;
+  background:linear-gradient(135deg,#ffcc55,#f18422);
+  color:#251900;
+  border-radius:8px;
+  padding:2px 5px;
+  font-size:8px;
+  font-weight:900;
+}
+
+.ownerBadge{
+  position:absolute;
+  right:-8px;
+  top:-8px;
+  background:#ffd45a;
+  color:#301f00;
+  border-radius:8px;
+  padding:3px 5px;
+  font-size:9px;
+  font-weight:900;
+}
+
+.speaking{
+  animation:speakingPulse .8s infinite alternate;
+}
+
+@keyframes speakingPulse{
+  from{box-shadow:0 0 0 0 rgba(73,236,159,.1)}
+  to{box-shadow:0 0 0 8px rgba(73,236,159,.2)}
+}
+
+.seatName{
+  margin-top:6px;
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.seatId{
+  margin-top:2px;
+  font-size:9px;
+  color:#9097b1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.levelBadge{
+  display:inline-block;
+  margin-top:3px;
+  font-size:8px;
+  color:#cfc6ff;
+  background:#292443;
+  border-radius:6px;
+  padding:2px 4px;
+}
+
+/* ================= EMPTY SEAT ================= */
+
+.emptyAvatar{
+  width:61px;
+  height:61px;
+  margin:auto;
+  border-radius:20px;
+  background:#171a29;
+  border:1px dashed #454b65;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#717993;
+  font-size:22px;
+}
+
+.emptyText{
+  margin-top:6px;
+  font-size:10px;
+  color:#777e99;
+}
+
+/* ================= STATS ================= */
+
 .stats{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-  margin:20px 0;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+  margin-top:20px;
 }
+
 .stat{
-  background:#1b1a25;
-  border:1px solid #302f40;
+  background:#121524;
+  border:1px solid rgba(255,255,255,.06);
   border-radius:12px;
+  padding:8px 4px;
   text-align:center;
-  padding:9px 4px;
 }
+
 .stat b{
   display:block;
-  font-size:16px;
-}
-.stat span{
-  font-size:10px;
-  color:#9999aa;
+  font-size:13px;
 }
 
-/* CHAT */
+.stat span{
+  display:block;
+  margin-top:3px;
+  color:#858ba3;
+  font-size:9px;
+}
+
+/* ================= CHAT ================= */
+
 .chatBox{
-  background:#15151e;
-  border-radius:15px;
-  border:1px solid #2b2a38;
-  overflow:hidden;
-}
-.chatTitle{
-  padding:10px;
-  border-bottom:1px solid #2b2a38;
-  font-size:13px;
-  font-weight:bold;
-}
-.messages{
-  height:180px;
-  overflow-y:auto;
+  margin-top:12px;
+  background:rgba(17,20,34,.84);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:14px;
   padding:9px;
 }
-.msg{
-  margin-bottom:8px;
-  font-size:12px;
-}
-.msg b{
-  color:#e8bd52;
-}
-.msg span{
-  color:#ddd;
+
+.chatTitle{
+  font-size:11px;
+  color:#9da4bd;
+  margin-bottom:7px;
 }
 
-/* BOTTOM */
+.chatMessages{
+  max-height:125px;
+  overflow-y:auto;
+}
+
+.chatMsg{
+  padding:4px 0;
+  font-size:11px;
+  color:#ddd;
+  line-height:1.35;
+}
+
+.chatMsg b{
+  color:#b999ff;
+}
+
+.chatMsg .chatId{
+  color:#737b96;
+  font-size:9px;
+}
+
+/* ================= BOTTOM BAR ================= */
+
 .bottomBar{
   position:fixed;
   left:0;
   right:0;
   bottom:0;
-  z-index:30;
-  background:rgba(16,16,24,.98);
-  border-top:1px solid #333243;
-  padding:8px;
-}
-.chatInput{
+  min-height:72px;
+  padding:9px 8px 10px;
+  background:rgba(10,12,22,.98);
+  border-top:1px solid rgba(255,255,255,.08);
   display:flex;
-  gap:7px;
-  margin-bottom:8px;
-}
-.chatInput input{
-  flex:1;
-  min-width:0;
-  border:0;
-  outline:0;
-  background:#282735;
-  color:#fff;
-  border-radius:22px;
-  padding:11px 14px;
-}
-.sendBtn{
-  width:44px;
-  border-radius:50%;
-  background:#e1ad36;
-  color:#17130b;
-}
-.bottomBtns{
-  display:grid;
-  grid-template-columns:repeat(6,1fr);
+  align-items:center;
   gap:6px;
-}
-.bottomBtn{
-  background:#24232f;
-  color:#fff;
-  border-radius:12px;
-  padding:8px 2px;
-  font-size:17px;
-}
-.bottomBtn small{
-  display:block;
-  font-size:8px;
-  color:#aaa;
-  margin-top:2px;
+  z-index:20;
 }
 
-/* MODAL */
+.bottomBtn{
+  width:43px;
+  height:43px;
+  flex:none;
+  border-radius:14px;
+  background:#191c2e;
+  color:#fff;
+  font-size:18px;
+}
+
+.chatInputWrap{
+  flex:1;
+  min-width:60px;
+  height:43px;
+  display:flex;
+  align-items:center;
+  background:#181b2b;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:14px;
+  padding:0 8px;
+}
+
+.chatInputWrap input{
+  width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#fff;
+  font-size:12px;
+}
+
+.chatInputWrap input::placeholder{
+  color:#666d84;
+}
+
+.micMain{
+  background:linear-gradient(135deg,#744cff,#bd49a4);
+}
+
+/* ================= PANELS ================= */
+
 .overlay{
-  display:none;
   position:fixed;
   inset:0;
-  z-index:100;
   background:rgba(0,0,0,.68);
+  z-index:50;
+  display:none;
   align-items:flex-end;
-  justify-content:center;
 }
+
 .overlay.show{
   display:flex;
 }
+
 .panel{
   width:100%;
-  max-width:560px;
   max-height:85vh;
   overflow-y:auto;
-  background:#1a1924;
+  background:#111423;
   border-radius:22px 22px 0 0;
-  padding:16px;
-  border:1px solid #3a3949;
-  animation:up .18s ease;
+  border-top:1px solid rgba(255,255,255,.1);
+  padding:15px;
+  animation:panelUp .18s ease;
 }
-@keyframes up{
-  from{transform:translateY(40px);opacity:.3}
+
+@keyframes panelUp{
+  from{transform:translateY(50px);opacity:.4}
   to{transform:translateY(0);opacity:1}
 }
+
 .panelHead{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin-bottom:14px;
+  margin-bottom:13px;
 }
+
 .panelHead h3{
   margin:0;
-  font-size:17px;
+  font-size:16px;
 }
-.close{
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  background:#2b2a38;
-  color:#fff;
-  font-size:18px;
-}
-.option{
-  width:100%;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:13px;
-  margin:7px 0;
-  border-radius:13px;
-  background:#24232f;
-  color:#fff;
-  text-align:left;
-}
-.option:active{
-  transform:scale(.98);
-}
-.optionIcon{
+
+.closeBtn{
   width:34px;
   height:34px;
-  border-radius:10px;
-  background:#302f3e;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  border-radius:11px;
+  background:#24283a;
+  color:#fff;
   font-size:18px;
 }
-.optionText{
-  flex:1;
-}
-.optionText b{
-  display:block;
-  font-size:13px;
-}
-.optionText span{
-  display:block;
-  color:#9696a7;
-  font-size:10px;
-  margin-top:3px;
-}
-.arrow{
-  color:#777789;
+
+.panelText{
+  color:#9ba2ba;
+  font-size:12px;
+  line-height:1.5;
 }
 
-/* FORMS */
-.formGroup{
-  margin-bottom:12px;
-}
-.formGroup label{
-  display:block;
-  font-size:11px;
-  color:#aaaabd;
-  margin-bottom:5px;
-}
-.formGroup input,
-.formGroup textarea,
-.formGroup select{
+.formInput{
   width:100%;
-  border:1px solid #393848;
+  height:45px;
+  margin:6px 0;
+  padding:0 12px;
+  border:1px solid #30354d;
   outline:0;
-  background:#252430;
-  color:#fff;
-  border-radius:11px;
-  padding:11px;
-}
-.formGroup textarea{
-  min-height:90px;
-  resize:vertical;
-}
-.saveBtn{
-  width:100%;
-  padding:12px;
   border-radius:12px;
-  background:#dfac35;
-  color:#17130a;
-  font-weight:bold;
-  margin-top:5px;
+  background:#181c2d;
+  color:#fff;
 }
 
-/* DP */
-.bigDp{
-  width:110px;
-  height:110px;
-  border-radius:50%;
+.primaryBtn{
+  width:100%;
+  min-height:45px;
+  margin-top:8px;
+  border-radius:13px;
+  background:linear-gradient(135deg,#704cff,#b64ca4);
+  color:#fff;
+  font-weight:800;
+}
+
+.dangerBtn{
+  background:#3b1c27;
+  color:#ff8095;
+}
+
+/* ================= DP PANEL ================= */
+
+.dpPreview{
+  width:100px;
+  height:100px;
+  margin:5px auto 14px;
+  border-radius:25px;
   overflow:hidden;
-  margin:8px auto 18px;
-  border:3px solid #e3b63f;
-  background:#2a2937;
+  border:3px solid #805dff;
+  background:#25293c;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:45px;
+  font-size:40px;
 }
-.bigDp img{
+
+.dpPreview img{
   width:100%;
   height:100%;
   object-fit:cover;
 }
+
 .fileBtn{
   display:block;
   width:100%;
+  padding:13px;
   text-align:center;
-  padding:12px;
-  background:#292837;
   border-radius:12px;
-  margin-bottom:8px;
-  cursor:pointer;
-}
-.fileBtn input{
-  display:none;
+  background:#24283c;
+  color:#fff;
+  font-size:12px;
+  font-weight:700;
+  margin-top:8px;
 }
 
-/* GIFT */
-.gifts{
+/* ================= MORE GRID ================= */
+
+.moreGrid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:8px;
+  gap:9px;
 }
-.gift{
-  background:#252430;
-  border-radius:13px;
-  padding:11px 4px;
+
+.moreItem{
+  min-height:74px;
+  border-radius:15px;
+  background:#191d2e;
+  border:1px solid rgba(255,255,255,.05);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  color:#fff;
+}
+
+.moreItem .ico{
+  font-size:22px;
+}
+
+.moreItem span{
+  font-size:9px;
+  color:#b7bdd1;
   text-align:center;
 }
-.giftIcon{
-  font-size:25px;
+
+/* ================= ACTION GRID ================= */
+
+.actionGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
 }
-.giftName{
-  font-size:10px;
-  margin-top:4px;
+
+.actionBtn{
+  min-height:65px;
+  border-radius:13px;
+  background:#1b1f31;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.05);
 }
-.giftPrice{
-  color:#e4b94f;
+
+.actionBtn .aIcon{
+  display:block;
+  font-size:21px;
+  margin-bottom:5px;
+}
+
+.actionBtn span{
   font-size:9px;
+  color:#aeb4c8;
+}
+
+/* ================= USER CARD ================= */
+
+.userCard{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#191d2e;
+  padding:10px;
+  border-radius:14px;
+  margin-bottom:12px;
+}
+
+.userCardAvatar{
+  width:52px;
+  height:52px;
+  border-radius:17px;
+  overflow:hidden;
+  background:#292d42;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+}
+
+.userCardAvatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.userCardInfo{
+  min-width:0;
+  flex:1;
+}
+
+.userCardInfo b{
+  display:block;
+  font-size:14px;
+}
+
+.userCardInfo span{
+  display:block;
+  color:#858ca5;
+  font-size:10px;
   margin-top:3px;
 }
 
-/* MINIMIZE */
-#miniRoom{
-  display:none;
-  position:fixed;
-  right:15px;
-  bottom:20px;
-  z-index:200;
-  width:170px;
-  padding:12px;
-  background:#211f2c;
-  border:1px solid #4b485e;
-  border-radius:17px;
-  box-shadow:0 10px 30px rgba(0,0,0,.5);
+/* ================= LIST ================= */
+
+.listItem{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:11px 4px;
+  border-bottom:1px solid rgba(255,255,255,.06);
 }
+
+.listLeft{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.listAvatar{
+  width:40px;
+  height:40px;
+  border-radius:13px;
+  background:#292d42;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+}
+
+.listAvatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.listName{
+  font-size:12px;
+  font-weight:700;
+}
+
+.listId{
+  font-size:9px;
+  color:#737b94;
+  margin-top:2px;
+}
+
+.smallBtn{
+  padding:8px 10px;
+  border-radius:9px;
+  background:#292d43;
+  color:#fff;
+  font-size:10px;
+}
+
+/* ================= MINI ROOM ================= */
+
+#miniRoom{
+  position:fixed;
+  right:12px;
+  bottom:85px;
+  width:145px;
+  padding:10px;
+  border-radius:17px;
+  background:#171a2a;
+  border:1px solid #3b3f58;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+  z-index:100;
+  display:none;
+}
+
 #miniRoom.show{
   display:block;
 }
+
 .miniTop{
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:7px;
 }
+
 .miniDp{
-  width:38px;
-  height:38px;
-  border-radius:50%;
+  width:35px;
+  height:35px;
+  border-radius:11px;
   overflow:hidden;
-  background:#30303e;
+  background:#282c40;
   display:flex;
   align-items:center;
   justify-content:center;
 }
+
 .miniDp img{
   width:100%;
   height:100%;
   object-fit:cover;
 }
-.miniName{
-  flex:1;
-  font-size:12px;
-}
-.restoreBtn{
-  margin-top:10px;
-  width:100%;
-  padding:8px;
-  border-radius:10px;
-  background:#dfac35;
-  color:#17130a;
-  font-weight:bold;
+
+.miniInfo{
+  min-width:0;
 }
 
-/* TOAST */
+.miniInfo b{
+  display:block;
+  font-size:10px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.miniInfo span{
+  display:block;
+  color:#7d849d;
+  font-size:8px;
+  margin-top:2px;
+}
+
+.miniRestore{
+  width:100%;
+  height:30px;
+  margin-top:8px;
+  border-radius:9px;
+  background:#7350ff;
+  color:#fff;
+  font-size:10px;
+  font-weight:800;
+}
+
+/* ================= TOAST ================= */
+
 #toast{
   position:fixed;
   left:50%;
-  bottom:105px;
-  transform:translateX(-50%);
-  z-index:500;
-  background:#2b2a37;
+  bottom:91px;
+  transform:translateX(-50%) translateY(20px);
+  background:#25293b;
   color:#fff;
-  padding:10px 15px;
-  border-radius:20px;
-  font-size:12px;
-  display:none;
+  padding:10px 14px;
+  border-radius:12px;
+  font-size:11px;
+  opacity:0;
+  pointer-events:none;
+  transition:.2s;
+  z-index:200;
   max-width:90%;
   text-align:center;
 }
 
-/* RESPONSIVE */
-@media(max-width:360px){
-  .seatCircle{
-    width:58px;
-    height:58px;
+#toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:370px){
+  .topActions .iconBtn:nth-child(4),
+  .topActions .iconBtn:nth-child(5){
+    display:none;
   }
-  .seatRow{
-    gap:7px;
+
+  .avatarWrap,
+  .emptyAvatar{
+    width:54px;
+    height:54px;
   }
-  .headerBtns{
-    max-width:160px;
+
+  .seat{
+    font-size:10px;
+  }
+
+  .bottomBtn{
+    width:39px;
+    height:39px;
   }
 }
 </style>
@@ -583,488 +888,208 @@ button{
 <div id="app">
 
   <!-- HEADER -->
-  <header class="header">
+  <header class="topbar">
 
-    <button class="roomDp" onclick="openRoomDp()">
-      <img id="headerRoomDp" style="display:none">
-      <span id="headerRoomDpIcon">🏠</span>
-    </button>
+    <div class="roomDpBox" onclick="openRoomDp()">
+      <img id="roomDpImg" style="display:none">
+      <div id="roomDpFallback" class="roomDpFallback">🎙️</div>
+    </div>
 
-    <div class="roomInfo">
+    <div class="roomHead">
       <div class="roomName" id="roomName">PawanVoice Room</div>
-      <div class="roomSub">
-        ID: <span id="roomIdText">Loading...</span>
-        • Owner: <span id="ownerName">Pawan</span>
+
+      <div class="roomMeta">
+        Room No: <b id="roomNumber">------</b>
+        &nbsp;•&nbsp;
+        ID: <span id="roomFirebaseId">------</span>
+      </div>
+
+      <div class="roomOwner">
+        👑 Owner: <span id="ownerName">------</span>
       </div>
     </div>
 
-    <div class="headerBtns">
+    <div class="topActions">
       <button class="iconBtn" onclick="openSettings()">⚙️</button>
       <button class="iconBtn" onclick="openOnline()">👥</button>
       <button class="iconBtn" onclick="shareRoom()">↗️</button>
-      <button class="iconBtn" onclick="copyRoomId()">📋</button>
-      <button class="iconBtn" onclick="minimizeRoom()">➖</button>
-      <button class="iconBtn" onclick="openInfo()">ℹ️</button>
+      <button class="iconBtn" onclick="copyRoomNumber()">📋</button>
+      <button class="iconBtn" onclick="minimizeRoom()">—</button>
+      <button class="iconBtn" onclick="openInfo()">ⓘ</button>
       <button class="iconBtn" onclick="leaveRoom()">🚪</button>
     </div>
 
   </header>
 
-  <div class="announcement" id="announcement">
-    📢 Welcome to PawanVoice Room
-  </div>
+  <!-- BODY -->
+  <main class="roomBody">
 
-  <main class="roomArea">
-
-    <div class="sectionTitle">🎙️ VOICE ROOM</div>
-
-    <!-- OWNER -->
-    <div class="ownerSeat">
-      <div class="seat" id="ownerSeat"></div>
+    <div class="roomNotice" id="announcement">
+      🎙️ Welcome to PawanVoice Room
     </div>
 
-    <!-- SEATS 2-5 -->
-    <div class="seatRow" id="row1"></div>
+    <div class="roomTitleLine">
+      <b>🎤 Voice Room</b>
+      <span class="liveDot">● LIVE</span>
+    </div>
 
-    <!-- SEATS 6-9 -->
-    <div class="seatRow" id="row2"></div>
+    <!-- OWNER -->
+    <div class="ownerArea">
+      <div class="seat ownerSeat" id="ownerSeat"></div>
+    </div>
+
+    <!-- SEATS -->
+    <div class="seatRows">
+
+      <div class="seatRow" id="seatRow1">
+        <div class="seat" id="seat2"></div>
+        <div class="seat" id="seat3"></div>
+        <div class="seat" id="seat4"></div>
+        <div class="seat" id="seat5"></div>
+      </div>
+
+      <div class="seatRow" id="seatRow2">
+        <div class="seat" id="seat6"></div>
+        <div class="seat" id="seat7"></div>
+        <div class="seat" id="seat8"></div>
+        <div class="seat" id="seat9"></div>
+      </div>
+
+    </div>
 
     <!-- STATS -->
     <div class="stats">
       <div class="stat">
-        <b id="onlineCount">1</b>
+        <b id="onlineCount">0</b>
         <span>Online</span>
       </div>
+
       <div class="stat">
         <b id="likeCount">0</b>
         <span>Likes</span>
       </div>
+
       <div class="stat">
         <b id="giftCount">0</b>
         <span>Gifts</span>
+      </div>
+
+      <div class="stat">
+        <b id="roomDuration">00:00</b>
+        <span>Time</span>
       </div>
     </div>
 
     <!-- CHAT -->
     <section class="chatBox">
       <div class="chatTitle">💬 Room Chat</div>
-      <div class="messages" id="messages">
-        <div class="msg">
-          <b>System:</b>
-          <span>Welcome to PawanVoice!</span>
-        </div>
+      <div class="chatMessages" id="chatMessages">
+        <div class="chatMsg">Welcome to PawanVoice.</div>
       </div>
     </section>
+
+    <div id="audioContainer"></div>
 
   </main>
 
   <!-- BOTTOM -->
   <div class="bottomBar">
 
-    <div class="chatInput">
-      <button class="bottomBtn" onclick="emoji()">😊</button>
-      <input id="chatInput" placeholder="Type message...">
-      <button class="sendBtn" onclick="sendMessage()">➤</button>
+    <button class="bottomBtn" onclick="sendEmoji()">😊</button>
+
+    <div class="chatInputWrap">
+      <input
+        id="chatInput"
+        type="text"
+        maxlength="150"
+        placeholder="Say something..."
+        onkeydown="if(event.key==='Enter')sendChat()">
     </div>
 
-    <div class="bottomBtns">
+    <button class="bottomBtn" onclick="toggleSpeaker()" id="speakerBtn">🔊</button>
 
-      <button class="bottomBtn" onclick="toggleSpeaker()">
-        🔊
-        <small>Speaker</small>
-      </button>
+    <button class="bottomBtn micMain"
+            onclick="toggleMic()"
+            id="micBtn">🎙️</button>
 
-      <button class="bottomBtn" id="micButton" onclick="toggleMic()">
-        🎙️
-        <small>Mic ON</small>
-      </button>
+    <button class="bottomBtn" onclick="openInbox()">📥</button>
 
-      <button class="bottomBtn" onclick="openOnline()">
-        👥
-        <small>Users</small>
-      </button>
+    <button class="bottomBtn" onclick="openGifts()">🎁</button>
 
-      <button class="bottomBtn" onclick="openGifts()">
-        🎁
-        <small>Gift</small>
-      </button>
+    <button class="bottomBtn" onclick="openMore()">☰</button>
 
-      <button class="bottomBtn" onclick="openMore()">
-        ⋮
-        <small>More</small>
-      </button>
-
-      <button class="bottomBtn" onclick="sendLike()">
-        ❤️
-        <small>Like</small>
-      </button>
-
-    </div>
   </div>
 
 </div>
 
-<!-- MINIMIZED ROOM -->
+
+<!-- MINI ROOM -->
 <div id="miniRoom">
 
   <div class="miniTop">
 
     <div class="miniDp">
-      <img id="miniRoomDp" style="display:none">
-      <span id="miniRoomIcon">🏠</span>
+      <img id="miniDpImg" style="display:none">
+      <span id="miniDpFallback">🎙️</span>
     </div>
 
-    <div class="miniName" id="miniRoomName">
-      PawanVoice
+    <div class="miniInfo">
+      <b id="miniRoomName">PawanVoice</b>
+      <span>Room <span id="miniRoomNumber">------</span></span>
     </div>
 
   </div>
 
-  <button class="restoreBtn" onclick="restoreRoom()">
-    ↗️ Restore Room
+  <button class="miniRestore" onclick="restoreRoom()">
+    Open Room
   </button>
 
 </div>
 
+
+<!-- PANEL OVERLAY -->
+<div class="overlay" id="overlay" onclick="closePanel(event)">
+  <div class="panel" id="panel" onclick="event.stopPropagation()">
+  </div>
+</div>
+
+
 <!-- TOAST -->
 <div id="toast"></div>
 
-<!-- ROOM DP PANEL -->
-<div class="overlay" id="dpOverlay">
-  <div class="panel">
-
-    <div class="panelHead">
-      <h3>🖼️ Room DP</h3>
-      <button class="close" onclick="closePanel('dpOverlay')">×</button>
-    </div>
-
-    <div class="bigDp">
-      <img id="bigRoomDp" style="display:none">
-      <span id="bigRoomDpIcon">🏠</span>
-    </div>
-
-    <button class="option" onclick="viewRoomDp()">
-      <div class="optionIcon">👁️</div>
-      <div class="optionText">
-        <b>View Room DP</b>
-        <span>Room profile picture dekhein</span>
-      </div>
-      <div class="arrow">›</div>
-    </button>
-
-    <div id="ownerDpOptions">
-
-      <label class="fileBtn">
-        🖼️ Change Room DP
-        <input type="file" accept="image/*" onchange="changeRoomDp(event)">
-      </label>
-
-      <button class="option" onclick="removeRoomDp()">
-        <div class="optionIcon">🗑️</div>
-        <div class="optionText">
-          <b>Remove Room DP</b>
-          <span>Current room picture remove karein</span>
-        </div>
-        <div class="arrow">›</div>
-      </button>
-
-    </div>
-
-  </div>
-</div>
-
-<!-- SETTINGS -->
-<div class="overlay" id="settingsOverlay">
-  <div class="panel">
-
-    <div class="panelHead">
-      <h3>⚙️ Room Settings</h3>
-      <button class="close" onclick="closePanel('settingsOverlay')">×</button>
-    </div>
-
-    <button class="option" onclick="openSettingPage('basic')">
-      <div class="optionIcon">🏠</div>
-      <div class="optionText">
-        <b>Basic Settings</b>
-        <span>Room name, description, category</span>
-      </div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="openSettingPage('privacy')">
-      <div class="optionIcon">🔒</div>
-      <div class="optionText">
-        <b>Privacy</b>
-        <span>Public, private, password</span>
-      </div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="openSettingPage('seats')">
-      <div class="optionIcon">💺</div>
-      <div class="optionText">
-        <b>Seat Settings</b>
-        <span>Seat lock and speaker permissions</span>
-      </div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="openSettingPage('voice')">
-      <div class="optionIcon">🎙️</div>
-      <div class="optionText">
-        <b>Voice Settings</b>
-        <span>Mic and speaker options</span>
-      </div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="openSettingPage('admin')">
-      <div class="optionIcon">🛡️</div>
-      <div class="optionText">
-        <b>Admin Settings</b>
-        <span>Admin and moderation controls</span>
-      </div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="openSettingPage('notice')">
-      <div class="optionIcon">📢</div>
-      <div class="optionText">
-        <b>Announcement</b>
-        <span>Room announcement change karein</span>
-      </div>
-      <div class="arrow">›</div>
-    </button>
-
-  </div>
-</div>
-
-<!-- SETTING DETAIL -->
-<div class="overlay" id="settingDetailOverlay">
-  <div class="panel">
-
-    <div class="panelHead">
-      <h3 id="settingTitle">Settings</h3>
-      <button class="close" onclick="closePanel('settingDetailOverlay')">×</button>
-    </div>
-
-    <div id="settingContent"></div>
-
-  </div>
-</div>
-
-<!-- ONLINE -->
-<div class="overlay" id="onlineOverlay">
-  <div class="panel">
-
-    <div class="panelHead">
-      <h3>👥 Online Users</h3>
-      <button class="close" onclick="closePanel('onlineOverlay')">×</button>
-    </div>
-
-    <div id="onlineUsers"></div>
-
-  </div>
-</div>
-
-<!-- INFO -->
-<div class="overlay" id="infoOverlay">
-  <div class="panel">
-
-    <div class="panelHead">
-      <h3>ℹ️ Room Information</h3>
-      <button class="close" onclick="closePanel('infoOverlay')">×</button>
-    </div>
-
-    <div id="roomInfoContent"></div>
-
-  </div>
-</div>
-
-<!-- GIFTS -->
-<div class="overlay" id="giftOverlay">
-  <div class="panel">
-
-    <div class="panelHead">
-      <h3>🎁 Gifts</h3>
-      <button class="close" onclick="closePanel('giftOverlay')">×</button>
-    </div>
-
-    <div class="gifts">
-
-      <button class="gift" onclick="sendGift('🌹','Rose',10)">
-        <div class="giftIcon">🌹</div>
-        <div class="giftName">Rose</div>
-        <div class="giftPrice">10 🪙</div>
-      </button>
-
-      <button class="gift" onclick="sendGift('❤️','Heart',100)">
-        <div class="giftIcon">❤️</div>
-        <div class="giftName">Heart</div>
-        <div class="giftPrice">100 🪙</div>
-      </button>
-
-      <button class="gift" onclick="sendGift('🎂','Cake',500)">
-        <div class="giftIcon">🎂</div>
-        <div class="giftName">Cake</div>
-        <div class="giftPrice">500 🪙</div>
-      </button>
-
-      <button class="gift" onclick="sendGift('💖','Love',1000)">
-        <div class="giftIcon">💖</div>
-        <div class="giftName">Love</div>
-        <div class="giftPrice">1K 🪙</div>
-      </button>
-
-      <button class="gift" onclick="sendGift('👑','Crown',5000)">
-        <div class="giftIcon">👑</div>
-        <div class="giftName">Crown</div>
-        <div class="giftPrice">5K 🪙</div>
-      </button>
-
-      <button class="gift" onclick="sendGift('💎','Diamond',10000)">
-        <div class="giftIcon">💎</div>
-        <div class="giftName">Diamond</div>
-        <div class="giftPrice">10K 🪙</div>
-      </button>
-
-      <button class="gift" onclick="sendGift('🚀','Rocket',50000)">
-        <div class="giftIcon">🚀</div>
-        <div class="giftName">Rocket</div>
-        <div class="giftPrice">50K 🪙</div>
-      </button>
-
-      <button class="gift" onclick="sendGift('🏰','Castle',100000)">
-        <div class="giftIcon">🏰</div>
-        <div class="giftName">Castle</div>
-        <div class="giftPrice">100K 🪙</div>
-      </button>
-
-    </div>
-
-  </div>
-</div>
-
-<!-- MORE -->
-<div class="overlay" id="moreOverlay">
-  <div class="panel">
-
-    <div class="panelHead">
-      <h3>⋮ More</h3>
-      <button class="close" onclick="closePanel('moreOverlay')">×</button>
-    </div>
-
-    <button class="option" onclick="openOnline()">
-      <div class="optionIcon">👥</div>
-      <div class="optionText"><b>Members</b><span>Room members</span></div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="simpleAction('✋ Hand Raise')">
-      <div class="optionIcon">✋</div>
-      <div class="optionText"><b>Hand Raise</b><span>Speaker banne ki request</span></div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="simpleAction('🎙️ Mic Request')">
-      <div class="optionIcon">🎙️</div>
-      <div class="optionText"><b>Mic Request</b><span>Mic permission request</span></div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="simpleAction('💺 Seat Settings')">
-      <div class="optionIcon">💺</div>
-      <div class="optionText"><b>Seats</b><span>Seat management</span></div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="simpleAction('⚔️ PK')">
-      <div class="optionIcon">⚔️</div>
-      <div class="optionText"><b>PK Battle</b><span>Voice battle</span></div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="simpleAction('🎮 Games')">
-      <div class="optionIcon">🎮</div>
-      <div class="optionText"><b>Games</b><span>Room mini games</span></div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="simpleAction('🏆 Ranking')">
-      <div class="optionIcon">🏆</div>
-      <div class="optionText"><b>Ranking</b><span>Room ranking</span></div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="simpleAction('🎯 Missions')">
-      <div class="optionIcon">🎯</div>
-      <div class="optionText"><b>Missions</b><span>Daily room missions</span></div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="simpleAction('🎵 Music')">
-      <div class="optionIcon">🎵</div>
-      <div class="optionText"><b>Music</b><span>Room music</span></div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="simpleAction('🎨 Theme')">
-      <div class="optionIcon">🎨</div>
-      <div class="optionText"><b>Theme</b><span>Room appearance</span></div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="openSettings()">
-      <div class="optionIcon">⚙️</div>
-      <div class="optionText"><b>Settings</b><span>Room settings</span></div>
-      <div class="arrow">›</div>
-    </button>
-
-    <button class="option" onclick="leaveRoom()">
-      <div class="optionIcon">🚪</div>
-      <div class="optionText"><b>Leave Room</b><span>Room se bahar niklein</span></div>
-      <div class="arrow">›</div>
-    </button>
-
-  </div>
-</div>
 
 <script>
 
-/* =========================
+/* =========================================================
    FIREBASE
-========================= */
+========================================================= */
 
 const firebaseConfig = {
   apiKey: "AIzaSyDnlTde5qG5aPHrUIV6kTYnM521GtbrrE",
   authDomain: "pawanvoice-68c5e.firebaseapp.com",
-  databaseURL: "https://pawanvoice-68c5e-default-rtdb.firebaseio.com",
+  databaseURL: "https://pawanvoice-68c5e-default-rtdb.firebaseio.com/",
   projectId: "pawanvoice-68c5e",
   storageBucket: "pawanvoice-68c5e.firebasestorage.app",
   messagingSenderId: "148446327241",
   appId: "1:148446327241:web:6bac9cb9ad0fb530cbb818"
 };
 
-if(!firebase.apps.length){
-  firebase.initializeApp(firebaseConfig);
-}
+firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
 
-/* =========================
-   BASIC DATA
-========================= */
+
+/* =========================================================
+   BASIC VARIABLES
+========================================================= */
 
 const params = new URLSearchParams(location.search);
 
 let roomId =
   params.get("room") ||
   params.get("roomId") ||
-  localStorage.getItem("pawanRoomId");
-
-let myId =
-  localStorage.getItem("pawanUserId") ||
-  ("u_" + Date.now() + "_" + Math.random().toString(36).slice(2,7));
+  localStorage.getItem("pawanRoomId") ||
+  "";
 
 let myName =
   localStorage.getItem("pawanName") ||
@@ -1074,38 +1099,69 @@ let myDp =
   localStorage.getItem("pawanDp") ||
   "";
 
-let ownerId = "";
+let myFrame =
+  localStorage.getItem("pawanFrame") ||
+  "default";
 
-let roomData = {};
-let usersData = {};
-let localStream = null;
-let peer = null;
-let calls = {};
+let myVip =
+  Number(localStorage.getItem("pawanVip") || 0);
+
+let myLevel =
+  Number(localStorage.getItem("pawanLevel") || 1);
+
+let myCpLevel =
+  Number(localStorage.getItem("pawanCpLevel") || 1);
+
+let myId =
+  localStorage.getItem("pawanNumericUserId") ||
+  "";
+
+let roomNumber = "";
+
+let ownerId = "";
+let ownerName = "------";
+
+let users = {};
 let micOn = true;
 let speakerOn = true;
+let selectedUserId = null;
 
-/* =========================
-   HELPERS
-========================= */
+let peer = null;
+let localStream = null;
+let calls = {};
 
-function $(id){
-  return document.getElementById(id);
+let roomStartedAt = Date.now();
+
+let listenersReady = false;
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function toast(message){
+
+  const el = document.getElementById("toast");
+
+  el.innerText = message;
+  el.classList.add("show");
+
+  clearTimeout(window.__toastTimer);
+
+  window.__toastTimer =
+    setTimeout(()=>{
+      el.classList.remove("show");
+    },2200);
 }
 
-function showToast(message){
-  const t = $("toast");
-  t.textContent = message;
-  t.style.display = "block";
 
-  clearTimeout(window.toastTimer);
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
 
-  window.toastTimer = setTimeout(()=>{
-    t.style.display = "none";
-  },2200);
-}
+function escapeHtml(value){
 
-function escapeHtml(text){
-  return String(text || "")
+  return String(value ?? "")
     .replace(/&/g,"&amp;")
     .replace(/</g,"&lt;")
     .replace(/>/g,"&gt;")
@@ -1113,1099 +1169,2086 @@ function escapeHtml(text){
     .replace(/'/g,"&#039;");
 }
 
-function closePanel(id){
-  $(id).classList.remove("show");
+
+/* =========================================================
+   NUMERIC ID GENERATOR
+========================================================= */
+
+function randomNumericId(){
+
+  return String(
+    Math.floor(100000 + Math.random() * 900000)
+  );
 }
 
-/* =========================
-   ROOM START
-========================= */
 
-async function initRoom(){
+/* =========================================================
+   CREATE UNIQUE NUMERIC USER ID
+========================================================= */
 
-  if(!roomId){
-    roomId = "room_" + Date.now();
-    localStorage.setItem("pawanRoomId",roomId);
+async function createNumericUserId(){
+
+  if(myId && /^\d{6}$/.test(myId)){
+    return myId;
   }
 
-  $("roomIdText").textContent = roomId;
+  for(let attempt=0; attempt<20; attempt++){
 
-  await loadRoom();
+    const candidate = randomNumericId();
+
+    const ref = db.ref("users/" + candidate);
+
+    const result = await ref.transaction(current => {
+
+      if(current === null){
+        return {
+          id:candidate,
+          createdAt:firebase.database.ServerValue.TIMESTAMP
+        };
+      }
+
+      return;
+    });
+
+    if(result.committed){
+
+      myId = candidate;
+
+      localStorage.setItem(
+        "pawanNumericUserId",
+        myId
+      );
+
+      return myId;
+    }
+  }
+
+  throw new Error("Numeric User ID create nahi hua.");
+}
+
+
+/* =========================================================
+   NUMERIC ROOM NUMBER
+========================================================= */
+
+function randomRoomNumber(){
+
+  return String(
+    Math.floor(100000 + Math.random() * 900000)
+  );
+}
+
+
+async function createOrGetRoomNumber(){
+
+  const roomRef = db.ref("rooms/" + roomId);
+
+  let snapshot = await roomRef.once("value");
+
+  let data = snapshot.val() || {};
+
+  if(data.roomNumber &&
+     /^\d{6}$/.test(String(data.roomNumber))){
+
+    roomNumber = String(data.roomNumber);
+
+    return roomNumber;
+  }
+
+
+  const result = await roomRef.transaction(current => {
+
+    current = current || {};
+
+    if(
+      current.roomNumber &&
+      /^\d{6}$/.test(String(current.roomNumber))
+    ){
+      return current;
+    }
+
+    current.roomNumber = randomRoomNumber();
+
+    return current;
+  });
+
+
+  const finalData = result.snapshot.val() || {};
+
+  roomNumber =
+    String(finalData.roomNumber || randomRoomNumber());
+
+  return roomNumber;
+}
+
+
+/* =========================================================
+   ROOM ID
+========================================================= */
+
+async function ensureRoomId(){
+
+  if(roomId){
+    localStorage.setItem(
+      "pawanRoomId",
+      roomId
+    );
+
+    return;
+  }
+
+  roomId =
+    "room_" +
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2,8);
+
+  localStorage.setItem(
+    "pawanRoomId",
+    roomId
+  );
+}
+
+
+/* =========================================================
+   USER RECORD
+========================================================= */
+
+async function saveMyGlobalUser(){
+
+  const userRef =
+    db.ref("users/" + myId);
+
+  const snap =
+    await userRef.once("value");
+
+  const old =
+    snap.val() || {};
+
+  await userRef.update({
+
+    id:myId,
+
+    name:myName,
+
+    dp:myDp || old.dp || "",
+
+    frame:myFrame,
+
+    vip:myVip,
+
+    level:myLevel,
+
+    cpLevel:myCpLevel,
+
+    lastSeen:firebase.database.ServerValue.TIMESTAMP
+
+  });
+}
+
+
+/* =========================================================
+   ROOM LOAD / CREATE
+========================================================= */
+
+async function loadRoom(){
+
+  await ensureRoomId();
+
+  await createNumericUserId();
+
+  await saveMyGlobalUser();
+
+  const roomRef =
+    db.ref("rooms/" + roomId);
+
+  let snapshot =
+    await roomRef.once("value");
+
+  let data =
+    snapshot.val();
+
+  if(!data){
+
+    ownerId = myId;
+    ownerName = myName;
+
+    await roomRef.set({
+
+      roomNumber:randomRoomNumber(),
+
+      name:"PawanVoice Room",
+
+      description:"Welcome to PawanVoice",
+
+      ownerId:myId,
+
+      ownerName:myName,
+
+      category:"Voice Chat",
+
+      language:"Hindi",
+
+      isPrivate:false,
+
+      createdAt:firebase.database.ServerValue.TIMESTAMP,
+
+      likes:0,
+
+      gifts:0,
+
+      settings:{
+        dp:"",
+        announcement:"🎙️ Welcome to PawanVoice Room"
+      }
+
+    });
+
+    roomNumber =
+      String(
+        (await roomRef.once("value"))
+          .val().roomNumber
+      );
+
+  }else{
+
+    ownerId =
+      String(data.ownerId || "");
+
+    ownerName =
+      data.ownerName ||
+      "Pawan";
+
+    roomNumber =
+      String(data.roomNumber || "");
+
+    if(!roomNumber){
+      roomNumber =
+        await createOrGetRoomNumber();
+    }
+  }
+
+  roomNumber =
+    roomNumber ||
+    await createOrGetRoomNumber();
+
+  updateRoomHeader();
 
   await addMyUser();
+
+  listenRoom();
 
   listenUsers();
 
   listenChat();
 
-  listenRoomSettings();
+  listenStats();
 
-  startMicrophone();
+  loadRoomDp();
 
-  startPeer();
+  startRoomTimer();
+
+  startVoice();
 
 }
 
-async function loadRoom(){
 
-  const snap = await db.ref("rooms/" + roomId).once("value");
+/* =========================================================
+   ROOM HEADER
+========================================================= */
 
-  if(!snap.exists()){
+function updateRoomHeader(){
 
-    ownerId = myId;
+  document.getElementById("roomName").innerText =
+    window.currentRoomName ||
+    "PawanVoice Room";
 
-    roomData = {
-      name:"PawanVoice Room",
-      description:"Welcome to PawanVoice",
-      ownerId:myId,
-      ownerName:myName,
-      category:"General",
-      tags:"Voice",
-      privacy:"public",
-      maxMembers:9,
-      announcement:"📢 Welcome to PawanVoice Room",
-      createdAt:Date.now(),
-      settings:{
-        dp:""
+  document.getElementById("roomNumber").innerText =
+    roomNumber || "------";
+
+  document.getElementById("roomFirebaseId").innerText =
+    roomId || "------";
+
+  document.getElementById("ownerName").innerText =
+    ownerName || "------";
+
+  document.getElementById("miniRoomName").innerText =
+    window.currentRoomName ||
+    "PawanVoice";
+
+  document.getElementById("miniRoomNumber").innerText =
+    roomNumber || "------";
+}
+
+
+/* =========================================================
+   ROOM LISTENER
+========================================================= */
+
+function listenRoom(){
+
+  db.ref("rooms/" + roomId)
+    .on("value",snap=>{
+
+      const data =
+        snap.val() || {};
+
+      window.currentRoomName =
+        data.name ||
+        "PawanVoice Room";
+
+      ownerId =
+        String(data.ownerId || ownerId);
+
+      ownerName =
+        data.ownerName ||
+        ownerName;
+
+      if(data.roomNumber){
+        roomNumber =
+          String(data.roomNumber);
       }
-    };
 
-    await db.ref("rooms/" + roomId).set(roomData);
+      updateRoomHeader();
 
-  }else{
+      const notice =
+        data.settings &&
+        data.settings.announcement;
 
-    roomData = snap.val() || {};
+      if(notice){
 
-    ownerId = roomData.ownerId || myId;
+        document.getElementById(
+          "announcement"
+        ).innerText = notice;
 
-  }
+      }
 
-  renderRoomSettings();
+      renderOwner();
 
+      renderSeats();
+    });
 }
 
-/* =========================
-   ADD USER
-========================= */
+
+/* =========================================================
+   ADD CURRENT USER TO ROOM
+========================================================= */
 
 async function addMyUser(){
 
-  const userRef =
-    db.ref("rooms/" + roomId + "/users/" + myId);
+  const ref =
+    db.ref(
+      "rooms/" +
+      roomId +
+      "/users/" +
+      myId
+    );
 
-  const data = {
+  await ref.set({
+
     id:myId,
+
     name:myName,
+
     dp:myDp,
+
+    frame:myFrame,
+
+    vip:myVip,
+
+    level:myLevel,
+
+    cpLevel:myCpLevel,
+
     peerId:"",
+
     mic:true,
-    joinedAt:Date.now()
-  };
 
-  await userRef.set(data);
+    joinedAt:firebase.database.ServerValue.TIMESTAMP,
 
-  userRef.onDisconnect().remove();
+    lastSeen:firebase.database.ServerValue.TIMESTAMP
 
+  });
 }
 
-/* =========================
-   USER LIST
-========================= */
+
+/* =========================================================
+   USERS LISTENER
+========================================================= */
 
 function listenUsers(){
 
-  db.ref("rooms/" + roomId + "/users")
-    .on("value",snap=>{
+  db.ref(
+    "rooms/" +
+    roomId +
+    "/users"
+  ).on("value",snap=>{
 
-      usersData = snap.val() || {};
+    users =
+      snap.val() || {};
 
-      renderUsers();
+    renderOwner();
 
-      $("onlineCount").textContent =
-        Object.keys(usersData).length;
+    renderSeats();
 
-      connectToUsers();
+    updateOnlineCount();
 
-    });
+    connectToUsers();
 
+  });
 }
 
-/* =========================
-   RENDER SEATS
-========================= */
 
-function renderUsers(){
+/* =========================================================
+   USER CARD HTML
+========================================================= */
 
-  const ids = Object.keys(usersData);
+function userAvatar(user){
 
-  let owner = usersData[ownerId];
+  const name =
+    user.name ||
+    "Guest";
 
-  if(!owner){
-    owner = usersData[myId];
-  }
-
-  renderSeat(
-    $("ownerSeat"),
-    owner,
-    "👑 Owner",
-    true
-  );
-
-  $("row1").innerHTML = "";
-  $("row2").innerHTML = "";
-
-  for(let i=0;i<8;i++){
-
-    const seatNo = i + 2;
-
-    const user = ids
-      .filter(id=>id !== ownerId)[i];
-
-    const div = document.createElement("div");
-
-    div.className = "seat";
-
-    renderSeat(
-      div,
-      user,
-      "Seat " + seatNo,
-      false
+  const first =
+    escapeHtml(
+      name.charAt(0).toUpperCase()
     );
 
-    if(seatNo <= 5){
-      $("row1").appendChild(div);
-    }else{
-      $("row2").appendChild(div);
-    }
+  if(user.dp){
+
+    return `
+      <img
+        src="${escapeHtml(user.dp)}"
+        alt=""
+        onerror="this.style.display='none'"
+      >
+    `;
 
   }
 
+  return first;
 }
 
-function renderSeat(container,user,label,isOwner){
+
+function frameClass(frame){
+
+  if(frame === "gold"){
+    return "frame-gold";
+  }
+
+  if(frame === "blue"){
+    return "frame-blue";
+  }
+
+  if(frame === "green"){
+    return "frame-green";
+  }
+
+  if(frame === "red"){
+    return "frame-red";
+  }
+
+  return "";
+}
+
+
+function seatHtml(user, isOwner){
 
   if(!user){
 
-    container.innerHTML = `
-      <div class="seatCircle">
-        <div class="emptyIcon">＋</div>
+    return `
+      <div class="emptyAvatar">＋</div>
+      <div class="emptyText">
+        ${isOwner ? "Owner" : "Seat Empty"}
       </div>
-      <div class="seatName">${escapeHtml(label)}</div>
     `;
-
-    return;
   }
 
-  const dp = user.dp || "";
 
-  container.innerHTML = `
-    <div class="seatCircle ${user.mic ? "speaking":""}"
-         onclick="openUserActions('${escapeHtml(user.id)}')">
+  const id =
+    String(user.id || "");
+
+  const name =
+    escapeHtml(user.name || "Guest");
+
+  const frame =
+    frameClass(user.frame);
+
+  const vip =
+    Number(user.vip || 0);
+
+  const level =
+    Number(user.level || 1);
+
+  const mic =
+    user.mic !== false;
+
+  const speaking =
+    user.speaking === true;
+
+  return `
+
+    <div
+      class="avatarWrap ${frame} ${speaking ? "speaking":""}"
+      onclick="openUserActions('${escapeHtml(id)}')"
+    >
+
+      <div class="avatar">
+        ${userAvatar(user)}
+      </div>
 
       ${
-        dp
-        ? `<img src="${dp}" alt="">`
-        : `<span style="font-size:25px">
-             ${escapeHtml((user.name || "G").charAt(0).toUpperCase())}
-           </span>`
+        isOwner
+        ?
+        `<div class="ownerBadge">👑</div>`
+        :
+        ""
       }
-
-      ${isOwner ? `<div class="ownerTag">👑 Owner</div>` : ""}
 
       ${
-        user.vip
-        ? `<div class="vipTag">VIP ${user.vip}</div>`
-        : ""
+        vip > 0
+        ?
+        `<div class="vipBadge">VIP ${vip}</div>`
+        :
+        ""
       }
 
-      <div class="micDot ${user.mic ? "micOn":""}">
-        ${user.mic ? "🎙️":"🔇"}
+      <div class="micDot ${mic ? "on":"off"}">
+        ${mic ? "🎙️":"🔇"}
       </div>
 
     </div>
 
     <div class="seatName">
-      ${escapeHtml(user.name || "Guest")}
+      ${name}
     </div>
 
     <div class="seatId">
-      ID: ${escapeHtml(user.id)}
+      ID: ${escapeHtml(id)}
+    </div>
+
+    <div class="levelBadge">
+      LV ${level}
     </div>
   `;
-
 }
 
-/* =========================
-   USER ACTIONS
-========================= */
 
-function openUserActions(id){
+/* =========================================================
+   OWNER RENDER
+========================================================= */
 
-  const user = usersData[id];
+function renderOwner(){
 
-  if(!user) return;
+  const ownerSeat =
+    document.getElementById("ownerSeat");
 
-  const isOwner = id === ownerId;
+  let ownerUser =
+    users[ownerId];
 
-  const buttons = [
+  if(!ownerUser){
 
-    ["👤","Profile","User profile"],
-    ["❤️","Follow","Follow this user"],
-    ["💬","Chat","Private chat"],
-    ["🎁","Gift","Send gift"],
-    ["🎯","Mission","View mission"],
-    ["📋","Copy ID","Copy user ID"],
-    ["🚫","Block","Block user"],
-    ["⚠️","Report","Report user"]
-
-  ];
-
-  if(myId === ownerId && !isOwner){
-
-    buttons.push(
-      ["🔇","Mute","Mute user"],
-      ["🚪","Kick","Remove from room"],
-      ["🔒","Lock Seat","Lock seat"],
-      ["🛡️","Make Admin","Give admin permission"]
-    );
-
+    ownerUser = {
+      id:ownerId || myId,
+      name:ownerName || "Owner",
+      dp:"",
+      frame:"default",
+      vip:0,
+      level:1,
+      mic:true
+    };
   }
 
-  let html = `
-    <div class="overlay show" id="dynamicUserPanel"
-         onclick="if(event.target===this)this.remove()">
+  ownerSeat.innerHTML =
+    seatHtml(ownerUser,true);
+}
 
-      <div class="panel">
 
-        <div class="panelHead">
-          <h3>👤 ${escapeHtml(user.name || "Guest")}</h3>
-          <button class="close"
-                  onclick="document.getElementById('dynamicUserPanel').remove()">
-            ×
-          </button>
-        </div>
-  `;
+/* =========================================================
+   SEATS 2-9
+========================================================= */
 
-  buttons.forEach(item=>{
+function renderSeats(){
 
-    html += `
-      <button class="option"
-        onclick="userAction('${item[1]}','${escapeHtml(id)}')">
+  const roomUsers =
+    Object.values(users || {});
 
-        <div class="optionIcon">${item[0]}</div>
+  const ownerUser =
+    users[ownerId];
 
-        <div class="optionText">
-          <b>${item[1]}</b>
-          <span>${item[2]}</span>
-        </div>
+  const otherUsers =
+    roomUsers.filter(u =>
+      String(u.id) !== String(ownerId)
+    );
 
-        <div class="arrow">›</div>
+  const seatIds =
+    [2,3,4,5,6,7,8,9];
 
-      </button>
-    `;
+  seatIds.forEach((seatNumber,index)=>{
+
+    const el =
+      document.getElementById(
+        "seat" + seatNumber
+      );
+
+    if(!el) return;
+
+    const user =
+      otherUsers[index] || null;
+
+    el.innerHTML =
+      seatHtml(user,false);
 
   });
 
-  html += `
-      </div>
-    </div>
-  `;
-
-  document.body.insertAdjacentHTML("beforeend",html);
-
+  updateOnlineCount();
 }
 
-async function userAction(action,id){
 
-  const user = usersData[id];
+/* =========================================================
+   ONLINE COUNT
+========================================================= */
 
-  if(!user) return;
+function updateOnlineCount(){
 
-  if(action === "Copy ID"){
+  const count =
+    Object.keys(users || {}).length;
 
-    copyText(id);
+  document.getElementById(
+    "onlineCount"
+  ).innerText = count;
+}
 
-  }else if(action === "Kick"){
 
-    if(myId !== ownerId){
-      showToast("Only owner can kick users");
-      return;
-    }
+/* =========================================================
+   ROOM DP LOAD
+========================================================= */
 
-    await db.ref("rooms/" + roomId + "/users/" + id).remove();
+function loadRoomDp(){
 
-    showToast("User removed");
+  db.ref(
+    "rooms/" +
+    roomId +
+    "/settings/dp"
+  ).on("value",snap=>{
 
-  }else if(action === "Mute"){
+    const dp =
+      snap.val() || "";
 
-    await db.ref(
-      "rooms/" + roomId + "/users/" + id + "/mic"
-    ).set(false);
+    setRoomDp(dp);
+  });
+}
 
-    showToast("User muted");
 
-  }else if(action === "Follow"){
+function setRoomDp(dp){
 
-    showToast("Follow request sent");
+  const img =
+    document.getElementById("roomDpImg");
 
-  }else if(action === "Gift"){
+  const fallback =
+    document.getElementById("roomDpFallback");
 
-    openGifts();
+  const miniImg =
+    document.getElementById("miniDpImg");
+
+  const miniFallback =
+    document.getElementById("miniDpFallback");
+
+  if(dp){
+
+    img.src = dp;
+    img.style.display = "block";
+
+    fallback.style.display = "none";
+
+    miniImg.src = dp;
+    miniImg.style.display = "block";
+
+    miniFallback.style.display = "none";
 
   }else{
 
-    showToast(action + " selected");
+    img.removeAttribute("src");
+    img.style.display = "none";
 
+    fallback.style.display = "block";
+
+    miniImg.removeAttribute("src");
+    miniImg.style.display = "none";
+
+    miniFallback.style.display = "block";
   }
-
-  const p = $("dynamicUserPanel");
-
-  if(p) p.remove();
-
 }
 
-/* =========================
-   ROOM DP
-========================= */
+
+/* =========================================================
+   ROOM DP PANEL
+========================================================= */
 
 function openRoomDp(){
 
-  const dp =
-    roomData.settings &&
-    roomData.settings.dp
-      ? roomData.settings.dp
-      : "";
+  const isOwner =
+    String(myId) === String(ownerId);
 
-  if(dp){
+  if(!isOwner){
 
-    $("bigRoomDp").src = dp;
-    $("bigRoomDp").style.display = "block";
-    $("bigRoomDpIcon").style.display = "none";
+    openPanel(`
 
-  }else{
+      <div class="panelHead">
+        <h3>🎙️ Room DP</h3>
+        <button class="closeBtn" onclick="closePanel()">×</button>
+      </div>
 
-    $("bigRoomDp").style.display = "none";
-    $("bigRoomDpIcon").style.display = "block";
+      <div class="panelText">
+        Room DP sirf Room Owner change kar sakta hai.
+      </div>
 
+    `);
+
+    return;
   }
 
-  $("ownerDpOptions").style.display =
-    myId === ownerId ? "block":"none";
 
-  $("dpOverlay").classList.add("show");
+  const currentDp =
+    document.getElementById("roomDpImg").src || "";
 
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>🖼️ Change Room DP</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <div class="dpPreview">
+      ${
+        currentDp
+        ?
+        `<img src="${escapeHtml(currentDp)}">`
+        :
+        `🎙️`
+      }
+    </div>
+
+    <label class="fileBtn">
+      📷 Select Room DP
+      <input
+        type="file"
+        accept="image/*"
+        style="display:none"
+        onchange="changeRoomDp(event)"
+      >
+    </label>
+
+    <button
+      class="primaryBtn dangerBtn"
+      onclick="removeRoomDp()">
+      🗑️ Remove Room DP
+    </button>
+
+  `);
 }
 
-function changeRoomDp(event){
 
-  if(myId !== ownerId){
-    showToast("Only room owner can change DP");
+/* =========================================================
+   IMAGE COMPRESS
+========================================================= */
+
+function compressImage(file){
+
+  return new Promise((resolve,reject)=>{
+
+    const reader =
+      new FileReader();
+
+    reader.onload = function(e){
+
+      const img =
+        new Image();
+
+      img.onload = function(){
+
+        const maxSize = 500;
+
+        let width =
+          img.width;
+
+        let height =
+          img.height;
+
+        if(width > height){
+
+          if(width > maxSize){
+
+            height =
+              Math.round(
+                height * maxSize / width
+              );
+
+            width = maxSize;
+          }
+
+        }else{
+
+          if(height > maxSize){
+
+            width =
+              Math.round(
+                width * maxSize / height
+              );
+
+            height = maxSize;
+          }
+        }
+
+        const canvas =
+          document.createElement("canvas");
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx =
+          canvas.getContext("2d");
+
+        ctx.drawImage(
+          img,
+          0,
+          0,
+          width,
+          height
+        );
+
+        const result =
+          canvas.toDataURL(
+            "image/jpeg",
+            .72
+          );
+
+        resolve(result);
+
+      };
+
+      img.onerror = reject;
+
+      img.src = e.target.result;
+    };
+
+    reader.onerror = reject;
+
+    reader.readAsDataURL(file);
+
+  });
+}
+
+
+/* =========================================================
+   CHANGE ROOM DP
+========================================================= */
+
+async function changeRoomDp(event){
+
+  const file =
+    event.target.files &&
+    event.target.files[0];
+
+  if(!file){
     return;
   }
 
-  const file = event.target.files[0];
+  if(!file.type.startsWith("image/")){
 
-  if(!file) return;
-
-  if(file.size > 700000){
-    showToast("Image 700KB se chhoti rakhein");
-    event.target.value = "";
+    toast("Sirf image select karein.");
     return;
   }
 
-  const reader = new FileReader();
+  try{
 
-  reader.onload = async function(){
+    toast("Room DP save ho rahi hai...");
 
-    const data = reader.result;
+    const compressed =
+      await compressImage(file);
 
     await db.ref(
-      "rooms/" + roomId + "/settings/dp"
-    ).set(data);
+      "rooms/" +
+      roomId +
+      "/settings/dp"
+    ).set(compressed);
 
-    showToast("Room DP updated");
+    toast("Room DP change ho gayi ✅");
 
-    updateRoomDp(data);
+    closePanel();
 
-  };
+  }catch(error){
 
-  reader.readAsDataURL(file);
+    console.error(error);
 
+    toast(
+      "DP save nahi hui. Firebase rules check karein."
+    );
+  }
 }
+
+
+/* =========================================================
+   REMOVE ROOM DP
+========================================================= */
 
 async function removeRoomDp(){
 
-  if(myId !== ownerId){
-    showToast("Only owner can remove DP");
+  if(String(myId) !== String(ownerId)){
+
+    toast("Sirf Owner.");
     return;
   }
 
-  await db.ref(
-    "rooms/" + roomId + "/settings/dp"
-  ).remove();
+  try{
 
-  updateRoomDp("");
+    await db.ref(
+      "rooms/" +
+      roomId +
+      "/settings/dp"
+    ).remove();
 
-  showToast("Room DP removed");
+    toast("Room DP remove ho gayi.");
 
+    closePanel();
+
+  }catch(error){
+
+    console.error(error);
+
+    toast("Room DP remove nahi hui.");
+  }
 }
 
-function viewRoomDp(){
 
-  const dp =
-    roomData.settings &&
-    roomData.settings.dp;
+/* =========================================================
+   USER ACTIONS
+========================================================= */
 
-  if(dp){
-    window.open(dp,"_blank");
-  }else{
-    showToast("Room DP available nahi hai");
+function openUserActions(userId){
+
+  selectedUserId =
+    String(userId);
+
+  const user =
+    users[selectedUserId];
+
+  if(!user){
+
+    toast("User nahi mila.");
+    return;
   }
 
+  const isMe =
+    String(selectedUserId) === String(myId);
+
+  const isOwner =
+    String(myId) === String(ownerId);
+
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>👤 User Options</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <div class="userCard">
+
+      <div class="userCardAvatar">
+        ${userAvatar(user)}
+      </div>
+
+      <div class="userCardInfo">
+
+        <b>${escapeHtml(user.name || "Guest")}</b>
+
+        <span>
+          User ID: ${escapeHtml(user.id)}
+        </span>
+
+        <span>
+          Room No: ${escapeHtml(roomNumber)}
+        </span>
+
+        <span>
+          Level: ${Number(user.level || 1)}
+          &nbsp; • &nbsp;
+          VIP: ${Number(user.vip || 0)}
+        </span>
+
+      </div>
+
+    </div>
+
+    <div class="actionGrid">
+
+      <button class="actionBtn"
+              onclick="viewProfile('${escapeHtml(user.id)}')">
+        <span class="aIcon">👤</span>
+        <span>Profile</span>
+      </button>
+
+      <button class="actionBtn"
+              onclick="followUser('${escapeHtml(user.id)}')">
+        <span class="aIcon">❤️</span>
+        <span>Follow</span>
+      </button>
+
+      <button class="actionBtn"
+              onclick="messageUser('${escapeHtml(user.id)}')">
+        <span class="aIcon">💬</span>
+        <span>Message</span>
+      </button>
+
+      <button class="actionBtn"
+              onclick="openGifts('${escapeHtml(user.id)}')">
+        <span class="aIcon">🎁</span>
+        <span>Gift</span>
+      </button>
+
+      ${
+        !isMe
+        ?
+        `
+        <button class="actionBtn"
+                onclick="muteUser('${escapeHtml(user.id)}')">
+          <span class="aIcon">🔇</span>
+          <span>Mute</span>
+        </button>
+
+        <button class="actionBtn"
+                onclick="blockUser('${escapeHtml(user.id)}')">
+          <span class="aIcon">🚫</span>
+          <span>Block</span>
+        </button>
+
+        <button class="actionBtn"
+                onclick="reportUser('${escapeHtml(user.id)}')">
+          <span class="aIcon">⚠️</span>
+          <span>Report</span>
+        </button>
+        `
+        :
+        ""
+      }
+
+      ${
+        isOwner && !isMe
+        ?
+        `
+        <button class="actionBtn"
+                onclick="kickUser('${escapeHtml(user.id)}')">
+          <span class="aIcon">🚪</span>
+          <span>Remove</span>
+        </button>
+
+        <button class="actionBtn"
+                onclick="toggleUserSeat('${escapeHtml(user.id)}')">
+          <span class="aIcon">🔒</span>
+          <span>Seat Lock</span>
+        </button>
+
+        <button class="actionBtn"
+                onclick="makeAdmin('${escapeHtml(user.id)}')">
+          <span class="aIcon">🛡️</span>
+          <span>Make Admin</span>
+        </button>
+        `
+        :
+        ""
+      }
+
+      <button class="actionBtn"
+              onclick="copyUserId('${escapeHtml(user.id)}')">
+        <span class="aIcon">📋</span>
+        <span>Copy ID</span>
+      </button>
+
+    </div>
+
+  `);
 }
 
-function updateRoomDp(dp){
 
-  if(dp){
+/* =========================================================
+   VIEW PROFILE
+========================================================= */
 
-    $("headerRoomDp").src = dp;
-    $("headerRoomDp").style.display = "block";
-    $("headerRoomDpIcon").style.display = "none";
+function viewProfile(userId){
 
-    $("miniRoomDp").src = dp;
-    $("miniRoomDp").style.display = "block";
-    $("miniRoomIcon").style.display = "none";
+  const user =
+    users[userId];
 
-    $("bigRoomDp").src = dp;
-    $("bigRoomDp").style.display = "block";
-    $("bigRoomDpIcon").style.display = "none";
+  if(!user){
+    toast("User nahi mila.");
+    return;
+  }
+
+  recordProfileVisit(
+    userId,
+    user.name || "Guest"
+  );
+
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>👤 Profile</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <div class="userCard">
+
+      <div class="userCardAvatar">
+        ${userAvatar(user)}
+      </div>
+
+      <div class="userCardInfo">
+
+        <b>${escapeHtml(user.name || "Guest")}</b>
+
+        <span>
+          User ID: ${escapeHtml(user.id)}
+        </span>
+
+        <span>
+          Room No: ${escapeHtml(roomNumber)}
+        </span>
+
+        <span>
+          User Level: ${Number(user.level || 1)}
+        </span>
+
+        <span>
+          CP Level: ${Number(user.cpLevel || 1)}
+        </span>
+
+        <span>
+          VIP: ${Number(user.vip || 0)}
+        </span>
+
+      </div>
+
+    </div>
+
+    <div class="panelText">
+      Current room: ${escapeHtml(window.currentRoomName || "PawanVoice Room")}
+    </div>
+
+  `);
+}
+
+
+/* =========================================================
+   PROFILE VISIT
+========================================================= */
+
+async function recordProfileVisit(targetId,targetName){
+
+  if(String(targetId) === String(myId)){
+    return;
+  }
+
+  const ref =
+    db.ref(
+      "profileVisitors/" +
+      targetId +
+      "/" +
+      myId
+    );
+
+  await ref.set({
+
+    visitorId:myId,
+
+    visitorName:myName,
+
+    roomNumber:roomNumber,
+
+    visitedAt:firebase.database.ServerValue.TIMESTAMP
+
+  }).catch(()=>{});
+}
+
+
+/* =========================================================
+   COPY USER ID
+========================================================= */
+
+function copyUserId(id){
+
+  if(navigator.clipboard){
+
+    navigator.clipboard.writeText(
+      String(id)
+    );
 
   }else{
 
-    $("headerRoomDp").style.display = "none";
-    $("headerRoomDpIcon").style.display = "block";
-
-    $("miniRoomDp").style.display = "none";
-    $("miniRoomIcon").style.display = "block";
-
-    $("bigRoomDp").style.display = "none";
-    $("bigRoomDpIcon").style.display = "block";
-
+    fallbackCopy(
+      String(id)
+    );
   }
 
+  toast("User ID copied: " + id);
 }
 
-/* =========================
-   ROOM SETTINGS
-========================= */
+
+/* =========================================================
+   COPY ROOM NUMBER
+========================================================= */
+
+function copyRoomNumber(){
+
+  if(navigator.clipboard){
+
+    navigator.clipboard.writeText(
+      String(roomNumber)
+    );
+
+  }else{
+
+    fallbackCopy(
+      String(roomNumber)
+    );
+  }
+
+  toast("Room Number copied: " + roomNumber);
+}
+
+
+function fallbackCopy(text){
+
+  const ta =
+    document.createElement("textarea");
+
+  ta.value = text;
+
+  document.body.appendChild(ta);
+
+  ta.select();
+
+  try{
+    document.execCommand("copy");
+  }catch(e){}
+
+  ta.remove();
+}
+
+
+/* =========================================================
+   SHARE ROOM
+========================================================= */
+
+async function shareRoom(){
+
+  const url =
+    location.origin +
+    location.pathname +
+    "?room=" +
+    encodeURIComponent(roomId);
+
+  const shareText =
+    "🎙️ Join my PawanVoice Room\n" +
+    "Room No: " +
+    roomNumber +
+    "\n" +
+    url;
+
+  if(navigator.share){
+
+    try{
+
+      await navigator.share({
+        title:"PawanVoice Room",
+        text:shareText,
+        url:url
+      });
+
+      return;
+
+    }catch(e){}
+  }
+
+  fallbackCopy(url);
+
+  toast("Room link copied.");
+}
+
+
+/* =========================================================
+   ROOM INFO
+========================================================= */
+
+function openInfo(){
+
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>ℹ️ Room Information</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <div class="panelText">
+
+      <p>
+        <b>Room Name:</b>
+        ${escapeHtml(window.currentRoomName || "PawanVoice Room")}
+      </p>
+
+      <p>
+        <b>Room Number:</b>
+        ${escapeHtml(roomNumber)}
+      </p>
+
+      <p>
+        <b>Room ID:</b>
+        ${escapeHtml(roomId)}
+      </p>
+
+      <p>
+        <b>Owner:</b>
+        ${escapeHtml(ownerName)}
+      </p>
+
+      <p>
+        <b>Owner User ID:</b>
+        ${escapeHtml(ownerId)}
+      </p>
+
+      <p>
+        <b>Your User ID:</b>
+        ${escapeHtml(myId)}
+      </p>
+
+      <p>
+        <b>Your Room Number:</b>
+        ${escapeHtml(roomNumber)}
+      </p>
+
+    </div>
+
+  `);
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
 
 function openSettings(){
 
-  $("settingsOverlay").classList.add("show");
+  const isOwner =
+    String(myId) === String(ownerId);
 
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>⚙️ Room Settings</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    ${
+      isOwner
+      ?
+      `
+      <input
+        id="newRoomName"
+        class="formInput"
+        value="${escapeHtml(window.currentRoomName || "PawanVoice Room")}"
+        placeholder="Room Name">
+
+      <input
+        id="newAnnouncement"
+        class="formInput"
+        placeholder="Room Announcement">
+
+      <button class="primaryBtn"
+              onclick="saveRoomSettings()">
+        💾 Save Room Settings
+      </button>
+      `
+      :
+      `
+      <div class="panelText">
+        Room name/announcement settings Owner hi change kar sakta hai.
+      </div>
+      `
+    }
+
+    <button class="primaryBtn"
+            onclick="togglePrivacy()">
+      🔐 Change Privacy
+    </button>
+
+    <button class="primaryBtn"
+            onclick="openRoomDp()">
+      🖼️ Room DP
+    </button>
+
+  `);
 }
 
-function openSettingPage(type){
 
-  closePanel("settingsOverlay");
+async function saveRoomSettings(){
 
-  $("settingDetailOverlay").classList.add("show");
+  if(String(myId) !== String(ownerId)){
 
-  let title = "";
-  let html = "";
-
-  if(type === "basic"){
-
-    title = "🏠 Basic Settings";
-
-    html = `
-      <div class="formGroup">
-        <label>Room Name</label>
-        <input id="setRoomName"
-          value="${escapeHtml(roomData.name || "PawanVoice Room")}">
-      </div>
-
-      <div class="formGroup">
-        <label>Description</label>
-        <textarea id="setDescription">${escapeHtml(roomData.description || "")}</textarea>
-      </div>
-
-      <div class="formGroup">
-        <label>Category</label>
-        <select id="setCategory">
-          <option>General</option>
-          <option>Music</option>
-          <option>Friends</option>
-          <option>Gaming</option>
-          <option>Chat</option>
-          <option>Study</option>
-        </select>
-      </div>
-
-      <div class="formGroup">
-        <label>Tags</label>
-        <input id="setTags"
-          value="${escapeHtml(roomData.tags || "")}">
-      </div>
-
-      <button class="saveBtn"
-        onclick="saveBasicSettings()">
-        💾 Save Changes
-      </button>
-    `;
-
-  }
-
-  else if(type === "privacy"){
-
-    title = "🔒 Privacy Settings";
-
-    html = `
-      <div class="formGroup">
-        <label>Room Privacy</label>
-
-        <select id="setPrivacy">
-          <option value="public"
-            ${roomData.privacy==="public"?"selected":""}>
-            Public
-          </option>
-
-          <option value="private"
-            ${roomData.privacy==="private"?"selected":""}>
-            Private
-          </option>
-        </select>
-      </div>
-
-      <div class="formGroup">
-        <label>Password</label>
-        <input id="setPassword"
-          type="password"
-          placeholder="Optional">
-      </div>
-
-      <div class="formGroup">
-        <label>Maximum Members</label>
-        <input id="setMaxMembers"
-          type="number"
-          min="1"
-          max="9"
-          value="${roomData.maxMembers || 9}">
-      </div>
-
-      <button class="saveBtn"
-        onclick="savePrivacySettings()">
-        💾 Save Privacy
-      </button>
-    `;
-
-  }
-
-  else if(type === "seats"){
-
-    title = "💺 Seat Settings";
-
-    html = `
-      <button class="option"
-        onclick="simpleAction('🔒 All Empty Seats Locked')">
-        <div class="optionIcon">🔒</div>
-        <div class="optionText">
-          <b>Lock Empty Seats</b>
-          <span>Empty seats ko lock karein</span>
-        </div>
-      </button>
-
-      <button class="option"
-        onclick="simpleAction('🎙️ Speaker Permission')">
-        <div class="optionIcon">🎙️</div>
-        <div class="optionText">
-          <b>Speaker Permission</b>
-          <span>Kaun seat le sakta hai</span>
-        </div>
-      </button>
-
-      <button class="option"
-        onclick="simpleAction('🔄 Seat Switch')">
-        <div class="optionIcon">🔄</div>
-        <div class="optionText">
-          <b>Seat Switch</b>
-          <span>Users seat change kar sakte hain</span>
-        </div>
-      </button>
-    `;
-
-  }
-
-  else if(type === "voice"){
-
-    title = "🎙️ Voice Settings";
-
-    html = `
-      <button class="option"
-        onclick="toggleMic()">
-        <div class="optionIcon">🎙️</div>
-        <div class="optionText">
-          <b>Microphone</b>
-          <span>Mic ON/OFF</span>
-        </div>
-      </button>
-
-      <button class="option"
-        onclick="toggleSpeaker()">
-        <div class="optionIcon">🔊</div>
-        <div class="optionText">
-          <b>Speaker</b>
-          <span>Speaker ON/OFF</span>
-        </div>
-      </button>
-
-      <button class="option"
-        onclick="simpleAction('🎧 Audio Test')">
-        <div class="optionIcon">🎧</div>
-        <div class="optionText">
-          <b>Audio Test</b>
-          <span>Mic aur speaker test</span>
-        </div>
-      </button>
-    `;
-
-  }
-
-  else if(type === "admin"){
-
-    title = "🛡️ Admin Settings";
-
-    html = `
-      <button class="option"
-        onclick="simpleAction('🛡️ Admin Management')">
-        <div class="optionIcon">🛡️</div>
-        <div class="optionText">
-          <b>Admin Management</b>
-          <span>Admins add/remove</span>
-        </div>
-      </button>
-
-      <button class="option"
-        onclick="simpleAction('🚫 Ban List')">
-        <div class="optionIcon">🚫</div>
-        <div class="optionText">
-          <b>Ban List</b>
-          <span>Banned users</span>
-        </div>
-      </button>
-
-      <button class="option"
-        onclick="simpleAction('🔇 Mute All')">
-        <div class="optionIcon">🔇</div>
-        <div class="optionText">
-          <b>Mute All</b>
-          <span>All speakers mute</span>
-        </div>
-      </button>
-    `;
-
-  }
-
-  else if(type === "notice"){
-
-    title = "📢 Room Announcement";
-
-    html = `
-      <div class="formGroup">
-        <label>Announcement</label>
-        <textarea id="setAnnouncement">${escapeHtml(roomData.announcement || "")}</textarea>
-      </div>
-
-      <button class="saveBtn"
-        onclick="saveAnnouncement()">
-        📢 Update Announcement
-      </button>
-    `;
-
-  }
-
-  $("settingTitle").textContent = title;
-  $("settingContent").innerHTML = html;
-
-}
-
-async function saveBasicSettings(){
-
-  if(myId !== ownerId){
-    showToast("Only owner can change settings");
+    toast("Only Owner.");
     return;
   }
 
-  const data = {
-    name:$("setRoomName").value.trim() || "PawanVoice Room",
-    description:$("setDescription").value.trim(),
-    category:$("setCategory").value,
-    tags:$("setTags").value.trim()
-  };
+  const name =
+    document.getElementById(
+      "newRoomName"
+    ).value.trim();
 
-  await db.ref("rooms/" + roomId).update(data);
+  const announcement =
+    document.getElementById(
+      "newAnnouncement"
+    ).value.trim();
 
-  showToast("Room settings saved");
+  if(name){
 
-  closePanel("settingDetailOverlay");
+    await db.ref(
+      "rooms/" +
+      roomId +
+      "/name"
+    ).set(name);
+  }
 
+  if(announcement){
+
+    await db.ref(
+      "rooms/" +
+      roomId +
+      "/settings/announcement"
+    ).set(announcement);
+  }
+
+  toast("Room settings saved.");
 }
 
-async function savePrivacySettings(){
 
-  if(myId !== ownerId){
-    showToast("Only owner can change settings");
+/* =========================================================
+   PRIVACY
+========================================================= */
+
+async function togglePrivacy(){
+
+  if(String(myId) !== String(ownerId)){
+
+    toast("Only Owner.");
     return;
   }
 
-  const privacy = $("setPrivacy").value;
+  const ref =
+    db.ref(
+      "rooms/" +
+      roomId +
+      "/isPrivate"
+    );
 
-  let maxMembers =
-    parseInt($("setMaxMembers").value,10);
+  await ref.transaction(value =>
+    value === true ? false : true
+  );
 
-  if(!Number.isFinite(maxMembers)){
-    maxMembers = 9;
+  const snap =
+    await ref.once("value");
+
+  toast(
+    snap.val()
+    ?
+    "Room Private 🔒"
+    :
+    "Room Public 🌐"
+  );
+}
+
+
+/* =========================================================
+   ONLINE USERS
+========================================================= */
+
+function openOnline(){
+
+  let html = `
+
+    <div class="panelHead">
+      <h3>👥 Online Users</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+  `;
+
+  const list =
+    Object.values(users || {});
+
+  if(!list.length){
+
+    html += `
+      <div class="panelText">
+        No users.
+      </div>
+    `;
+
+  }else{
+
+    list.forEach(user=>{
+
+      html += `
+
+        <div class="listItem">
+
+          <div class="listLeft">
+
+            <div class="listAvatar">
+              ${userAvatar(user)}
+            </div>
+
+            <div>
+
+              <div class="listName">
+                ${escapeHtml(user.name || "Guest")}
+              </div>
+
+              <div class="listId">
+                ID: ${escapeHtml(user.id)}
+              </div>
+
+            </div>
+
+          </div>
+
+          <button
+            class="smallBtn"
+            onclick="openUserActions('${escapeHtml(user.id)}')">
+            Open
+          </button>
+
+        </div>
+
+      `;
+
+    });
   }
 
-  maxMembers = Math.max(1,Math.min(9,maxMembers));
+  openPanel(html);
+}
 
-  await db.ref("rooms/" + roomId).update({
 
-    privacy:privacy,
+/* =========================================================
+   MORE
+========================================================= */
 
-    password:$("setPassword").value,
+function openMore(){
 
-    maxMembers:maxMembers
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>☰ Room Features</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <div class="moreGrid">
+
+      <button class="moreItem" onclick="openOnline()">
+        <div class="ico">👥</div>
+        <span>Members</span>
+      </button>
+
+      <button class="moreItem" onclick="handRaise()">
+        <div class="ico">✋</div>
+        <span>Hand Raise</span>
+      </button>
+
+      <button class="moreItem" onclick="micRequest()">
+        <div class="ico">🎙️</div>
+        <span>Mic Request</span>
+      </button>
+
+      <button class="moreItem" onclick="seatInfo()">
+        <div class="ico">💺</div>
+        <span>Seats</span>
+      </button>
+
+      <button class="moreItem" onclick="seatLock()">
+        <div class="ico">🔒</div>
+        <span>Seat Lock</span>
+      </button>
+
+      <button class="moreItem" onclick="openPK()">
+        <div class="ico">⚔️</div>
+        <span>PK</span>
+      </button>
+
+      <button class="moreItem" onclick="openGames()">
+        <div class="ico">🎮</div>
+        <span>Games</span>
+      </button>
+
+      <button class="moreItem" onclick="openRanking()">
+        <div class="ico">🏆</div>
+        <span>Ranking</span>
+      </button>
+
+      <button class="moreItem" onclick="openMissions()">
+        <div class="ico">🎯</div>
+        <span>Missions</span>
+      </button>
+
+      <button class="moreItem" onclick="openMusic()">
+        <div class="ico">🎵</div>
+        <span>Music</span>
+      </button>
+
+      <button class="moreItem" onclick="openTheme()">
+        <div class="ico">🎨</div>
+        <span>Theme</span>
+      </button>
+
+      <button class="moreItem" onclick="openBackground()">
+        <div class="ico">🌌</div>
+        <span>Background</span>
+      </button>
+
+      <button class="moreItem" onclick="openNotice()">
+        <div class="ico">📢</div>
+        <span>Notice</span>
+      </button>
+
+      <button class="moreItem" onclick="shareRoom()">
+        <div class="ico">↗️</div>
+        <span>Invite</span>
+      </button>
+
+      <button class="moreItem" onclick="reportRoom()">
+        <div class="ico">⚠️</div>
+        <span>Report</span>
+      </button>
+
+      <button class="moreItem" onclick="openSettings()">
+        <div class="ico">⚙️</div>
+        <span>Settings</span>
+      </button>
+
+    </div>
+
+  `);
+}
+
+
+/* =========================================================
+   GIFTS
+========================================================= */
+
+function openGifts(targetId=""){
+
+  selectedUserId =
+    targetId || selectedUserId || myId;
+
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>🎁 Gifts</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <div class="moreGrid">
+
+      ${giftItem("🌹","Rose","10")}
+      ${giftItem("❤️","Heart","100")}
+      ${giftItem("🍰","Cake","500")}
+      ${giftItem("💖","Love","1000")}
+      ${giftItem("👑","Crown","5000")}
+      ${giftItem("💎","Diamond","10000")}
+      ${giftItem("🚀","Rocket","50000")}
+      ${giftItem("🏰","Castle","100000")}
+
+    </div>
+
+    <div class="panelText" style="margin-top:12px">
+      Target:
+      ${escapeHtml(
+        users[selectedUserId]?.name ||
+        "Room"
+      )}
+    </div>
+
+  `);
+}
+
+
+function giftItem(icon,name,price){
+
+  return `
+
+    <button
+      class="moreItem"
+      onclick="sendGift('${name}',${price})">
+
+      <div class="ico">${icon}</div>
+
+      <span>
+        ${name}<br>
+        🪙 ${price.toLocaleString("en-IN")}
+      </span>
+
+    </button>
+
+  `;
+}
+
+
+async function sendGift(name,price){
+
+  await db.ref(
+    "rooms/" +
+    roomId +
+    "/gifts"
+  ).push({
+
+    fromId:myId,
+
+    fromName:myName,
+
+    toId:selectedUserId || "",
+
+    gift:name,
+
+    price:price,
+
+    createdAt:firebase.database.ServerValue.TIMESTAMP
 
   });
 
-  showToast("Privacy settings saved");
-
-  closePanel("settingDetailOverlay");
-
-}
-
-async function saveAnnouncement(){
-
-  if(myId !== ownerId){
-    showToast("Only owner can change announcement");
-    return;
-  }
-
-  const announcement =
-    $("setAnnouncement").value.trim();
-
   await db.ref(
-    "rooms/" + roomId + "/announcement"
-  ).set(announcement);
+    "rooms/" +
+    roomId +
+    "/giftCount"
+  ).transaction(v => Number(v || 0) + 1);
 
-  showToast("Announcement updated");
-
-  closePanel("settingDetailOverlay");
-
-}
-
-function listenRoomSettings(){
-
-  db.ref("rooms/" + roomId)
-    .on("value",snap=>{
-
-      roomData = snap.val() || {};
-
-      renderRoomSettings();
-
-    });
-
-}
-
-function renderRoomSettings(){
-
-  $("roomName").textContent =
-    roomData.name || "PawanVoice Room";
-
-  $("ownerName").textContent =
-    roomData.ownerName || myName;
-
-  $("announcement").textContent =
-    roomData.announcement ||
-    "📢 Welcome to PawanVoice Room";
-
-  $("miniRoomName").textContent =
-    roomData.name || "PawanVoice";
-
-  updateRoomDp(
-    roomData.settings &&
-    roomData.settings.dp
-      ? roomData.settings.dp
-      : ""
+  toast(
+    "🎁 " +
+    name +
+    " sent!"
   );
 
+  closePanel();
 }
 
-/* =========================
+
+/* =========================================================
+   STATS LISTENER
+========================================================= */
+
+function listenStats(){
+
+  db.ref(
+    "rooms/" +
+    roomId +
+    "/likes"
+  ).on("value",snap=>{
+
+    document.getElementById(
+      "likeCount"
+    ).innerText =
+      Number(snap.val() || 0);
+
+  });
+
+
+  db.ref(
+    "rooms/" +
+    roomId +
+    "/giftCount"
+  ).on("value",snap=>{
+
+    document.getElementById(
+      "giftCount"
+    ).innerText =
+      Number(snap.val() || 0);
+
+  });
+}
+
+
+/* =========================================================
+   LIKE
+========================================================= */
+
+async function sendLike(){
+
+  await db.ref(
+    "rooms/" +
+    roomId +
+    "/likes"
+  ).transaction(v =>
+    Number(v || 0) + 1
+  );
+
+  toast("❤️ Like sent");
+}
+
+
+function sendEmoji(){
+
+  sendLike();
+}
+
+
+/* =========================================================
    CHAT
-========================= */
+========================================================= */
 
 function listenChat(){
 
-  db.ref("rooms/" + roomId + "/chat")
-    .limitToLast(100)
-    .on("value",snap=>{
+  db.ref(
+    "rooms/" +
+    roomId +
+    "/chat"
+  )
+  .limitToLast(80)
+  .on("value",snap=>{
 
-      const data = snap.val() || {};
+    const data =
+      snap.val() || {};
 
-      const arr = Object.keys(data)
-        .map(k=>data[k])
+    const messages =
+      Object.values(data)
         .sort((a,b)=>
-          (a.time||0)-(b.time||0)
+          Number(a.createdAt || 0) -
+          Number(b.createdAt || 0)
         );
 
-      $("messages").innerHTML = arr.map(m=>`
+    const box =
+      document.getElementById(
+        "chatMessages"
+      );
 
-        <div class="msg">
+    if(!messages.length){
 
-          <b>${escapeHtml(m.name || "Guest")}:</b>
+      box.innerHTML =
+        `<div class="chatMsg">
+          Welcome to PawanVoice.
+        </div>`;
 
-          <span>
-            ${escapeHtml(m.text || "")}
+      return;
+    }
+
+    box.innerHTML =
+      messages.map(m=>`
+
+        <div class="chatMsg">
+
+          <b>
+            ${escapeHtml(m.name || "Guest")}
+          </b>
+
+          <span class="chatId">
+            (${escapeHtml(m.userId || "")})
           </span>
+
+          :
+          ${escapeHtml(m.text || "")}
 
         </div>
 
       `).join("");
 
-      const box = $("messages");
-
-      box.scrollTop = box.scrollHeight;
-
-    });
-
+    box.scrollTop =
+      box.scrollHeight;
+  });
 }
 
-async function sendMessage(){
 
-  const input = $("chatInput");
+async function sendChat(){
 
-  const text = input.value.trim();
+  const input =
+    document.getElementById(
+      "chatInput"
+    );
 
-  if(!text) return;
+  const text =
+    input.value.trim();
+
+  if(!text){
+    return;
+  }
 
   await db.ref(
-    "rooms/" + roomId + "/chat"
+    "rooms/" +
+    roomId +
+    "/chat"
   ).push({
 
+    userId:myId,
+
     name:myName,
-    id:myId,
+
     text:text,
-    time:Date.now()
+
+    createdAt:firebase.database.ServerValue.TIMESTAMP
 
   });
 
   input.value = "";
-
 }
 
-$("chatInput").addEventListener(
-  "keydown",
-  function(e){
 
-    if(e.key === "Enter"){
-      sendMessage();
-    }
-
-  }
-);
-
-/* =========================
-   LIKE
-========================= */
-
-async function sendLike(){
-
-  const ref =
-    db.ref("rooms/" + roomId + "/likes");
-
-  await ref.transaction(v=>
-    (Number(v)||0)+1
-  );
-
-  showToast("❤️ Like sent");
-
-}
-
-db.ref("rooms/" + roomId + "/likes")
-  .on("value",snap=>{
-
-    $("likeCount").textContent =
-      snap.val() || 0;
-
-  });
-
-/* =========================
-   GIFTS
-========================= */
-
-async function sendGift(icon,name,price){
-
-  await db.ref(
-    "rooms/" + roomId + "/gifts"
-  ).push({
-
-    icon:icon,
-    name:name,
-    price:price,
-    sender:myName,
-    senderId:myId,
-    time:Date.now()
-
-  });
-
-  await db.ref(
-    "rooms/" + roomId + "/giftCount"
-  ).transaction(v=>
-    (Number(v)||0)+1
-  );
-
-  showToast(icon + " " + name + " sent");
-
-  closePanel("giftOverlay");
-
-}
-
-db.ref("rooms/" + roomId + "/giftCount")
-  .on("value",snap=>{
-
-    $("giftCount").textContent =
-      snap.val() || 0;
-
-  });
-
-/* =========================
+/* =========================================================
    MIC
-========================= */
+========================================================= */
 
-async function startMicrophone(){
+async function toggleMic(){
+
+  micOn =
+    !micOn;
+
+  if(localStream){
+
+    localStream
+      .getAudioTracks()
+      .forEach(track=>{
+        track.enabled =
+          micOn;
+      });
+  }
+
+  document.getElementById(
+    "micBtn"
+  ).innerText =
+    micOn ? "🎙️":"🔇";
+
+  await db.ref(
+    "rooms/" +
+    roomId +
+    "/users/" +
+    myId +
+    "/mic"
+  ).set(micOn);
+
+  toast(
+    micOn
+    ?
+    "Mic ON"
+    :
+    "Mic OFF"
+  );
+}
+
+
+/* =========================================================
+   SPEAKER
+========================================================= */
+
+function toggleSpeaker(){
+
+  speakerOn =
+    !speakerOn;
+
+  document.getElementById(
+    "speakerBtn"
+  ).innerText =
+    speakerOn ? "🔊":"🔇";
+
+  document
+    .querySelectorAll("audio")
+    .forEach(audio=>{
+      audio.muted =
+        !speakerOn;
+    });
+
+  toast(
+    speakerOn
+    ?
+    "Speaker ON"
+    :
+    "Speaker OFF"
+  );
+}
+
+
+/* =========================================================
+   WEBRTC / PEERJS
+========================================================= */
+
+async function startVoice(){
 
   try{
 
     localStream =
       await navigator.mediaDevices.getUserMedia({
-        audio:true
+        audio:{
+          echoCancellation:true,
+          noiseSuppression:true,
+          autoGainControl:true
+        },
+        video:false
       });
 
-    localStream.getAudioTracks()
+    localStream
+      .getAudioTracks()
       .forEach(track=>{
         track.enabled = micOn;
       });
 
-    updateMicUI();
+    startPeer();
 
   }catch(error){
 
-    console.log(error);
+    console.error(error);
 
-    micOn = false;
-
-    updateMicUI();
-
-    showToast(
-      "Mic permission allow karein"
+    toast(
+      "Mic permission allow karein."
     );
 
   }
-
 }
 
-async function toggleMic(){
-
-  if(!localStream){
-
-    await startMicrophone();
-
-    return;
-
-  }
-
-  micOn = !micOn;
-
-  localStream.getAudioTracks()
-    .forEach(track=>{
-      track.enabled = micOn;
-    });
-
-  await db.ref(
-    "rooms/" + roomId +
-    "/users/" + myId + "/mic"
-  ).set(micOn);
-
-  updateMicUI();
-
-}
-
-function updateMicUI(){
-
-  const btn = $("micButton");
-
-  btn.innerHTML =
-    (micOn ? "🎙️":"🔇") +
-    `<small>${micOn ? "Mic ON":"Mic OFF"}</small>`;
-
-}
-
-/* =========================
-   SPEAKER
-========================= */
-
-function toggleSpeaker(){
-
-  speakerOn = !speakerOn;
-
-  document.querySelectorAll("audio")
-    .forEach(a=>{
-      a.muted = !speakerOn;
-    });
-
-  showToast(
-    speakerOn
-    ? "🔊 Speaker ON"
-    : "🔇 Speaker OFF"
-  );
-
-}
-
-/* =========================
-   PEERJS
-========================= */
 
 function startPeer(){
 
+  if(peer){
+    return;
+  }
+
   try{
 
-    peer = new Peer();
+    peer =
+      new Peer(
+        "pv-" +
+        myId +
+        "-" +
+        Math.random()
+          .toString(36)
+          .slice(2,6),
+        {
+          debug:1
+        }
+      );
 
-    peer.on("open",async id=>{
+    peer.on("open",async peerId=>{
 
       await db.ref(
-        "rooms/" + roomId +
-        "/users/" + myId +
+        "rooms/" +
+        roomId +
+        "/users/" +
+        myId +
         "/peerId"
-      ).set(id);
+      ).set(peerId);
 
       connectToUsers();
 
     });
 
+
     peer.on("call",call=>{
 
-      if(!localStream){
-
-        call.answer();
-
-        return;
-
-      }
-
-      call.answer(localStream);
+      call.answer(
+        localStream
+      );
 
       call.on("stream",remoteStream=>{
 
@@ -2218,34 +3261,52 @@ function startPeer(){
 
     });
 
+
     peer.on("error",error=>{
 
-      console.log("Peer error",error);
+      console.error(error);
+
+      toast(
+        "Voice connection error."
+      );
 
     });
 
-  }catch(e){
+  }catch(error){
 
-    console.log(e);
-
+    console.error(error);
   }
-
 }
+
+
+/* =========================================================
+   CONNECT USERS
+========================================================= */
 
 function connectToUsers(){
 
-  if(!peer || !localStream) return;
+  if(!peer || !localStream){
+    return;
+  }
 
-  Object.keys(usersData)
-    .forEach(id=>{
+  Object.values(users || {})
+    .forEach(user=>{
 
-      if(id === myId) return;
+      const targetId =
+        String(user.id || "");
 
-      const user = usersData[id];
+      if(!targetId ||
+         targetId === String(myId)){
+        return;
+      }
 
-      if(!user || !user.peerId) return;
+      if(!user.peerId){
+        return;
+      }
 
-      if(calls[id]) return;
+      if(calls[targetId]){
+        return;
+      }
 
       try{
 
@@ -2255,58 +3316,57 @@ function connectToUsers(){
             localStream
           );
 
-        calls[id] = call;
+        calls[targetId] =
+          call;
 
-        call.on("stream",remoteStream=>{
-
-          addAudio(
-            id,
-            remoteStream
-          );
-
-        });
+        call.on(
+          "stream",
+          remoteStream=>{
+            addAudio(
+              targetId,
+              remoteStream
+            );
+          }
+        );
 
         call.on("close",()=>{
-
-          delete calls[id];
-
-          const a =
-            document.getElementById(
-              "audio-" + safeId(id)
-            );
-
-          if(a) a.remove();
-
+          removeAudio(targetId);
+          delete calls[targetId];
         });
 
-      }catch(e){
+        call.on("error",()=>{
+          removeAudio(targetId);
+          delete calls[targetId];
+        });
 
-        console.log(e);
+      }catch(error){
 
+        console.error(error);
       }
-
     });
-
 }
 
-function safeId(id){
 
-  return String(id)
-    .replace(/[^a-zA-Z0-9_-]/g,"_");
-
-}
+/* =========================================================
+   AUDIO
+========================================================= */
 
 function addAudio(id,stream){
 
   const audioId =
-    "audio-" + safeId(id);
+    "audio-" +
+    String(id).replace(
+      /[^a-zA-Z0-9_-]/g,
+      "_"
+    );
 
   let audio =
     document.getElementById(audioId);
 
   if(!audio){
 
-    audio = document.createElement("audio");
+    audio =
+      document.createElement("audio");
 
     audio.id = audioId;
 
@@ -2316,326 +3376,1030 @@ function addAudio(id,stream){
 
     audio.controls = false;
 
-    document.body.appendChild(audio);
+    audio.style.display = "none";
+
+    document
+      .getElementById("audioContainer")
+      .appendChild(audio);
+  }
+
+  audio.srcObject =
+    stream;
+
+  audio.muted =
+    !speakerOn;
+
+  audio.play().catch(()=>{});
+}
+
+
+function removeAudio(id){
+
+  const audioId =
+    "audio-" +
+    String(id).replace(
+      /[^a-zA-Z0-9_-]/g,
+      "_"
+    );
+
+  const audio =
+    document.getElementById(audioId);
+
+  if(audio){
+    audio.remove();
+  }
+}
+
+
+/* =========================================================
+   HAND RAISE
+========================================================= */
+
+async function handRaise(){
+
+  await db.ref(
+    "rooms/" +
+    roomId +
+    "/requests/" +
+    myId
+  ).set({
+
+    id:myId,
+
+    name:myName,
+
+    type:"hand",
+
+    createdAt:firebase.database.ServerValue.TIMESTAMP
+
+  });
+
+  toast("✋ Hand raised.");
+
+  closePanel();
+}
+
+
+/* =========================================================
+   MIC REQUEST
+========================================================= */
+
+function micRequest(){
+
+  toast("🎙️ Mic request sent.");
+  closePanel();
+}
+
+
+/* =========================================================
+   SEAT INFO
+========================================================= */
+
+function seatInfo(){
+
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>💺 Seats</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <div class="panelText">
+      Owner + Seat 2–9 available.
+      <br><br>
+      Current users automatically seats par show hote hain.
+    </div>
+
+  `);
+}
+
+
+/* =========================================================
+   SEAT LOCK
+========================================================= */
+
+async function seatLock(){
+
+  if(String(myId) !== String(ownerId)){
+
+    toast("Only Owner.");
+    return;
+  }
+
+  const ref =
+    db.ref(
+      "rooms/" +
+      roomId +
+      "/settings/seatsLocked"
+    );
+
+  await ref.transaction(v =>
+    v === true ? false : true
+  );
+
+  const snap =
+    await ref.once("value");
+
+  toast(
+    snap.val()
+    ?
+    "Seats Locked 🔒"
+    :
+    "Seats Unlocked 🔓"
+  );
+
+  closePanel();
+}
+
+
+/* =========================================================
+   USER MUTE
+========================================================= */
+
+function muteUser(id){
+
+  toast(
+    "User " +
+    id +
+    " muted locally."
+  );
+
+  closePanel();
+}
+
+
+/* =========================================================
+   KICK USER
+========================================================= */
+
+async function kickUser(id){
+
+  if(String(myId) !== String(ownerId)){
+
+    toast("Only Owner.");
+    return;
+  }
+
+  if(String(id) === String(ownerId)){
+
+    toast("Owner ko remove nahi kar sakte.");
+    return;
+  }
+
+  await db.ref(
+    "rooms/" +
+    roomId +
+    "/users/" +
+    id
+  ).remove();
+
+  toast("User removed.");
+
+  closePanel();
+}
+
+
+/* =========================================================
+   USER SEAT TOGGLE
+========================================================= */
+
+async function toggleUserSeat(id){
+
+  if(String(myId) !== String(ownerId)){
+
+    toast("Only Owner.");
+    return;
+  }
+
+  toast("Seat control updated.");
+  closePanel();
+}
+
+
+/* =========================================================
+   MAKE ADMIN
+========================================================= */
+
+async function makeAdmin(id){
+
+  if(String(myId) !== String(ownerId)){
+
+    toast("Only Owner.");
+    return;
+  }
+
+  await db.ref(
+    "rooms/" +
+    roomId +
+    "/admins/" +
+    id
+  ).set(true);
+
+  toast("Admin added.");
+
+  closePanel();
+}
+
+
+/* =========================================================
+   FOLLOW
+========================================================= */
+
+function followUser(id){
+
+  toast(
+    "❤️ Follow request for " +
+    id
+  );
+
+  closePanel();
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function messageUser(id){
+
+  toast(
+    "Private message feature ready for integration."
+  );
+
+  closePanel();
+}
+
+
+/* =========================================================
+   BLOCK
+========================================================= */
+
+async function blockUser(id){
+
+  await db.ref(
+    "blocks/" +
+    myId +
+    "/" +
+    id
+  ).set({
+
+    userId:id,
+
+    createdAt:firebase.database.ServerValue.TIMESTAMP
+
+  });
+
+  toast("User blocked.");
+
+  closePanel();
+}
+
+
+/* =========================================================
+   REPORT
+========================================================= */
+
+async function reportUser(id){
+
+  await db.ref(
+    "reports/users"
+  ).push({
+
+    reporterId:myId,
+
+    targetId:id,
+
+    roomId:roomId,
+
+    roomNumber:roomNumber,
+
+    createdAt:firebase.database.ServerValue.TIMESTAMP
+
+  });
+
+  toast("Report submitted.");
+
+  closePanel();
+}
+
+
+/* =========================================================
+   ROOM REPORT
+========================================================= */
+
+async function reportRoom(){
+
+  await db.ref(
+    "reports/rooms"
+  ).push({
+
+    reporterId:myId,
+
+    roomId:roomId,
+
+    roomNumber:roomNumber,
+
+    createdAt:firebase.database.ServerValue.TIMESTAMP
+
+  });
+
+  toast("Room report submitted.");
+
+  closePanel();
+}
+
+
+/* =========================================================
+   PK
+========================================================= */
+
+function openPK(){
+
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>⚔️ PK Battle</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <div class="panelText">
+      PK system ka UI ready hai.
+      Room-vs-Room real-time battle ke liye backend
+      aur opponent room connection add karna hoga.
+    </div>
+
+    <button class="primaryBtn"
+            onclick="toast('PK invite sent');closePanel()">
+      ⚔️ Invite for PK
+    </button>
+
+  `);
+}
+
+
+/* =========================================================
+   GAMES
+========================================================= */
+
+function openGames(){
+
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>🎮 Games</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <div class="moreGrid">
+
+      <button class="moreItem"
+              onclick="playDice()">
+        <div class="ico">🎲</div>
+        <span>Dice</span>
+      </button>
+
+      <button class="moreItem"
+              onclick="playWheel()">
+        <div class="ico">🎡</div>
+        <span>Lucky Wheel</span>
+      </button>
+
+      <button class="moreItem"
+              onclick="playCards()">
+        <div class="ico">🃏</div>
+        <span>Cards</span>
+      </button>
+
+      <button class="moreItem"
+              onclick="playTreasure()">
+        <div class="ico">🎁</div>
+        <span>Treasure</span>
+      </button>
+
+    </div>
+
+  `);
+}
+
+
+function playDice(){
+
+  const number =
+    Math.floor(
+      Math.random()*6
+    ) + 1;
+
+  toast(
+    "🎲 Dice: " + number
+  );
+}
+
+
+function playWheel(){
+
+  const number =
+    Math.floor(
+      Math.random()*100
+    ) + 1;
+
+  toast(
+    "🎡 Wheel: " + number
+  );
+}
+
+
+function playCards(){
+
+  const cards =
+    ["A","K","Q","J","10"];
+
+  const card =
+    cards[
+      Math.floor(
+        Math.random()*cards.length
+      )
+    ];
+
+  toast(
+    "🃏 Card: " + card
+  );
+}
+
+
+function playTreasure(){
+
+  toast(
+    "🎁 Treasure Box opened."
+  );
+}
+
+
+/* =========================================================
+   RANKING
+========================================================= */
+
+function openRanking(){
+
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>🏆 Ranking</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <div class="moreGrid">
+
+      <button class="moreItem"
+              onclick="toast('Room Ranking')">
+        <div class="ico">🏠</div>
+        <span>Room</span>
+      </button>
+
+      <button class="moreItem"
+              onclick="toast('Gift Ranking')">
+        <div class="ico">🎁</div>
+        <span>Gift</span>
+      </button>
+
+      <button class="moreItem"
+              onclick="toast('Like Ranking')">
+        <div class="ico">❤️</div>
+        <span>Likes</span>
+      </button>
+
+      <button class="moreItem"
+              onclick="toast('Host Ranking')">
+        <div class="ico">👑</div>
+        <span>Host</span>
+      </button>
+
+    </div>
+
+  `);
+}
+
+
+/* =========================================================
+   MISSIONS
+========================================================= */
+
+function openMissions(){
+
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>🎯 Missions</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <div class="listItem">
+      <div>
+        <div class="listName">
+          🎙️ Join Voice Room
+        </div>
+        <div class="listId">
+          Progress: 1/1
+        </div>
+      </div>
+
+      <button
+        class="smallBtn"
+        onclick="toast('Reward claimed')">
+        Claim
+      </button>
+    </div>
+
+    <div class="listItem">
+      <div>
+        <div class="listName">
+          ❤️ Send 10 Likes
+        </div>
+        <div class="listId">
+          Progress: 0/10
+        </div>
+      </div>
+
+      <button
+        class="smallBtn"
+        onclick="sendLike()">
+        Like
+      </button>
+    </div>
+
+  `);
+}
+
+
+/* =========================================================
+   MUSIC
+========================================================= */
+
+function openMusic(){
+
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>🎵 Music</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <div class="panelText">
+      Music playlist feature ke liye audio source/backend
+      connect karna hoga.
+    </div>
+
+    <button
+      class="primaryBtn"
+      onclick="toast('Music request sent');closePanel()">
+      🎵 Request Music
+    </button>
+
+  `);
+}
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+function openTheme(){
+
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>🎨 Theme</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <div class="moreGrid">
+
+      <button class="moreItem"
+              onclick="setTheme('purple')">
+        <div class="ico">💜</div>
+        <span>Purple</span>
+      </button>
+
+      <button class="moreItem"
+              onclick="setTheme('blue')">
+        <div class="ico">💙</div>
+        <span>Blue</span>
+      </button>
+
+      <button class="moreItem"
+              onclick="setTheme('green')">
+        <div class="ico">💚</div>
+        <span>Green</span>
+      </button>
+
+      <button class="moreItem"
+              onclick="setTheme('dark')">
+        <div class="ico">🖤</div>
+        <span>Dark</span>
+      </button>
+
+    </div>
+
+  `);
+}
+
+
+function setTheme(theme){
+
+  if(theme === "blue"){
+
+    document.documentElement.style.setProperty(
+      "--theme",
+      "#3e7bff"
+    );
 
   }
 
-  audio.srcObject = stream;
+  if(theme === "green"){
 
-  audio.muted = !speakerOn;
-
-}
-
-/* =========================
-   ONLINE
-========================= */
-
-function openOnline(){
-
-  closeAllPanels();
-
-  const ids = Object.keys(usersData);
-
-  $("onlineUsers").innerHTML =
-    ids.length
-    ? ids.map(id=>{
-
-        const u = usersData[id];
-
-        return `
-          <button class="option"
-            onclick="openUserActions('${escapeHtml(id)}')">
-
-            <div class="optionIcon">
-              ${u.mic ? "🎙️":"🔇"}
-            </div>
-
-            <div class="optionText">
-              <b>${escapeHtml(u.name || "Guest")}</b>
-              <span>ID: ${escapeHtml(id)}</span>
-            </div>
-
-            <div class="arrow">›</div>
-
-          </button>
-        `;
-
-      }).join("")
-    : `
-      <div style="text-align:center;color:#999;padding:20px">
-        No users
-      </div>
-    `;
-
-  $("onlineOverlay").classList.add("show");
-
-}
-
-/* =========================
-   ROOM INFO
-========================= */
-
-function openInfo(){
-
-  $("roomInfoContent").innerHTML = `
-
-    <div class="option">
-      <div class="optionIcon">🏠</div>
-      <div class="optionText">
-        <b>${escapeHtml(roomData.name || "PawanVoice Room")}</b>
-        <span>${escapeHtml(roomData.description || "No description")}</span>
-      </div>
-    </div>
-
-    <div class="option">
-      <div class="optionIcon">🆔</div>
-      <div class="optionText">
-        <b>Room ID</b>
-        <span>${escapeHtml(roomId)}</span>
-      </div>
-    </div>
-
-    <div class="option">
-      <div class="optionIcon">👑</div>
-      <div class="optionText">
-        <b>Owner</b>
-        <span>${escapeHtml(roomData.ownerName || myName)}</span>
-      </div>
-    </div>
-
-    <div class="option">
-      <div class="optionIcon">🏷️</div>
-      <div class="optionText">
-        <b>Category</b>
-        <span>${escapeHtml(roomData.category || "General")}</span>
-      </div>
-    </div>
-
-    <div class="option">
-      <div class="optionIcon">🔒</div>
-      <div class="optionText">
-        <b>Privacy</b>
-        <span>${escapeHtml(roomData.privacy || "public")}</span>
-      </div>
-    </div>
-
-  `;
-
-  $("infoOverlay").classList.add("show");
-
-}
-
-/* =========================
-   GIFTS / MORE
-========================= */
-
-function openGifts(){
-
-  closeAllPanels();
-
-  $("giftOverlay").classList.add("show");
-
-}
-
-function openMore(){
-
-  closeAllPanels();
-
-  $("moreOverlay").classList.add("show");
-
-}
-
-function simpleAction(text){
-
-  closeAllPanels();
-
-  showToast(text + " selected");
-
-}
-
-/* =========================
-   EMOJI
-========================= */
-
-function emoji(){
-
-  const input = $("chatInput");
-
-  input.value += " 😊";
-
-  input.focus();
-
-}
-
-/* =========================
-   SHARE
-========================= */
-
-async function shareRoom(){
-
-  const url =
-    location.origin +
-    location.pathname +
-    "?room=" +
-    encodeURIComponent(roomId);
-
-  if(navigator.share){
-
-    try{
-
-      await navigator.share({
-        title:roomData.name || "PawanVoice Room",
-        text:"Join my PawanVoice room",
-        url:url
-      });
-
-    }catch(e){}
-
-  }else{
-
-    copyText(url);
-
-    showToast("Room link copied");
+    document.documentElement.style.setProperty(
+      "--theme",
+      "#21b879"
+    );
 
   }
 
-}
+  if(theme === "purple"){
 
-/* =========================
-   COPY
-========================= */
-
-function copyRoomId(){
-
-  copyText(roomId);
-
-  showToast("Room ID copied");
-
-}
-
-function copyText(text){
-
-  if(navigator.clipboard){
-
-    navigator.clipboard.writeText(text)
-      .catch(()=>fallbackCopy(text));
-
-  }else{
-
-    fallbackCopy(text);
+    document.documentElement.style.setProperty(
+      "--theme",
+      "#7b55ff"
+    );
 
   }
 
+  toast(
+    "Theme: " + theme
+  );
+
+  closePanel();
 }
 
-function fallbackCopy(text){
 
-  const area =
-    document.createElement("textarea");
+/* =========================================================
+   BACKGROUND
+========================================================= */
 
-  area.value = text;
+function openBackground(){
 
-  document.body.appendChild(area);
+  openPanel(`
 
-  area.select();
+    <div class="panelHead">
+      <h3>🌌 Background</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
 
-  document.execCommand("copy");
+    <div class="moreGrid">
 
-  area.remove();
+      <button class="moreItem"
+              onclick="setBackground(1)">
+        <div class="ico">🌌</div>
+        <span>Space</span>
+      </button>
 
+      <button class="moreItem"
+              onclick="setBackground(2)">
+        <div class="ico">🌃</div>
+        <span>Night</span>
+      </button>
+
+      <button class="moreItem"
+              onclick="setBackground(3)">
+        <div class="ico">🌈</div>
+        <span>Neon</span>
+      </button>
+
+      <button class="moreItem"
+              onclick="setBackground(4)">
+        <div class="ico">✨</div>
+        <span>Stars</span>
+      </button>
+
+    </div>
+
+  `);
 }
 
-/* =========================
+
+function setBackground(number){
+
+  const backgrounds = {
+
+    1:
+    "radial-gradient(circle at 50% 10%,#24213d,#111324 35%,#090b13 75%)",
+
+    2:
+    "linear-gradient(160deg,#081425,#15102c,#05070c)",
+
+    3:
+    "radial-gradient(circle at 30% 20%,#40124e,#11152f,#05060b)",
+
+    4:
+    "radial-gradient(circle at 50% 20%,#302852,#0b0d19 60%,#05060b)"
+
+  };
+
+  document.getElementById("app").style.background =
+    backgrounds[number] || backgrounds[1];
+
+  toast("Background changed.");
+
+  closePanel();
+}
+
+
+/* =========================================================
+   NOTICE
+========================================================= */
+
+function openNotice(){
+
+  const isOwner =
+    String(myId) === String(ownerId);
+
+  if(!isOwner){
+
+    toast("Only Owner can change notice.");
+    return;
+  }
+
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>📢 Room Notice</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <input
+      id="noticeInput"
+      class="formInput"
+      placeholder="Write room notice...">
+
+    <button
+      class="primaryBtn"
+      onclick="saveNotice()">
+      📢 Publish Notice
+    </button>
+
+  `);
+}
+
+
+async function saveNotice(){
+
+  const value =
+    document.getElementById(
+      "noticeInput"
+    ).value.trim();
+
+  if(!value){
+    toast("Notice likhiye.");
+    return;
+  }
+
+  await db.ref(
+    "rooms/" +
+    roomId +
+    "/settings/announcement"
+  ).set(value);
+
+  toast("Notice published.");
+
+  closePanel();
+}
+
+
+/* =========================================================
+   INBOX
+========================================================= */
+
+function openInbox(){
+
+  openPanel(`
+
+    <div class="panelHead">
+      <h3>📥 Inbox</h3>
+      <button class="closeBtn" onclick="closePanel()">×</button>
+    </div>
+
+    <div class="panelText">
+      🎁 Gift notifications<br><br>
+      👤 Friend notifications<br><br>
+      🎙️ Room invitations<br><br>
+      🏆 Mission rewards
+    </div>
+
+  `);
+}
+
+
+/* =========================================================
    MINIMIZE
-========================= */
+========================================================= */
 
 function minimizeRoom(){
 
-  $("app").style.display = "none";
+  document.getElementById(
+    "app"
+  ).style.display = "none";
 
-  $("miniRoom").classList.add("show");
-
+  document.getElementById(
+    "miniRoom"
+  ).classList.add("show");
 }
+
 
 function restoreRoom(){
 
-  $("miniRoom").classList.remove("show");
+  document.getElementById(
+    "app"
+  ).style.display = "flex";
 
-  $("app").style.display = "block";
-
+  document.getElementById(
+    "miniRoom"
+  ).classList.remove("show");
 }
 
-/* =========================
-   LEAVE
-========================= */
+
+/* =========================================================
+   PANEL
+========================================================= */
+
+function openPanel(html){
+
+  document.getElementById(
+    "panel"
+  ).innerHTML = html;
+
+  document.getElementById(
+    "overlay"
+  ).classList.add("show");
+}
+
+
+function closePanel(event){
+
+  if(
+    event &&
+    event.target !==
+    document.getElementById("overlay")
+  ){
+    return;
+  }
+
+  document.getElementById(
+    "overlay"
+  ).classList.remove("show");
+}
+
+
+/* =========================================================
+   ROOM TIMER
+========================================================= */
+
+function startRoomTimer(){
+
+  setInterval(()=>{
+
+    const seconds =
+      Math.floor(
+        (Date.now() - roomStartedAt) / 1000
+      );
+
+    const h =
+      Math.floor(seconds / 3600);
+
+    const m =
+      Math.floor(
+        (seconds % 3600) / 60
+      );
+
+    const s =
+      seconds % 60;
+
+    let value = "";
+
+    if(h > 0){
+
+      value =
+        String(h).padStart(2,"0") +
+        ":" +
+        String(m).padStart(2,"0") +
+        ":" +
+        String(s).padStart(2,"0");
+
+    }else{
+
+      value =
+        String(m).padStart(2,"0") +
+        ":" +
+        String(s).padStart(2,"0");
+    }
+
+    document.getElementById(
+      "roomDuration"
+    ).innerText = value;
+
+  },1000);
+}
+
+
+/* =========================================================
+   LEAVE ROOM
+========================================================= */
 
 async function leaveRoom(){
-
-  const ok =
-    confirm("Room se leave karna hai?");
-
-  if(!ok) return;
 
   try{
 
     await db.ref(
-      "rooms/" + roomId +
-      "/users/" + myId
+      "rooms/" +
+      roomId +
+      "/users/" +
+      myId
     ).remove();
 
   }catch(e){}
 
-  if(localStream){
-
-    localStream.getTracks()
-      .forEach(t=>t.stop());
-
-  }
-
   if(peer){
 
-    peer.destroy();
-
-  }
-
-  location.href = "index.html";
-
-}
-
-/* =========================
-   PANELS
-========================= */
-
-function closeAllPanels(){
-
-  document.querySelectorAll(".overlay")
-    .forEach(el=>{
-      el.classList.remove("show");
-    });
-
-}
-
-/* =========================
-   START
-========================= */
-
-initRoom();
-
-window.addEventListener(
-  "beforeunload",
-  function(){
-
     try{
-
-      db.ref(
-        "rooms/" + roomId +
-        "/users/" + myId
-      ).remove();
-
+      peer.destroy();
     }catch(e){}
 
   }
+
+  if(localStream){
+
+    localStream
+      .getTracks()
+      .forEach(track=>{
+        track.stop();
+      });
+  }
+
+  toast("Room left.");
+
+  setTimeout(()=>{
+
+    location.href =
+      "index.html";
+
+  },500);
+}
+
+
+/* =========================================================
+   PAGE CLOSE
+========================================================= */
+
+window.addEventListener(
+  "beforeunload",
+  ()=>{
+    try{
+
+      if(roomId && myId){
+
+        navigator.sendBeacon &&
+        db.ref(
+          "rooms/" +
+          roomId +
+          "/users/" +
+          myId
+        ).remove();
+
+      }
+
+    }catch(e){}
+  }
 );
+
+
+/* =========================================================
+   START
+========================================================= */
+
+(async function(){
+
+  try{
+
+    await loadRoom();
+
+  }catch(error){
+
+    console.error(error);
+
+    toast(
+      "Room load nahi hua. Firebase check karein."
+    );
+
+  }
+
+})();
 
 </script>
 
