@@ -1,819 +1,1026 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>PawanVoice Room</title>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
+*{box-sizing:border-box}
 body{
+  margin:0;
+  background:#090b12;
+  color:#fff;
   font-family:Arial,sans-serif;
-  background:
-    radial-gradient(circle at 50% 25%,#34345f 0,#18182e 35%,#090912 75%);
-  color:white;
-  min-height:100vh;
   overflow-x:hidden;
 }
+button,input,textarea{font:inherit}
+button{cursor:pointer}
 
-button{
-  border:0;
-  color:white;
-  cursor:pointer;
-}
-
-.room{
-  min-height:100vh;
-  max-width:520px;
-  margin:auto;
-  position:relative;
-  padding-bottom:100px;
-}
-
-/* TOP */
 .top{
-  height:64px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:10px 14px;
-  background:rgba(10,10,25,.75);
-}
-
-.roomTitle{
+  position:sticky;
+  top:0;
+  z-index:50;
+  min-height:72px;
   display:flex;
   align-items:center;
   gap:10px;
+  padding:10px;
+  background:#111522;
+  border-bottom:1px solid #272c3b;
 }
 
-.roomIcon{
-  width:42px;
-  height:42px;
-  border-radius:14px;
+.roomLogo{
+  width:50px;height:50px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#7c3aed,#ec4899);
   display:flex;
   align-items:center;
   justify-content:center;
-  background:linear-gradient(135deg,#7647ff,#d94fff);
-  font-size:21px;
+  font-size:24px;
+  flex:none;
+  overflow:hidden;
+  border:2px solid #fff;
 }
+.roomLogo img{width:100%;height:100%;object-fit:cover}
 
+.roomInfo{
+  min-width:0;
+  flex:1;
+}
 .roomName{
+  font-size:16px;
   font-weight:bold;
-  font-size:15px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
-
-.roomId{
-  color:#aaa;
+.roomMeta{
   font-size:11px;
-  margin-top:3px;
+  color:#aab1c5;
+  margin-top:4px;
 }
 
-.topBtns{
+.headerBtns{
   display:flex;
-  gap:7px;
+  gap:5px;
 }
-
-.topBtns button{
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  background:rgba(255,255,255,.12);
-  font-size:17px;
+.iconBtn{
+  width:38px;height:38px;
+  border:0;
+  border-radius:12px;
+  background:#1b2030;
+  color:#fff;
+  font-size:18px;
 }
+.iconBtn:active{transform:scale(.94)}
+.ownerEdit{display:none}
 
-/* NOTICE */
-.notice{
-  margin:10px 12px;
-  padding:10px 13px;
-  border-radius:15px;
-  background:rgba(255,255,255,.09);
+.announcement{
+  margin:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:#171b29;
+  color:#d8dcef;
   font-size:12px;
-  color:#eee;
+  border:1px solid #292f42;
 }
 
-/* OWNER */
-.ownerArea{
+.roomArea{
+  padding:8px 10px 130px;
+}
+
+.ownerTitle,.seatTitle{
   text-align:center;
-  margin-top:18px;
-}
-
-.ownerSeat{
-  width:116px;
-  height:116px;
-  margin:auto;
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.ownerGlow{
-  position:absolute;
-  inset:0;
-  border-radius:50%;
-  background:radial-gradient(circle,#d5a7ff,transparent 65%);
-  opacity:.45;
-}
-
-.avatar{
-  width:82px;
-  height:82px;
-  border-radius:50%;
-  object-fit:cover;
-  border:4px solid #f4c95d;
-  position:relative;
-  z-index:2;
-  background:#292943;
-}
-
-.crown{
-  position:absolute;
-  top:-9px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:4;
-  font-size:25px;
-}
-
-.micDot{
-  position:absolute;
-  right:12px;
-  bottom:11px;
-  width:23px;
-  height:23px;
-  border-radius:50%;
-  background:#32d46b;
-  border:3px solid #17172c;
-  z-index:5;
+  color:#9ea7bd;
   font-size:11px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.ownerName{
-  margin-top:5px;
-  font-size:14px;
-  font-weight:bold;
-}
-
-.ownerTag{
-  display:inline-block;
-  margin-top:5px;
-  padding:4px 10px;
-  border-radius:20px;
-  background:rgba(255,197,75,.16);
-  color:#ffd86a;
-  font-size:10px;
-}
-
-/* SEATS */
-.seats{
-  padding:15px 10px 0;
+  margin:10px 0;
 }
 
 .seatRow{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:9px;
-  margin-bottom:18px;
+  margin-bottom:15px;
+}
+
+.ownerRow{
+  display:flex;
+  justify-content:center;
 }
 
 .seat{
-  text-align:center;
   min-width:0;
+  text-align:center;
+}
+.ownerSeat{
+  width:92px;
 }
 
-.seatCircle{
-  width:68px;
-  height:68px;
+.avatarBox{
+  width:62px;
+  height:62px;
   margin:auto;
   position:relative;
   border-radius:50%;
-  padding:4px;
-  background:linear-gradient(135deg,#ffbd55,#a55cff,#4e83ff);
+  padding:3px;
+  background:#34394b;
 }
-
-.seatInner{
+.ownerSeat .avatarBox{
+  width:78px;
+  height:78px;
+  background:linear-gradient(135deg,#f7c948,#ff6b6b);
+}
+.avatar{
   width:100%;
   height:100%;
   border-radius:50%;
-  background:#19192e;
+  background:#242a3a;
   display:flex;
   align-items:center;
   justify-content:center;
   overflow:hidden;
+  font-size:23px;
 }
-
-.seatInner img{
+.avatar img{
   width:100%;
   height:100%;
   object-fit:cover;
-  border-radius:50%;
 }
 
-.emptySeat{
-  font-size:25px;
-  color:#aaa;
-}
-
-.seatNumber{
+.crown{
   position:absolute;
-  left:-2px;
+  top:-10px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:20px;
+}
+.vip{
+  position:absolute;
+  right:-4px;
   top:-2px;
-  min-width:21px;
-  height:21px;
-  padding:0 5px;
-  border-radius:20px;
-  background:#292943;
-  border:1px solid #ffffff35;
-  font-size:10px;
+  background:#eab308;
+  color:#17100a;
+  border-radius:8px;
+  font-size:8px;
+  font-weight:bold;
+  padding:3px 5px;
+}
+.micState{
+  position:absolute;
+  bottom:-3px;
+  left:-3px;
+  width:21px;height:21px;
+  border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
-  z-index:3;
+  background:#1f2937;
+  font-size:11px;
 }
-
-.seatMic{
-  position:absolute;
-  right:-1px;
-  bottom:0;
-  width:21px;
-  height:21px;
-  border-radius:50%;
-  background:#32d46b;
-  border:2px solid #17172c;
-  font-size:9px;
-  z-index:4;
+.micOn{
+  background:#16a34a;
 }
-
-.seatName{
-  margin-top:6px;
+.name{
+  margin-top:7px;
   font-size:11px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  color:#eee;
 }
-
-.vip{
-  color:#ffd75c;
+.seatNo{
+  margin-top:4px;
+  color:#727b91;
   font-size:9px;
 }
 
-/* INFO */
-.info{
-  margin:8px 12px;
-  padding:10px;
-  border-radius:14px;
-  display:flex;
-  justify-content:space-around;
-  background:rgba(255,255,255,.07);
-  font-size:11px;
-  color:#ddd;
+.empty .avatarBox{
+  border:1px dashed #4b5267;
+  background:#171b27;
 }
-
-.info span{
-  color:#fff;
-  font-weight:bold;
-}
-
-/* CHAT */
-.chatArea{
-  margin:10px 12px;
-  height:130px;
-  overflow-y:auto;
-  padding:10px;
-  border-radius:15px;
-  background:rgba(0,0,0,.18);
-}
-
-.message{
-  margin-bottom:7px;
-  font-size:12px;
-}
-
-.message b{
-  color:#d7a4ff;
-}
-
-/* BOTTOM */
-.bottom{
-  position:fixed;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:min(520px,100%);
-  height:82px;
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  background:rgba(13,13,27,.96);
-  border-top:1px solid #ffffff15;
-  backdrop-filter:blur(15px);
-  z-index:20;
-}
-
-.bottomBtn{
-  width:52px;
-  height:52px;
-  border-radius:18px;
-  background:rgba(255,255,255,.09);
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  gap:3px;
-  font-size:19px;
-}
-
-.bottomBtn small{
-  font-size:9px;
-  color:#ccc;
-}
-
-.moreBtn{
-  background:linear-gradient(135deg,#7d45ff,#d34cff);
-}
-
-/* MORE PANEL */
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;
-  z-index:30;
-}
-
-.panel{
-  position:absolute;
-  left:50%;
-  bottom:0;
-  transform:translateX(-50%);
-  width:min(520px,100%);
-  background:#17172a;
-  border-radius:25px 25px 0 0;
-  padding:18px 15px 25px;
-}
-
-.panelHeader{
-  text-align:center;
-  font-weight:bold;
-  margin-bottom:15px;
-}
-
-.handle{
-  width:45px;
-  height:4px;
-  border-radius:10px;
-  background:#777;
-  margin:0 auto 15px;
-}
-
-.optionGrid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
-}
-
-.option{
-  min-height:70px;
-  border-radius:16px;
-  background:rgba(255,255,255,.07);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  font-size:22px;
-}
-
-.option span{
-  font-size:10px;
-  color:#ddd;
-}
-
-/* POPUP */
-.popup{
-  position:fixed;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:rgba(0,0,0,.65);
-  z-index:40;
-}
-
-.popupBox{
-  width:100%;
-  max-width:420px;
-  max-height:80vh;
-  overflow:auto;
-  background:#1b1b30;
-  border:1px solid #ffffff15;
-  border-radius:22px;
-  padding:20px;
-}
-
-.popupTitle{
-  font-size:18px;
-  font-weight:bold;
-  margin-bottom:15px;
-}
-
-.popupText{
-  color:#bbb;
-  font-size:13px;
-  line-height:1.6;
-}
-
-.popupClose{
-  margin-top:18px;
-  width:100%;
-  padding:12px;
-  border-radius:14px;
-  background:#7647ff;
-  font-weight:bold;
-}
-
-/* GIFT */
-.gifts{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-}
-
-.gift{
-  padding:13px 5px;
-  border-radius:15px;
-  background:rgba(255,255,255,.07);
-  text-align:center;
+.empty .avatar{
+  color:#70798f;
   font-size:25px;
 }
 
-.gift small{
-  display:block;
-  font-size:9px;
-  margin-top:4px;
-  color:#ccc;
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin:12px 0;
+}
+.stat{
+  background:#111522;
+  border:1px solid #252b3a;
+  border-radius:12px;
+  padding:9px;
+  text-align:center;
+}
+.stat b{display:block;font-size:14px}
+.stat span{font-size:9px;color:#818aa0}
+
+.chatBox{
+  background:#0e111a;
+  border:1px solid #22283a;
+  border-radius:14px;
+  padding:10px;
+  height:180px;
+  overflow-y:auto;
+}
+.chatMsg{
+  margin-bottom:8px;
+  font-size:12px;
+  color:#dce1ed;
+}
+.chatMsg b{color:#a78bfa}
+.chatTime{color:#687186;font-size:9px}
+
+.bottom{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  z-index:60;
+  background:#10131d;
+  border-top:1px solid #292f40;
+  padding:8px 7px calc(8px + env(safe-area-inset-bottom));
 }
 
-/* TOAST */
+.chatSend{
+  display:flex;
+  gap:6px;
+  margin-bottom:8px;
+}
+.chatSend input{
+  min-width:0;
+  flex:1;
+  border:1px solid #30364a;
+  background:#1a1f2d;
+  color:#fff;
+  border-radius:20px;
+  padding:10px 13px;
+  outline:none;
+}
+.chatSend button{
+  width:42px;
+  border:0;
+  border-radius:50%;
+  background:#7c3aed;
+  color:#fff;
+}
+
+.bottomBtns{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:4px;
+}
+.bottomBtn{
+  border:0;
+  background:transparent;
+  color:#fff;
+  border-radius:12px;
+  padding:5px 2px;
+  font-size:21px;
+}
+.bottomBtn small{
+  display:block;
+  font-size:8px;
+  color:#9ca4b8;
+  margin-top:2px;
+}
+
+.panel{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  z-index:100;
+  background:#111522;
+  border-radius:20px 20px 0 0;
+  border-top:1px solid #30364a;
+  box-shadow:0 -10px 40px #0009;
+  max-height:82vh;
+  overflow-y:auto;
+  padding:15px;
+  display:none;
+}
+.panel.show{display:block}
+
+.panelHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+.panelHead h3{margin:0;font-size:16px}
+.close{
+  border:0;
+  background:#252b3b;
+  color:#fff;
+  border-radius:10px;
+  width:35px;height:35px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px;
+}
+.action{
+  min-height:68px;
+  border:1px solid #292f40;
+  background:#191e2b;
+  color:#fff;
+  border-radius:14px;
+  padding:8px 3px;
+}
+.action .ico{font-size:22px;display:block}
+.action span{font-size:9px;color:#b5bdd0}
+
+.form{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.form input,.form textarea,.form select{
+  width:100%;
+  background:#191e2b;
+  border:1px solid #30364a;
+  color:#fff;
+  border-radius:11px;
+  padding:11px;
+  outline:none;
+}
+.primary{
+  border:0;
+  border-radius:11px;
+  padding:12px;
+  background:#7c3aed;
+  color:#fff;
+  font-weight:bold;
+}
+.danger{background:#991b1b}
+
+.giftGrid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+.gift{
+  background:#191e2b;
+  border:1px solid #30364a;
+  border-radius:13px;
+  padding:10px 3px;
+  text-align:center;
+  color:#fff;
+}
+.gift div{font-size:25px}
+.gift small{display:block;color:#b5bdd0;margin-top:4px}
+
+.userActionInfo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#191e2b;
+  border-radius:13px;
+  padding:10px;
+  margin-bottom:12px;
+}
+.miniAvatar{
+  width:48px;height:48px;
+  border-radius:50%;
+  background:#30364a;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.miniAvatar img{width:100%;height:100%;object-fit:cover}
+
 .toast{
   position:fixed;
   left:50%;
-  bottom:95px;
+  bottom:145px;
   transform:translateX(-50%);
-  padding:11px 17px;
-  border-radius:20px;
-  background:#272741;
+  z-index:200;
+  background:#272d3c;
   color:#fff;
+  padding:10px 15px;
+  border-radius:20px;
   font-size:12px;
   display:none;
-  z-index:100;
+}
+.toast.show{display:block}
+
+.noticeText{
+  background:#191e2b;
+  padding:12px;
+  border-radius:12px;
+  color:#d5dbea;
+  font-size:12px;
+  line-height:1.5;
 }
 
-/* RESPONSIVE */
-@media(max-width:370px){
-  .seatCircle{
-    width:60px;
-    height:60px;
-  }
-
-  .optionGrid{
-    gap:7px;
-  }
-
-  .option{
-    min-height:64px;
-  }
+@media(max-width:380px){
+  .headerBtns{gap:2px}
+  .iconBtn{width:34px;height:34px;font-size:16px}
+  .seatRow{gap:5px}
+  .grid{grid-template-columns:repeat(3,1fr)}
 }
 </style>
 </head>
 
 <body>
 
-<div class="room">
+<header class="top">
 
-  <div class="top">
-    <div class="roomTitle">
-      <div class="roomIcon">🎙️</div>
-      <div>
-        <div class="roomName" id="roomName">PawanVoice Room</div>
-        <div class="roomId" id="roomIdText">Room ID: Loading...</div>
-      </div>
-    </div>
+  <div class="roomLogo" id="roomLogo" onclick="roomDpClick()">🎙️</div>
 
-    <div class="topBtns">
-      <button onclick="shareRoom()">↗</button>
-      <button onclick="showPopup('info')">ⓘ</button>
+  <div class="roomInfo">
+    <div class="roomName" id="roomName">PawanVoice Room</div>
+    <div class="roomMeta">
+      ID: <span id="roomIdText">Loading...</span>
+      · Owner: <span id="ownerName">Loading...</span>
     </div>
   </div>
 
-  <div class="notice" id="notice">
-    📢 Welcome to PawanVoice Room
+  <div class="headerBtns">
+    <button class="iconBtn ownerEdit" id="editRoomBtn" onclick="openRoomSettings()">✏️</button>
+    <button class="iconBtn" onclick="openPanel('settingsPanel')">⚙️</button>
+    <button class="iconBtn" onclick="openPanel('onlinePanel')">👥</button>
+    <button class="iconBtn" onclick="shareRoom()">🔗</button>
+    <button class="iconBtn" onclick="copyRoomId()">📋</button>
+    <button class="iconBtn" onclick="toggleMinimize()">⬇️</button>
+    <button class="iconBtn" onclick="openPanel('infoPanel')">ℹ️</button>
   </div>
+</header>
 
-  <div class="ownerArea">
-    <div class="ownerSeat">
-      <div class="ownerGlow"></div>
-      <div class="crown">👑</div>
-      <img id="ownerAvatar" class="avatar"
-           src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%23292943'/%3E%3Ctext x='50' y='60' text-anchor='middle' font-size='45'%3E👤%3C/text%3E%3C/svg%3E">
-      <div class="micDot">🎙</div>
-    </div>
-
-    <div class="ownerName" id="ownerName">Owner</div>
-    <div class="ownerTag">ROOM OWNER</div>
-  </div>
-
-  <div class="seats">
-
-    <div class="seatRow" id="row1">
-      <div class="seat" onclick="seatClick(2)">
-        <div class="seatCircle">
-          <div class="seatInner">
-            <div class="emptySeat">＋</div>
-          </div>
-          <div class="seatNumber">2</div>
-          <div class="seatMic">🎙</div>
-        </div>
-        <div class="seatName">Seat 2</div>
-      </div>
-
-      <div class="seat" onclick="seatClick(3)">
-        <div class="seatCircle">
-          <div class="seatInner">
-            <div class="emptySeat">＋</div>
-          </div>
-          <div class="seatNumber">3</div>
-          <div class="seatMic">🎙</div>
-        </div>
-        <div class="seatName">Seat 3</div>
-      </div>
-
-      <div class="seat" onclick="seatClick(4)">
-        <div class="seatCircle">
-          <div class="seatInner">
-            <div class="emptySeat">＋</div>
-          </div>
-          <div class="seatNumber">4</div>
-          <div class="seatMic">🎙</div>
-        </div>
-        <div class="seatName">Seat 4</div>
-      </div>
-
-      <div class="seat" onclick="seatClick(5)">
-        <div class="seatCircle">
-          <div class="seatInner">
-            <div class="emptySeat">＋</div>
-          </div>
-          <div class="seatNumber">5</div>
-          <div class="seatMic">🎙</div>
-        </div>
-        <div class="seatName">Seat 5</div>
-      </div>
-    </div>
-
-    <div class="seatRow" id="row2">
-      <div class="seat" onclick="seatClick(6)">
-        <div class="seatCircle">
-          <div class="seatInner">
-            <div class="emptySeat">＋</div>
-          </div>
-          <div class="seatNumber">6</div>
-          <div class="seatMic">🎙</div>
-        </div>
-        <div class="seatName">Seat 6</div>
-      </div>
-
-      <div class="seat" onclick="seatClick(7)">
-        <div class="seatCircle">
-          <div class="seatInner">
-            <div class="emptySeat">＋</div>
-          </div>
-          <div class="seatNumber">7</div>
-          <div class="seatMic">🎙</div>
-        </div>
-        <div class="seatName">Seat 7</div>
-      </div>
-
-      <div class="seat" onclick="seatClick(8)">
-        <div class="seatCircle">
-          <div class="seatInner">
-            <div class="emptySeat">＋</div>
-          </div>
-          <div class="seatNumber">8</div>
-          <div class="seatMic">🎙</div>
-        </div>
-        <div class="seatName">Seat 8</div>
-      </div>
-
-      <div class="seat" onclick="seatClick(9)">
-        <div class="seatCircle">
-          <div class="seatInner">
-            <div class="emptySeat">＋</div>
-          </div>
-          <div class="seatNumber">9</div>
-          <div class="seatMic">🎙</div>
-        </div>
-        <div class="seatName">Seat 9</div>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="info">
-    <div>👥 <span id="onlineCount">1</span> Online</div>
-    <div>❤️ <span id="likeCount">0</span></div>
-    <div>🎁 <span id="giftCount">0</span></div>
-  </div>
-
-  <div class="chatArea" id="chatArea">
-    <div class="message">
-      <b>System:</b> Welcome to PawanVoice 🎙️
-    </div>
-  </div>
-
+<div class="announcement" id="announcement">
+  📢 Welcome to PawanVoice Room
 </div>
 
+<main class="roomArea" id="roomArea">
+
+  <div class="ownerTitle">👑 ROOM OWNER</div>
+
+  <div class="ownerRow">
+    <div class="seat ownerSeat" id="seat1" onclick="seatClick(1)">
+      <div class="avatarBox">
+        <div class="crown">👑</div>
+        <div class="avatar" id="avatar1">👤</div>
+        <div class="vip" id="vip1" style="display:none">VIP</div>
+        <div class="micState" id="mic1">🎤</div>
+      </div>
+      <div class="name" id="name1">Owner</div>
+      <div class="seatNo">Seat 1</div>
+    </div>
+  </div>
+
+  <div class="seatTitle">🎙️ SPEAKERS</div>
+
+  <div class="seatRow">
+    <div class="seat" id="seat2" onclick="seatClick(2)">
+      <div class="avatarBox"><div class="avatar" id="avatar2">＋</div><div class="micState" id="mic2">🎤</div></div>
+      <div class="name" id="name2">Empty</div><div class="seatNo">Seat 2</div>
+    </div>
+
+    <div class="seat" id="seat3" onclick="seatClick(3)">
+      <div class="avatarBox"><div class="avatar" id="avatar3">＋</div><div class="micState" id="mic3">🎤</div></div>
+      <div class="name" id="name3">Empty</div><div class="seatNo">Seat 3</div>
+    </div>
+
+    <div class="seat" id="seat4" onclick="seatClick(4)">
+      <div class="avatarBox"><div class="avatar" id="avatar4">＋</div><div class="micState" id="mic4">🎤</div></div>
+      <div class="name" id="name4">Empty</div><div class="seatNo">Seat 4</div>
+    </div>
+
+    <div class="seat" id="seat5" onclick="seatClick(5)">
+      <div class="avatarBox"><div class="avatar" id="avatar5">＋</div><div class="micState" id="mic5">🎤</div></div>
+      <div class="name" id="name5">Empty</div><div class="seatNo">Seat 5</div>
+    </div>
+  </div>
+
+  <div class="seatRow">
+    <div class="seat" id="seat6" onclick="seatClick(6)">
+      <div class="avatarBox"><div class="avatar" id="avatar6">＋</div><div class="micState" id="mic6">🎤</div></div>
+      <div class="name" id="name6">Empty</div><div class="seatNo">Seat 6</div>
+    </div>
+
+    <div class="seat" id="seat7" onclick="seatClick(7)">
+      <div class="avatarBox"><div class="avatar" id="avatar7">＋</div><div class="micState" id="mic7">🎤</div></div>
+      <div class="name" id="name7">Empty</div><div class="seatNo">Seat 7</div>
+    </div>
+
+    <div class="seat" id="seat8" onclick="seatClick(8)">
+      <div class="avatarBox"><div class="avatar" id="avatar8">＋</div><div class="micState" id="mic8">🎤</div></div>
+      <div class="name" id="name8">Empty</div><div class="seatNo">Seat 8</div>
+    </div>
+
+    <div class="seat" id="seat9" onclick="seatClick(9)">
+      <div class="avatarBox"><div class="avatar" id="avatar9">＋</div><div class="micState" id="mic9">🎤</div></div>
+      <div class="name" id="name9">Empty</div><div class="seatNo">Seat 9</div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="onlineCount">1</b><span>ONLINE</span></div>
+    <div class="stat"><b id="likeCount">0</b><span>LIKES</span></div>
+    <div class="stat"><b id="giftCount">0</b><span>GIFTS</span></div>
+  </div>
+
+  <div class="chatBox" id="chatBox"></div>
+
+</main>
+
 <!-- BOTTOM -->
+
 <div class="bottom">
 
-  <button class="bottomBtn" onclick="toggleMic()">
-    <div id="micIcon">🎙️</div>
-    <small id="micText">Mic ON</small>
-  </button>
+  <div class="chatSend">
+    <input id="chatInput" placeholder="Room message...">
+    <button onclick="sendChat()">➤</button>
+  </div>
 
-  <button class="bottomBtn" onclick="showPopup('hand')">
-    ✋
-    <small>Hand</small>
-  </button>
+  <div class="bottomBtns">
 
-  <button class="bottomBtn" onclick="showPopup('gift')">
-    🎁
-    <small>Gift</small>
-  </button>
+    <button class="bottomBtn" onclick="openEmoji()">
+      😊
+      <small>Emoji</small>
+    </button>
 
-  <button class="bottomBtn" onclick="sendLike()">
-    ❤️
-    <small>Like</small>
-  </button>
+    <button class="bottomBtn" onclick="focusChat()">
+      🗨️
+      <small>Message</small>
+    </button>
 
-  <button class="bottomBtn moreBtn" onclick="openMore()">
-    ☰
-    <small>More</small>
-  </button>
+    <button class="bottomBtn" onclick="toggleSpeaker()">
+      <span id="speakerIcon">🔊</span>
+      <small>Speaker</small>
+    </button>
 
+    <button class="bottomBtn" onclick="toggleMic()">
+      <span id="micIcon">🎤</span>
+      <small>Mic</small>
+    </button>
+
+    <button class="bottomBtn" onclick="openPanel('inboxPanel')">
+      ✉️
+      <small>Inbox</small>
+    </button>
+
+    <button class="bottomBtn" onclick="openGiftPanel()">
+      🎁
+      <small>Gifts</small>
+    </button>
+
+    <button class="bottomBtn" onclick="openPanel('morePanel')">
+      ☰
+      <small>More</small>
+    </button>
+
+  </div>
+</div>
+
+<!-- USER ACTION PANEL -->
+
+<div class="panel" id="userPanel">
+  <div class="panelHead">
+    <h3>👤 User Options</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+
+  <div class="userActionInfo">
+    <div class="miniAvatar" id="selectedAvatar">👤</div>
+    <div>
+      <b id="selectedName">User</b>
+      <div style="font-size:10px;color:#8992a8">
+        ID: <span id="selectedId">---</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <button class="action" onclick="userAction('profile')">
+      <span class="ico">👤</span><span>Profile</span>
+    </button>
+
+    <button class="action" onclick="userAction('mute')">
+      <span class="ico">🔇</span><span>Mute</span>
+    </button>
+
+    <button class="action" onclick="userAction('kick')">
+      <span class="ico">🚪</span><span>Kick</span>
+    </button>
+
+    <button class="action" onclick="userAction('lock')">
+      <span class="ico">🔒</span><span>Lock Seat</span>
+    </button>
+
+    <button class="action" onclick="userAction('admin')">
+      <span class="ico">👮</span><span>Admin</span>
+    </button>
+
+    <button class="action" onclick="userAction('follow')">
+      <span class="ico">❤️</span><span>Follow</span>
+    </button>
+
+    <button class="action" onclick="userAction('chat')">
+      <span class="ico">💬</span><span>Chat</span>
+    </button>
+
+    <button class="action" onclick="openGiftPanel()">
+      <span class="ico">🎁</span><span>Gift</span>
+    </button>
+
+    <button class="action" onclick="userAction('mission')">
+      <span class="ico">🎯</span><span>Mission</span>
+    </button>
+
+    <button class="action" onclick="userAction('block')">
+      <span class="ico">🚫</span><span>Block</span>
+    </button>
+
+    <button class="action" onclick="userAction('report')">
+      <span class="ico">⚠️</span><span>Report</span>
+    </button>
+
+    <button class="action" onclick="copySelectedId()">
+      <span class="ico">📋</span><span>Copy ID</span>
+    </button>
+
+  </div>
 </div>
 
 <!-- MORE -->
-<div class="overlay" id="moreOverlay" onclick="closeMore(event)">
-  <div class="panel" onclick="event.stopPropagation()">
 
-    <div class="handle"></div>
-    <div class="panelHeader">Room Options</div>
-
-    <div class="optionGrid">
-
-      <button class="option" onclick="showPopup('members')">
-        👥<span>Members</span>
-      </button>
-
-      <button class="option" onclick="showPopup('seat')">
-        💺<span>Seats</span>
-      </button>
-
-      <button class="option" onclick="showPopup('request')">
-        🎙️<span>Mic Request</span>
-      </button>
-
-      <button class="option" onclick="showPopup('lock')">
-        🔒<span>Seat Lock</span>
-      </button>
-
-      <button class="option" onclick="showPopup('event')">
-        🎉<span>Events</span>
-      </button>
-
-      <button class="option" onclick="showPopup('game')">
-        🎮<span>Games</span>
-      </button>
-
-      <button class="option" onclick="showPopup('pk')">
-        ⚔️<span>PK Battle</span>
-      </button>
-
-      <button class="option" onclick="showPopup('rank')">
-        🏆<span>Ranking</span>
-      </button>
-
-      <button class="option" onclick="showPopup('music')">
-        🎵<span>Music</span>
-      </button>
-
-      <button class="option" onclick="showPopup('theme')">
-        🎨<span>Theme</span>
-      </button>
-
-      <button class="option" onclick="showPopup('background')">
-        🖼️<span>Background</span>
-      </button>
-
-      <button class="option" onclick="showPopup('notice')">
-        📢<span>Notice</span>
-      </button>
-
-      <button class="option" onclick="shareRoom()">
-        ↗️<span>Invite</span>
-      </button>
-
-      <button class="option" onclick="shareRoom()">
-        📤<span>Share Room</span>
-      </button>
-
-      <button class="option" onclick="showPopup('report')">
-        🚩<span>Report</span>
-      </button>
-
-      <button class="option" onclick="showPopup('settings')">
-        ⚙️<span>Settings</span>
-      </button>
-
-      <button class="option" onclick="showPopup('admin')">
-        🛡️<span>Admin</span>
-      </button>
-
-      <button class="option" onclick="showPopup('roominfo')">
-        ℹ️<span>Room Info</span>
-      </button>
-
-      <button class="option" onclick="leaveRoom()">
-        🚪<span>Leave</span>
-      </button>
-
-    </div>
+<div class="panel" id="morePanel">
+  <div class="panelHead">
+    <h3>☰ More Options</h3>
+    <button class="close" onclick="closePanels()">✕</button>
   </div>
-</div>
 
-<!-- POPUP -->
-<div class="popup" id="popup">
+  <div class="grid">
 
-  <div class="popupBox">
+    <button class="action" onclick="openPanel('onlinePanel')">
+      <span class="ico">👥</span><span>Members</span>
+    </button>
 
-    <div class="popupTitle" id="popupTitle">Room</div>
+    <button class="action" onclick="raiseHand()">
+      <span class="ico">✋</span><span>Hand Raise</span>
+    </button>
 
-    <div class="popupText" id="popupContent"></div>
+    <button class="action" onclick="requestMic()">
+      <span class="ico">🎤</span><span>Mic Request</span>
+    </button>
 
-    <div id="giftBox" style="display:none">
-      <div class="gifts">
+    <button class="action" onclick="seatRequest()">
+      <span class="ico">🪑</span><span>Seats</span>
+    </button>
 
-        <button class="gift" onclick="sendGift('🌹')">
-          🌹
-          <small>Rose</small>
-        </button>
+    <button class="action" onclick="toggleSeatLock()">
+      <span class="ico">🔒</span><span>Seat Lock</span>
+    </button>
 
-        <button class="gift" onclick="sendGift('❤️')">
-          ❤️
-          <small>Heart</small>
-        </button>
+    <button class="action" onclick="openPanel('pkPanel')">
+      <span class="ico">⚔️</span><span>PK Battle</span>
+    </button>
 
-        <button class="gift" onclick="sendGift('💎')">
-          💎
-          <small>Diamond</small>
-        </button>
+    <button class="action" onclick="openPanel('gamesPanel')">
+      <span class="ico">🎮</span><span>Games</span>
+    </button>
 
-        <button class="gift" onclick="sendGift('👑')">
-          👑
-          <small>Crown</small>
-        </button>
+    <button class="action" onclick="openPanel('rankingPanel')">
+      <span class="ico">🏆</span><span>Ranking</span>
+    </button>
 
-      </div>
-    </div>
+    <button class="action" onclick="openPanel('missionPanel')">
+      <span class="ico">🎯</span><span>Missions</span>
+    </button>
 
-    <button class="popupClose" onclick="closePopup()">Close</button>
+    <button class="action" onclick="openPanel('musicPanel')">
+      <span class="ico">🎵</span><span>Music</span>
+    </button>
+
+    <button class="action" onclick="openPanel('themePanel')">
+      <span class="ico">🎨</span><span>Theme</span>
+    </button>
+
+    <button class="action" onclick="openPanel('backgroundPanel')">
+      <span class="ico">🖼️</span><span>Background</span>
+    </button>
+
+    <button class="action" onclick="openPanel('noticePanel')">
+      <span class="ico">📢</span><span>Notice</span>
+    </button>
+
+    <button class="action" onclick="openPanel('settingsPanel')">
+      <span class="ico">⚙️</span><span>Room Settings</span>
+    </button>
+
+    <button class="action" onclick="shareRoom()">
+      <span class="ico">🔗</span><span>Invite</span>
+    </button>
+
+    <button class="action" onclick="openPanel('reportPanel')">
+      <span class="ico">🚩</span><span>Report</span>
+    </button>
+
+    <button class="action" onclick="openPanel('adminPanel')">
+      <span class="ico">👮</span><span>Admin</span>
+    </button>
+
+    <button class="action" onclick="leaveRoom()">
+      <span class="ico">🚪</span><span>Leave</span>
+    </button>
 
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- GIFTS -->
 
-<div id="audioContainer"></div>
+<div class="panel" id="giftPanel">
+  <div class="panelHead">
+    <h3>🎁 Gifts</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+
+  <div style="font-size:11px;color:#929bb0;margin-bottom:10px">
+    Different gifts • Different coin prices
+  </div>
+
+  <div class="giftGrid">
+
+    <button class="gift" onclick="sendGift('Rose',10,'🌹')">
+      <div>🌹</div>Rose<small>10 🪙</small>
+    </button>
+
+    <button class="gift" onclick="sendGift('Heart',100,'❤️')">
+      <div>❤️</div>Heart<small>100 🪙</small>
+    </button>
+
+    <button class="gift" onclick="sendGift('Cake',500,'🎂')">
+      <div>🎂</div>Cake<small>500 🪙</small>
+    </button>
+
+    <button class="gift" onclick="sendGift('Love',1000,'💖')">
+      <div>💖</div>Love<small>1K 🪙</small>
+    </button>
+
+    <button class="gift" onclick="sendGift('Crown',5000,'👑')">
+      <div>👑</div>Crown<small>5K 🪙</small>
+    </button>
+
+    <button class="gift" onclick="sendGift('Diamond',10000,'💎')">
+      <div>💎</div>Diamond<small>10K 🪙</small>
+    </button>
+
+    <button class="gift" onclick="sendGift('Rocket',50000,'🚀')">
+      <div>🚀</div>Rocket<small>50K 🪙</small>
+    </button>
+
+    <button class="gift" onclick="sendGift('Castle',100000,'🏰')">
+      <div>🏰</div>Castle<small>100K 🪙</small>
+    </button>
+
+  </div>
+</div>
+
+<!-- ONLINE -->
+
+<div class="panel" id="onlinePanel">
+  <div class="panelHead">
+    <h3>👥 Online Users</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+  <div id="onlineList" class="noticeText">Loading...</div>
+</div>
+
+<!-- SETTINGS -->
+
+<div class="panel" id="settingsPanel">
+  <div class="panelHead">
+    <h3>⚙️ Room Settings</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+
+  <div class="form">
+
+    <input id="settingsRoomName" placeholder="Room Name">
+    <textarea id="settingsDescription" placeholder="Room Description"></textarea>
+
+    <select id="settingsCategory">
+      <option>General</option>
+      <option>Chat</option>
+      <option>Music</option>
+      <option>Games</option>
+      <option>Friends</option>
+      <option>PK</option>
+    </select>
+
+    <input id="settingsTags" placeholder="Tags">
+
+    <button class="primary" onclick="saveRoomSettings()">Save Room Settings</button>
+
+    <button class="primary" onclick="toggleRoomPrivacy()">
+      🔐 Public / Private
+    </button>
+
+    <button class="primary danger" onclick="leaveRoom()">
+      🚪 Leave Room
+    </button>
+
+  </div>
+</div>
+
+<!-- INFO -->
+
+<div class="panel" id="infoPanel">
+  <div class="panelHead">
+    <h3>ℹ️ Room Information</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+  <div class="noticeText">
+    <b>🎙️ PawanVoice</b><br><br>
+    Room: <span id="infoRoomName"></span><br>
+    Room ID: <span id="infoRoomId"></span><br>
+    Owner: <span id="infoOwner"></span><br>
+    Members: <span id="infoMembers">1</span><br><br>
+    Voice room powered by WebRTC.
+  </div>
+</div>
+
+<!-- INBOX -->
+
+<div class="panel" id="inboxPanel">
+  <div class="panelHead">
+    <h3>✉️ Inbox</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+  <div class="noticeText">
+    📩 No new notifications.<br><br>
+    Room invites, gifts, mic requests and other notifications will appear here.
+  </div>
+</div>
+
+<!-- PK -->
+
+<div class="panel" id="pkPanel">
+  <div class="panelHead">
+    <h3>⚔️ PK Battle</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+  <div class="grid">
+    <button class="action" onclick="toast('1 vs 1 PK request sent')"><span class="ico">⚔️</span><span>1 vs 1</span></button>
+    <button class="action" onclick="toast('Team PK selected')"><span class="ico">👥</span><span>Team PK</span></button>
+    <button class="action" onclick="toast('Room PK selected')"><span class="ico">🏆</span><span>Room PK</span></button>
+    <button class="action" onclick="toast('Rematch selected')"><span class="ico">🔄</span><span>Rematch</span></button>
+  </div>
+</div>
+
+<!-- GAMES -->
+
+<div class="panel" id="gamesPanel">
+  <div class="panelHead">
+    <h3>🎮 Games</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+  <div class="grid">
+    <button class="action" onclick="toast('Dice started')"><span class="ico">🎲</span><span>Dice</span></button>
+    <button class="action" onclick="toast('Wheel opened')"><span class="ico">🎡</span><span>Wheel</span></button>
+    <button class="action" onclick="toast('Lucky Draw opened')"><span class="ico">🎟️</span><span>Lucky Draw</span></button>
+    <button class="action" onclick="toast('Treasure Box opened')"><span class="ico">🧰</span><span>Treasure</span></button>
+  </div>
+</div>
+
+<!-- RANKING -->
+
+<div class="panel" id="rankingPanel">
+  <div class="panelHead">
+    <h3>🏆 Ranking</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+  <div class="grid">
+    <button class="action" onclick="toast('Room ranking')"><span class="ico">🏠</span><span>Room</span></button>
+    <button class="action" onclick="toast('Gift ranking')"><span class="ico">🎁</span><span>Gifts</span></button>
+    <button class="action" onclick="toast('Like ranking')"><span class="ico">❤️</span><span>Likes</span></button>
+    <button class="action" onclick="toast('Speaker ranking')"><span class="ico">🎤</span><span>Speaker</span></button>
+  </div>
+</div>
+
+<!-- MISSIONS -->
+
+<div class="panel" id="missionPanel">
+  <div class="panelHead">
+    <h3>🎯 Missions</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+  <div class="noticeText">
+    🎯 Daily Mission<br><br>
+    ❤️ Send 100 Likes<br>
+    🎁 Send 1 Gift<br>
+    🎤 Speak for 10 Minutes<br>
+    👥 Invite 3 Users
+  </div>
+</div>
+
+<!-- MUSIC -->
+
+<div class="panel" id="musicPanel">
+  <div class="panelHead">
+    <h3>🎵 Music</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+  <div class="grid">
+    <button class="action" onclick="toast('Music queue')"><span class="ico">🎵</span><span>Queue</span></button>
+    <button class="action" onclick="toast('Music request')"><span class="ico">🙋</span><span>Request</span></button>
+    <button class="action" onclick="toast('Music paused')"><span class="ico">⏸️</span><span>Pause</span></button>
+    <button class="action" onclick="toast('Next music')"><span class="ico">⏭️</span><span>Next</span></button>
+  </div>
+</div>
+
+<!-- THEME -->
+
+<div class="panel" id="themePanel">
+  <div class="panelHead">
+    <h3>🎨 Theme</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+  <div class="grid">
+    <button class="action" onclick="setTheme('#090b12')"><span class="ico">🌑</span><span>Dark</span></button>
+    <button class="action" onclick="setTheme('#111827')"><span class="ico">💙</span><span>Blue</span></button>
+    <button class="action" onclick="setTheme('#1a1024')"><span class="ico">💜</span><span>Purple</span></button>
+    <button class="action" onclick="setTheme('#20120c')"><span class="ico">🧡</span><span>Warm</span></button>
+  </div>
+</div>
+
+<!-- BACKGROUND -->
+
+<div class="panel" id="backgroundPanel">
+  <div class="panelHead">
+    <h3>🖼️ Background</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+  <div class="grid">
+    <button class="action" onclick="setBackground('#090b12')"><span class="ico">🌑</span><span>Default</span></button>
+    <button class="action" onclick="setBackground('#101b2d')"><span class="ico">🌌</span><span>Night</span></button>
+    <button class="action" onclick="setBackground('#201329')"><span class="ico">🌆</span><span>Party</span></button>
+    <button class="action" onclick="setBackground('#172015')"><span class="ico">🌿</span><span>Nature</span></button>
+  </div>
+</div>
+
+<!-- NOTICE -->
+
+<div class="panel" id="noticePanel">
+  <div class="panelHead">
+    <h3>📢 Room Notice</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+  <div class="form">
+    <textarea id="noticeInput" placeholder="Write room notice..."></textarea>
+    <button class="primary" onclick="saveNotice()">Publish Notice</button>
+  </div>
+</div>
+
+<!-- REPORT -->
+
+<div class="panel" id="reportPanel">
+  <div class="panelHead">
+    <h3>🚩 Report</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+  <div class="grid">
+    <button class="action" onclick="reportRoom('spam')"><span class="ico">🚫</span><span>Spam</span></button>
+    <button class="action" onclick="reportRoom('abuse')"><span class="ico">⚠️</span><span>Abuse</span></button>
+    <button class="action" onclick="reportRoom('fake')"><span class="ico">❌</span><span>Fake</span></button>
+    <button class="action" onclick="reportRoom('other')"><span class="ico">📝</span><span>Other</span></button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+
+<div class="panel" id="adminPanel">
+  <div class="panelHead">
+    <h3>👮 Admin</h3>
+    <button class="close" onclick="closePanels()">✕</button>
+  </div>
+  <div class="grid">
+    <button class="action" onclick="muteAll()"><span class="ico">🔇</span><span>Mute All</span></button>
+    <button class="action" onclick="unlockAllSeats()"><span class="ico">🔓</span><span>Unlock All</span></button>
+    <button class="action" onclick="toast('Admin list opened')"><span class="ico">👮</span><span>Admins</span></button>
+    <button class="action" onclick="toast('Ban list opened')"><span class="ico">🚫</span><span>Ban List</span></button>
+  </div>
+</div>
+
+<div class="toast" id="toastBox"></div>
 
 <script>
+/* ================================
+   FIREBASE
+================================ */
 
-/* FIREBASE */
-const firebaseConfig = {
+const firebaseConfig={
   apiKey:"AIzaSyDnlTde5qG5aPHrUIV6kTYnM521GtbrrE",
   authDomain:"pawanvoice-68c5e.firebaseapp.com",
   databaseURL:"https://pawanvoice-68c5e-default-rtdb.firebaseio.com/",
@@ -824,539 +1031,1002 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const db=firebase.database();
 
+/* ================================
+   BASIC DATA
+================================ */
+
 const params=new URLSearchParams(location.search);
+let roomId=params.get("room") || localStorage.getItem("pawanRoomId");
 
-const roomId=
-  params.get("room") ||
-  localStorage.getItem("pawanRoomId") ||
-  "PAWANROOM";
-
-const myName=
-  localStorage.getItem("pawanName") ||
-  "Pawan";
-
-const myId=
-  localStorage.getItem("pawanUserId") ||
-  ("user_"+Date.now());
-
-let micOn=true;
-let stream=null;
-let peer=null;
-let calls={};
-
-document.getElementById("roomIdText").textContent=
-  "Room ID: "+roomId;
-
-document.getElementById("ownerName").textContent=
-  myName;
-
-
-/* TOAST */
-function toast(text){
-
-  const t=document.getElementById("toast");
-
-  t.textContent=text;
-  t.style.display="block";
-
-  clearTimeout(window.toastTimer);
-
-  window.toastTimer=setTimeout(()=>{
-    t.style.display="none";
-  },2200);
+if(!roomId){
+  roomId="PV"+Date.now().toString().slice(-8);
+  localStorage.setItem("pawanRoomId",roomId);
 }
 
+const myId=localStorage.getItem("pawanUserId") || ("u_"+Date.now()+"_"+Math.random().toString(36).slice(2,7));
+const myName=localStorage.getItem("pawanName") || "Guest";
 
-/* MIC */
-async function setupMic(){
+localStorage.setItem("pawanUserId",myId);
+localStorage.setItem("pawanRoomId",roomId);
 
-  try{
+let roomOwnerId=null;
+let roomOwnerName=null;
+let micOn=true;
+let speakerOn=true;
+let selectedUser=null;
+let selectedSeat=null;
+let peer=null;
+let localStream=null;
+let calls={};
+let minimized=false;
 
-    stream=await navigator.mediaDevices.getUserMedia({
-      audio:true
-    });
+/* ================================
+   HELPERS
+================================ */
 
-    stream.getAudioTracks().forEach(track=>{
-      track.enabled=micOn;
-    });
+function esc(v){
+  return String(v||"")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
 
-  }catch(e){
+function toast(msg){
+  const box=document.getElementById("toastBox");
+  box.textContent=msg;
+  box.classList.add("show");
+  clearTimeout(window.toastTimer);
+  window.toastTimer=setTimeout(()=>box.classList.remove("show"),2200);
+}
 
-    toast("Microphone permission allow karo");
+function openPanel(id){
+  closePanels();
+  const el=document.getElementById(id);
+  if(el)el.classList.add("show");
+}
 
+function closePanels(){
+  document.querySelectorAll(".panel").forEach(x=>x.classList.remove("show"));
+}
+
+function copyText(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>toast("Copied"));
+    return;
   }
 
+  const area=document.createElement("textarea");
+  area.value=text;
+  document.body.appendChild(area);
+  area.select();
+  try{document.execCommand("copy");toast("Copied")}catch(e){toast(text)}
+  area.remove();
 }
 
-function toggleMic(){
+function copyRoomId(){
+  copyText(roomId);
+}
+
+function copySelectedId(){
+  if(selectedUser)copyText(selectedUser.id);
+}
+
+function shareRoom(){
+  const url=location.origin+location.pathname+"?room="+encodeURIComponent(roomId);
+  if(navigator.share){
+    navigator.share({
+      title:"PawanVoice Room",
+      text:"Join my PawanVoice room",
+      url:url
+    }).catch(()=>{});
+  }else{
+    copyText(url);
+    toast("Room link copied");
+  }
+}
+
+/* ================================
+   ROOM
+================================ */
+
+function roomRef(){
+  return db.ref("rooms/"+roomId);
+}
+
+function userRef(){
+  return roomRef().child("users/"+myId);
+}
+
+function loadRoom(){
+
+  roomRef().on("value",snap=>{
+    const data=snap.val()||{};
+
+    roomOwnerId=data.ownerId || myId;
+    roomOwnerName=data.ownerName || myName;
+
+    document.getElementById("roomName").textContent=data.name || "PawanVoice Room";
+    document.getElementById("roomIdText").textContent=roomId;
+    document.getElementById("ownerName").textContent=roomOwnerName;
+
+    document.getElementById("infoRoomName").textContent=data.name || "PawanVoice Room";
+    document.getElementById("infoRoomId").textContent=roomId;
+    document.getElementById("infoOwner").textContent=roomOwnerName;
+
+    document.getElementById("settingsRoomName").value=data.name || "";
+    document.getElementById("settingsDescription").value=data.description || "";
+    document.getElementById("settingsTags").value=data.tags || "";
+    document.getElementById("settingsCategory").value=data.category || "General";
+
+    if(data.notice){
+      document.getElementById("announcement").textContent="📢 "+data.notice;
+    }
+
+    if(roomOwnerId===myId){
+      document.getElementById("editRoomBtn").style.display="block";
+    }else{
+      document.getElementById("editRoomBtn").style.display="none";
+    }
+  });
+
+  roomRef().child("users").on("value",snap=>{
+    const users=snap.val()||{};
+    renderUsers(users);
+    renderOnline(users);
+  });
+
+  roomRef().child("chat").limitToLast(100).on("value",snap=>{
+    const messages=snap.val()||{};
+    renderChat(messages);
+  });
+
+  roomRef().child("likes").on("value",snap=>{
+    document.getElementById("likeCount").textContent=snap.val()||0;
+  });
+
+  roomRef().child("giftCount").on("value",snap=>{
+    document.getElementById("giftCount").textContent=snap.val()||0;
+  });
+}
+
+/* ================================
+   ENTER ROOM
+================================ */
+
+async function enterRoom(){
+
+  const roomSnap=await roomRef().once("value");
+  const room=roomSnap.val();
+
+  if(!room){
+    await roomRef().set({
+      name:"PawanVoice Room",
+      ownerId:myId,
+      ownerName:myName,
+      description:"Welcome to PawanVoice",
+      category:"General",
+      tags:"",
+      createdAt:firebase.database.ServerValue.TIMESTAMP,
+      privacy:"public"
+    });
+    roomOwnerId=myId;
+    roomOwnerName=myName;
+  }else{
+    roomOwnerId=room.ownerId;
+    roomOwnerName=room.ownerName;
+  }
+
+  await userRef().set({
+    id:myId,
+    name:myName,
+    peerId:"",
+    mic:true,
+    speaker:true,
+    joinedAt:firebase.database.ServerValue.TIMESTAMP,
+    vip:localStorage.getItem("pawanVIP") || "",
+    frame:localStorage.getItem("pawanFrame") || "",
+    entry:localStorage.getItem("pawanEntry") || ""
+  });
+
+  userRef().onDisconnect().remove();
+
+  document.getElementById("onlineCount").textContent="1";
+
+  startWebRTC();
+}
+
+/* ================================
+   USERS / SEATS
+================================ */
+
+function renderUsers(users){
+
+  const ids=Object.keys(users);
+
+  document.getElementById("onlineCount").textContent=ids.length;
+
+  for(let seat=1;seat<=9;seat++){
+    const av=document.getElementById("avatar"+seat);
+    const nm=document.getElementById("name"+seat);
+    const mic=document.getElementById("mic"+seat);
+    const vip=document.getElementById("vip"+seat);
+
+    if(!av||!nm)continue;
+
+    if(seat===1){
+
+      const owner=users[roomOwnerId];
+
+      if(owner){
+        nm.textContent=owner.name || roomOwnerName || "Owner";
+        setAvatar(av,owner);
+        mic.textContent=owner.mic===false?"🔇":"🎤";
+        mic.className="micState "+(owner.mic===false?"":"micOn");
+        vip.style.display=owner.vip?"block":"none";
+      }else{
+        nm.textContent=roomOwnerName || "Owner";
+      }
+
+      continue;
+    }
+
+    const index=seat-2;
+    const uid=ids.filter(id=>id!==roomOwnerId)[index];
+
+    if(uid && users[uid]){
+
+      const u=users[uid];
+
+      nm.textContent=u.name || "Guest";
+      setAvatar(av,u);
+
+      mic.textContent=u.mic===false?"🔇":"🎤";
+      mic.className="micState "+(u.mic===false?"":"micOn");
+
+      vip.style.display=u.vip?"block":"none";
+
+      document.getElementById("seat"+seat).classList.remove("empty");
+
+    }else{
+
+      av.innerHTML="+";
+      nm.textContent="Empty";
+      mic.textContent="🎤";
+      mic.className="micState";
+      vip.style.display="none";
+
+      document.getElementById("seat"+seat).classList.add("empty");
+    }
+  }
+}
+
+function setAvatar(el,user){
+
+  if(user.dp){
+    el.innerHTML="<img src='"+esc(user.dp)+"' alt='DP'>";
+  }else{
+    el.textContent="👤";
+  }
+}
+
+function renderOnline(users){
+
+  const ids=Object.keys(users);
+
+  let html="";
+
+  if(!ids.length){
+    html="No users online";
+  }else{
+
+    ids.forEach(id=>{
+      const u=users[id];
+
+      html+=`
+        <div style="padding:10px 0;border-bottom:1px solid #2a3040">
+          <b>${esc(u.name||"Guest")}</b>
+          <div style="font-size:9px;color:#7f899f">
+            ID: ${esc(u.id||id)}
+            ${u.id===myId?" · You":""}
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  document.getElementById("onlineList").innerHTML=html;
+}
+
+/* ================================
+   SEAT CLICK
+================================ */
+
+async function seatClick(seat){
+
+  selectedSeat=seat;
+
+  const snap=await roomRef().child("users").once("value");
+  const users=snap.val()||{};
+
+  if(seat===1){
+    selectedUser=users[roomOwnerId] || {
+      id:roomOwnerId,
+      name:roomOwnerName
+    };
+  }else{
+
+    const ids=Object.keys(users);
+    const others=ids.filter(id=>id!==roomOwnerId);
+    const id=others[seat-2];
+
+    if(!id){
+      if(seatLocked()){
+        toast("Seat locked");
+        return;
+      }
+
+      const join=confirm("Is seat par baithna hai?");
+      if(join){
+        await userRef().update({
+          seat:seat
+        });
+        toast("Seat request sent");
+      }
+      return;
+    }
+
+    selectedUser=users[id];
+  }
+
+  if(!selectedUser)return;
+
+  document.getElementById("selectedName").textContent=selectedUser.name || "Guest";
+  document.getElementById("selectedId").textContent=selectedUser.id || "---";
+
+  const av=document.getElementById("selectedAvatar");
+
+  if(selectedUser.dp){
+    av.innerHTML="<img src='"+esc(selectedUser.dp)+"'>";
+  }else{
+    av.textContent="👤";
+  }
+
+  openPanel("userPanel");
+}
+
+/* ================================
+   USER ACTIONS
+================================ */
+
+async function userAction(action){
+
+  if(!selectedUser){
+    toast("User select karein");
+    return;
+  }
+
+  if(action==="profile"){
+    toast("Profile: "+selectedUser.name);
+  }
+
+  if(action==="mute"){
+    await roomRef().child("muted/"+selectedUser.id).set(true);
+    toast(selectedUser.name+" muted");
+  }
+
+  if(action==="kick"){
+    if(!isOwner()){
+      toast("Only owner/admin can kick");
+      return;
+    }
+    await roomRef().child("users/"+selectedUser.id).remove();
+    toast("User removed");
+  }
+
+  if(action==="lock"){
+    if(!isOwner()){
+      toast("Only owner can lock");
+      return;
+    }
+    await roomRef().child("seatLocks/"+selectedSeat).set(true);
+    toast("Seat locked");
+  }
+
+  if(action==="admin"){
+    if(!isOwner()){
+      toast("Only owner can manage admin");
+      return;
+    }
+    await roomRef().child("admins/"+selectedUser.id).set(true);
+    toast("Admin added");
+  }
+
+  if(action==="follow"){
+    toast("Follow request sent");
+  }
+
+  if(action==="chat"){
+    closePanels();
+    focusChat();
+  }
+
+  if(action==="mission"){
+    openPanel("missionPanel");
+  }
+
+  if(action==="block"){
+    await db.ref("blocked/"+myId+"/"+selectedUser.id).set(true);
+    toast("User blocked");
+  }
+
+  if(action==="report"){
+    await roomRef().child("reports").push({
+      reporter:myId,
+      reported:selectedUser.id,
+      reason:"user report",
+      time:firebase.database.ServerValue.TIMESTAMP
+    });
+    toast("Report submitted");
+  }
+}
+
+/* ================================
+   CHAT
+================================ */
+
+function sendChat(){
+
+  const input=document.getElementById("chatInput");
+  const text=input.value.trim();
+
+  if(!text)return;
+
+  roomRef().child("chat").push({
+    id:myId,
+    name:myName,
+    text:text,
+    time:firebase.database.ServerValue.TIMESTAMP
+  });
+
+  input.value="";
+}
+
+function renderChat(messages){
+
+  const box=document.getElementById("chatBox");
+
+  let arr=Object.values(messages||{});
+  arr.sort((a,b)=>(a.time||0)-(b.time||0));
+
+  box.innerHTML=arr.map(m=>`
+    <div class="chatMsg">
+      <b>${esc(m.name||"Guest")}</b>:
+      ${esc(m.text||"")}
+      <span class="chatTime"> ${m.time?new Date(m.time).toLocaleTimeString():""}</span>
+    </div>
+  `).join("");
+
+  box.scrollTop=box.scrollHeight;
+}
+
+function focusChat(){
+  document.getElementById("chatInput").focus();
+}
+
+function openEmoji(){
+  const emojis=["😀","😂","😍","🥰","😎","🔥","❤️","👍","👏","🎉"];
+  const choice=prompt("Emoji choose karein:\n"+emojis.join(" "));
+  if(choice){
+    document.getElementById("chatInput").value+=choice;
+    focusChat();
+  }
+}
+
+/* ================================
+   MIC / SPEAKER
+================================ */
+
+async function toggleMic(){
 
   micOn=!micOn;
 
-  if(stream){
+  document.getElementById("micIcon").textContent=micOn?"🎤":"🔇";
 
-    stream.getAudioTracks().forEach(track=>{
+  if(localStream){
+    localStream.getAudioTracks().forEach(track=>{
       track.enabled=micOn;
     });
-
   }
 
-  document.getElementById("micIcon").textContent=
-    micOn ? "🎙️":"🔇";
+  await userRef().update({mic:micOn});
 
-  document.getElementById("micText").textContent=
-    micOn ? "Mic ON":"Mic OFF";
-
-  toast(micOn ? "Mic ON":"Mic OFF");
-
-  db.ref("rooms/"+roomId+"/users/"+myId+"/micOn")
-    .set(micOn)
-    .catch(()=>{});
-
+  toast(micOn?"Mic ON":"Mic OFF");
 }
 
+function toggleSpeaker(){
 
-/* PEER */
-function startPeer(){
+  speakerOn=!speakerOn;
 
-  peer=new Peer();
+  document.getElementById("speakerIcon").textContent=speakerOn?"🔊":"🔇";
 
-  peer.on("open",id=>{
-
-    db.ref("rooms/"+roomId+"/users/"+myId).update({
-
-      name:myName,
-      peerId:id,
-      micOn:micOn,
-      joinedAt:Date.now()
-
-    });
-
+  document.querySelectorAll("audio").forEach(a=>{
+    a.muted=!speakerOn;
   });
 
-  peer.on("call",call=>{
+  toast(speakerOn?"Speaker ON":"Speaker OFF");
+}
 
-    if(stream){
+/* ================================
+   WEBRTC / PEERJS
+================================ */
 
-      call.answer(stream);
+async function startWebRTC(){
+
+  try{
+
+    localStream=await navigator.mediaDevices.getUserMedia({
+      audio:{
+        echoCancellation:true,
+        noiseSuppression:true,
+        autoGainControl:true
+      },
+      video:false
+    });
+
+    peer=new Peer();
+
+    peer.on("open",async id=>{
+
+      await userRef().update({
+        peerId:id
+      });
+
+      connectExistingUsers();
+    });
+
+    peer.on("call",call=>{
+
+      call.answer(localStream);
 
       call.on("stream",remoteStream=>{
         addAudio(call.peer,remoteStream);
       });
 
-    }
+    });
 
-  });
+    peer.on("error",e=>{
+      console.log(e);
+      toast("Voice connection issue");
+    });
 
+  }catch(e){
+
+    console.log(e);
+    toast("Mic permission allow karein");
+  }
 }
 
+async function connectExistingUsers(){
 
-/* AUDIO */
-function addAudio(id,remoteStream){
+  const snap=await roomRef().child("users").once("value");
+  const users=snap.val()||{};
+
+  Object.keys(users).forEach(id=>{
+
+    const u=users[id];
+
+    if(id!==myId && u.peerId){
+      callUser(u.peerId,id);
+    }
+  });
+
+  roomRef().child("users").on("child_added",snap=>{
+    const id=snap.key;
+    const u=snap.val();
+
+    if(id!==myId && u.peerId){
+      callUser(u.peerId,id);
+    }
+  });
+
+  roomRef().child("users").on("child_changed",snap=>{
+    const u=snap.val();
+
+    if(snap.key!==myId && u.peerId){
+      callUser(u.peerId,snap.key);
+    }
+  });
+}
+
+function callUser(peerId,userId){
+
+  if(!peer || !localStream)return;
+  if(calls[userId])return;
+
+  try{
+
+    const call=peer.call(peerId,localStream);
+
+    calls[userId]=call;
+
+    call.on("stream",remoteStream=>{
+      addAudio(userId,remoteStream);
+    });
+
+    call.on("close",()=>{
+      delete calls[userId];
+    });
+
+    call.on("error",()=>{
+      delete calls[userId];
+    });
+
+  }catch(e){
+    console.log(e);
+  }
+}
+
+function addAudio(id,stream){
 
   let audio=document.getElementById("audio-"+id);
 
   if(!audio){
 
     audio=document.createElement("audio");
-
     audio.id="audio-"+id;
     audio.autoplay=true;
     audio.playsInline=true;
 
-    document.getElementById("audioContainer")
-      .appendChild(audio);
-
+    document.body.appendChild(audio);
   }
 
-  audio.srcObject=remoteStream;
+  audio.srcObject=stream;
+  audio.muted=!speakerOn;
+
+  audio.play().catch(()=>{});
 }
 
+/* ================================
+   ROOM DP
+================================ */
 
-/* ROOM USERS */
-function listenUsers(){
+function roomDpClick(){
 
-  db.ref("rooms/"+roomId+"/users")
-    .on("value",snap=>{
-
-      const data=snap.val()||{};
-      const ids=Object.keys(data);
-
-      document.getElementById("onlineCount")
-        .textContent=ids.length || 1;
-
-      renderUsers(data);
-
-    });
-
-}
-
-
-/* RENDER USERS */
-function renderUsers(data){
-
-  const ids=Object.keys(data)
-    .filter(id=>id!==myId);
-
-  const owner=
-    data[myId] ||
-    Object.values(data)[0];
-
-  if(owner && owner.name){
-
-    document.getElementById("ownerName")
-      .textContent=owner.name;
-
+  if(!isOwner()){
+    toast("Only owner can change Room DP");
+    return;
   }
 
-  const seats=document.querySelectorAll(".seat");
+  const choice=prompt("Room DP:\n1 = Change\n2 = Remove");
 
-  seats.forEach((seat,index)=>{
+  if(choice==="1"){
 
-    const user=ids[index];
+    const input=document.createElement("input");
+    input.type="file";
+    input.accept="image/*";
 
-    if(!user){
+    input.onchange=async()=>{
+      const file=input.files[0];
+      if(!file)return;
 
-      seat.querySelector(".seatName")
-        .textContent="Seat "+(index+2);
+      const reader=new FileReader();
 
-      seat.querySelector(".emptySeat")
-        .textContent="＋";
+      reader.onload=async()=>{
+        const data=reader.result;
 
-      return;
+        await roomRef().update({
+          dp:data
+        });
 
-    }
+        document.getElementById("roomLogo").innerHTML=
+          "<img src='"+esc(data)+"'>";
+      };
 
-    const info=data[user];
+      reader.readAsDataURL(file);
+    };
 
-    seat.querySelector(".seatName")
-      .textContent=info.name || "Guest";
+    input.click();
 
-    seat.querySelector(".emptySeat")
-      .textContent="👤";
+  }else if(choice==="2"){
 
+    roomRef().update({dp:null});
+    document.getElementById("roomLogo").innerHTML="🎙️";
+    toast("Room DP removed");
+  }
+}
+
+/* ================================
+   ROOM SETTINGS
+================================ */
+
+function openRoomSettings(){
+  if(!isOwner()){
+    toast("Only owner");
+    return;
+  }
+  openPanel("settingsPanel");
+}
+
+async function saveRoomSettings(){
+
+  if(!isOwner()){
+    toast("Only owner");
+    return;
+  }
+
+  await roomRef().update({
+    name:document.getElementById("settingsRoomName").value.trim() || "PawanVoice Room",
+    description:document.getElementById("settingsDescription").value,
+    category:document.getElementById("settingsCategory").value,
+    tags:document.getElementById("settingsTags").value
   });
 
+  toast("Room settings saved");
+  closePanels();
 }
 
+function toggleRoomPrivacy(){
 
-/* CONNECT */
-function connectToUser(user){
+  if(!isOwner()){
+    toast("Only owner");
+    return;
+  }
 
-  const data=user;
+  roomRef().child("privacy").once("value").then(s=>{
+    const next=s.val()==="private"?"public":"private";
+    roomRef().update({privacy:next});
+    toast("Room "+next);
+  });
+}
 
-  if(!data.peerId || !peer || !stream) return;
+/* ================================
+   NOTICE
+================================ */
 
-  const call=peer.call(data.peerId,stream);
+async function saveNotice(){
 
-  call.on("stream",remoteStream=>{
-    addAudio(data.peerId,remoteStream);
+  if(!isOwner()){
+    toast("Only owner can publish notice");
+    return;
+  }
+
+  const text=document.getElementById("noticeInput").value.trim();
+
+  if(!text)return;
+
+  await roomRef().update({
+    notice:text
   });
 
+  toast("Notice published");
+  closePanels();
 }
 
+/* ================================
+   LIKE / GIFT
+================================ */
 
-/* SEAT */
-function seatClick(number){
+function likeRoom(){
 
-  showPopup("seat");
-
-  document.getElementById("popupContent").innerHTML=
-    "💺 Seat "+number+"<br><br>"+
-    "Is seat par baithne ke liye request bheji ja sakti hai.<br><br>"+
-    "🎙️ Mic request<br>"+
-    "🔒 Seat lock<br>"+
-    "👤 Profile";
+  roomRef().child("likes").transaction(v=>(v||0)+1);
 }
 
+function sendGift(name,price,icon){
 
-/* MORE */
-function openMore(){
+  roomRef().child("giftCount").transaction(v=>(v||0)+1);
 
-  document.getElementById("moreOverlay")
-    .style.display="block";
+  roomRef().child("gifts").push({
+    name:name,
+    price:price,
+    icon:icon,
+    fromId:myId,
+    fromName:myName,
+    time:firebase.database.ServerValue.TIMESTAMP
+  });
 
+  closePanels();
+  toast(icon+" "+name+" sent!");
 }
 
-function closeMore(e){
+function openGiftPanel(){
+  openPanel("giftPanel");
+}
 
-  if(e.target.id==="moreOverlay"){
+/* ================================
+   EXTRA
+================================ */
 
-    document.getElementById("moreOverlay")
-      .style.display="none";
+function raiseHand(){
+  roomRef().child("handRequests/"+myId).set({
+    id:myId,
+    name:myName,
+    time:firebase.database.ServerValue.TIMESTAMP
+  });
+  toast("✋ Hand raised");
+}
 
+function requestMic(){
+  roomRef().child("micRequests/"+myId).set({
+    id:myId,
+    name:myName,
+    time:firebase.database.ServerValue.TIMESTAMP
+  });
+  toast("🎤 Mic request sent");
+}
+
+function seatRequest(){
+  toast("🪑 Seat request sent");
+}
+
+function seatLocked(){
+  return false;
+}
+
+async function toggleSeatLock(){
+
+  if(!isOwner()){
+    toast("Only owner");
+    return;
   }
 
+  const snap=await roomRef().child("seatLocked").once("value");
+  const next=!snap.val();
+
+  await roomRef().child("seatLocked").set(next);
+
+  toast(next?"Seats locked":"Seats unlocked");
 }
 
+async function unlockAllSeats(){
 
-/* POPUPS */
-function showPopup(type){
-
-  document.getElementById("moreOverlay")
-    .style.display="none";
-
-  const popup=document.getElementById("popup");
-  const title=document.getElementById("popupTitle");
-  const content=document.getElementById("popupContent");
-  const giftBox=document.getElementById("giftBox");
-
-  giftBox.style.display="none";
-
-  const pages={
-
-    info:[
-      "Room Information",
-      "🎙️ PawanVoice Room<br>Room ID: "+roomId+
-      "<br>Owner: "+myName+
-      "<br><br>Public Voice Room"
-    ],
-
-    members:[
-      "Members",
-      "👥 Online members: "+
-      document.getElementById("onlineCount").textContent
-    ],
-
-    hand:[
-      "Raise Hand",
-      "✋ Your hand-raise request has been sent."
-    ],
-
-    seat:[
-      "Voice Seats",
-      "💺 Owner + Seat 2–9<br><br>"+
-      "Tap any empty seat to request a seat."
-    ],
-
-    request:[
-      "Mic Request",
-      "🎙️ Mic request system ready."
-    ],
-
-    lock:[
-      "Seat Lock",
-      "🔒 Owner/Admin can lock voice seats."
-    ],
-
-    event:[
-      "Events",
-      "🎉 Daily events<br>🏆 Weekly events<br>🎁 Special rewards"
-    ],
-
-    game:[
-      "Games",
-      "🎮 Dice<br>🎡 Lucky Spin<br>🃏 Cards<br>🎯 Mini Games"
-    ],
-
-    pk:[
-      "PK Battle",
-      "⚔️ Room Battle<br>❤️ Likes<br>🎁 Gifts<br>🏆 Scoreboard"
-    ],
-
-    rank:[
-      "Room Ranking",
-      "🏆 Room ranking<br>🎁 Gift ranking<br>👑 Host ranking"
-    ],
-
-    music:[
-      "Room Music",
-      "🎵 Room music controls."
-    ],
-
-    theme:[
-      "Room Theme",
-      "🎨 Default<br>🌌 Night<br>✨ Premium"
-    ],
-
-    background:[
-      "Background",
-      "🖼️ Room background selection."
-    ],
-
-    notice:[
-      "Room Notice",
-      "📢 Welcome to PawanVoice Room."
-    ],
-
-    report:[
-      "Report",
-      "🚩 Report this room or user."
-    ],
-
-    settings:[
-      "Room Settings",
-      "⚙️ Voice settings<br>🔊 Speaker settings<br>🎙️ Mic settings"
-    ],
-
-    admin:[
-      "Admin Panel",
-      "🛡️ Admin controls<br>🔇 Mute<br>🚫 Kick<br>🔒 Lock Seat"
-    ],
-
-    roominfo:[
-      "Room Info",
-      "Room ID: "+roomId+
-      "<br>Owner: "+myName+
-      "<br>Online: "+
-      document.getElementById("onlineCount").textContent
-    ]
-
-  };
-
-  if(type==="gift"){
-
-    title.textContent="Send Gift";
-    content.innerHTML="";
-    giftBox.style.display="block";
-
-  }else{
-
-    const p=pages[type] || pages.info;
-
-    title.textContent=p[0];
-    content.innerHTML=p[1];
-
+  if(!isOwner()){
+    toast("Only owner");
+    return;
   }
 
-  popup.style.display="flex";
+  await roomRef().child("seatLocks").remove();
+  await roomRef().child("seatLocked").set(false);
 
+  toast("All seats unlocked");
 }
 
+async function muteAll(){
 
-function closePopup(){
-
-  document.getElementById("popup")
-    .style.display="none";
-
-}
-
-
-/* GIFTS */
-function sendGift(gift){
-
-  const ref=db.ref(
-    "rooms/"+roomId+"/gifts"
-  ).push();
-
-  ref.set({
-
-    from:myName,
-    gift:gift,
-    time:Date.now()
-
-  }).catch(()=>{});
-
-  const count=
-    Number(document.getElementById("giftCount").textContent)||0;
-
-  document.getElementById("giftCount")
-    .textContent=count+1;
-
-  closePopup();
-
-  toast(gift+" Gift sent 🎁");
-
-}
-
-
-/* LIKE */
-function sendLike(){
-
-  const count=
-    Number(document.getElementById("likeCount").textContent)||0;
-
-  document.getElementById("likeCount")
-    .textContent=count+1;
-
-  db.ref(
-    "rooms/"+roomId+"/likes"
-  ).transaction(v=>(v||0)+1);
-
-  toast("❤️ Like");
-
-}
-
-
-/* SHARE */
-function shareRoom(){
-
-  const url=
-    location.origin+
-    location.pathname+
-    "?room="+encodeURIComponent(roomId);
-
-  if(navigator.share){
-
-    navigator.share({
-      title:"PawanVoice Room",
-      text:"Join my PawanVoice Room",
-      url:url
-    }).catch(()=>{});
-
-  }else{
-
-    toast("Room link: "+url);
-
+  if(!isOwner()){
+    toast("Only owner");
+    return;
   }
 
+  await roomRef().child("muteAll").set(true);
+  toast("Mute all requested");
 }
 
+function reportRoom(reason){
 
-/* LEAVE */
-function leaveRoom(){
+  roomRef().child("roomReports").push({
+    reporter:myId,
+    reason:reason,
+    time:firebase.database.ServerValue.TIMESTAMP
+  });
 
-  closePopup();
+  toast("Report submitted");
+  closePanels();
+}
 
-  if(stream){
+/* ================================
+   THEME
+================================ */
 
-    stream.getTracks().forEach(track=>{
-      track.stop();
-    });
+function setTheme(bg){
 
+  document.body.style.background=bg;
+  localStorage.setItem("pawanRoomTheme",bg);
+  toast("Theme changed");
+}
+
+function setBackground(bg){
+
+  document.body.style.background=bg;
+  localStorage.setItem("pawanRoomBackground",bg);
+  toast("Background changed");
+}
+
+/* ================================
+   MINIMIZE
+================================ */
+
+function toggleMinimize(){
+
+  minimized=!minimized;
+
+  document.getElementById("roomArea").style.display=minimized?"none":"block";
+
+  toast(minimized?"Room minimized":"Room restored");
+}
+
+/* ================================
+   OWNER
+================================ */
+
+function isOwner(){
+  return roomOwnerId===myId;
+}
+
+/* ================================
+   LEAVE
+================================ */
+
+async function leaveRoom(){
+
+  try{
+    await userRef().remove();
+  }catch(e){}
+
+  if(localStream){
+    localStream.getTracks().forEach(t=>t.stop());
   }
-
-  db.ref(
-    "rooms/"+roomId+"/users/"+myId
-  ).remove().catch(()=>{});
 
   if(peer){
-
-    peer.destroy();
-
+    try{peer.destroy()}catch(e){}
   }
 
+  localStorage.removeItem("pawanRoomId");
+
   location.href="index.html";
-
 }
 
+/* ================================
+   ROOM DP LOAD
+================================ */
 
-/* INIT */
-async function init(){
+roomRef().child("dp").on("value",snap=>{
 
-  await setupMic();
+  const dp=snap.val();
 
-  startPeer();
+  if(dp){
+    document.getElementById("roomLogo").innerHTML=
+      "<img src='"+esc(dp)+"'>";
+  }else{
+    document.getElementById("roomLogo").innerHTML="🎙️";
+  }
+});
 
-  listenUsers();
+/* ================================
+   EMERGENCY EXIT
+================================ */
 
-}
-
-init();
-
-
-/* CLEANUP */
 window.addEventListener("beforeunload",()=>{
 
-  db.ref(
-    "rooms/"+roomId+"/users/"+myId
-  ).remove().catch(()=>{});
+  try{
+    userRef().remove();
+  }catch(e){}
 
 });
+
+/* ================================
+   START
+================================ */
+
+document.getElementById("chatInput").addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    sendChat();
+  }
+});
+
+const savedTheme=localStorage.getItem("pawanRoomTheme");
+if(savedTheme){
+  document.body.style.background=savedTheme;
+}
+
+enterRoom();
+loadRoom();
 
 </script>
 
 </body>
-                                      </html>
+</html>
+```
