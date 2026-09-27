@@ -7,1020 +7,1095 @@
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <style>
 *{box-sizing:border-box}
 body{
-  margin:0;
-  background:#10131b;
-  color:#fff;
-  font-family:Arial,sans-serif;
+ margin:0;
+ background:linear-gradient(180deg,#17052b,#07030f);
+ color:white;
+ font-family:Arial,sans-serif;
+ min-height:100vh;
 }
 button{
-  border:0;
-  color:#fff;
-  background:#202532;
-  border-radius:12px;
-  padding:10px 13px;
-  cursor:pointer;
+ border:0;
+ color:white;
+ background:#25133d;
+ border-radius:12px;
+ padding:10px 13px;
+ cursor:pointer;
 }
-button:active{transform:scale(.97)}
-#app{max-width:650px;margin:auto;min-height:100vh;position:relative}
+button:active{transform:scale(.96)}
 
 .header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:10px;
-  background:#171b26;
-  position:sticky;
-  top:0;
-  z-index:20;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:12px;
+ background:#160624;
+ position:sticky;
+ top:0;
+ z-index:20;
 }
-.roomInfo{display:flex;align-items:center;gap:9px;min-width:0}
+.roomInfo{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ min-width:0;
+}
 .roomDp{
-  width:48px;height:48px;border-radius:50%;
-  object-fit:cover;background:#343a4b;
-  border:2px solid #555;
+ width:48px;height:48px;
+ border-radius:50%;
+ object-fit:cover;
+ border:2px solid #ffbd45;
 }
-.roomTitle{min-width:0}
-.roomTitle b{
-  display:block;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+.roomText{min-width:0}
+.roomName{
+ font-size:17px;
+ font-weight:bold;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis;
 }
-.roomTitle small{color:#aab0bd}
-
+.small{font-size:11px;color:#bbb;margin-top:3px}
 .headerBtns{
-  display:flex;
-  gap:5px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
+ display:flex;
+ gap:5px;
+ flex-wrap:wrap;
+ justify-content:flex-end;
 }
 .headerBtns button{
-  width:38px;height:38px;padding:0;
-  font-size:17px;
+ padding:8px;
+ font-size:15px;
 }
 
-.roomArea{
-  padding:15px 10px 130px;
-  min-height:650px;
-  background:
-    radial-gradient(circle at 50% 20%,#252b42 0,#151925 35%,#10131b 70%);
+.pkRank{
+ display:flex;
+ justify-content:flex-end;
+ gap:8px;
+ padding:9px 12px 3px;
+}
+.pkRank button{
+ background:linear-gradient(135deg,#8d1cff,#ff3b86);
+ font-weight:bold;
 }
 
-.topActions{
-  display:flex;
-  justify-content:flex-end;
-  gap:8px;
-  margin-bottom:10px;
+.roomArea{padding:12px 10px 110px}
+
+.owner{
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ margin:8px 0 18px;
 }
-.topActions button{
-  background:#252b3a;
-  min-width:78px;
+.owner .seatCircle{
+ width:78px;height:78px;
+}
+.ownerTitle{
+ color:#ffd35c;
+ font-weight:bold;
+ margin-bottom:5px;
 }
 
-.ownerBox{
-  text-align:center;
-  margin:5px auto 25px;
+.seatRow{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:9px;
+ margin-bottom:18px;
 }
-.ownerSeat{
-  width:82px;height:82px;
-  margin:auto;
-  border-radius:50%;
-  background:#292f40;
-  border:3px solid #d6a94a;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:30px;
-  overflow:hidden;
-}
-.ownerSeat img{
-  width:100%;height:100%;object-fit:cover;
-}
-.crown{font-size:20px;margin-top:4px}
-.userName{font-weight:bold;margin-top:4px}
-.userId{font-size:11px;color:#9299aa}
 
-.seats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:18px 8px;
-  max-width:560px;
-  margin:auto;
-}
 .seat{
-  text-align:center;
-  min-width:0;
+ text-align:center;
+ min-width:0;
 }
-.seatAvatar{
-  width:62px;height:62px;
-  border-radius:50%;
-  margin:auto;
-  background:#252b39;
-  border:2px solid #51596c;
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:visible;
+.seatCircle{
+ width:60px;
+ height:60px;
+ margin:auto;
+ border-radius:50%;
+ background:#24163a;
+ border:2px solid #60487a;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ position:relative;
+ overflow:visible;
 }
-.seatAvatar img{
-  width:100%;height:100%;
-  border-radius:50%;
-  object-fit:cover;
+.seatCircle img{
+ width:100%;
+ height:100%;
+ border-radius:50%;
+ object-fit:cover;
 }
 .empty{
-  color:#777f91;
-  font-size:25px;
+ font-size:25px;
+ color:#aaa;
+}
+.name{
+ margin-top:6px;
+ font-size:12px;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis;
+}
+.uid{
+ color:#999;
+ font-size:9px;
+ margin-top:2px;
 }
 .mic{
-  position:absolute;
-  right:-4px;
-  bottom:-3px;
-  background:#161a24;
-  border-radius:50%;
-  padding:3px;
-  font-size:12px;
+ position:absolute;
+ right:-4px;
+ bottom:-3px;
+ background:#17bd65;
+ width:20px;height:20px;
+ border-radius:50%;
+ font-size:11px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
 }
 .vip{
-  position:absolute;
-  left:-7px;
-  top:-7px;
-  background:#8d5bce;
-  border-radius:7px;
-  padding:2px 4px;
-  font-size:9px;
+ position:absolute;
+ left:-5px;
+ top:-6px;
+ background:#ffb300;
+ color:#241000;
+ font-size:9px;
+ padding:2px 5px;
+ border-radius:8px;
+ font-weight:bold;
 }
-.frame1{border-color:#f0b94b}
-.frame2{border-color:#55c7ff}
-.frame3{border-color:#d96cff}
+.frame1{border:3px solid #ffd54a}
+.frame2{border:3px solid #ff4fa3}
+.frame3{border:3px solid #62d7ff}
 
-.seatName{
-  font-size:12px;
-  margin-top:5px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+.bottom{
+ position:fixed;
+ bottom:0;
+ left:0;
+ right:0;
+ background:#13051f;
+ border-top:1px solid #38214e;
+ padding:9px 7px;
+ display:grid;
+ grid-template-columns:repeat(6,1fr);
+ gap:5px;
+ z-index:30;
 }
-.seatId{
-  color:#858c9d;
-  font-size:10px;
+.bottom button{
+ padding:9px 3px;
+ background:#241333;
+ font-size:11px;
 }
-
-.bottomBar{
-  position:fixed;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:min(650px,100%);
-  padding:8px 10px;
-  background:#171b25;
-  border-top:1px solid #303646;
-  display:flex;
-  align-items:center;
-  gap:7px;
-  z-index:50;
-}
-.bottomBar button{
-  min-width:48px;
-  min-height:48px;
-  padding:5px;
-  font-size:12px;
-}
-.bottomBar .big{
-  flex:1;
-}
-.moreBtn{
-  background:#303746;
+.bottom button b{
+ display:block;
+ font-size:20px;
+ margin-bottom:2px;
 }
 
 .panel{
-  position:fixed;
-  left:50%;
-  bottom:72px;
-  transform:translateX(-50%);
-  width:min(620px,94%);
-  max-height:75vh;
-  overflow:auto;
-  background:#1a1f2b;
-  border:1px solid #343b4d;
-  border-radius:18px;
-  padding:15px;
-  z-index:100;
-  box-shadow:0 15px 45px #0008;
+ display:none;
+ position:fixed;
+ left:0;
+ right:0;
+ bottom:0;
+ background:#190827;
+ border-radius:22px 22px 0 0;
+ padding:17px;
+ z-index:50;
+ max-height:78vh;
+ overflow:auto;
+ box-shadow:0 -8px 30px #000;
 }
-.panelHead{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:12px;
+.panel.show{display:block}
+.panel h2{
+ margin:0 0 14px;
+ font-size:19px;
 }
-.panelHead b{font-size:18px}
 .close{
-  width:40px;height:40px;
-  padding:0;
+ float:right;
+ background:#42234f;
 }
-.optionGrid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:9px;
+.grid{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:9px;
 }
 .option{
-  min-height:70px;
-  text-align:center;
-  padding:9px 5px;
-  background:#242a38;
+ background:#28143b;
+ padding:13px 5px;
+ border-radius:13px;
+ text-align:center;
+ font-size:11px;
 }
 .option span{
-  display:block;
-  font-size:24px;
-  margin-bottom:4px;
+ display:block;
+ font-size:24px;
+ margin-bottom:5px;
 }
-.option small{color:#c4c9d4}
 
-.detail{
-  line-height:1.5;
+.moreGrid{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:9px;
 }
-.detail button{margin-top:10px}
+.moreItem{
+ background:#28143b;
+ padding:12px 4px;
+ border-radius:13px;
+ text-align:center;
+}
+.moreItem div{font-size:24px}
+.moreItem small{font-size:10px}
 
 .chatBox{
-  display:flex;
-  gap:7px;
+ display:flex;
+ gap:7px;
+ margin-top:10px;
 }
 .chatBox input{
-  flex:1;
-  min-width:0;
-  background:#272d3a;
-  border:1px solid #3b4354;
-  color:#fff;
-  border-radius:12px;
-  padding:12px;
-  font-size:15px;
+ flex:1;
+ min-width:0;
+ border:0;
+ border-radius:12px;
+ padding:12px;
+ background:#2b173d;
+ color:white;
+ outline:none;
 }
-.chatMessages{
-  max-height:300px;
-  overflow:auto;
-  margin-bottom:10px;
+.messages{
+ max-height:260px;
+ overflow:auto;
 }
 .msg{
-  padding:7px 9px;
-  background:#242a36;
-  border-radius:9px;
-  margin-bottom:6px;
-  font-size:13px;
+ padding:7px 9px;
+ background:#28143b;
+ border-radius:10px;
+ margin:5px 0;
+ font-size:12px;
 }
 
-.toast{
-  position:fixed;
-  left:50%;
-  bottom:135px;
-  transform:translateX(-50%);
-  background:#000d;
-  padding:10px 15px;
-  border-radius:10px;
-  z-index:300;
-  display:none;
+.stat{
+ background:#28143b;
+ padding:12px;
+ border-radius:13px;
+ margin-bottom:8px;
 }
 
-.hidden{display:none!important}
-
-@media(max-width:420px){
-  .seats{gap:15px 4px}
-  .seatAvatar{width:56px;height:56px}
-  .optionGrid{grid-template-columns:repeat(3,1fr)}
-  .bottomBar button{min-width:44px}
+@media(max-width:360px){
+ .seatRow{gap:5px}
+ .seatCircle{width:53px;height:53px}
+ .grid,.moreGrid{grid-template-columns:repeat(3,1fr)}
 }
 </style>
 </head>
 
 <body>
-<div id="app">
 
-<header class="header">
-  <div class="roomInfo">
-    <img id="roomDp" class="roomDp" src="" alt="Room">
-    <div class="roomTitle">
-      <b id="roomName">PawanVoice Room</b>
-      <small id="roomNumber">Room No: ----</small><br>
-      <small id="ownerText">Owner: --</small>
-    </div>
-  </div>
+<div class="header">
 
-  <div class="headerBtns">
-    <button onclick="openPanel('settings')">⚙️</button>
-    <button onclick="openPanel('users')">👥</button>
-    <button onclick="shareRoom()">↗️</button>
-    <button onclick="copyRoom()">📋</button>
-    <button onclick="openPanel('info')">ℹ️</button>
-    <button onclick="leaveRoom()">🚪</button>
-  </div>
-</header>
+ <div class="roomInfo">
+   <img id="roomDp" class="roomDp"
+        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%23331a4d'/%3E%3Ctext x='50' y='58' text-anchor='middle' font-size='38' fill='white'%3EPV%3C/text%3E%3C/svg%3E">
+   <div class="roomText">
+     <div id="roomName" class="roomName">PawanVoice Room</div>
+     <div class="small">
+       Room No: <span id="roomNo">------</span>
+       · Owner: <span id="ownerName">Pawan</span>
+     </div>
+   </div>
+ </div>
 
-<main class="roomArea">
+ <div class="headerBtns">
+   <button onclick="openPanel('settings')">⚙️</button>
+   <button onclick="openPanel('users')">👥</button>
+   <button onclick="shareRoom()">↗️</button>
+   <button onclick="copyRoom()">📋</button>
+   <button onclick="openPanel('info')">ℹ️</button>
+   <button onclick="leaveRoom()">🚪</button>
+ </div>
 
-  <!-- PK + Ranking ऊपर RIGHT -->
-  <div class="topActions">
-    <button onclick="openFeature('pk')">⚔️ PK</button>
-    <button onclick="openFeature('ranking')">🏆 Ranking</button>
-  </div>
+</div>
 
-  <!-- OWNER -->
-  <section class="ownerBox">
-    <div id="ownerAvatar" class="ownerSeat">👑</div>
-    <div class="crown">👑 OWNER</div>
-    <div id="ownerName" class="userName">Loading...</div>
-    <div id="ownerId" class="userId"></div>
-  </section>
+<div class="pkRank">
+ <button onclick="openPanel('pk')">⚔️ PK</button>
+ <button onclick="openPanel('ranking')">🏆 Ranking</button>
+</div>
 
-  <!-- SEATS 2-9 -->
-  <section id="seatGrid" class="seats"></section>
+<div class="roomArea">
 
-</main>
+ <div class="owner">
+   <div class="ownerTitle">👑 OWNER</div>
+   <div class="seatCircle frame1" id="ownerSeat">
+     <div class="empty">👤</div>
+     <span class="mic">🎙️</span>
+   </div>
+   <div class="name" id="ownerSeatName">Owner</div>
+   <div class="uid" id="ownerSeatId">ID: ------</div>
+ </div>
 
-<!-- BOTTOM -->
-<nav class="bottomBar">
-  <button class="big" onclick="openPanel('chat')">💬<br>Chat</button>
-  <button onclick="toggleMic()" id="micButton">🎙️<br>Mic</button>
-  <button onclick="toggleSpeaker()" id="speakerButton">🔊<br>Speaker</button>
-  <button onclick="openPanel('inbox')">📥<br>Inbox</button>
-  <button class="big" onclick="openPanel('gift')">🎁<br>Gift</button>
+ <div class="seatRow" id="row1"></div>
+ <div class="seatRow" id="row2"></div>
 
-  <!-- Gift के ठीक आगे More -->
-  <button class="moreBtn big" onclick="openPanel('more')">☰<br>More</button>
-</nav>
+</div>
+
+<div class="bottom">
+
+ <button onclick="openPanel('chat')">
+   <b>💬</b>Chat
+ </button>
+
+ <button onclick="toggleMic()">
+   <b id="micIcon">🎙️</b>Mic
+ </button>
+
+ <button onclick="toggleSpeaker()">
+   <b id="speakerIcon">🔊</b>Speaker
+ </button>
+
+ <button onclick="openPanel('inbox')">
+   <b>📥</b>Inbox
+ </button>
+
+ <button onclick="openPanel('gift')">
+   <b>🎁</b>Gift
+ </button>
+
+ <button onclick="openPanel('more')">
+   <b>☰</b>More
+ </button>
+
+</div>
+
 
 <!-- MORE -->
-<div id="morePanel" class="panel hidden">
-  <div class="panelHead">
-    <b>☰ More — All Options</b>
-    <button class="close" onclick="closePanels()">✕</button>
+<div id="more" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h2>☰ More Options</h2>
+
+ <div class="moreGrid">
+
+  <div class="moreItem" onclick="feature('games')">
+   <div>🎮</div><small>Games</small>
   </div>
 
-  <div id="moreGrid" class="optionGrid"></div>
+  <div class="moreItem" onclick="feature('missions')">
+   <div>🎯</div><small>Missions</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('roomlevel')">
+   <div>⭐</div><small>Room Level</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('decoration')">
+   <div>🎨</div><small>Decoration</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('music')">
+   <div>🎵</div><small>Music</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('moments')">
+   <div>📸</div><small>Moments</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('events')">
+   <div>🎉</div><small>Events</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('family')">
+   <div>👨‍👩‍👧</div><small>Family</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('invite')">
+   <div>📨</div><small>Invite</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('queue')">
+   <div>🗣️</div><small>Speaker Queue</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('captions')">
+   <div>💬</div><small>Captions</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('translation')">
+   <div>🌐</div><small>Translation</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('safety')">
+   <div>🛡️</div><small>Safety</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('history')">
+   <div>🕘</div><small>History</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('members')">
+   <div>👥</div><small>Members</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('favorite')">
+   <div>❤️</div><small>Favorite</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('announcement')">
+   <div>📢</div><small>Announcement</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('report')">
+   <div>🚨</div><small>Report</small>
+  </div>
+
+  <div class="moreItem" onclick="feature('shortcuts')">
+   <div>➕</div><small>Add to Main Room</small>
+  </div>
+
+ </div>
 </div>
 
-<!-- DETAIL -->
-<div id="detailPanel" class="panel hidden">
-  <div class="panelHead">
-    <b id="detailTitle">Option</b>
-    <button class="close" onclick="closePanels()">✕</button>
-  </div>
-
-  <div class="detail">
-    <p id="detailText"></p>
-    <button id="addShortcutBtn" onclick="addShortcut()">⭐ Add to Main Room</button>
-  </div>
-</div>
 
 <!-- CHAT -->
-<div id="chatPanel" class="panel hidden">
-  <div class="panelHead">
-    <b>💬 Room Chat</b>
-    <button class="close" onclick="closePanels()">✕</button>
-  </div>
-  <div id="chatMessages" class="chatMessages"></div>
-  <div class="chatBox">
-    <input id="chatInput" placeholder="Message लिखें...">
-    <button onclick="sendChat()">Send</button>
-  </div>
+<div id="chat" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h2>💬 Room Chat</h2>
+
+ <div id="messages" class="messages"></div>
+
+ <div class="chatBox">
+   <input id="chatInput" placeholder="Message likho...">
+   <button onclick="sendChat()">Send</button>
+ </div>
 </div>
 
-<!-- GENERIC PANEL -->
-<div id="genericPanel" class="panel hidden">
-  <div class="panelHead">
-    <b id="genericTitle">Option</b>
-    <button class="close" onclick="closePanels()">✕</button>
+
+<!-- GIFT -->
+<div id="gift" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h2>🎁 Gifts</h2>
+
+ <div class="grid">
+
+  <div class="option" onclick="sendGift('Rose',100)">
+   <span>🌹</span>Rose<br>100
   </div>
-  <div id="genericContent" class="detail"></div>
+
+  <div class="option" onclick="sendGift('Heart',500)">
+   <span>❤️</span>Heart<br>500
+  </div>
+
+  <div class="option" onclick="sendGift('Love',1000)">
+   <span>💝</span>Love<br>1K
+  </div>
+
+  <div class="option" onclick="sendGift('Crown',5000)">
+   <span>👑</span>Crown<br>5K
+  </div>
+
+  <div class="option" onclick="sendGift('Diamond',10000)">
+   <span>💎</span>Diamond<br>10K
+  </div>
+
+  <div class="option" onclick="sendGift('Car',50000)">
+   <span>🚗</span>Car<br>50K
+  </div>
+
+  <div class="option" onclick="sendGift('Castle',100000)">
+   <span>🏰</span>Castle<br>100K
+  </div>
+
+  <div class="option" onclick="sendGift('Universe',500000)">
+   <span>🌌</span>Universe<br>500K
+  </div>
+
+ </div>
 </div>
 
-<div id="toast" class="toast"></div>
 
+<!-- USERS -->
+<div id="users" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h2>👥 Online Users</h2>
+ <div id="userList">Loading...</div>
 </div>
+
+
+<!-- SETTINGS -->
+<div id="settings" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h2>⚙️ Room Settings</h2>
+
+ <div class="option" onclick="changeRoomName()">✏️ Change Room Name</div>
+ <br>
+ <div class="option" onclick="changeRoomDp()">🖼️ Change Room DP</div>
+ <br>
+ <div class="option" onclick="openPanel('privacy')">🔐 Privacy</div>
+ <br>
+ <div class="option" onclick="openPanel('admin')">👑 Admin Controls</div>
+</div>
+
+
+<!-- INFO -->
+<div id="info" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h2>ℹ️ Room Information</h2>
+
+ <div class="stat">Room Name: <b id="infoName"></b></div>
+ <div class="stat">Room Number: <b id="infoRoom"></b></div>
+ <div class="stat">Owner: <b id="infoOwner"></b></div>
+ <div class="stat">Members: <b id="memberCount">0</b></div>
+</div>
+
+
+<!-- PK -->
+<div id="pk" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h2>⚔️ PK Battle</h2>
+
+ <div class="stat">
+  1 VS 1 PK<br><br>
+  Room battle system
+ </div>
+
+ <button onclick="alert('PK invite sent')">⚔️ Invite PK</button>
+</div>
+
+
+<!-- RANKING -->
+<div id="ranking" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h2>🏆 Ranking</h2>
+
+ <div class="stat">🥇 Top Contributor</div>
+ <div class="stat">🥈 Top Speaker</div>
+ <div class="stat">🥉 Top Gifter</div>
+ <div class="stat">❤️ Top Like</div>
+</div>
+
+
+<!-- INBOX -->
+<div id="inbox" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h2>📥 Inbox</h2>
+
+ <div class="stat">No new notifications</div>
+</div>
+
+
+<!-- GENERIC -->
+<div id="featurePanel" class="panel">
+ <button class="close" onclick="closePanels()">✕</button>
+ <h2 id="featureTitle">Feature</h2>
+ <div id="featureContent"></div>
+</div>
+
+
+<input id="dpFile" type="file" accept="image/*" style="display:none">
 
 <script>
-/* Firebase */
-const firebaseConfig = {
-  apiKey: "AIzaSyDnlTde5G5aPHrUIV6kTYnM521GtbrrE",
-  authDomain: "pawanvoice-68c5e.firebaseapp.com",
-  databaseURL: "https://pawanvoice-68c5e-default-rtdb.firebaseio.com/",
-  projectId: "pawanvoice-68c5e",
-  storageBucket: "pawanvoice-68c5e.firebasestorage.app",
-  messagingSenderId: "148446327241",
-  appId: "1:148446327241:web:6bac9cb9ad0fb530cbb818"
+
+const firebaseConfig={
+ apiKey:"AIzaSyDnlTde5G5aPHrUIV6kTYnM521GtbrrE",
+ authDomain:"pawanvoice-68c5e.firebaseapp.com",
+ databaseURL:"https://pawanvoice-68c5e-default-rtdb.firebaseio.com",
+ projectId:"pawanvoice-68c5e",
+ storageBucket:"pawanvoice-68c5e.firebasestorage.app",
+ messagingSenderId:"148446327241",
+ appId:"1:148446327241:web:6bac9cb9ad0fb530cbb818"
 };
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const db=firebase.database();
 
-/* Basic IDs */
-const params = new URLSearchParams(location.search);
-let roomId =
-  params.get("room") ||
-  params.get("roomId") ||
-  localStorage.getItem("pawanRoomId") ||
-  "";
-
-let myId =
-  localStorage.getItem("pawanNumericUserId") ||
-  ("u" + Math.random().toString(36).slice(2,10));
-
-localStorage.setItem("pawanNumericUserId",myId);
-
-let myName =
-  localStorage.getItem("pawanName") ||
-  "Pawan";
-
-let myDp =
-  localStorage.getItem("pawanDp") ||
-  "";
-
-let micOn = true;
-let speakerOn = true;
-let selectedOption = "";
-let shortcuts =
-  JSON.parse(localStorage.getItem("pawanRoomShortcuts") || "[]");
-
-/* All More options */
-const moreOptions = [
-  ["🎁","Gift","Gifts और gift history"],
-  ["⚔️","PK","1 vs 1 / team PK"],
-  ["🎮","Games","Room mini games"],
-  ["🏆","Ranking","Room और user ranking"],
-  ["🎯","Missions","Daily और weekly missions"],
-  ["🎵","Music","Music और playlist"],
-  ["🎉","Events","Room events और challenges"],
-  ["🎨","Decoration","Room background और effects"],
-  ["👑","VIP","VIP levels और privileges"],
-  ["📊","Analytics","Room statistics"],
-  ["🛡️","Safety","Report, block और moderation"],
-  ["📜","History","Room activity history"],
-  ["👨‍👩‍👧","Family","Family / club features"],
-  ["✨","Moments","Important room moments"],
-  ["📝","Captions","Live captions"],
-  ["🌐","Translation","Chat translation"],
-  ["📣","Announcement","Room announcement"],
-  ["🎙️","Speaker Queue","Speaker waiting queue"],
-  ["🔒","Seat Management","Seat lock और permissions"],
-  ["👥","Online Users","Online members"],
-  ["💬","Chat Settings","Chat controls"],
-  ["❤️","Likes","Room likes"],
-  ["🎖️","Achievements","Achievements और badges"],
-  ["📅","Schedule","Scheduled room"],
-  ["🎫","Tickets","Event tickets"],
-  ["🔔","Notifications","Room notifications"],
-  ["🚫","Ban List","Blocked users"],
-  ["👑","Co-Host","Co-host management"],
-  ["🔄","Reconnect","Voice reconnect"],
-  ["🎤","Mic Test","Mic test"],
-  ["🔊","Speaker Test","Speaker test"]
-];
-
-/* Initial render */
-renderMore();
-renderSeats();
-loadRoom();
-
-/* Room loading */
-function loadRoom(){
-  if(!roomId){
-    toast("Room ID नहीं मिला");
-    return;
-  }
-
-  localStorage.setItem("pawanRoomId",roomId);
-
-  db.ref("rooms/"+roomId).on("value",snap=>{
-    const data=snap.val() || {};
-
-    document.getElementById("roomName").textContent =
-      data.name || "PawanVoice Room";
-
-    document.getElementById("roomNumber").textContent =
-      "Room No: " + (data.roomNumber || "----");
-
-    document.getElementById("ownerText").textContent =
-      "Owner: " + (data.ownerName || "Pawan");
-
-    if(data.settings && data.settings.dp){
-      document.getElementById("roomDp").src=data.settings.dp;
-    }else{
-      document.getElementById("roomDp").src =
-        makeAvatar(data.name || "P");
-    }
-
-    document.getElementById("ownerName").textContent =
-      data.ownerName || "Pawan";
-
-    document.getElementById("ownerId").textContent =
-      data.ownerId ? "ID: "+data.ownerId : "";
-
-    if(data.ownerDp){
-      document.getElementById("ownerAvatar").innerHTML =
-        '<img src="'+escapeAttr(data.ownerDp)+'" alt="Owner">';
-    }
-
-    renderUsers(data.users || {});
-  });
+let roomId=new URLSearchParams(location.search).get("room");
+if(!roomId){
+ roomId=localStorage.getItem("pawanRoomId");
 }
 
-/* Seats */
-function renderSeats(users){
-  const grid=document.getElementById("seatGrid");
-  grid.innerHTML="";
+let myId=localStorage.getItem("pawanNumericUserId");
 
-  const arr=Object.values(users || {});
-  const occupied={};
-
-  arr.forEach(u=>{
-    if(u.seat) occupied[Number(u.seat)]=u;
-  });
-
-  for(let seatNo=2;seatNo<=9;seatNo++){
-    const u=occupied[seatNo];
-
-    const seat=document.createElement("div");
-    seat.className="seat";
-
-    if(u){
-      let frameClass="";
-      if(u.frame==="frame1") frameClass="frame1";
-      if(u.frame==="frame2") frameClass="frame2";
-      if(u.frame==="frame3") frameClass="frame3";
-
-      seat.innerHTML=`
-        <div class="seatAvatar ${frameClass}"
-             onclick="openUser('${escapeAttr(u.id || "")}')">
-          <img src="${escapeAttr(u.dp || makeAvatar(u.name || "U"))}"
-               alt="User">
-          ${Number(u.vip||0)>0
-            ? `<div class="vip">VIP ${Number(u.vip)}</div>`:""}
-          <div class="mic">${u.mic===false?"🔇":"🎙️"}</div>
-        </div>
-        <div class="seatName">${escapeHtml(u.name || "User")}</div>
-        <div class="seatId">ID: ${escapeHtml(u.id || "")}</div>
-      `;
-    }else{
-      seat.innerHTML=`
-        <div class="seatAvatar empty"
-             onclick="requestSeat(${seatNo})">＋</div>
-        <div class="seatName">Seat ${seatNo}</div>
-        <div class="seatId">Empty</div>
-      `;
-    }
-
-    grid.appendChild(seat);
-  }
+if(!myId){
+ myId=String(Math.floor(100000+Math.random()*900000));
+ localStorage.setItem("pawanNumericUserId",myId);
 }
 
-/* Users */
-function renderUsers(users){
-  renderSeats(users);
-}
+let myName=localStorage.getItem("pawanName") || "Pawan";
+let micOn=true;
+let speakerOn=true;
 
-/* More */
-function renderMore(){
-  const grid=document.getElementById("moreGrid");
-  grid.innerHTML="";
-
-  moreOptions.forEach(item=>{
-    const icon=item[0];
-    const name=item[1];
-
-    const b=document.createElement("button");
-    b.className="option";
-    b.type="button";
-
-    b.innerHTML=
-      "<span>"+icon+"</span>"+
-      "<b>"+name+"</b>"+
-      "<small>"+(isShortcut(icon+" "+name)?" ✓ Main":"")+"</small>";
-
-    b.onclick=()=>openFeature(name);
-
-    grid.appendChild(b);
-  });
-}
-
-function isShortcut(label){
-  return shortcuts.indexOf(label)>=0;
-}
-
-/* Feature */
-function openFeature(name){
-  selectedOption=name;
-
-  if(name==="PK"){
-    showGeneric(
-      "⚔️ PK",
-      `
-      <p>PK / Battle room यहाँ खुलेगा।</p>
-      <button onclick="toast('PK invite भेजने का flow यहाँ चलेगा')">
-      ⚔️ Invite for PK
-      </button>
-      `
-    );
-    return;
-  }
-
-  if(name==="Ranking"){
-    showGeneric(
-      "🏆 Ranking",
-      `
-      <p>Room ranking</p>
-      <button onclick="toast('Room ranking खुल गया')">🏆 Room Ranking</button>
-      <button onclick="toast('Gift ranking खुल गया')">🎁 Gift Ranking</button>
-      <button onclick="toast('Like ranking खुल गया')">❤️ Like Ranking</button>
-      `
-    );
-    return;
-  }
-
-  const found=moreOptions.find(x=>x[1]===name);
-
-  showGeneric(
-    (found ? found[0]+" " : "")+name,
-    `<p>${found ? found[2] : "इस feature का अपना panel यहाँ खुलेगा।"}</p>`
-  );
-}
-
-/* Add option to Main Room */
-function addShortcut(){
-  if(!selectedOption)return;
-
-  if(shortcuts.indexOf(selectedOption)>=0){
-    toast("यह पहले से Main Room पर है");
-    return;
-  }
-
-  shortcuts.push(selectedOption);
-  localStorage.setItem(
-    "pawanRoomShortcuts",
-    JSON.stringify(shortcuts)
-  );
-
-  renderMore();
-  toast(selectedOption+" Main Room पर add हो गया");
-  closePanels();
-}
-
-/* Generic */
-function showGeneric(title,content){
-  document.getElementById("morePanel").classList.add("hidden");
-  document.getElementById("detailPanel").classList.add("hidden");
-
-  document.getElementById("genericTitle").textContent=title;
-  document.getElementById("genericContent").innerHTML=content;
-
-  document.getElementById("genericPanel").classList.remove("hidden");
-}
-
-/* Panels */
-function openPanel(name){
-  closePanels();
-
-  if(name==="more"){
-    renderMore();
-    document.getElementById("morePanel").classList.remove("hidden");
-    return;
-  }
-
-  if(name==="chat"){
-    document.getElementById("chatPanel").classList.remove("hidden");
-    loadChat();
-    return;
-  }
-
-  if(name==="settings"){
-    showGeneric(
-      "⚙️ Settings",
-      `
-      <button onclick="changeRoomName()">✏️ Room Name</button>
-      <button onclick="changeRoomDp()">🖼️ Room DP</button>
-      <button onclick="toast('Room settings')">🔧 Room Settings</button>
-      `
-    );
-    return;
-  }
-
-  if(name==="users"){
-    showGeneric(
-      "👥 Online Users",
-      `<p>Room के सभी online users यहाँ दिखाई देंगे।</p>`
-    );
-    return;
-  }
-
-  if(name==="info"){
-    showGeneric(
-      "ℹ️ Room Info",
-      `
-      <p>Room: ${escapeHtml(document.getElementById("roomName").textContent)}</p>
-      <p>${escapeHtml(document.getElementById("roomNumber").textContent)}</p>
-      `
-    );
-    return;
-  }
-
-  if(name==="inbox"){
-    showGeneric(
-      "📥 Inbox",
-      `<p>Messages, requests और notifications यहाँ दिखाई देंगी।</p>`
-    );
-    return;
-  }
-
-  if(name==="gift"){
-    showGeneric(
-      "🎁 Gifts",
-      `
-      <button onclick="sendGift('🌹 Rose')">🌹 Rose</button>
-      <button onclick="sendGift('❤️ Heart')">❤️ Heart</button>
-      <button onclick="sendGift('💎 Diamond')">💎 Diamond</button>
-      <button onclick="sendGift('👑 Crown')">👑 Crown</button>
-      `
-    );
-  }
+function openPanel(id){
+ closePanels();
+ const el=document.getElementById(id);
+ if(el) el.classList.add("show");
 }
 
 function closePanels(){
-  document.querySelectorAll(".panel")
-    .forEach(x=>x.classList.add("hidden"));
+ document.querySelectorAll(".panel").forEach(x=>x.classList.remove("show"));
 }
 
-/* User panel */
-function openUser(id){
-  showGeneric(
-    "👤 User",
-    `
-    <p>User ID: ${escapeHtml(id)}</p>
-    <button onclick="toast('Profile खुल रहा है')">👤 Profile</button>
-    <button onclick="toast('Follow request भेजी')">➕ Follow</button>
-    <button onclick="toast('Chat खुल रही है')">💬 Chat</button>
-    <button onclick="toast('User muted')">🔇 Mute</button>
-    <button onclick="toast('Report भेजी गई')">🚩 Report</button>
-    `
-  );
+function feature(name){
+
+ const title={
+  games:"🎮 Games",
+  missions:"🎯 Missions",
+  roomlevel:"⭐ Room Level",
+  decoration:"🎨 Decoration",
+  music:"🎵 Music",
+  moments:"📸 Moments",
+  events:"🎉 Events",
+  family:"👨‍👩‍👧 Family",
+  invite:"📨 Invite",
+  queue:"🗣️ Speaker Queue",
+  captions:"💬 Captions",
+  translation:"🌐 Translation",
+  safety:"🛡️ Safety",
+  history:"🕘 History",
+  members:"👥 Members",
+  favorite:"❤️ Favorite",
+  announcement:"📢 Announcement",
+  report:"🚨 Report",
+  shortcuts:"➕ Add to Main Room"
+ }[name] || name;
+
+ document.getElementById("featureTitle").innerText=title;
+
+ document.getElementById("featureContent").innerHTML=
+ `
+ <div class="stat">
+   <b>${title}</b><br><br>
+   Ye option PawanVoice room ke liye ready hai.
+ </div>
+
+ <button onclick="addShortcut('${name}')">
+   ➕ Add to Main Room
+ </button>
+ `;
+
+ openPanel("featurePanel");
 }
 
-/* Seat request */
-function requestSeat(seat){
-  toast("Seat "+seat+" के लिए request भेजी गई");
+function addShortcut(name){
+ let arr=JSON.parse(localStorage.getItem("pawanRoomShortcuts")||"[]");
+
+ if(!arr.includes(name)){
+  arr.push(name);
+  localStorage.setItem("pawanRoomShortcuts",JSON.stringify(arr));
+  alert("Option Main Room me add ho gaya");
+ }else{
+  alert("Ye option already Main Room me hai");
+ }
 }
 
-/* Mic */
 function toggleMic(){
-  micOn=!micOn;
-  document.getElementById("micButton").innerHTML =
-    (micOn?"🎙️":"🔇")+"<br>Mic";
+ micOn=!micOn;
+ document.getElementById("micIcon").innerText=micOn?"🎙️":"🔇";
 
-  if(roomId){
-    db.ref("rooms/"+roomId+"/users/"+myId+"/mic")
-      .set(micOn)
-      .catch(()=>{});
-  }
+ if(roomId){
+  db.ref("rooms/"+roomId+"/users/"+myId+"/mic").set(micOn);
+ }
 }
 
-/* Speaker */
 function toggleSpeaker(){
-  speakerOn=!speakerOn;
-  document.getElementById("speakerButton").innerHTML =
-    (speakerOn?"🔊":"🔇")+"<br>Speaker";
-
-  document.querySelectorAll("audio")
-    .forEach(a=>a.muted=!speakerOn);
+ speakerOn=!speakerOn;
+ document.getElementById("speakerIcon").innerText=
+  speakerOn?"🔊":"🔇";
 }
 
-/* Chat */
-function sendChat(){
-  const input=document.getElementById("chatInput");
-  const text=input.value.trim();
-
-  if(!text)return;
-
-  const msg={
-    name:myName,
-    id:myId,
-    text:text,
-    time:Date.now()
-  };
-
-  if(roomId){
-    db.ref("rooms/"+roomId+"/chat").push(msg);
-  }
-
-  input.value="";
-}
-
-function loadChat(){
-  if(!roomId)return;
-
-  db.ref("rooms/"+roomId+"/chat")
-    .limitToLast(50)
-    .on("value",snap=>{
-      const box=document.getElementById("chatMessages");
-      box.innerHTML="";
-
-      snap.forEach(child=>{
-        const m=child.val() || {};
-        const div=document.createElement("div");
-        div.className="msg";
-        div.innerHTML=
-          "<b>"+escapeHtml(m.name||"User")+"</b>: "+
-          escapeHtml(m.text||"");
-        box.appendChild(div);
-      });
-
-      box.scrollTop=box.scrollHeight;
-    });
-}
-
-/* Gift */
-function sendGift(gift){
-  toast(gift+" भेजा गया 🎁");
-
-  if(roomId){
-    db.ref("rooms/"+roomId+"/giftHistory").push({
-      from:myId,
-      name:myName,
-      gift:gift,
-      time:Date.now()
-    });
-  }
-}
-
-/* Room DP */
-function changeRoomDp(){
-  const input=document.createElement("input");
-  input.type="file";
-  input.accept="image/*";
-
-  input.onchange=()=>{
-    const file=input.files[0];
-    if(!file)return;
-
-    const reader=new FileReader();
-
-    reader.onload=e=>{
-      const img=new Image();
-
-      img.onload=()=>{
-        const canvas=document.createElement("canvas");
-        const max=500;
-
-        let w=img.width;
-        let h=img.height;
-
-        if(w>h){
-          if(w>max){
-            h=h*max/w;
-            w=max;
-          }
-        }else{
-          if(h>max){
-            w=w*max/h;
-            h=max;
-          }
-        }
-
-        canvas.width=w;
-        canvas.height=h;
-
-        const ctx=canvas.getContext("2d");
-        ctx.drawImage(img,0,0,w,h);
-
-        const data=canvas.toDataURL("image/jpeg",.70);
-
-        db.ref("rooms/"+roomId+"/settings/dp")
-          .set(data)
-          .then(()=>{
-            document.getElementById("roomDp").src=data;
-            toast("Room DP बदल गई");
-          })
-          .catch(err=>{
-            toast("DP save नहीं हुई: "+err.message);
-          });
-      };
-
-      img.src=e.target.result;
-    };
-
-    reader.readAsDataURL(file);
-  };
-
-  input.click();
-}
-
-/* Room name */
-function changeRoomName(){
-  const oldName=document.getElementById("roomName").textContent;
-  const name=prompt("New Room Name",oldName);
-
-  if(!name || !name.trim())return;
-
-  db.ref("rooms/"+roomId+"/name")
-    .set(name.trim())
-    .then(()=>toast("Room Name बदल गया"))
-    .catch(err=>toast("Save error: "+err.message));
-}
-
-/* Share */
 function shareRoom(){
-  const url=location.href;
 
-  if(navigator.share){
-    navigator.share({
-      title:"PawanVoice Room",
-      text:"Join my PawanVoice Room",
-      url:url
-    }).catch(()=>{});
-  }else{
-    copyText(url);
-    toast("Room link copy हो गया");
-  }
+ const url=location.href;
+
+ if(navigator.share){
+  navigator.share({
+   title:"PawanVoice Room",
+   text:"PawanVoice room join karo",
+   url:url
+  }).catch(()=>{});
+ }else{
+  alert(url);
+ }
 }
 
-/* Copy room */
 function copyRoom(){
-  const no=document.getElementById("roomNumber").textContent;
-  copyText(no).then(()=>toast("Room Number copy हो गया"));
+
+ const room=document.getElementById("roomNo").innerText;
+
+ if(navigator.clipboard){
+  navigator.clipboard.writeText(room)
+   .then(()=>alert("Room Number copied"));
+ }else{
+  alert("Room Number: "+room);
+ }
 }
 
-/* Leave */
-function leaveRoom(){
-  if(!confirm("Room छोड़ना है?"))return;
+function sendChat(){
 
-  if(roomId){
-    db.ref("rooms/"+roomId+"/users/"+myId)
-      .remove()
-      .finally(()=>{
-        location.href="index.html";
-      });
-  }else{
-    location.href="index.html";
-  }
+ const input=document.getElementById("chatInput");
+ const text=input.value.trim();
+
+ if(!text)return;
+
+ const msg={
+  name:myName,
+  uid:myId,
+  text:text,
+  time:Date.now()
+ };
+
+ if(roomId){
+  db.ref("rooms/"+roomId+"/chat").push(msg);
+ }
+
+ input.value="";
 }
 
-/* Helpers */
-function copyText(text){
-  if(navigator.clipboard){
-    return navigator.clipboard.writeText(text);
-  }
+function listenChat(){
 
-  const ta=document.createElement("textarea");
-  ta.value=text;
-  document.body.appendChild(ta);
-  ta.select();
-  document.execCommand("copy");
-  ta.remove();
+ if(!roomId)return;
 
-  return Promise.resolve();
-}
+ db.ref("rooms/"+roomId+"/chat")
+ .limitToLast(50)
+ .on("value",snap=>{
 
-function makeAvatar(text){
-  const letter=(text||"P").charAt(0).toUpperCase();
+  const box=document.getElementById("messages");
+  box.innerHTML="";
 
-  const svg=
-    `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">
-      <rect width="300" height="300" fill="#303748"/>
-      <text x="150" y="190"
-        text-anchor="middle"
-        font-size="140"
-        fill="white">${letter}</text>
-    </svg>`;
+  snap.forEach(x=>{
+   const m=x.val();
 
-  return "data:image/svg+xml;charset=UTF-8,"+
-    encodeURIComponent(svg);
+   box.innerHTML+=`
+    <div class="msg">
+      <b>${escapeHtml(m.name||"User")}</b>
+      <br>${escapeHtml(m.text||"")}
+    </div>
+   `;
+  });
+
+  box.scrollTop=box.scrollHeight;
+ });
 }
 
 function escapeHtml(s){
-  return String(s)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+ return String(s)
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#039;");
 }
 
-function escapeAttr(s){
-  return escapeHtml(s);
+function sendGift(name,coins){
+
+ alert(name+" gift selected ("+coins+" coins)");
+
+ if(roomId){
+  db.ref("rooms/"+roomId+"/gifts").push({
+   from:myId,
+   fromName:myName,
+   gift:name,
+   coins:coins,
+   time:Date.now()
+  });
+ }
 }
 
-function toast(text){
-  const t=document.getElementById("toast");
-  t.textContent=text;
-  t.style.display="block";
+function changeRoomName(){
 
-  clearTimeout(window.toastTimer);
-  window.toastTimer=setTimeout(()=>{
-    t.style.display="none";
-  },2200);
+ const name=prompt("Naya Room Name:");
+
+ if(!name || !roomId)return;
+
+ db.ref("rooms/"+roomId+"/settings/name").set(name);
 }
+
+function changeRoomDp(){
+ document.getElementById("dpFile").click();
+}
+
+document.getElementById("dpFile").addEventListener("change",function(){
+
+ const file=this.files[0];
+
+ if(!file || !roomId)return;
+
+ const reader=new FileReader();
+
+ reader.onload=function(){
+
+  const img=new Image();
+
+  img.onload=function(){
+
+   const canvas=document.createElement("canvas");
+   const max=400;
+
+   let w=img.width;
+   let h=img.height;
+
+   if(w>h){
+    if(w>max){
+     h=h*max/w;
+     w=max;
+    }
+   }else{
+    if(h>max){
+     w=w*max/h;
+     h=max;
+    }
+   }
+
+   canvas.width=w;
+   canvas.height=h;
+
+   const ctx=canvas.getContext("2d");
+   ctx.drawImage(img,0,0,w,h);
+
+   const data=canvas.toDataURL("image/jpeg",.7);
+
+   db.ref("rooms/"+roomId+"/settings/dp")
+     .set(data)
+     .then(()=>alert("Room DP change ho gayi"))
+     .catch(e=>alert("DP error: "+e.message));
+  };
+
+  img.src=reader.result;
+ };
+
+ reader.readAsDataURL(file);
+});
+
+function listenRoom(){
+
+ if(!roomId){
+  alert("Room ID nahi mila");
+  return;
+ }
+
+ db.ref("rooms/"+roomId).on("value",snap=>{
+
+  const room=snap.val();
+
+  if(!room)return;
+
+  const settings=room.settings||{};
+
+  document.getElementById("roomName").innerText=
+   settings.name || room.name || "PawanVoice Room";
+
+  document.getElementById("roomNo").innerText=
+   room.roomNumber || "------";
+
+  document.getElementById("ownerName").innerText=
+   room.ownerName || "Pawan";
+
+  document.getElementById("infoName").innerText=
+   settings.name || room.name || "PawanVoice Room";
+
+  document.getElementById("infoRoom").innerText=
+   room.roomNumber || "------";
+
+  document.getElementById("infoOwner").innerText=
+   room.ownerName || "Pawan";
+
+  if(settings.dp){
+   document.getElementById("roomDp").src=settings.dp;
+  }
+
+  renderSeats(room.users||{},room);
+
+ });
+}
+
+function renderSeats(users,room){
+
+ const ids=Object.keys(users);
+
+ document.getElementById("memberCount").innerText=ids.length;
+
+ const row1=document.getElementById("row1");
+ const row2=document.getElementById("row2");
+
+ row1.innerHTML="";
+ row2.innerHTML="";
+
+ for(let seat=2;seat<=9;seat++){
+
+  let userId=ids[seat-2];
+  let user=userId?users[userId]:null;
+
+  const html=createSeat(seat,user);
+
+  if(seat<=5)row1.innerHTML+=html;
+  else row2.innerHTML+=html;
+ }
+
+ const ownerId=room.ownerId;
+
+ if(ownerId && users[ownerId]){
+  const u=users[ownerId];
+
+  document.getElementById("ownerSeatName").innerText=
+   u.name||"Owner";
+
+  document.getElementById("ownerSeatId").innerText=
+   "ID: "+ownerId;
+
+  if(u.dp){
+   document.getElementById("ownerSeat").innerHTML=
+    `<img src="${u.dp}">
+     <span class="mic">${u.mic===false?"🔇":"🎙️"}</span>`;
+  }
+ }else{
+  document.getElementById("ownerSeatName").innerText=
+   room.ownerName||"Owner";
+
+  document.getElementById("ownerSeatId").innerText=
+   "ID: "+(ownerId||"------");
+ }
+
+ const list=document.getElementById("userList");
+ list.innerHTML="";
+
+ ids.forEach(id=>{
+  const u=users[id]||{};
+
+  list.innerHTML+=`
+   <div class="stat">
+    👤 <b>${escapeHtml(u.name||"Guest")}</b>
+    <br>ID: ${escapeHtml(id)}
+    ${u.mic===false?" 🔇":" 🎙️"}
+   </div>
+  `;
+ });
+}
+
+function createSeat(seat,user){
+
+ if(!user){
+  return `
+   <div class="seat">
+    <div class="seatCircle">
+     <div class="empty">+</div>
+    </div>
+    <div class="name">Seat ${seat}</div>
+    <div class="uid">Empty</div>
+   </div>
+  `;
+ }
+
+ let frame=user.frame||"";
+
+ return `
+  <div class="seat" onclick="openUser('${user.id||""}')">
+
+   <div class="seatCircle ${frame}">
+
+    ${
+     user.dp
+     ? `<img src="${user.dp}">`
+     : `<div class="empty">👤</div>`
+    }
+
+    ${user.vip
+     ? `<span class="vip">VIP${user.vip}</span>`
+     : ""}
+
+    <span class="mic">
+      ${user.mic===false?"🔇":"🎙️"}
+    </span>
+
+   </div>
+
+   <div class="name">
+    ${escapeHtml(user.name||"Guest")}
+   </div>
+
+   <div class="uid">
+    ID: ${escapeHtml(user.id||"")}
+   </div>
+
+  </div>
+ `;
+}
+
+function openUser(id){
+
+ if(!id)return;
+
+ document.getElementById("featureTitle").innerText=
+  "👤 User Options";
+
+ document.getElementById("featureContent").innerHTML=`
+  <div class="stat">User ID: ${escapeHtml(id)}</div>
+
+  <div class="grid">
+
+   <div class="option" onclick="alert('Profile')">
+    <span>👤</span>Profile
+   </div>
+
+   <div class="option" onclick="alert('Mute')">
+    <span>🔇</span>Mute
+   </div>
+
+   <div class="option" onclick="alert('Follow')">
+    <span>❤️</span>Follow
+   </div>
+
+   <div class="option" onclick="alert('Message')">
+    <span>💬</span>Message
+   </div>
+
+   <div class="option" onclick="openPanel('gift')">
+    <span>🎁</span>Gift
+   </div>
+
+   <div class="option" onclick="alert('Report')">
+    <span>🚨</span>Report
+   </div>
+
+   <div class="option" onclick="alert('Block')">
+    <span>🚫</span>Block
+   </div>
+
+   <div class="option" onclick="alert('Copy ID')">
+    <span>📋</span>Copy ID
+   </div>
+
+  </div>
+ `;
+
+ openPanel("featurePanel");
+}
+
+function leaveRoom(){
+
+ if(confirm("Room se leave karna hai?")){
+  if(roomId){
+   db.ref("rooms/"+roomId+"/users/"+myId).remove()
+    .finally(()=>{
+     location.href="index.html";
+    });
+  }else{
+   location.href="index.html";
+  }
+ }
+}
+
+window.addEventListener("beforeunload",function(){
+ if(roomId){
+  db.ref("rooms/"+roomId+"/users/"+myId)
+   .onDisconnect()
+   .remove();
+ }
+});
+
+listenRoom();
+listenChat();
+
 </script>
 
 </body>
-</html>
+  </html>
