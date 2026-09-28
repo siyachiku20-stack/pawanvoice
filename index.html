@@ -6,416 +6,302 @@
 <title>PawanVoice</title>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
 *{box-sizing:border-box}
-body{
- margin:0;
- font-family:Arial,sans-serif;
- background:#080914;
- color:#fff;
-}
+html,body{margin:0;padding:0;background:#070812;color:#fff;font-family:Arial,sans-serif}
 button,input,select{font:inherit}
-button{cursor:pointer;border:0}
-.app{
- max-width:520px;
- margin:auto;
- min-height:100vh;
- background:linear-gradient(180deg,#11152b,#080914 60%);
- padding-bottom:82px;
-}
+button{border:0;cursor:pointer;color:#fff}
+.app{max-width:520px;margin:auto;min-height:100vh;background:linear-gradient(#11142a,#070812);padding-bottom:78px}
+
 .top{
- padding:18px 16px 12px;
- display:flex;
- align-items:center;
- justify-content:space-between;
- position:sticky;
- top:0;
- z-index:10;
- background:rgba(8,9,20,.94);
- backdrop-filter:blur(12px);
+ height:64px;padding:10px 14px;display:flex;align-items:center;
+ justify-content:space-between;background:#0b0d19f2;position:sticky;top:0;z-index:20;
+ backdrop-filter:blur(12px)
 }
-.logo{
- font-size:22px;
- font-weight:900;
+.logo{font-size:21px;font-weight:900}
+.coin{
+ background:#1b2035;border:1px solid #343b5d;border-radius:22px;
+ padding:8px 12px;color:#ffd75a;font-weight:700
 }
-.coins{
- background:#1c2039;
- border:1px solid #343a62;
- padding:8px 12px;
- border-radius:22px;
- color:#ffd85a;
-}
-.hero{
- margin:10px 14px;
- padding:18px;
- border-radius:22px;
- background:linear-gradient(135deg,#7c3aed,#2563eb);
- box-shadow:0 12px 35px rgba(73,50,180,.25);
-}
-.hero h2{margin:0 0 5px}
-.hero p{margin:0;color:#ddd}
-.search{
- margin:14px;
- display:flex;
- background:#171a2d;
- border:1px solid #292e4b;
- border-radius:16px;
- padding:5px;
-}
-.search input{
- flex:1;
- background:transparent;
- border:0;
- outline:0;
- color:white;
- padding:12px;
-}
-.search button{
- width:45px;
- border-radius:12px;
- background:#7c3aed;
- color:white;
-}
-.banners{
- display:grid;
- gap:9px;
- margin:14px;
-}
-.banner{
- min-height:68px;
- padding:13px 16px;
- border-radius:18px;
- display:flex;
- align-items:center;
- justify-content:space-between;
- font-weight:800;
-}
-.banner small{display:block;color:#e5e7eb;margin-top:4px}
-.family{background:linear-gradient(110deg,#5b21b6,#9333ea)}
-.cp{background:linear-gradient(110deg,#075985,#0284c7)}
-.rich{background:linear-gradient(110deg,#92400e,#d97706)}
-.section{
- padding:8px 14px;
-}
-.tabs{
- display:flex;
- gap:8px;
- overflow:auto;
- margin:8px 0 13px;
-}
-.tab{
- padding:9px 15px;
- border-radius:20px;
- background:#171a2d;
- color:#aaa;
- white-space:nowrap;
-}
-.tab.active{
- background:#7c3aed;
- color:#fff;
-}
-.room{
- background:#14182b;
- border:1px solid #292e4b;
- border-radius:20px;
- padding:13px;
- margin-bottom:12px;
-}
-.roomTop{
- display:flex;
- gap:12px;
- align-items:center;
-}
-.roomDp{
- width:58px;
- height:58px;
- border-radius:17px;
- background:linear-gradient(135deg,#7c3aed,#ec4899);
- display:grid;
- place-items:center;
- font-size:28px;
-}
-.roomInfo{flex:1}
-.roomInfo b{font-size:16px}
-.roomInfo small{display:block;color:#9298b2;margin-top:5px}
-.join{
- background:#7c3aed;
- color:white;
- padding:9px 14px;
- border-radius:13px;
- font-weight:bold;
-}
-.roomBottom{
- display:flex;
- justify-content:space-between;
- margin-top:11px;
- color:#aeb3c9;
- font-size:13px;
-}
-.miniUsers{margin-top:9px;color:#cbd5e1}
-.create{
- margin:14px;
- background:linear-gradient(135deg,#16a34a,#059669);
- border-radius:20px;
- padding:17px;
-}
-.create input,.create select{
- width:100%;
- margin:7px 0;
- padding:12px;
- border-radius:12px;
- border:1px solid #ffffff22;
- background:#ffffff18;
- color:white;
- outline:0;
-}
-.create button{
- width:100%;
- margin-top:6px;
- padding:13px;
- border-radius:13px;
- background:#fff;
- color:#047857;
- font-weight:900;
-}
+
 .page{display:none}
 .page.active{display:block}
-.profileHero{
- margin:14px;
- padding:22px 16px;
- border-radius:25px;
- text-align:center;
- background:linear-gradient(145deg,#25135a,#12152a);
- border:1px solid #40306e;
+
+.hero{
+ margin:12px 14px;padding:20px;border-radius:23px;
+ background:linear-gradient(135deg,#7629dc,#245eea);
+ box-shadow:0 12px 35px #0005
+}
+.hero h2{margin:0 0 6px}
+.hero p{margin:0;color:#e5e7eb}
+
+.banners{padding:0 14px;display:grid;gap:9px}
+.banner{
+ width:100%;height:72px;border-radius:19px;padding:12px 15px;
+ display:flex;align-items:center;justify-content:space-between;text-align:left
+}
+.banner b{font-size:25px}
+.banner small{display:block;margin-top:5px;color:#e8e8ee}
+.family{background:linear-gradient(110deg,#5b21b6,#a855f7)}
+.cp{background:linear-gradient(110deg,#075985,#0891b2)}
+.rich{background:linear-gradient(110deg,#92400e,#f59e0b)}
+
+.search{
+ margin:14px;padding:5px;border-radius:16px;background:#15192b;
+ border:1px solid #2c3351;display:flex
+}
+.search input{
+ flex:1;min-width:0;background:transparent;border:0;outline:0;
+ color:#fff;padding:12px
+}
+.search button{
+ width:45px;border-radius:12px;background:#7c3aed
+}
+
+.tabs{
+ display:flex;gap:8px;overflow:auto;padding:0 14px 13px
+}
+.tab{
+ padding:9px 15px;border-radius:20px;background:#171b2d;
+ color:#9399ae;white-space:nowrap
+}
+.tab.active{background:#7c3aed;color:#fff}
+
+.room{
+ margin:0 14px 11px;padding:13px;border-radius:20px;
+ background:#14182a;border:1px solid #292f4b
+}
+.roomHead{display:flex;align-items:center;gap:11px}
+.roomDp{
+ width:58px;height:58px;border-radius:17px;
+ display:grid;place-items:center;font-size:28px;
+ background:linear-gradient(135deg,#7c3aed,#ec4899)
+}
+.roomInfo{flex:1;min-width:0}
+.roomInfo b{
+ display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.roomInfo small{display:block;color:#969db4;margin-top:5px}
+.join{
+ background:#7c3aed;border-radius:12px;padding:9px 13px;font-weight:800
+}
+.roomMeta{
+ display:flex;justify-content:space-between;margin-top:10px;
+ color:#9da4bb;font-size:12px
+}
+
+.create{
+ margin:14px;padding:16px;border-radius:20px;
+ background:linear-gradient(135deg,#047857,#10b981)
+}
+.create h3{margin:0 0 9px}
+.create input,.create select{
+ width:100%;padding:12px;margin:5px 0;border-radius:12px;
+ border:1px solid #ffffff33;background:#ffffff15;color:#fff;outline:0
+}
+.create select option{background:#111}
+.create button{
+ width:100%;padding:13px;margin-top:5px;border-radius:12px;
+ background:#fff;color:#047857;font-weight:900
+}
+
+.profile{
+ margin:14px;padding:22px 15px;text-align:center;border-radius:25px;
+ background:linear-gradient(145deg,#25134e,#12152a);
+ border:1px solid #49336d
 }
 .avatar{
- width:92px;
- height:92px;
- margin:auto;
- border-radius:50%;
- background:linear-gradient(135deg,#9333ea,#ec4899);
- display:grid;
- place-items:center;
- font-size:42px;
- border:4px solid #ffd35a;
+ width:94px;height:94px;margin:auto;border-radius:50%;
+ display:grid;place-items:center;font-size:42px;
+ border:4px solid #ffd65a;
+ background:linear-gradient(135deg,#7c3aed,#ec4899)
 }
-.profileHero h2{margin:10px 0 4px}
-.profileHero p{margin:4px;color:#9fa6bd}
-.level{
- margin-top:16px;
- background:#0b0d19;
- border-radius:15px;
- padding:12px;
- text-align:left;
+.profile h2{margin:10px 0 4px}
+.muted{color:#9ca3b8}
+.levelBox{
+ margin-top:15px;padding:12px;background:#0b0d18;
+ border-radius:15px;text-align:left
 }
 .progress{
- height:9px;
- background:#282c40;
- border-radius:20px;
- overflow:hidden;
- margin-top:8px;
+ height:8px;background:#292e43;border-radius:10px;
+ overflow:hidden;margin-top:8px
 }
 .progress i{
- display:block;
- width:42%;
- height:100%;
- background:linear-gradient(90deg,#8b5cf6,#ec4899);
+ display:block;width:42%;height:100%;
+ background:linear-gradient(90deg,#8b5cf6,#ec4899)
 }
+
 .stats{
- display:grid;
- grid-template-columns:repeat(4,1fr);
- gap:7px;
- margin:14px;
+ display:grid;grid-template-columns:repeat(4,1fr);
+ gap:7px;padding:0 14px 13px
 }
 .stat{
- background:#14182b;
- padding:12px 4px;
- text-align:center;
- border-radius:15px;
+ background:#14182a;border:1px solid #292f4b;
+ border-radius:15px;padding:11px 3px;text-align:center
 }
 .stat b{display:block}
-.stat span{font-size:11px;color:#9298b2}
-.menuGrid{
- display:grid;
- grid-template-columns:repeat(4,1fr);
- gap:9px;
- padding:14px;
+.stat span{font-size:10px;color:#9298ae}
+
+.grid{
+ display:grid;grid-template-columns:repeat(4,1fr);
+ gap:8px;padding:0 14px 14px
 }
-.menu{
- background:#14182b;
- border:1px solid #292e4b;
- min-height:82px;
- border-radius:17px;
- color:white;
- display:flex;
- flex-direction:column;
- align-items:center;
- justify-content:center;
- gap:7px;
- font-size:12px;
+.item{
+ min-height:80px;border-radius:16px;background:#14182a;
+ border:1px solid #292f4b;color:#fff;
+ display:flex;flex-direction:column;
+ align-items:center;justify-content:center;gap:6px
 }
-.menu strong{font-size:24px}
-.ownerPanel{
- margin:14px;
- padding:15px;
- border-radius:20px;
- border:1px solid #9b59ff;
- background:linear-gradient(145deg,#24123d,#101426);
+.item strong{font-size:23px}
+.item span{font-size:11px}
+
+.owner{
+ margin:14px;padding:15px;border-radius:21px;
+ background:linear-gradient(145deg,#28133f,#101323);
+ border:1px solid #a855f7
 }
-.ownerPanel h3{margin-top:0;color:#d8b4fe}
+.owner h3{margin:0 0 4px;color:#d8b4fe}
 .ownerGrid{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:8px;
+ display:grid;grid-template-columns:repeat(2,1fr);
+ gap:8px;margin-top:12px
 }
 .ownerGrid button{
- padding:12px 7px;
- border-radius:12px;
- background:#27203b;
- color:#fff;
- border:1px solid #453564;
+ padding:12px;border-radius:12px;
+ background:#291d3b;border:1px solid #49325e
 }
-.list{
- margin:14px;
-}
+
+.list{padding:14px}
 .listItem{
- display:flex;
- align-items:center;
- gap:12px;
- background:#14182b;
- border:1px solid #292e4b;
- padding:14px;
- border-radius:16px;
- margin-bottom:9px;
+ display:flex;align-items:center;gap:12px;
+ padding:14px;margin-bottom:9px;border-radius:17px;
+ background:#14182a;border:1px solid #292f4b
 }
-.icon{
- width:44px;height:44px;
- display:grid;
- place-items:center;
- border-radius:13px;
- background:#262b46;
- font-size:23px;
+.listIcon{
+ width:45px;height:45px;border-radius:13px;
+ display:grid;place-items:center;
+ background:#252a43;font-size:22px
 }
+
 .bottom{
- position:fixed;
- bottom:0;
- left:50%;
+ position:fixed;bottom:0;left:50%;
  transform:translateX(-50%);
- width:min(520px,100%);
- height:72px;
- background:rgba(11,13,25,.97);
- border-top:1px solid #292e4b;
- display:grid;
- grid-template-columns:repeat(3,1fr);
- z-index:30;
+ width:min(520px,100%);height:72px;
+ display:grid;grid-template-columns:repeat(3,1fr);
+ background:#0b0d19f7;border-top:1px solid #292f4b;
+ z-index:50
 }
-.bottom button{
- background:transparent;
- color:#858ba5;
-}
-.bottom button.active{color:#b784ff}
-.modal{
- position:fixed;
- inset:0;
- background:rgba(0,0,0,.72);
- display:none;
- align-items:flex-end;
- z-index:100;
-}
-.modal.show{display:flex}
+.bottom button{background:transparent;color:#858ca4}
+.bottom button.active{color:#c084fc}
+
 .sheet{
- width:min(520px,100%);
- margin:auto auto 0;
- background:#121528;
- border-radius:25px 25px 0 0;
- padding:20px;
- max-height:82vh;
- overflow:auto;
+ position:fixed;inset:0;background:#000b;
+ display:none;align-items:flex-end;z-index:100
 }
-.sheet h3{margin-top:0}
+.sheet.show{display:flex}
+.sheetBox{
+ width:min(520px,100%);max-height:84vh;overflow:auto;
+ margin:auto auto 0;padding:20px;
+ background:#121528;border-radius:25px 25px 0 0
+}
 .close{
- float:right;
- background:#292e45;
- color:white;
- padding:8px 12px;
- border-radius:10px;
+ float:right;background:#292e45;
+ padding:8px 11px;border-radius:10px
 }
-.formInput{
- width:100%;
- padding:13px;
- background:#080b17;
- color:white;
- border:1px solid #303650;
- border-radius:12px;
- margin:7px 0;
-}
+.sheetBox h3{margin-top:0}
 .action{
- width:100%;
- padding:13px;
- border-radius:12px;
- background:#7c3aed;
- color:#fff;
- margin-top:8px;
- font-weight:bold;
+ width:100%;padding:13px;border-radius:12px;
+ background:#7c3aed;margin-top:8px
 }
-@media(max-width:360px){
- .menuGrid{grid-template-columns:repeat(3,1fr)}
+.input{
+ width:100%;padding:12px;margin:6px 0;
+ background:#080b16;color:#fff;
+ border:1px solid #303650;border-radius:12px
+}
+
+@media(max-width:370px){
+ .grid{grid-template-columns:repeat(3,1fr)}
  .stats{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
 
 <body>
+
 <div class="app">
 
 <!-- HOME -->
-<div id="homePage" class="page active">
+<section id="homePage" class="page active">
 
 <div class="top">
  <div class="logo">🎙️ PawanVoice</div>
- <div class="coins">🪙 <span id="coinBalance">0</span></div>
+ <div class="coin">🪙 <span id="coins">0</span></div>
 </div>
 
 <div class="hero">
- <h2>Welcome to PawanVoice</h2>
- <p>Voice • Friends • Family • Live Rooms</p>
+ <h2>Voice • Friends • Family</h2>
+ <p>Live voice rooms में अपने दोस्तों से जुड़ें</p>
 </div>
 
 <div class="banners">
- <div class="banner family" onclick="openFeature('Family')">
-  <div>👑 FAMILY<small>Family Ranking & Family War</small></div>
-  <b>›</b>
+
+<button class="banner family" onclick="openFeature('Family')">
+ <div>
+  👑 FAMILY
+  <small>Family Ranking • Family War</small>
  </div>
- <div class="banner cp" onclick="openFeature('CP Ranking')">
-  <div>💜 CP RANKING<small>Top Couples & CP Level</small></div>
-  <b>›</b>
+ <b>›</b>
+</button>
+
+<button class="banner cp" onclick="openFeature('CP Ranking')">
+ <div>
+  💜 CP RANKING
+  <small>Couple Level • CP EXP • CP Frame</small>
  </div>
- <div class="banner rich" onclick="openFeature('Rich King Ranking')">
-  <div>💎 RICH KING<small>Top Contributors & Gifts</small></div>
-  <b>›</b>
+ <b>›</b>
+</button>
+
+<button class="banner rich" onclick="openFeature('Rich King')">
+ <div>
+  💎 RICH KING
+  <small>Top Gift & Contributor Ranking</small>
  </div>
+ <b>›</b>
+</button>
+
 </div>
 
 <div class="search">
- <input id="roomSearch" placeholder="🔎 Search rooms..." oninput="loadRooms()">
+ <input id="searchRoom"
+        placeholder="🔎 Search rooms..."
+        oninput="loadRooms()">
  <button onclick="loadRooms()">⌕</button>
 </div>
 
-<div class="section">
- <div class="tabs">
-  <button class="tab active" id="popularTab" onclick="setRoomTab('popular')">Popular</button>
-  <button class="tab" id="newTab" onclick="setRoomTab('new')">New</button>
-  <button class="tab" id="followTab" onclick="setRoomTab('following')">Following</button>
- </div>
- <div id="roomList">Loading...</div>
+<div class="tabs">
+ <button id="popularTab" class="tab active"
+         onclick="setTab('popular')">Popular</button>
+
+ <button id="newTab" class="tab"
+         onclick="setTab('new')">New</button>
+
+ <button id="followingTab" class="tab"
+         onclick="setTab('following')">Following</button>
+
+ <button id="friendsTab" class="tab"
+         onclick="setTab('friends')">Friends</button>
 </div>
+
+<div id="roomList"></div>
 
 <div class="create">
  <h3>➕ Create Voice Room</h3>
- <input id="roomName" placeholder="Room Name">
+
+ <input id="roomName"
+        placeholder="Room Name">
+
  <select id="roomCategory">
   <option>General</option>
   <option>Music</option>
@@ -424,138 +310,323 @@ button{cursor:pointer;border:0}
   <option>Family</option>
   <option>Entertainment</option>
  </select>
+
  <button onclick="createRoom()">CREATE VOICE ROOM</button>
 </div>
 
-</div>
+</section>
+
 
 <!-- INBOX -->
-<div id="inboxPage" class="page">
- <div class="top">
-  <div class="logo">📥 Inbox</div>
- </div>
+<section id="inboxPage" class="page">
 
- <div class="list">
-  <div class="listItem" onclick="openFeature('Messages')">
-   <div class="icon">💬</div>
-   <div><b>Messages</b><small> Private chats</small></div>
-  </div>
-  <div class="listItem" onclick="openFeature('Friend Requests')">
-   <div class="icon">👥</div>
-   <div><b>Friend Requests</b><small>New friend requests</small></div>
-  </div>
-  <div class="listItem" onclick="openFeature('Gifts')">
-   <div class="icon">🎁</div>
-   <div><b>Gifts</b><small>Received gifts</small></div>
-  </div>
-  <div class="listItem" onclick="openFeature('Likes')">
-   <div class="icon">❤️</div>
-   <div><b>Likes</b><small>Profile & room likes</small></div>
-  </div>
-  <div class="listItem" onclick="openFeature('Notifications')">
-   <div class="icon">🔔</div>
-   <div><b>Notifications</b><small>System notifications</small></div>
-  </div>
+<div class="top">
+ <div class="logo">📥 Inbox</div>
+</div>
+
+<div class="list">
+
+<div class="listItem" onclick="openFeature('Messages')">
+ <div class="listIcon">💬</div>
+ <div>
+  <b>Messages</b>
+  <div class="muted">Private chats</div>
  </div>
 </div>
 
+<div class="listItem" onclick="openFeature('Friend Requests')">
+ <div class="listIcon">👥</div>
+ <div>
+  <b>Friend Requests</b>
+  <div class="muted">Friends & requests</div>
+ </div>
+</div>
+
+<div class="listItem" onclick="openFeature('Gifts')">
+ <div class="listIcon">🎁</div>
+ <div>
+  <b>Gifts</b>
+  <div class="muted">Received gifts</div>
+ </div>
+</div>
+
+<div class="listItem" onclick="openFeature('Likes')">
+ <div class="listIcon">❤️</div>
+ <div>
+  <b>Likes</b>
+  <div class="muted">Profile & room likes</div>
+ </div>
+</div>
+
+<div class="listItem" onclick="openFeature('Notifications')">
+ <div class="listIcon">🔔</div>
+ <div>
+  <b>Notifications</b>
+  <div class="muted">System notifications</div>
+ </div>
+</div>
+
+</div>
+
+</section>
+
+
 <!-- PROFILE -->
-<div id="mePage" class="page">
+<section id="profilePage" class="page">
 
 <div class="top">
  <div class="logo">👤 Profile</div>
- <button onclick="openFeature('Settings')" style="background:none;color:white;font-size:20px">⚙️</button>
+ <button style="background:transparent;font-size:20px"
+         onclick="openFeature('Settings')">⚙️</button>
 </div>
 
-<div class="profileHero">
- <div class="avatar">👤</div>
- <h2 id="profileName">PAWAN</h2>
- <p id="profileId">ID: Loading...</p>
- <p>⭐ Level 1 • 🏆 Official Member</p>
+<div class="profile">
 
- <div class="level">
-  <div style="display:flex;justify-content:space-between">
-   <b>Level 1</b><span>42 / 100 EXP</span>
-  </div>
-  <div class="progress"><i></i></div>
- </div>
+<div class="avatar">👤</div>
+
+<h2 id="profileName">PAWAN SIR</h2>
+
+<div class="muted">
+ ID: <span id="profileId">Loading...</span>
+</div>
+
+<div class="muted">
+ Founder • Owner • Manager
+</div>
+
+<div class="levelBox">
+
+<div style="display:flex;justify-content:space-between">
+ <b>⭐ Level 1</b>
+ <span>42 / 100 EXP</span>
+</div>
+
+<div class="progress">
+ <i></i>
+</div>
+
+</div>
+
 </div>
 
 <div class="stats">
- <div class="stat"><b>0</b><span>Following</span></div>
- <div class="stat"><b>0</b><span>Followers</span></div>
- <div class="stat"><b>0</b><span>Visitors</span></div>
- <div class="stat"><b>1</b><span>CP Level</span></div>
+
+<div class="stat">
+ <b>0</b>
+ <span>Following</span>
 </div>
 
-<div class="menuGrid">
-
-<button class="menu" onclick="openFeature('Bag')"><strong>🎒</strong>Bag</button>
-<button class="menu" onclick="openFeature('Dress')"><strong>👕</strong>Dress</button>
-<button class="menu" onclick="openFeature('Avatar Frame')"><strong>🖼️</strong>Frame</button>
-<button class="menu" onclick="openFeature('Entry Effect')"><strong>✨</strong>Entry</button>
-
-<button class="menu" onclick="openFeature('VIP')"><strong>👑</strong>VIP</button>
-<button class="menu" onclick="openFeature('Badge')"><strong>🏅</strong>Badge</button>
-<button class="menu" onclick="openFeature('Vehicle')"><strong>🚗</strong>Vehicle</button>
-<button class="menu" onclick="openFeature('Gifts')"><strong>🎁</strong>Gifts</button>
-
-<button class="menu" onclick="openFeature('Family')"><strong>👨‍👩‍👧</strong>Family</button>
-<button class="menu" onclick="openFeature('CP Space')"><strong>💜</strong>CP</button>
-<button class="menu" onclick="openFeature('Ranking')"><strong>🏆</strong>Ranking</button>
-<button class="menu" onclick="openFeature('Wallet')"><strong>💰</strong>Wallet</button>
-
-<button class="menu" onclick="openFeature('User Level')"><strong>⭐</strong>Level</button>
-<button class="menu" onclick="openFeature('Invite Friend')"><strong>📨</strong>Invite</button>
-<button class="menu" onclick="openFeature('Achievements')"><strong>🎖️</strong>Achievements</button>
-<button class="menu" onclick="openFeature('Settings')"><strong>⚙️</strong>Settings</button>
-
+<div class="stat">
+ <b>0</b>
+ <span>Followers</span>
 </div>
 
-<div id="ownerPanel" class="ownerPanel" style="display:none">
- <h3>👑 PAWAN SIR — OWNER / MANAGER</h3>
- <p style="color:#a8a2b8">Main ID Control Center</p>
+<div class="stat">
+ <b>0</b>
+ <span>Visitors</span>
+</div>
 
- <div class="ownerGrid">
-  <button onclick="ownerAction('User Ban / Unban')">🚫 User Ban</button>
-  <button onclick="ownerAction('Room Ban / Unban')">🏠 Room Ban</button>
-  <button onclick="ownerAction('Give Admin')">🛡️ Give Admin</button>
-  <button onclick="ownerAction('Give Super Admin')">👑 Super Admin</button>
-  <button onclick="ownerAction('Give Manager')">💼 Manager</button>
-  <button onclick="ownerAction('Coin Seller')">🪙 Coin Seller</button>
-  <button onclick="ownerAction('Official')">✔️ Official</button>
-  <button onclick="ownerAction('Verify User')">✅ Verify</button>
-  <button onclick="ownerAction('Frames')">🖼️ Frames</button>
-  <button onclick="ownerAction('Vehicles')">🚗 Vehicles</button>
-  <button onclick="ownerAction('Gifts')">🎁 Gifts</button>
-  <button onclick="ownerAction('Coins')">💰 Coins</button>
-  <button onclick="ownerAction('Room Control')">🏠 Room Control</button>
-  <button onclick="ownerAction('Reports')">🚨 Reports</button>
-  <button onclick="ownerAction('Staff')">👥 Staff</button>
-  <button onclick="ownerAction('Dashboard')">📊 Dashboard</button>
- </div>
+<div class="stat">
+ <b>1</b>
+ <span>CP Level</span>
 </div>
 
 </div>
 
-<div class="bottom">
- <button id="navHome" class="active" onclick="showPage('home')">🏠<br>Home</button>
- <button id="navInbox" onclick="showPage('inbox')">📥<br>Inbox</button>
- <button id="navMe" onclick="showPage('me')">👤<br>Me</button>
-</div>
+
+<div class="grid">
+
+<button class="item" onclick="openFeature('Bag')">
+ <strong>🎒</strong><span>Bag</span>
+</button>
+
+<button class="item" onclick="openFeature('Dress')">
+ <strong>👕</strong><span>Dress</span>
+</button>
+
+<button class="item" onclick="openFeature('Frames')">
+ <strong>🖼️</strong><span>Frames</span>
+</button>
+
+<button class="item" onclick="openFeature('Entry Effects')">
+ <strong>✨</strong><span>Entry</span>
+</button>
+
+<button class="item" onclick="openFeature('VIP')">
+ <strong>👑</strong><span>VIP</span>
+</button>
+
+<button class="item" onclick="openFeature('Badges')">
+ <strong>🏅</strong><span>Badge</span>
+</button>
+
+<button class="item" onclick="openFeature('Vehicles')">
+ <strong>🚗</strong><span>Vehicle</span>
+</button>
+
+<button class="item" onclick="openFeature('Gifts')">
+ <strong>🎁</strong><span>Gifts</span>
+</button>
+
+<button class="item" onclick="openFeature('Family')">
+ <strong>👨‍👩‍👧</strong><span>Family</span>
+</button>
+
+<button class="item" onclick="openFeature('CP Space')">
+ <strong>💜</strong><span>CP</span>
+</button>
+
+<button class="item" onclick="openFeature('Ranking')">
+ <strong>🏆</strong><span>Ranking</span>
+</button>
+
+<button class="item" onclick="openFeature('Wallet')">
+ <strong>💰</strong><span>Wallet</span>
+</button>
+
+<button class="item" onclick="openFeature('User Level')">
+ <strong>⭐</strong><span>Level</span>
+</button>
+
+<button class="item" onclick="openFeature('Invite Friend')">
+ <strong>📨</strong><span>Invite</span>
+</button>
+
+<button class="item" onclick="openFeature('Achievements')">
+ <strong>🎖️</strong><span>Achievements</span>
+</button>
+
+<button class="item" onclick="openFeature('Settings')">
+ <strong>⚙️</strong><span>Settings</span>
+</button>
 
 </div>
 
-<!-- MODAL -->
-<div id="modal" class="modal">
- <div class="sheet">
-  <button class="close" onclick="closeModal()">✕</button>
-  <h3 id="modalTitle">Feature</h3>
-  <div id="modalContent"></div>
- </div>
+
+<!-- OWNER -->
+<div id="ownerPanel" class="owner" style="display:none">
+
+<h3>👑 PAWAN SIR — OWNER / MANAGER</h3>
+
+<div class="muted">
+Special Owner ID Control Center
 </div>
+
+<div class="ownerGrid">
+
+<button onclick="ownerAction('User Ban / Unban')">
+🚫 User Ban
+</button>
+
+<button onclick="ownerAction('Room Ban / Unban')">
+🏠 Room Ban
+</button>
+
+<button onclick="ownerAction('Give Admin')">
+🛡️ Give Admin
+</button>
+
+<button onclick="ownerAction('Give Super Admin')">
+👑 Super Admin
+</button>
+
+<button onclick="ownerAction('Give Manager')">
+💼 Manager
+</button>
+
+<button onclick="ownerAction('Coin Seller')">
+🪙 Coin Seller
+</button>
+
+<button onclick="ownerAction('Official')">
+✔️ Official
+</button>
+
+<button onclick="ownerAction('Verify User')">
+✅ Verify
+</button>
+
+<button onclick="ownerAction('Frames')">
+🖼️ Frames
+</button>
+
+<button onclick="ownerAction('Vehicles')">
+🚗 Vehicles
+</button>
+
+<button onclick="ownerAction('Gifts')">
+🎁 Gifts
+</button>
+
+<button onclick="ownerAction('Coins')">
+💰 Coins
+</button>
+
+<button onclick="ownerAction('Room Control')">
+🏠 Room Control
+</button>
+
+<button onclick="ownerAction('Reports')">
+🚨 Reports
+</button>
+
+<button onclick="ownerAction('Staff')">
+👥 Staff
+</button>
+
+<button onclick="ownerAction('Dashboard')">
+📊 Dashboard
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- BOTTOM NAV -->
+<nav class="bottom">
+
+<button id="homeNav"
+        class="active"
+        onclick="showPage('homePage','homeNav')">
+ 🏠<br>Home
+</button>
+
+<button id="inboxNav"
+        onclick="showPage('inboxPage','inboxNav')">
+ 📥<br>Inbox
+</button>
+
+<button id="profileNav"
+        onclick="showPage('profilePage','profileNav')">
+ 👤<br>Me
+</button>
+
+</nav>
+
+</div>
+
+
+<!-- SHEET -->
+<div id="sheet" class="sheet">
+
+<div class="sheetBox">
+
+<button class="close" onclick="closeSheet()">✕</button>
+
+<h3 id="sheetTitle"></h3>
+
+<div id="sheetBody"></div>
+
+</div>
+
+</div>
+
 
 <script>
+
 const firebaseConfig={
  apiKey:"AIzaSyDnlTde5qG5aPHrUIV6kTYnM521GtbrrE",
  authDomain:"pawanvoice-68c5e.firebaseapp.com",
@@ -567,223 +638,675 @@ const firebaseConfig={
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const db=firebase.database();
 
 let uid="";
-let currentTab="popular";
+let roomTab="popular";
 
-const OWNER_UID="PAWAN_SIR_OWNER_UID";
+/*
+ IMPORTANT:
+ यहाँ अपना वास्तविक Owner Firebase UID डालना है।
+ अभी placeholder है।
+*/
+const OWNER_UID="PAWAN_OWNER_UID";
+
 
 firebase.auth().signInAnonymously()
+
 .then(result=>{
+
  uid=result.user.uid;
- document.getElementById("profileId").innerText="ID: "+uid.slice(0,10);
- loadProfile();
- loadRooms();
-})
-.catch(e=>{
- console.log(e);
- uid=localStorage.getItem("pawanUid")||("guest_"+Date.now());
+
  localStorage.setItem("pawanUid",uid);
- loadRooms();
+
+ startApp();
+
+})
+
+.catch(error=>{
+
+ console.log(error);
+
+ uid=localStorage.getItem("pawanUid")
+     ||"guest_"+Date.now();
+
+ localStorage.setItem("pawanUid",uid);
+
+ startApp();
+
 });
 
-function loadProfile(){
- const savedName=localStorage.getItem("pawanName")||"PAWAN";
- document.getElementById("profileName").innerText=savedName;
+
+function startApp(){
+
+ document.getElementById("profileId")
+ .textContent=uid.substring(0,12);
+
+ const savedName=
+ localStorage.getItem("pawanName")
+ ||"PAWAN SIR";
+
+ document.getElementById("profileName")
+ .textContent=savedName;
 
  if(uid===OWNER_UID){
-  document.getElementById("ownerPanel").style.display="block";
+
+  document.getElementById("ownerPanel")
+  .style.display="block";
+
  }
-}
 
-function showPage(page){
- document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
- document.getElementById(page+"Page").classList.add("active");
-
- document.querySelectorAll(".bottom button").forEach(x=>x.classList.remove("active"));
-
- if(page==="home")document.getElementById("navHome").classList.add("active");
- if(page==="inbox")document.getElementById("navInbox").classList.add("active");
- if(page==="me")document.getElementById("navMe").classList.add("active");
-}
-
-function setRoomTab(tab){
- currentTab=tab;
- document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-
- if(tab==="popular")document.getElementById("popularTab").classList.add("active");
- if(tab==="new")document.getElementById("newTab").classList.add("active");
- if(tab==="following")document.getElementById("followTab").classList.add("active");
+ loadCoins();
 
  loadRooms();
+
 }
 
-function loadRooms(){
- const list=document.getElementById("roomList");
- const search=(document.getElementById("roomSearch")?.value||"").toLowerCase();
 
- db.ref("rooms").once("value").then(snap=>{
-  let rooms=[];
-  snap.forEach(child=>{
-   const r=child.val()||{};
-   r.id=child.key;
+function loadCoins(){
 
-   if(search && !(r.name||"").toLowerCase().includes(search)) return;
+ db.ref("users/"+uid+"/coins")
+ .once("value")
 
-   rooms.push(r);
-  });
+ .then(s=>{
 
-  if(currentTab==="new"){
-   rooms.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-  }else{
-   rooms.sort((a,b)=>(b.membersCount||0)-(a.membersCount||0));
-  }
+  document.getElementById("coins")
+  .textContent=s.val()||0;
 
-  if(!rooms.length){
-   list.innerHTML='<div style="padding:30px;text-align:center;color:#8d93aa">🎙️ अभी कोई room नहीं है</div>';
-   return;
-  }
-
-  list.innerHTML=rooms.map(r=>`
-   <div class="room">
-    <div class="roomTop">
-     <div class="roomDp">🎙️</div>
-     <div class="roomInfo">
-      <b>${escapeHtml(r.name||"PawanVoice Room")}</b>
-      <small>👑 ${escapeHtml(r.ownerName||"Host")}</small>
-      <small>🎵 ${escapeHtml(r.category||"General")}</small>
-     </div>
-     <button class="join" onclick="joinRoom('${r.id}')">JOIN</button>
-    </div>
-    <div class="roomBottom">
-     <span>👥 ${r.membersCount||0}/9</span>
-     <span>🔥 ${r.exp||0} EXP</span>
-     <span>🎁 ${r.gifts||0}</span>
-    </div>
-    <div class="miniUsers">🟢 Online • 🟣 Live • ⭐ Popular</div>
-   </div>
-  `).join("");
- }).catch(e=>{
-  list.innerHTML='<div style="padding:20px;color:#ff9b9b">Firebase connection error</div>';
  });
+
 }
 
-function createRoom(){
- const name=document.getElementById("roomName").value.trim();
- const category=document.getElementById("roomCategory").value;
 
- if(!name){
-  alert("Room Name डालें");
-  return;
- }
+function showPage(pageId,navId){
 
- const id="room_"+Date.now();
+ document
+ .querySelectorAll(".page")
+ .forEach(x=>x.classList.remove("active"));
 
- db.ref("rooms/"+id).set({
-  name:name,
-  category:category,
-  ownerUid:uid,
-  ownerName:localStorage.getItem("pawanName")||"PAWAN",
-  membersCount:1,
-  exp:0,
-  gifts:0,
-  createdAt:firebase.database.ServerValue.TIMESTAMP
- }).then(()=>{
-  db.ref("rooms/"+id+"/members/"+uid).set({
-   name:localStorage.getItem("pawanName")||"PAWAN",
-   uid:uid,
-   owner:true,
-   joinedAt:firebase.database.ServerValue.TIMESTAMP
-  });
+ document
+ .getElementById(pageId)
+ .classList.add("active");
 
-  location.href="room.html?room="+encodeURIComponent(id);
- }).catch(e=>{
-  alert("Room create नहीं हुआ: "+e.message);
- });
+ document
+ .querySelectorAll(".bottom button")
+ .forEach(x=>x.classList.remove("active"));
+
+ document
+ .getElementById(navId)
+ .classList.add("active");
+
 }
 
-function joinRoom(id){
- location.href="room.html?room="+encodeURIComponent(id);
-}
 
-function openFeature(name){
- let html="";
+function setTab(tabName){
 
- const data={
-  "Family":"👨‍👩‍👧‍👦 Family system<br><br>• Family Members<br>• Family Admin<br>• Co-Captain<br>• Host<br>• Family Level<br>• Family Ranking<br>• Family War",
-  "CP Ranking":"💜 CP Ranking<br><br>Couple Level • CP EXP • CP Frame • Couple Gifts • CP Ranking",
-  "Rich King Ranking":"💎 Rich King Ranking<br><br>Daily • Weekly • Monthly • Global",
-  "Bag":"🎒 Backpack<br><br>🎁 Gifts<br>🖼️ Frames<br>👕 Dress<br>🚗 Vehicles<br>🏅 Badges<br>✨ Entry Effects",
-  "Dress":"👕 My Dress<br><br>Equipped Dress<br>Owned Dress<br>Expired Dress",
-  "Avatar Frame":"🖼️ Avatar Frames<br><br>Welcome Frame<br>Level Frame<br>CP Frame<br>BD Frame<br>Admin Frame<br>Super Admin Frame<br>VIP Frame<br>Official Frame<br>Owner Frame",
-  "Entry Effect":"✨ Entry Effects<br><br>Welcome Entry<br>VIP Entry<br>Official Entry<br>Owner Special Entry",
-  "VIP":"👑 VIP Center<br><br>VIP Level<br>VIP Privileges<br>VIP Frame<br>VIP Vehicle<br>VIP Gifts",
-  "Badge":"🏅 Badges<br><br>Official<br>Founder<br>Host<br>Admin<br>Super Admin<br>Creator<br>Manager",
-  "Vehicle":"🚗 Vehicles<br><br>Bike<br>Car<br>Luxury Car<br>Sports Car<br>Helicopter<br>Jet<br>Rocket<br>Dragon<br>VIP Vehicle<br>Owner Special Vehicle",
-  "Gifts":"🎁 Gift Center<br><br>Normal Gifts<br>VIP Gifts<br>Family Gifts<br>CP Gifts<br>Event Gifts",
-  "CP Space":"💜 CP Space<br><br>CP Level 1 → 100<br>CP EXP<br>CP Frame<br>CP Entry<br>Couple Gifts",
-  "Ranking":"🏆 Ranking<br><br>Gift Ranking<br>Host Ranking<br>Popularity<br>Room Ranking<br>CP Ranking<br>Rich King<br>Family Ranking",
-  "Wallet":"💰 Wallet<br><br>Recharge Coins<br>Gift Coins<br>Diamonds<br>CP Points<br>Charm Points<br>Ranking Points<br>Family Points<br>Host Points<br>Event Points",
-  "User Level":"⭐ User Level<br><br>EXP Progress<br>Level Rewards<br>Level Frame<br>Level Vehicle",
-  "Invite Friend":"📨 Invite Friends<br><br>Invite Code<br>Referral Reward<br>Friend List",
-  "Achievements":"🎖️ Achievements<br><br>Voice Hours<br>Room Visits<br>Gifts Sent<br>Gifts Received<br>Host Achievements",
-  "Settings":"⚙️ Settings<br><br>Account<br>Privacy<br>Notifications<br>Language<br>Security",
-  "Messages":"💬 Messages<br><br>Your private conversations will appear here.",
-  "Friend Requests":"👥 Friend Requests<br><br>Incoming and outgoing requests.",
-  "Likes":"❤️ Likes<br><br>Profile and room likes.",
-  "Notifications":"🔔 Notifications<br><br>System and social notifications."
+ roomTab=tabName;
+
+ document
+ .querySelectorAll(".tab")
+ .forEach(x=>x.classList.remove("active"));
+
+ const map={
+  popular:"popularTab",
+  new:"newTab",
+  following:"followingTab",
+  friends:"friendsTab"
  };
 
- html=data[name]||("📌 "+name+"<br><br>Feature screen");
+ document
+ .getElementById(map[tabName])
+ .classList.add("active");
 
- document.getElementById("modalTitle").innerText=name;
- document.getElementById("modalContent").innerHTML=html+
- '<button class="action" onclick="closeModal()">DONE</button>';
- document.getElementById("modal").classList.add("show");
+ loadRooms();
+
 }
+
+
+function loadRooms(){
+
+ const list=
+ document.getElementById("roomList");
+
+ const search=
+ (document.getElementById("searchRoom").value||"")
+ .trim()
+ .toLowerCase();
+
+ db.ref("rooms")
+
+ .once("value")
+
+ .then(snapshot=>{
+
+  let rooms=[];
+
+  snapshot.forEach(child=>{
+
+   const r=child.val()||{};
+
+   r.id=child.key;
+
+   if(search){
+
+    const text=
+    (r.name||"")+" "+
+    (r.ownerName||"")+" "+
+    (r.category||"");
+
+    if(!text.toLowerCase().includes(search))
+    return;
+
+   }
+
+   rooms.push(r);
+
+  });
+
+
+  if(roomTab==="new"){
+
+   rooms.sort(
+    (a,b)=>
+    (b.createdAt||0)-
+    (a.createdAt||0)
+   );
+
+  }else{
+
+   rooms.sort(
+    (a,b)=>
+    (b.membersCount||0)-
+    (a.membersCount||0)
+   );
+
+  }
+
+
+  if(!rooms.length){
+
+   list.innerHTML=`
+   <div style="text-align:center;padding:30px;color:#8e95ac">
+    🎙️ अभी कोई live room नहीं है
+   </div>`;
+
+   return;
+
+  }
+
+
+  list.innerHTML=
+  rooms.map(room=>`
+
+   <div class="room">
+
+    <div class="roomHead">
+
+     <div class="roomDp">
+      🎙️
+     </div>
+
+     <div class="roomInfo">
+
+      <b>
+       ${safe(room.name||"PawanVoice Room")}
+      </b>
+
+      <small>
+       👑 ${safe(room.ownerName||"Host")}
+      </small>
+
+      <small>
+       🎵 ${safe(room.category||"General")}
+      </small>
+
+     </div>
+
+     <button
+      class="join"
+      onclick="joinRoom('${safeAttr(room.id)}')">
+      JOIN
+     </button>
+
+    </div>
+
+
+    <div class="roomMeta">
+
+     <span>
+      👥 ${room.membersCount||0}/9
+     </span>
+
+     <span>
+      🚀 ${room.exp||0} EXP
+     </span>
+
+     <span>
+      🎁 ${room.gifts||0}
+     </span>
+
+    </div>
+
+   </div>
+
+  `).join("");
+
+ })
+
+ .catch(error=>{
+
+  console.log(error);
+
+  list.innerHTML=`
+  <div style="padding:20px;color:#ff9b9b">
+   Firebase database connect नहीं हुआ।
+  </div>`;
+
+ });
+
+}
+
+
+function createRoom(){
+
+ const name=
+ document.getElementById("roomName")
+ .value.trim();
+
+ const category=
+ document.getElementById("roomCategory")
+ .value;
+
+ if(!name){
+
+  alert("Room Name डालें");
+
+  return;
+
+ }
+
+
+ const roomId=
+ "room_"+Date.now();
+
+ const ownerName=
+ localStorage.getItem("pawanName")
+ ||"PAWAN SIR";
+
+
+ const roomData={
+
+  name:name,
+
+  category:category,
+
+  ownerUid:uid,
+
+  ownerName:ownerName,
+
+  membersCount:1,
+
+  exp:0,
+
+  gifts:0,
+
+  createdAt:
+  firebase.database.ServerValue.TIMESTAMP
+
+ };
+
+
+ db.ref("rooms/"+roomId)
+
+ .set(roomData)
+
+ .then(()=>{
+
+  return db
+  .ref("rooms/"+roomId+"/members/"+uid)
+  .set({
+
+   uid:uid,
+
+   name:ownerName,
+
+   owner:true,
+
+   role:"owner",
+
+   mic:true,
+
+   joinedAt:
+   firebase.database.ServerValue.TIMESTAMP
+
+  });
+
+ })
+
+ .then(()=>{
+
+  location.href=
+  "room.html?room="+
+  encodeURIComponent(roomId);
+
+ })
+
+ .catch(error=>{
+
+  alert(
+   "Room create नहीं हुआ: "+
+   error.message
+  );
+
+ });
+
+}
+
+
+function joinRoom(roomId){
+
+ location.href=
+ "room.html?room="+
+ encodeURIComponent(roomId);
+
+}
+
 
 function ownerAction(action){
+
  if(uid!==OWNER_UID){
-  alert("यह option सिर्फ Owner ID के लिए है");
+
+  alert(
+   "यह option सिर्फ Owner ID के लिए है।"
+  );
+
   return;
+
  }
 
- let html=`
-  <p>👑 <b>PAWAN SIR OWNER CONTROL</b></p>
-  <p>Selected: ${action}</p>
-  <input class="formInput" id="ownerTarget" placeholder="User ID / Room ID">
-  <button class="action" onclick="executeOwner('${action}')">CONTINUE</button>
+
+ const body=`
+
+ <p>
+  👑 PAWAN SIR Owner Control
+ </p>
+
+ <p>
+  <b>${safe(action)}</b>
+ </p>
+
+ <input
+  id="ownerTarget"
+  class="input"
+  placeholder="User ID / Room ID">
+
+ <button
+  class="action"
+  onclick="executeOwnerAction('${safeAttr(action)}')">
+  CONTINUE
+ </button>
+
  `;
 
- document.getElementById("modalTitle").innerText=action;
- document.getElementById("modalContent").innerHTML=html;
- document.getElementById("modal").classList.add("show");
+
+ openSheet(
+  "👑 "+action,
+  body
+ );
+
 }
 
-function executeOwner(action){
- const target=document.getElementById("ownerTarget").value.trim();
+
+function executeOwnerAction(action){
+
+ const target=
+ document.getElementById("ownerTarget")
+ .value.trim();
 
  if(!target){
+
   alert("ID डालें");
+
   return;
+
  }
 
- alert(action+" request: "+target+"\n\nBackend authorization जोड़ने के बाद यह action सुरक्षित रूप से execute होगा.");
+
+ /*
+  यहाँ UI तैयार है।
+  Actual privileged action को Firebase
+  backend/Security Rules से authorize करना होगा।
+ */
+
+ alert(
+  action+
+  " → "+
+  target+
+  "\n\nOwner authorization required."
+ );
+
 }
 
-function closeModal(){
- document.getElementById("modal").classList.remove("show");
+
+function openFeature(name){
+
+ const features={
+
+ Family:`
+  <h3>👑 Family</h3>
+  <p>Family members और Family ranking.</p>
+  <button class="action">➕ Create Family</button>
+  <button class="action">👥 Members</button>
+  <button class="action">🏆 Family Ranking</button>
+  <button class="action">⚔️ Family War</button>
+ `,
+
+ "CP Ranking":`
+  <h3>💜 CP Ranking</h3>
+  <p>Couple Level • CP EXP • CP Frame • CP Badge</p>
+  <button class="action">🏆 CP Ranking</button>
+ `,
+
+ "Rich King":`
+  <h3>💎 Rich King</h3>
+  <p>Gift और contribution ranking.</p>
+  <button class="action">🏆 Daily</button>
+  <button class="action">🏆 Weekly</button>
+  <button class="action">🏆 Monthly</button>
+ `,
+
+ Frames:`
+  <h3>🖼️ Frames</h3>
+  <p>अलग-अलग role और level के frames.</p>
+  <button class="action">🎁 Welcome Frame</button>
+  <button class="action">⭐ Level Frame</button>
+  <button class="action">💜 CP Frame</button>
+  <button class="action">💎 BD Frame</button>
+  <button class="action">🛡️ Admin Frame</button>
+  <button class="action">👑 Super Admin Frame</button>
+  <button class="action">💎 VIP Frame</button>
+  <button class="action">✔️ Official Frame</button>
+  <button class="action">💼 Manager Frame</button>
+  <button class="action">👑 Owner Special Frame</button>
+ `,
+
+ Vehicles:`
+  <h3>🚗 Vehicles</h3>
+  <button class="action">🏍️ Bike</button>
+  <button class="action">🚗 Car</button>
+  <button class="action">🏎️ Sports Car</button>
+  <button class="action">🚁 Helicopter</button>
+  <button class="action">✈️ Jet</button>
+  <button class="action">🚀 Rocket</button>
+  <button class="action">🐉 Dragon</button>
+  <button class="action">👑 VIP Vehicle</button>
+  <button class="action">👑 Owner Special Vehicle</button>
+ `,
+
+ Wallet:`
+  <h3>💰 Wallet</h3>
+  <p>अलग-अलग currency अलग balance रखेगी.</p>
+  <button class="action">🪙 Recharge Coins</button>
+  <button class="action">🎁 Gift Coins</button>
+  <button class="action">💎 Diamonds</button>
+  <button class="action">💜 CP Points</button>
+  <button class="action">✨ Charm Points</button>
+  <button class="action">🏆 Ranking Points</button>
+  <button class="action">👑 Family Points</button>
+  <button class="action">🎤 Host Points</button>
+  <button class="action">🎯 Event Points</button>
+ `,
+
+ "CP Space":`
+  <h3>💜 CP Space</h3>
+  <p>CP Level 1 → 100</p>
+  <p>CP EXP • CP Frame • CP Entry • Couple Gifts</p>
+ `,
+
+ Ranking:`
+  <h3>🏆 Ranking</h3>
+  <button class="action">🎁 Gift Ranking</button>
+  <button class="action">🎤 Host Ranking</button>
+  <button class="action">🔥 Popularity</button>
+  <button class="action">🏠 Room Ranking</button>
+  <button class="action">💜 CP Ranking</button>
+  <button class="action">💎 Rich King</button>
+  <button class="action">👑 Family Ranking</button>
+ `,
+
+ VIP:`
+  <h3>👑 VIP</h3>
+  <p>VIP Level • VIP Frame • VIP Vehicle • VIP Gifts • VIP Entry</p>
+ `,
+
+ Gifts:`
+  <h3>🎁 Gifts</h3>
+  <button class="action">🌹 Normal Gifts</button>
+  <button class="action">👑 VIP Gifts</button>
+  <button class="action">👨‍👩‍👧 Family Gifts</button>
+  <button class="action">💜 CP Gifts</button>
+  <button class="action">🎯 Event Gifts</button>
+ `,
+
+ Bag:`
+  <h3>🎒 Bag</h3>
+  <p>आपके खरीदे/equipped items यहाँ रहेंगे.</p>
+ `,
+
+ Dress:`
+  <h3>👕 Dress</h3>
+  <p>Owned • Equipped • Expiring Dress</p>
+ `,
+
+ "Entry Effects":`
+  <h3>✨ Entry Effects</h3>
+  <p>Welcome • VIP • Official • Owner Special</p>
+ `,
+
+ Badges:`
+  <h3>🏅 Badges</h3>
+  <p>Official • Founder • Host • Admin • Super Admin • Creator • Manager</p>
+ `,
+
+ "User Level":`
+  <h3>⭐ User Level</h3>
+  <p>EXP • Level Rewards • Level Frame • Level Vehicle</p>
+ `,
+
+ "Invite Friend":`
+  <h3>📨 Invite Friend</h3>
+  <p>Invite Code • Referral Reward • Friends</p>
+ `,
+
+ Achievements:`
+  <h3>🎖️ Achievements</h3>
+  <p>Voice Hours • Rooms • Gifts • Host Goals</p>
+ `,
+
+ Messages:`
+  <h3>💬 Messages</h3>
+  <p>Private conversations यहाँ दिखाई देंगी.</p>
+ `,
+
+ "Friend Requests":`
+  <h3>👥 Friend Requests</h3>
+  <p>Incoming और outgoing requests.</p>
+ `,
+
+ Likes:`
+  <h3>❤️ Likes</h3>
+  <p>Profile और room likes.</p>
+ `,
+
+ Notifications:`
+  <h3>🔔 Notifications</h3>
+  <p>System और social notifications.</p>
+ `,
+
+ Settings:`
+  <h3>⚙️ Settings</h3>
+  <button class="action">👤 Account</button>
+  <button class="action">🔒 Privacy</button>
+  <button class="action">🔔 Notifications</button>
+  <button class="action">🌐 Language</button>
+  <button class="action">🛡️ Security</button>
+ `
+
+ };
+
+ openSheet(
+  name,
+  features[name]||
+  "<p>Feature screen</p>"
+ );
+
 }
 
-function escapeHtml(text){
- return String(text)
-  .replace(/&/g,"&amp;")
-  .replace(/</g,"&lt;")
-  .replace(/>/g,"&gt;")
-  .replace(/"/g,"&quot;")
-  .replace(/'/g,"&#039;");
+
+function openSheet(title,body){
+
+ document.getElementById("sheetTitle")
+ .innerHTML=title;
+
+ document.getElementById("sheetBody")
+ .innerHTML=body;
+
+ document.getElementById("sheet")
+ .classList.add("show");
+
 }
+
+
+function closeSheet(){
+
+ document.getElementById("sheet")
+ .classList.remove("show");
+
+}
+
+
+function safe(value){
+
+ return String(value)
+ .replace(/&/g,"&amp;")
+ .replace(/</g,"&lt;")
+ .replace(/>/g,"&gt;")
+ .replace(/"/g,"&quot;")
+ .replace(/'/g,"&#039;");
+
+}
+
+
+function safeAttr(value){
+
+ return String(value)
+ .replace(/\\/g,"\\\\")
+ .replace(/'/g,"\\'");
+
+}
+
 </script>
+
 </body>
-</html>
+  </html>
