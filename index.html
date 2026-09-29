@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>PawanVoice</title>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -12,120 +12,313 @@
 <style>
 *{box-sizing:border-box}
 body{
- margin:0;background:#101016;color:#fff;font-family:Arial,sans-serif;
+ margin:0;
+ background:#09090f;
+ color:#fff;
+ font-family:Arial,sans-serif;
  padding-bottom:75px
 }
 button,input,select{font:inherit}
-button{cursor:pointer;border:0}
+button{border:0;cursor:pointer}
 .top{
- position:sticky;top:0;z-index:20;
- background:#171720;padding:13px 15px;
- display:flex;justify-content:space-between;align-items:center;
+ padding:12px;
+ background:#11111a;
+ position:sticky;
+ top:0;
+ z-index:20;
  border-bottom:1px solid #292936
 }
-.logo{font-size:21px;font-weight:bold}
+.toprow{
+ display:flex;
+ align-items:center;
+ gap:10px
+}
+.logo{
+ font-size:21px;
+ font-weight:bold;
+ flex:1
+}
+.icon{
+ width:40px;
+ height:40px;
+ border-radius:50%;
+ background:#242430;
+ color:#fff
+}
 .coins{
- background:#29202e;padding:8px 12px;border-radius:20px;
- color:#ffd45c
+ background:#282016;
+ border:1px solid #684718;
+ color:#ffd76a;
+ padding:9px 12px;
+ border-radius:20px;
+ font-size:13px
 }
-.page{display:none;padding:14px}
-.page.active{display:block}
-.banner{
- background:linear-gradient(135deg,#442080,#17172b);
- border-radius:15px;padding:15px;margin-bottom:12px
-}
-.banner h3{margin:0 0 5px}
-.grid{
- display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
- margin-bottom:14px
-}
-.quick{
- background:#1c1c27;border:1px solid #2c2c39;
- border-radius:12px;padding:12px 4px;text-align:center;color:#fff
-}
-.card{
- background:#191922;border:1px solid #292936;
- border-radius:15px;padding:14px;margin-bottom:12px
-}
-.card h3{margin:0 0 12px}
 .search{
- width:100%;background:#22222d;border:1px solid #343442;
- color:white;padding:12px;border-radius:10px;margin-bottom:12px
+ margin-top:10px;
+ display:flex;
+ background:#20202b;
+ border-radius:12px;
+ padding:11px
 }
-.tabs{display:flex;gap:8px;overflow:auto;margin-bottom:12px}
+.search input{
+ width:100%;
+ background:none;
+ border:0;
+ outline:0;
+ color:#fff
+}
+.page{padding:10px}
+.sectionTitle{
+ font-size:18px;
+ font-weight:bold;
+ margin:15px 2px 9px
+}
+
+/* banners */
+.bannerWrap{
+ display:flex;
+ gap:9px;
+ overflow-x:auto;
+ padding:3px 1px 5px
+}
+.banner{
+ min-width:250px;
+ padding:15px;
+ border-radius:16px;
+ background:linear-gradient(135deg,#5b21b6,#24143e);
+ border:1px solid #7042b7
+}
+.banner:nth-child(2){background:linear-gradient(135deg,#164e63,#102a38)}
+.banner:nth-child(3){background:linear-gradient(135deg,#7c2d12,#35140b)}
+.banner:nth-child(4){background:linear-gradient(135deg,#9f1239,#3b0719)}
+.banner b{font-size:17px}
+.banner small{display:block;color:#ddd;margin:6px 0 12px}
+.banner button{
+ background:#fff;
+ color:#111;
+ padding:8px 13px;
+ border-radius:9px
+}
+
+/* categories */
+.categories{
+ display:grid;
+ grid-template-columns:repeat(5,1fr);
+ gap:7px
+}
+.cat{
+ background:#191922;
+ border:1px solid #292936;
+ border-radius:12px;
+ padding:10px 3px;
+ color:#fff;
+ text-align:center;
+ font-size:11px
+}
+.cat span{font-size:21px;display:block;margin-bottom:4px}
+
+/* tabs */
+.tabs{
+ display:flex;
+ gap:7px;
+ overflow-x:auto;
+ margin:10px 0
+}
 .tab{
- background:#24242f;color:#bbb;padding:9px 15px;border-radius:20px;
+ background:#20202a;
+ color:#bbb;
+ padding:9px 14px;
+ border-radius:20px;
  white-space:nowrap
 }
-.tab.active{background:#7c3aed;color:white}
+.tab.active{
+ background:#7c3aed;
+ color:#fff
+}
+
+/* rooms */
 .room{
- background:#1b1b25;border:1px solid #2c2c39;
- border-radius:13px;padding:13px;margin-bottom:9px;
- display:flex;justify-content:space-between;align-items:center
+ background:#16161f;
+ border:1px solid #292936;
+ border-radius:15px;
+ padding:11px;
+ margin-bottom:9px;
+ display:flex;
+ gap:10px;
+ align-items:center
 }
-.room small{color:#aaa}
-.btn{
- background:#7c3aed;color:#fff;padding:10px 14px;border-radius:9px
+.roomAvatar{
+ width:57px;
+ height:57px;
+ border-radius:14px;
+ background:#292938;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:26px;
+ flex-shrink:0
 }
-.btn.green{background:#16a34a}
-.btn.red{background:#dc2626}
-.btn.gold{background:#c88a13}
-.btn.gray{background:#343440}
-.full{width:100%}
-.stat{
- display:grid;grid-template-columns:repeat(3,1fr);gap:8px
+.roomInfo{flex:1;min-width:0}
+.roomInfo b{
+ display:block;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis
 }
-.stat div{
- background:#22222d;padding:12px;text-align:center;border-radius:10px
+.roomInfo small{
+ color:#aaa;
+ display:block;
+ margin-top:5px
 }
+.join{
+ background:#7c3aed;
+ color:#fff;
+ padding:9px 13px;
+ border-radius:10px
+}
+.empty{
+ text-align:center;
+ color:#888;
+ padding:30px
+}
+
+/* cards */
+.card{
+ background:#16161f;
+ border:1px solid #292936;
+ border-radius:15px;
+ padding:13px;
+ margin-bottom:10px
+}
+.profileRow{
+ display:flex;
+ gap:12px;
+ align-items:center
+}
+.avatar{
+ width:58px;
+ height:58px;
+ border-radius:50%;
+ background:#30303c;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:26px
+}
+.profileInfo{flex:1}
+.profileInfo b{font-size:17px}
+.profileInfo small{display:block;color:#999;margin-top:4px}
+.primary{
+ width:100%;
+ padding:12px;
+ background:#7c3aed;
+ color:#fff;
+ border-radius:10px;
+ margin-top:8px
+}
+.green{background:#16a34a}
+.gold{background:#b7791f}
 .option{
- width:100%;background:#1e1e29;color:white;
- padding:14px;text-align:left;border-bottom:1px solid #30303c
+ width:100%;
+ text-align:left;
+ padding:13px;
+ margin-top:7px;
+ background:#22222d;
+ color:#fff;
+ border-radius:10px
 }
-.option:first-child{border-radius:10px 10px 0 0}
-.option:last-child{border-radius:0 0 10px 10px}
+
+/* bottom */
+.bottom{
+ position:fixed;
+ left:0;
+ right:0;
+ bottom:0;
+ z-index:50;
+ background:#11111a;
+ border-top:1px solid #292936;
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ padding:7px
+}
+.bottom button{
+ background:transparent;
+ color:#aaa;
+ padding:7px;
+ font-size:11px
+}
+.bottom button.active{color:#fff}
+.bottom span{display:block;font-size:21px}
+
 .modal{
- position:fixed;inset:0;background:rgba(0,0,0,.7);
- display:none;align-items:flex-end;z-index:100
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.75);
+ display:none;
+ align-items:flex-end;
+ z-index:100
 }
 .modal.show{display:flex}
 .sheet{
- width:100%;max-height:85%;overflow:auto;
- background:#171720;border-radius:20px 20px 0 0;padding:18px
+ width:100%;
+ max-height:88%;
+ overflow:auto;
+ background:#171720;
+ border-radius:20px 20px 0 0;
+ padding:17px
 }
 .close{
- float:right;background:#30303a;color:white;
- border-radius:50%;width:35px;height:35px
+ float:right;
+ background:#30303a;
+ color:#fff;
+ width:36px;
+ height:36px;
+ border-radius:50%
 }
-.progress{
- height:10px;background:#30303b;border-radius:10px;overflow:hidden
-}
-.progress i{
- display:block;height:100%;background:#8b5cf6;width:0
-}
-.bottom{
- position:fixed;bottom:0;left:0;right:0;height:68px;
- background:#171720;border-top:1px solid #2b2b36;
- display:grid;grid-template-columns:repeat(3,1fr);z-index:50
-}
-.bottom button{
- background:none;color:#aaa
-}
-.bottom button.active{color:#a78bfa}
-.avatar{
- width:55px;height:55px;border-radius:50%;
- background:linear-gradient(135deg,#7c3aed,#ec4899);
- display:flex;align-items:center;justify-content:center;
- font-size:25px
-}
-.profile{
- display:flex;gap:12px;align-items:center;margin-bottom:15px
-}
-.list{margin-top:10px}
-.empty{color:#999;text-align:center;padding:20px}
 .notice{
- background:#27202e;border:1px solid #4b2d63;
- padding:10px;border-radius:10px;color:#ddd;margin-bottom:10px
+ background:#242430;
+ border-radius:11px;
+ padding:12px;
+ color:#ddd;
+ margin:10px 0
+}
+input.form,select.form{
+ width:100%;
+ background:#22222d;
+ color:#fff;
+ border:1px solid #353541;
+ border-radius:10px;
+ padding:12px;
+ margin:6px 0
+}
+.statgrid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:7px;
+ margin-top:10px
+}
+.stat{
+ background:#22222d;
+ border-radius:10px;
+ text-align:center;
+ padding:10px 3px;
+ font-size:12px
+}
+.stat b{display:block;font-size:17px}
+.rank{
+ display:flex;
+ gap:10px;
+ align-items:center;
+ background:#22222d;
+ border-radius:10px;
+ padding:11px;
+ margin:6px 0
+}
+.rankNum{width:30px;font-weight:bold}
+@media(max-width:380px){
+ .categories{grid-template-columns:repeat(5,1fr)}
+ .cat{font-size:10px}
+ .cat span{font-size:18px}
 }
 </style>
 </head>
@@ -133,168 +326,168 @@ button{cursor:pointer;border:0}
 <body>
 
 <div class="top">
- <div class="logo">🎙️ PawanVoice</div>
- <div class="coins">🪙 <span id="coinTop">0</span></div>
+ <div class="toprow">
+  <div class="logo">🎙️ PawanVoice</div>
+  <button class="icon" onclick="openNotifications()">🔔</button>
+  <div class="coins">🪙 <span id="coinBalance">0</span></div>
+ </div>
+
+ <div class="search">
+  🔎
+  <input id="searchInput"
+   placeholder="Search room, user or room ID..."
+   oninput="searchRooms()">
+ </div>
 </div>
 
-<!-- HOME -->
-<section id="homePage" class="page active">
+<main id="homePage" class="page">
 
- <div class="banner" onclick="openFeature('family')">
-  <h3>👨‍👩‍👧 Family</h3>
-  <small>Family members, level & rewards</small>
- </div>
+ <div class="sectionTitle">🎉 Special Events</div>
 
- <div class="banner" onclick="openFeature('cp')">
-  <h3>💕 CP Ranking</h3>
-  <small>Couple level, EXP & ranking</small>
- </div>
+ <div class="bannerWrap">
 
- <div class="banner" onclick="openFeature('rich')">
-  <h3>👑 Rich King Ranking</h3>
-  <small>Top contributors & gifts</small>
- </div>
-
- <input id="roomSearch" class="search"
-   placeholder="🔎 Search room..."
-   oninput="searchRooms()">
-
- <div class="grid">
-  <button class="quick" onclick="loadRooms('popular')">🔥<br>Popular</button>
-  <button class="quick" onclick="loadRooms('new')">🆕<br>New</button>
-  <button class="quick" onclick="loadRooms('singing')">🎤<br>Singing</button>
-  <button class="quick" onclick="loadRooms('games')">🎮<br>Games</button>
-  <button class="quick" onclick="loadRooms('music')">🎵<br>Music</button>
-  <button class="quick" onclick="loadRooms('talent')">🌟<br>Talent</button>
-  <button class="quick" onclick="openFeature('events')">🎉<br>Events</button>
-  <button class="quick" onclick="openFeature('ranking')">🏆<br>Ranking</button>
- </div>
-
- <div class="card">
-  <h3>🎁 Daily Reward</h3>
-  <div id="dailyText">Check today's reward</div>
-  <br>
-  <button class="btn gold" onclick="claimDaily()">Claim Reward</button>
- </div>
-
- <div class="card">
-  <h3>🎯 Missions</h3>
-  <div id="missionText">Speak in a room to earn EXP.</div>
-  <br>
-  <button class="btn" onclick="openFeature('missions')">Open Missions</button>
- </div>
-
- <div class="card">
-  <h3>🎙️ Live Voice Rooms</h3>
-  <div class="tabs">
-   <button class="tab active" onclick="loadRooms('popular')">Popular</button>
-   <button class="tab" onclick="loadRooms('new')">New</button>
-   <button class="tab" onclick="loadRooms('friends')">Friends</button>
+  <div class="banner">
+   <b>🎁 Daily Reward</b>
+   <small>आज का reward claim करें</small>
+   <button onclick="dailyReward()">CLAIM</button>
   </div>
-  <div id="roomList"><div class="empty">Loading...</div></div>
+
+  <div class="banner">
+   <b>👨‍👩‍👧 Family Ranking</b>
+   <small>Top families देखें</small>
+   <button onclick="familyPage()">OPEN</button>
+  </div>
+
+  <div class="banner">
+   <b>💕 CP Ranking</b>
+   <small>Top CP couples</small>
+   <button onclick="cpPage()">OPEN</button>
+  </div>
+
+  <div class="banner">
+   <b>👑 Rich King</b>
+   <small>Today's top users</small>
+   <button onclick="richKing()">OPEN</button>
+  </div>
+
  </div>
 
+ <div class="sectionTitle">⚡ Quick Access</div>
+
+ <div class="categories">
+  <button class="cat" onclick="setTab('popular')"><span>🔥</span>Popular</button>
+  <button class="cat" onclick="setTab('new')"><span>🆕</span>New</button>
+  <button class="cat" onclick="setTab('friends')"><span>👥</span>Friends</button>
+  <button class="cat" onclick="eventPage()"><span>🎉</span>Events</button>
+  <button class="cat" onclick="rankingPage()"><span>🏆</span>Ranking</button>
+  <button class="cat" onclick="setCategory('Singing')"><span>🎤</span>Singing</button>
+  <button class="cat" onclick="setCategory('Chat')"><span>💬</span>Chat</button>
+  <button class="cat" onclick="setCategory('CP')"><span>💕</span>CP</button>
+  <button class="cat" onclick="setCategory('Family')"><span>👨‍👩‍👧</span>Family</button>
+  <button class="cat" onclick="gamePage()"><span>🎮</span>Games</button>
+ </div>
+
+ <div class="sectionTitle">🎙️ Live Voice Rooms</div>
+
+ <div class="tabs">
+  <button id="tabPopular" class="tab active" onclick="setTab('popular')">🔥 Popular</button>
+  <button id="tabNew" class="tab" onclick="setTab('new')">🆕 New</button>
+  <button id="tabFriends" class="tab" onclick="setTab('friends')">👥 Friends</button>
+ </div>
+
+ <div id="rooms">
+  <div class="empty">Loading rooms...</div>
+ </div>
+
+ <div class="sectionTitle">➕ Create Voice Room</div>
+
  <div class="card">
-  <h3>➕ Create Voice Room</h3>
-  <input id="createRoomName" class="search" placeholder="Room Name">
-  <select id="createCategory" class="search">
+  <input id="roomNameInput" class="form" maxlength="60"
+   placeholder="Room Name">
+
+  <select id="roomCategoryInput" class="form">
    <option>General</option>
+   <option>Chat</option>
    <option>Singing</option>
-   <option>Music</option>
+   <option>CP</option>
+   <option>Family</option>
    <option>Games</option>
-   <option>Talent</option>
-   <option>Emotion</option>
   </select>
-  <button class="btn green full" onclick="createRoom()">Create Voice Room</button>
+
+  <button class="primary green" onclick="createRoom()">
+   🎙️ Create Voice Room
+  </button>
  </div>
 
-</section>
+</main>
 
-<!-- INBOX -->
-<section id="inboxPage" class="page">
+<section id="inboxPage" class="page" style="display:none">
+ <div class="sectionTitle">📥 Inbox</div>
+
  <div class="card">
-  <h2>📥 Inbox</h2>
-  <button class="option" onclick="showMessage('Friend Requests','Friend request system ready.')">👥 Friend Requests</button>
-  <button class="option" onclick="showMessage('Gifts','Your received gifts will appear here.')">🎁 Gifts</button>
-  <button class="option" onclick="showMessage('Family','Family invitations will appear here.')">👨‍👩‍👧 Family Invites</button>
-  <button class="option" onclick="showMessage('CP','CP requests will appear here.')">💕 CP Requests</button>
-  <button class="option" onclick="showMessage('Notifications','System notifications will appear here.')">🔔 Notifications</button>
+  <button class="option" onclick="showMessage('🎁 Gift notifications')">🎁 Gift Notifications</button>
+  <button class="option" onclick="showMessage('💕 CP requests')">💕 CP Requests</button>
+  <button class="option" onclick="showMessage('👨‍👩‍👧 Family invitations')">👨‍👩‍👧 Family Invitations</button>
+  <button class="option" onclick="showMessage('🏆 Ranking rewards')">🏆 Ranking Rewards</button>
+  <button class="option" onclick="showMessage('🎉 Event notifications')">🎉 Event Notifications</button>
+  <button class="option" onclick="showMessage('🔔 System notifications')">🔔 System Notifications</button>
  </div>
 </section>
 
-<!-- PROFILE -->
-<section id="mePage" class="page">
+<section id="mePage" class="page" style="display:none">
+
+ <div class="sectionTitle">👤 My Profile</div>
 
  <div class="card">
-  <div class="profile">
-   <div class="avatar" id="profileAvatar">👤</div>
-   <div>
-    <h2 id="profileName">Guest</h2>
-    <small>ID: <span id="profileId">---</span></small><br>
-    <small id="profileGender">Male</small>
+  <div class="profileRow">
+   <div class="avatar">👤</div>
+   <div class="profileInfo">
+    <b id="profileName">Guest</b>
+    <small>ID: <span id="profileId">---</span></small>
+    <small>⭐ Level <span id="profileLevel">1</span> · EXP <span id="profileExp">0</span></small>
    </div>
   </div>
 
-  <input id="userName" class="search" placeholder="Your Name">
-
-  <select id="gender" class="search">
-   <option>Male</option>
-   <option>Female</option>
-   <option>Other</option>
-  </select>
-
-  <button class="btn green full" onclick="saveProfile()">Save Profile</button>
- </div>
-
- <div class="card">
-  <h3>⭐ Level & EXP</h3>
-  <div>Level <b id="levelValue">1</b></div>
-  <br>
-  <div class="progress"><i id="expBar"></i></div>
-  <small id="expText">0 / 100 EXP</small>
- </div>
-
- <div class="card">
-  <div class="stat">
-   <div>Following<br><b id="following">0</b></div>
-   <div>Followers<br><b id="followers">0</b></div>
-   <div>Visitors<br><b id="visitors">0</b></div>
+  <div class="statgrid">
+   <div class="stat"><b id="following">0</b>Following</div>
+   <div class="stat"><b id="followers">0</b>Followers</div>
+   <div class="stat"><b id="visitors">0</b>Visitors</div>
   </div>
  </div>
 
  <div class="card">
-  <h3>👤 Profile Features</h3>
 
-  <button class="option" onclick="openFeature('family')">👨‍👩‍👧 Family</button>
-  <button class="option" onclick="openFeature('cp')">💕 CP Space</button>
-  <button class="option" onclick="openFeature('ranking')">🏆 Ranking</button>
-  <button class="option" onclick="openFeature('gifts')">🎁 Gifts</button>
-  <button class="option" onclick="openFeature('bag')">🎒 Bag</button>
-  <button class="option" onclick="openFeature('dress')">👗 Dress</button>
-  <button class="option" onclick="openFeature('frames')">🖼️ Avatar Frame</button>
-  <button class="option" onclick="openFeature('entry')">✨ Entry Effect</button>
-  <button class="option" onclick="openFeature('mic')">🎤 Mic Decoration</button>
-  <button class="option" onclick="openFeature('vip')">👑 VIP</button>
-  <button class="option" onclick="openFeature('badges')">🏅 Badge</button>
-  <button class="option" onclick="openFeature('vehicles')">🚗 Vehicle</button>
-  <button class="option" onclick="openFeature('wallet')">💰 Wallet</button>
-  <button class="option" onclick="openFeature('missions')">🎯 Missions</button>
-  <button class="option" onclick="openFeature('daily')">🎁 Daily Reward</button>
-  <button class="option" onclick="openFeature('invite')">👥 Invite Friend</button>
-  <button class="option" onclick="openFeature('settings')">⚙️ Settings</button>
-  <button class="option" onclick="openFeature('safety')">🛡️ Safety Center</button>
-  <button class="option" onclick="openFeature('support')">🆘 Customer Service</button>
+  <button class="option" onclick="editProfile()">👤 Edit Profile</button>
+  <button class="option" onclick="familyPage()">👨‍👩‍👧 Family</button>
+  <button class="option" onclick="cpPage()">💕 CP Space</button>
+  <button class="option" onclick="rankingPage()">🏆 Ranking</button>
+  <button class="option" onclick="walletPage()">🪙 Wallet</button>
+  <button class="option" onclick="bagPage()">🎒 Bag</button>
+  <button class="option" onclick="dressPage()">👗 My Dress</button>
+  <button class="option" onclick="framePage()">🎨 Avatar Frame</button>
+  <button class="option" onclick="vehiclePage()">🚗 Vehicle</button>
+  <button class="option" onclick="vipPage()">👑 VIP</button>
+  <button class="option" onclick="badgePage()">🏅 Badge</button>
+  <button class="option" onclick="eventPage()">🎉 Events</button>
+  <button class="option" onclick="dailyReward()">🎁 Daily Reward</button>
+  <button class="option" onclick="settingsPage()">⚙️ Settings</button>
+
  </div>
 
 </section>
 
 <div class="bottom">
- <button id="navHome" class="active" onclick="showPage('homePage',this)">🏠<br>Home</button>
- <button id="navInbox" onclick="showPage('inboxPage',this)">📥<br>Inbox</button>
- <button id="navMe" onclick="showPage('mePage',this)">👤<br>Me</button>
+ <button id="navHome" class="active" onclick="nav('home')">
+  <span>🏠</span>Home
+ </button>
+ <button id="navInbox" onclick="nav('inbox')">
+  <span>📥</span>Inbox
+ </button>
+ <button id="navMe" onclick="nav('me')">
+  <span>👤</span>Me
+ </button>
 </div>
 
-<!-- FEATURE MODAL -->
 <div id="modal" class="modal" onclick="closeModal(event)">
  <div class="sheet" onclick="event.stopPropagation()">
   <button class="close" onclick="hideModal()">×</button>
@@ -303,6 +496,7 @@ button{cursor:pointer;border:0}
 </div>
 
 <script>
+
 const firebaseConfig={
  apiKey:"AIzaSyDnlTde5qG5aPHrUIV6kTYnM521GtbrrE",
  authDomain:"pawanvoice-68c5e.firebaseapp.com",
@@ -319,487 +513,544 @@ const auth=firebase.auth();
 const db=firebase.database();
 
 let uid=null;
-let userData={
- name:"Guest",
- gender:"Male",
- coins:0,
- level:1,
- exp:0,
- following:0,
- followers:0,
- visitors:0,
- dailyDay:0,
- dailyClaimed:"",
- gifts:[],
- frames:[],
- entry:"",
- mic:"",
- vip:false
-};
-
-function esc(v){
- return String(v||"")
- .replace(/&/g,"&amp;")
- .replace(/</g,"&lt;")
- .replace(/>/g,"&gt;")
- .replace(/"/g,"&quot;");
-}
+let userData={name:"Guest"};
+let allRooms=[];
+let currentTab="popular";
+let currentCategory="";
 
 auth.onAuthStateChanged(async user=>{
+
  if(!user){
   await auth.signInAnonymously();
   return;
  }
 
  uid=user.uid;
- await loadUser();
- await loadRooms("popular");
+
+ let snap=await db.ref("users/"+uid).once("value");
+
+ if(!snap.exists()){
+  userData={
+   name:"Guest",
+   coins:0,
+   level:1,
+   exp:0,
+   following:0,
+   followers:0,
+   visitors:0
+  };
+
+  await db.ref("users/"+uid).set(userData);
+
+ }else{
+  userData=snap.val()||{name:"Guest"};
+ }
+
+ updateProfile();
+
+ loadRooms();
+
 });
 
-async function loadUser(){
- const snap=await db.ref("users/"+uid).once("value");
- const d=snap.val()||{};
+function updateProfile(){
 
- userData={...userData,...d};
-
- document.getElementById("userName").value=userData.name||"";
- document.getElementById("gender").value=userData.gender||"Male";
-
- updateUI();
-}
-
-function updateUI(){
- document.getElementById("coinTop").textContent=userData.coins||0;
  document.getElementById("profileName").textContent=userData.name||"Guest";
- document.getElementById("profileId").textContent=uid?uid.slice(0,12):"---";
- document.getElementById("profileGender").textContent=userData.gender||"Male";
-
- document.getElementById("levelValue").textContent=userData.level||1;
-
- const exp=Number(userData.exp)||0;
- const level=Number(userData.level)||1;
- const need=level*100;
-
- document.getElementById("expText").textContent=
-   exp+" / "+need+" EXP";
-
- document.getElementById("expBar").style.width=
-   Math.min(100,(exp/need)*100)+"%";
+ document.getElementById("profileId").textContent=uid||"---";
+ document.getElementById("profileLevel").textContent=userData.level||1;
+ document.getElementById("profileExp").textContent=userData.exp||0;
 
  document.getElementById("following").textContent=userData.following||0;
  document.getElementById("followers").textContent=userData.followers||0;
  document.getElementById("visitors").textContent=userData.visitors||0;
+
+ document.getElementById("coinBalance").textContent=userData.coins||0;
 }
 
-async function saveUser(){
- await db.ref("users/"+uid).update(userData);
- updateUI();
+function loadRooms(){
+
+ db.ref("rooms").on("value",snap=>{
+
+  allRooms=[];
+
+  snap.forEach(child=>{
+   allRooms.push({
+    id:child.key,
+    ...(child.val()||{})
+   });
+  });
+
+  renderRooms();
+ });
 }
 
-async function saveProfile(){
- const name=document.getElementById("userName").value.trim();
- const gender=document.getElementById("gender").value;
+function renderRooms(){
 
- if(!name){
-  alert("Name डालें");
+ let list=[...allRooms];
+
+ if(currentCategory){
+  list=list.filter(r=>
+   String(r.category||"").toLowerCase()===
+   currentCategory.toLowerCase()
+  );
+ }
+
+ if(currentTab==="new"){
+  list.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+ }else{
+  list.sort((a,b)=>
+   (Number(b.popularity)||0)-
+   (Number(a.popularity)||0)
+  );
+ }
+
+ const search=document.getElementById("searchInput").value.trim().toLowerCase();
+
+ if(search){
+  list=list.filter(r=>
+   String(r.name||"").toLowerCase().includes(search) ||
+   String(r.id||"").toLowerCase().includes(search)
+  );
+ }
+
+ const box=document.getElementById("rooms");
+
+ if(!list.length){
+  box.innerHTML='<div class="empty">🎙️ अभी कोई room नहीं मिला</div>';
   return;
  }
 
- userData.name=name;
- userData.gender=gender;
+ box.innerHTML=list.map(r=>`
 
- await saveUser();
+  <div class="room">
 
- alert("Profile saved");
-}
+   <div class="roomAvatar">🎙️</div>
 
-function showPage(id,button){
- document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
- document.getElementById(id).classList.add("active");
+   <div class="roomInfo">
+    <b>${safe(r.name||"PawanVoice Room")}</b>
+    <small>👑 ${safe(r.hostName||"Guest")}</small>
+    <small>${safe(r.category||"General")} · 👥 ${r.memberCount||0}/9 · ⭐ ${r.level||1}</small>
+   </div>
 
- document.querySelectorAll(".bottom button").forEach(x=>x.classList.remove("active"));
- button.classList.add("active");
+   <button class="join" onclick="joinRoom('${r.id}')">
+    JOIN
+   </button>
+
+  </div>
+
+ `).join("");
 }
 
 async function createRoom(){
- const name=document.getElementById("createRoomName").value.trim();
- const category=document.getElementById("createCategory").value;
+
+ const name=document.getElementById("roomNameInput").value.trim();
+ const category=document.getElementById("roomCategoryInput").value;
 
  if(!name){
   alert("Room name डालें");
   return;
  }
 
- const roomId="r_"+Date.now()+"_"+Math.random().toString(36).slice(2,7);
+ const key=db.ref("rooms").push().key;
 
- await db.ref("rooms/"+roomId).set({
+ await db.ref("rooms/"+key).set({
   name:name,
   category:category,
   hostUid:uid,
   hostName:userData.name||"Guest",
-  createdAt:firebase.database.ServerValue.TIMESTAMP,
-  memberCount:1,
+  memberCount:0,
+  popularity:0,
   level:1,
-  exp:0
+  exp:0,
+  createdAt:firebase.database.ServerValue.TIMESTAMP
  });
 
- await db.ref("rooms/"+roomId+"/members/"+uid).set({
-  uid:uid,
-  name:userData.name||"Guest",
-  role:"member",
-  joinedAt:firebase.database.ServerValue.TIMESTAMP
- });
+ document.getElementById("roomNameInput").value="";
 
- location.href="room.html?room="+encodeURIComponent(roomId);
+ location.href="room.html?room="+encodeURIComponent(key);
 }
 
-let allRooms=[];
-
-function loadRooms(category){
- const ref=db.ref("rooms");
-
- ref.once("value").then(snap=>{
-  allRooms=[];
-
-  snap.forEach(child=>{
-   const r=child.val()||{};
-   r.id=child.key;
-
-   if(category==="popular" ||
-      category==="new" ||
-      category==="friends" ||
-      !category ||
-      String(r.category||"").toLowerCase()===category.toLowerCase()){
-    allRooms.push(r);
-   }
-  });
-
-  if(category==="new"){
-   allRooms.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-  }else{
-   allRooms.sort((a,b)=>(b.memberCount||0)-(a.memberCount||0));
-  }
-
-  renderRooms(allRooms);
- });
-}
-
-function renderRooms(list){
- const box=document.getElementById("roomList");
-
- if(!list.length){
-  box.innerHTML='<div class="empty">No rooms found</div>';
-  return;
- }
-
- box.innerHTML=list.slice(0,30).map(r=>`
-  <div class="room">
-   <div>
-    <b>🎙️ ${esc(r.name)}</b><br>
-    <small>${esc(r.category||"General")} · 👥 ${r.memberCount||0}</small><br>
-    <small>Host: ${esc(r.hostName||"Guest")}</small>
-   </div>
-   <button class="btn" onclick="joinRoom('${r.id}')">Join</button>
-  </div>
- `).join("");
-}
-
-function searchRooms(){
- const q=document.getElementById("roomSearch").value.trim().toLowerCase();
-
- if(!q){
-  renderRooms(allRooms);
-  return;
- }
-
- renderRooms(allRooms.filter(r=>
-  String(r.name||"").toLowerCase().includes(q) ||
-  String(r.category||"").toLowerCase().includes(q)
- ));
-}
-
-async function joinRoom(id){
- const roomSnap=await db.ref("rooms/"+id).once("value");
-
- if(!roomSnap.exists()){
-  alert("Room बंद हो चुका है");
-  return;
- }
-
- await db.ref("rooms/"+id+"/members/"+uid).set({
-  uid:uid,
-  name:userData.name||"Guest",
-  role:"member",
-  joinedAt:firebase.database.ServerValue.TIMESTAMP
- });
-
+function joinRoom(id){
  location.href="room.html?room="+encodeURIComponent(id);
 }
 
-/* ---------- EXP ---------- */
+function setTab(tab){
 
-async function addExp(amount){
- let exp=Number(userData.exp)||0;
- let level=Number(userData.level)||1;
+ currentTab=tab;
+ currentCategory="";
 
- exp+=Number(amount)||0;
+ document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
 
- while(exp>=level*100){
-  exp-=level*100;
-  level++;
- }
+ if(tab==="popular")
+  document.getElementById("tabPopular").classList.add("active");
 
- userData.exp=exp;
- userData.level=level;
+ if(tab==="new")
+  document.getElementById("tabNew").classList.add("active");
 
- await saveUser();
+ if(tab==="friends")
+  document.getElementById("tabFriends").classList.add("active");
+
+ renderRooms();
 }
 
-/* ---------- DAILY REWARD ---------- */
+function setCategory(category){
 
-async function claimDaily(){
+ currentCategory=category;
+ currentTab="popular";
+
+ document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+
+ renderRooms();
+}
+
+function searchRooms(){
+ renderRooms();
+}
+
+function nav(page){
+
+ document.getElementById("homePage").style.display=page==="home"?"block":"none";
+ document.getElementById("inboxPage").style.display=page==="inbox"?"block":"none";
+ document.getElementById("mePage").style.display=page==="me"?"block":"none";
+
+ document.querySelectorAll(".bottom button").forEach(x=>x.classList.remove("active"));
+
+ if(page==="home")document.getElementById("navHome").classList.add("active");
+ if(page==="inbox")document.getElementById("navInbox").classList.add("active");
+ if(page==="me")document.getElementById("navMe").classList.add("active");
+
+ window.scrollTo(0,0);
+}
+
+async function dailyReward(){
+
  const today=new Date().toISOString().slice(0,10);
+ const last=userData.lastRewardDate||"";
 
- if(userData.dailyClaimed===today){
-  alert("आज का reward पहले ही claim हो चुका है");
+ if(last===today){
+  showModal(`
+   <h2>🎁 Daily Reward</h2>
+   <div class="notice">आज का reward पहले ही claim हो चुका है।</div>
+  `);
   return;
  }
 
- let day=Number(userData.dailyDay)||0;
- day++;
+ const reward=500;
 
- if(day>7)day=1;
+ await db.ref("users/"+uid).update({
+  lastRewardDate:today
+ });
 
- const rewards={
-  1:1000,
-  2:2000,
-  3:3000,
-  4:5000,
-  5:7000,
-  6:10000,
-  7:20000
- };
+ userData.lastRewardDate=today;
 
- const reward=rewards[day];
-
- userData.coins=(Number(userData.coins)||0)+reward;
- userData.dailyDay=day;
- userData.dailyClaimed=today;
-
- await saveUser();
-
- document.getElementById("dailyText").textContent=
-   "Day "+day+" reward claimed: "+reward+" coins";
-
- alert("🎁 +"+reward+" coins");
+ showModal(`
+  <h2>🎁 Daily Reward</h2>
+  <div class="notice">
+   🎉 आज का reward तैयार है!
+   <br><br>
+   🪙 ${reward} Coins
+  </div>
+  <button class="primary" onclick="claimReward(${reward})">
+   CLAIM REWARD
+  </button>
+ `);
 }
 
-/* ---------- FEATURES ---------- */
+async function claimReward(amount){
 
-function openFeature(type){
+ const newCoins=(Number(userData.coins)||0)+Number(amount);
 
- const titles={
-  family:"👨‍👩‍👧 Family",
-  cp:"💕 CP Space",
-  ranking:"🏆 Ranking",
-  rich:"👑 Rich King",
-  gifts:"🎁 Gifts",
-  bag:"🎒 Bag",
-  dress:"👗 Dress",
-  frames:"🖼️ Avatar Frame",
-  entry:"✨ Entry Effect",
-  mic:"🎤 Mic Decoration",
-  vip:"👑 VIP",
-  badges:"🏅 Badge",
-  vehicles:"🚗 Vehicle",
-  wallet:"💰 Wallet",
-  missions:"🎯 Missions",
-  daily:"🎁 Daily Reward",
-  invite:"👥 Invite Friend",
-  settings:"⚙️ Settings",
-  safety:"🛡️ Safety Center",
-  support:"🆘 Customer Service",
-  events:"🎉 Events"
- };
+ await db.ref("users/"+uid+"/coins").set(newCoins);
 
- let html="<h2>"+(titles[type]||"PawanVoice")+"</h2>";
+ userData.coins=newCoins;
 
- if(type==="family"){
-  html+=`
-   <div class="notice">Family system</div>
-   <button class="btn full" onclick="familyCreate()">➕ Create Family</button><br><br>
-   <button class="option" onclick="showMessage('Family Members','Members list will be stored in Firebase.')">👥 Members</button>
-   <button class="option" onclick="showMessage('Family Ranking','Family EXP ranking.')">🏆 Family Ranking</button>
-   <button class="option" onclick="showMessage('Family Tasks','Complete tasks to earn Family EXP.')">🎯 Family Tasks</button>
-  `;
+ updateProfile();
+
+ hideModal();
+
+ alert("🎁 Reward Claimed!\n\n🪙 +"+amount+" Coins");
+}
+
+function editProfile(){
+
+ showModal(`
+  <h2>👤 Edit Profile</h2>
+
+  <input id="editName" class="form"
+   maxlength="40"
+   value="${safe(userData.name||"Guest")}"
+   placeholder="Your Name">
+
+  <button class="primary" onclick="saveProfile()">
+   SAVE PROFILE
+  </button>
+ `);
+}
+
+async function saveProfile(){
+
+ const name=document.getElementById("editName").value.trim();
+
+ if(!name){
+  alert("Name डालें");
+  return;
  }
 
- else if(type==="cp"){
-  html+=`
-   <div class="notice">CP Level 1 → 100</div>
-   <button class="btn full" onclick="showMessage('CP Request','CP request system opened.')">💕 Send CP Request</button><br><br>
-   <button class="option" onclick="showMessage('CP EXP','CP EXP and level progress.')">⭐ CP EXP</button>
-   <button class="option" onclick="showMessage('CP Ranking','Top couples.')">🏆 CP Ranking</button>
-   <button class="option" onclick="showMessage('CP Gifts','Couple gifts.')">🎁 CP Gifts</button>
-  `;
- }
+ await db.ref("users/"+uid).update({
+  name:name
+ });
 
- else if(type==="ranking" || type==="rich"){
-  html+=`
-   <button class="option" onclick="showMessage('Gift Ranking','Gift ranking opened.')">🎁 Gift Ranking</button>
-   <button class="option" onclick="showMessage('Host Ranking','Host ranking opened.')">🎙️ Host Ranking</button>
-   <button class="option" onclick="showMessage('Room Ranking','Room ranking opened.')">🏠 Room Ranking</button>
-   <button class="option" onclick="showMessage('Rich King','Top contributors ranking.')">👑 Rich King</button>
-   <button class="option" onclick="showMessage('CP Ranking','Top CP ranking.')">💕 CP Ranking</button>
-   <button class="option" onclick="showMessage('Family Ranking','Top families.')">👨‍👩‍👧 Family Ranking</button>
-  `;
- }
+ userData.name=name;
 
- else if(type==="wallet"){
-  html+=`
-   <div class="notice">🪙 Current Coins: <b>${userData.coins||0}</b></div>
-   <button class="btn gold full" onclick="rechargeDemo()">💳 Recharge</button><br><br>
-   <button class="option" onclick="showMessage('History','Transaction history will appear here.')">📜 Transaction History</button>
-   <button class="option" onclick="showMessage('Gift Income','Gift income history.')">🎁 Gift Income</button>
-  `;
- }
+ updateProfile();
+ hideModal();
+}
 
- else if(type==="vip"){
-  html+=`
-   <div class="notice">👑 VIP Status: ${userData.vip?"ACTIVE":"LOCKED"}</div>
-   <button class="btn full" onclick="unlockVip()">👑 Unlock VIP</button>
-   <br><br>
-   <button class="option" onclick="showMessage('VIP Badge','VIP badge equipped.')">🏅 VIP Badge</button>
-   <button class="option" onclick="showMessage('VIP Entry','VIP entry effect.')">✨ VIP Entry</button>
-   <button class="option" onclick="showMessage('VIP Mic','VIP mic decoration.')">🎤 VIP Mic</button>
-  `;
- }
+function familyPage(){
 
- else if(type==="frames"){
-  html+=`
-   <button class="option" onclick="equipItem('frame','Purple Frame')">🟣 Purple Frame — Free</button>
-   <button class="option" onclick="equipItem('frame','Royal Frame')">👑 Royal Frame — 5000</button>
-   <button class="option" onclick="equipItem('frame','VIP Frame')">💎 VIP Frame</button>
-  `;
- }
+ showModal(`
+  <h2>👨‍👩‍👧 Family</h2>
 
- else if(type==="entry"){
-  html+=`
-   <button class="option" onclick="equipItem('entry','Lightning Entry')">⚡ Lightning Entry</button>
-   <button class="option" onclick="equipItem('entry','Royal Entry')">👑 Royal Entry</button>
-   <button class="option" onclick="equipItem('entry','Rocket Entry')">🚀 Rocket Entry</button>
-  `;
- }
+  <div class="notice">
+   Family में friends को add करें और Family Ranking में ऊपर जाएँ।
+  </div>
 
- else if(type==="mic"){
-  html+=`
-   <button class="option" onclick="equipItem('mic','Gold Mic')">🎤 Gold Mic</button>
-   <button class="option" onclick="equipItem('mic','VIP Mic')">👑 VIP Mic</button>
-   <button class="option" onclick="equipItem('mic','Rocket Mic')">🚀 Rocket Mic</button>
-  `;
- }
+  <button class="option" onclick="showMessage('👥 Family Members')">👥 Members</button>
+  <button class="option" onclick="showMessage('🏆 Family Ranking')">🏆 Family Ranking</button>
+  <button class="option" onclick="showMessage('🎯 Family Tasks')">🎯 Family Tasks</button>
+  <button class="option" onclick="showMessage('🎁 Family Rewards')">🎁 Family Rewards</button>
 
- else if(type==="gifts"){
-  html+=`
-   <button class="option" onclick="sendDemoGift('Rose',100)">🌹 Rose — 100</button>
-   <button class="option" onclick="sendDemoGift('Heart',500)">❤️ Heart — 500</button>
-   <button class="option" onclick="sendDemoGift('Rocket',5000)">🚀 Rocket — 5000</button>
-  `;
- }
+  <button class="primary" onclick="showMessage('Create Family')">
+   ➕ Create Family
+  </button>
+ `);
+}
 
- else if(type==="missions"){
-  html+=`
-   <div class="notice">Complete missions to earn EXP.</div>
-   <button class="option" onclick="completeMission(10)">🎙️ Speak in room +10 EXP</button>
-   <button class="option" onclick="completeMission(20)">🎁 Send gift +20 EXP</button>
-   <button class="option" onclick="completeMission(50)">🚀 Rocket event +50 EXP</button>
-  `;
- }
+function cpPage(){
 
- else if(type==="daily"){
-  html+=`
-   <div class="notice">7-day consecutive reward</div>
-   <button class="btn gold full" onclick="claimDaily()">🎁 Claim Today's Reward</button>
-  `;
- }
+ showModal(`
+  <h2>💕 CP Space</h2>
 
- else if(type==="invite"){
-  html+=`
-   <div class="notice">Invite friends and earn rewards.</div>
-   <button class="btn full" onclick="inviteFriend()">📩 Invite</button>
-  `;
- }
+  <div class="notice">
+   CP Level 1 → 100
+   <br>
+   CP EXP और Couple rewards
+  </div>
 
- else if(type==="events"){
-  html+=`
-   <button class="option" onclick="rocketEvent()">🚀 Rocket Event</button>
-   <button class="option" onclick="showMessage('Birthday','Birthday event.')">🎂 Birthday Party</button>
-   <button class="option" onclick="showMessage('Talent','Talent event.')">🌟 Talent Event</button>
-   <button class="option" onclick="showMessage('Games','Mini-games.')">🎮 Mini Games</button>
-  `;
- }
+  <button class="option" onclick="showMessage('💕 CP Request')">💕 CP Request</button>
+  <button class="option" onclick="showMessage('⭐ CP EXP')">⭐ CP EXP</button>
+  <button class="option" onclick="showMessage('🏆 CP Ranking')">🏆 CP Ranking</button>
+  <button class="option" onclick="showMessage('🎁 Couple Gifts')">🎁 Couple Gifts</button>
+ `);
+}
 
- else if(type==="safety"){
-  html+=`
-   <button class="option" onclick="showMessage('Block','Block management opened.')">🚫 Block Users</button>
-   <button class="option" onclick="showMessage('Report','Report system opened.')">⚠️ Report User/Room</button>
-   <button class="option" onclick="showMessage('Rules','Community rules.')">📜 Community Rules</button>
-  `;
- }
+function richKing(){
 
- else if(type==="settings"){
-  html+=`
-   <button class="option" onclick="toggleSetting('notifications')">🔔 Notifications</button>
-   <button class="option" onclick="toggleSetting('sound')">🔊 Sound</button>
-   <button class="option" onclick="toggleSetting('privacy')">🔐 Privacy</button>
-   <button class="option" onclick="showMessage('Account','Account management.')">👤 Account</button>
-  `;
- }
+ showModal(`
+  <h2>👑 Rich King</h2>
 
- else if(type==="bag"){
-  html+=`
-   <button class="option" onclick="openFeature('frames')">🖼️ Frames</button>
-   <button class="option" onclick="openFeature('entry')">✨ Entry Effects</button>
-   <button class="option" onclick="openFeature('mic')">🎤 Mic Decorations</button>
-   <button class="option" onclick="openFeature('vehicles')">🚗 Vehicles</button>
-  `;
- }
+  <div class="rank"><div class="rankNum">🥇</div> Rich King #1</div>
+  <div class="rank"><div class="rankNum">🥈</div> Rich King #2</div>
+  <div class="rank"><div class="rankNum">🥉</div> Rich King #3</div>
 
- else if(type==="vehicles"){
-  html+=`
-   <button class="option" onclick="showMessage('Bike','Bike vehicle selected.')">🏍️ Bike</button>
-   <button class="option" onclick="showMessage('Car','Car vehicle selected.')">🚗 Car</button>
-   <button class="option" onclick="showMessage('Helicopter','Helicopter selected.')">🚁 Helicopter</button>
-   <button class="option" onclick="showMessage('Rocket','Rocket vehicle selected.')">🚀 Rocket</button>
-  `;
- }
+  <div class="notice">
+   Ranking backend में gifts/verified transactions से calculate किया जाएगा।
+  </div>
+ `);
+}
 
- else if(type==="dress"){
-  html+=`
-   <button class="option" onclick="showMessage('Dress','Dress inventory opened.')">👕 Clothes</button>
-   <button class="option" onclick="showMessage('Special','Special dress items.')">✨ Special</button>
-  `;
- }
+function rankingPage(){
 
- else if(type==="badges"){
-  html+=`
-   <button class="option" onclick="showMessage('Level Badge','Level badge.')">⭐ Level Badge</button>
-   <button class="option" onclick="showMessage('VIP Badge','VIP badge.')">👑 VIP Badge</button>
-   <button class="option" onclick="showMessage('Mission Badge','Mission badge.')">🏅 Mission Badge</button>
-  `;
- }
+ showModal(`
+  <h2>🏆 Ranking</h2>
 
- else if(type==="support"){
-  html+=`
-   <button class="option" onclick="showMessage('Customer Service','Customer service request opened.')">🆘 Customer Service</button>
-   <button class="option" onclick="showMessage('Feedback','Feedback form opened.')">💬 Help & Feedback</button>
-  `;
- }
+  <button class="option" onclick="showMessage('🎁 Gift Ranking')">🎁 Gift Ranking</button>
+  <button class="option" onclick="showMessage('🎤 Host Ranking')">🎤 Host Ranking</button>
+  <button class="option" onclick="showMessage('🔥 Popularity Ranking')">🔥 Popularity</button>
+  <button class="option" onclick="showMessage('👑 Rich King')">👑 Rich King</button>
+  <button class="option" onclick="showMessage('👨‍👩‍👧 Family Ranking')">👨‍👩‍👧 Family</button>
+  <button class="option" onclick="showMessage('💕 CP Ranking')">💕 CP Ranking</button>
+ `);
+}
 
- else{
-  html+=`<div class="notice">Feature opened successfully.</div>`;
- }
+function eventPage(){
 
+ showModal(`
+  <h2>🎉 Events</h2>
+
+  <div class="card">
+   <b>🚀 Rocket Festival</b>
+   <p>Room activity + rewards</p>
+   <button class="primary" onclick="showMessage('Rocket Event Joined')">JOIN EVENT</button>
+  </div>
+
+  <div class="card">
+   <b>💕 CP Love Event</b>
+   <p>Couple missions + rewards</p>
+   <button class="primary" onclick="showMessage('CP Event Joined')">JOIN EVENT</button>
+  </div>
+
+  <div class="card">
+   <b>🎤 Singing Challenge</b>
+   <p>Host ranking challenge</p>
+   <button class="primary" onclick="showMessage('Singing Event Joined')">JOIN EVENT</button>
+  </div>
+
+  <div class="card">
+   <b>🎁 New Gift Event</b>
+   <p>Limited-time gifts</p>
+   <button class="primary" onclick="showMessage('Gift Event Opened')">OPEN</button>
+  </div>
+ `);
+}
+
+function gamePage(){
+
+ showModal(`
+  <h2>🎮 Games</h2>
+  <button class="option" onclick="dice()">🎲 Dice</button>
+  <button class="option" onclick="numberGame()">🔢 Lucky Number</button>
+  <button class="option" onclick="showMessage('More games will be added')">🎮 More Games</button>
+ `);
+}
+
+function dice(){
+
+ const n=Math.floor(Math.random()*6)+1;
+
+ showModal(`
+  <h2>🎲 Dice</h2>
+  <div class="notice" style="font-size:40px;text-align:center">
+   ${n}
+  </div>
+  <button class="primary" onclick="dice()">ROLL AGAIN</button>
+ `);
+}
+
+function numberGame(){
+
+ const n=Math.floor(Math.random()*10)+1;
+
+ showModal(`
+  <h2>🔢 Lucky Number</h2>
+  <div class="notice" style="font-size:35px;text-align:center">
+   ${n}
+  </div>
+  <button class="primary" onclick="numberGame()">TRY AGAIN</button>
+ `);
+}
+
+function walletPage(){
+
+ showModal(`
+  <h2>🪙 Wallet</h2>
+  <div class="notice">
+   Balance: 🪙 ${userData.coins||0}
+  </div>
+
+  <button class="option" onclick="showMessage('Recharge')">💳 Recharge</button>
+  <button class="option" onclick="showMessage('Transaction History')">📜 Transaction History</button>
+  <button class="option" onclick="showMessage('Gift Income')">🎁 Gift Income</button>
+  <button class="option" onclick="showMessage('Reward History')">🎁 Reward History</button>
+ `);
+}
+
+function bagPage(){
+
+ showModal(`
+  <h2>🎒 Bag</h2>
+  <button class="option" onclick="showMessage('🎁 Gifts')">🎁 Gifts</button>
+  <button class="option" onclick="framePage()">🎨 Frames</button>
+  <button class="option" onclick="vehiclePage()">🚗 Vehicles</button>
+  <button class="option" onclick="badgePage()">🏅 Badges</button>
+ `);
+}
+
+function dressPage(){
+ showModal(`
+  <h2>👗 My Dress</h2>
+  <div class="notice">Avatar customization</div>
+  <button class="option" onclick="showMessage('Dress Collection')">👗 Dress Collection</button>
+  <button class="option" onclick="showMessage('Avatar')">👤 Avatar</button>
+ `);
+}
+
+function framePage(){
+ showModal(`
+  <h2>🎨 Avatar Frame</h2>
+  <button class="option" onclick="showMessage('Welcome Frame')">🌟 Welcome Frame</button>
+  <button class="option" onclick="showMessage('VIP Frame')">👑 VIP Frame</button>
+  <button class="option" onclick="showMessage('Level Frame')">⭐ Level Frame</button>
+  <button class="option" onclick="showMessage('CP Frame')">💕 CP Frame</button>
+  <button class="option" onclick="showMessage('Family Frame')">👨‍👩‍👧 Family Frame</button>
+ `);
+}
+
+function vehiclePage(){
+ showModal(`
+  <h2>🚗 Vehicle</h2>
+  <button class="option" onclick="showMessage('🏍️ Bike')">🏍️ Bike</button>
+  <button class="option" onclick="showMessage('🚗 Luxury Car')">🚗 Luxury Car</button>
+  <button class="option" onclick="showMessage('🚁 Helicopter')">🚁 Helicopter</button>
+  <button class="option" onclick="showMessage('🚀 Rocket')">🚀 Rocket</button>
+ `);
+}
+
+function vipPage(){
+ showModal(`
+  <h2>👑 VIP</h2>
+  <div class="notice">
+   VIP Badge · Entry Effect · Mic Decoration · Special Gifts
+  </div>
+  <button class="primary" onclick="showMessage('VIP page opened')">VIEW VIP</button>
+ `);
+}
+
+function badgePage(){
+ showModal(`
+  <h2>🏅 Badges</h2>
+  <button class="option" onclick="showMessage('New User Badge')">🌟 New User</button>
+  <button class="option" onclick="showMessage('Host Badge')">🎤 Host</button>
+  <button class="option" onclick="showMessage('Gift King Badge')">🎁 Gift King</button>
+  <button class="option" onclick="showMessage('Event Winner Badge')">🏆 Event Winner</button>
+ `);
+}
+
+function settingsPage(){
+ showModal(`
+  <h2>⚙️ Settings</h2>
+  <button class="option" onclick="showMessage('Privacy Settings')">🔒 Privacy</button>
+  <button class="option" onclick="showMessage('Notification Settings')">🔔 Notifications</button>
+  <button class="option" onclick="showMessage('Language Settings')">🌐 Language</button>
+  <button class="option" onclick="showMessage('Help & Feedback')">💬 Help & Feedback</button>
+  <button class="option" onclick="showMessage('Account Settings')">👤 Account</button>
+ `);
+}
+
+function openNotifications(){
+ showModal(`
+  <h2>🔔 Notifications</h2>
+  <button class="option">🎁 Gift notifications</button>
+  <button class="option">💕 CP requests</button>
+  <button class="option">🎉 New events</button>
+  <button class="option">🏆 Ranking updates</button>
+ `);
+}
+
+function showMessage(msg){
+ hideModal();
+ alert(msg);
+}
+
+function safe(v){
+ return String(v||"")
+ .replace(/&/g,"&amp;")
+ .replace(/</g,"&lt;")
+ .replace(/>/g,"&gt;")
+ .replace(/"/g,"&quot;")
+ .replace(/'/g,"&#039;");
+}
+
+function showModal(html){
  document.getElementById("modalContent").innerHTML=html;
  document.getElementById("modal").classList.add("show");
 }
@@ -812,94 +1063,6 @@ function closeModal(e){
  if(e.target.id==="modal")hideModal();
 }
 
-function showMessage(title,msg){
- alert(title+"\\n\\n"+msg);
-}
-
-async function completeMission(exp){
- await addExp(exp);
- alert("🎯 Mission complete! +"+exp+" EXP");
-}
-
-async function equipItem(type,name){
- userData[type]=name;
- await saveUser();
- alert(name+" equipped");
-}
-
-async function unlockVip(){
- userData.vip=true;
- await saveUser();
- alert("👑 VIP unlocked");
- openFeature("vip");
-}
-
-async function sendDemoGift(name,cost){
- cost=Number(cost);
-
- if((userData.coins||0)<cost){
-  alert("Coins कम हैं");
-  return;
- }
-
- userData.coins-=cost;
- await addExp(20);
-
- userData.gifts=userData.gifts||[];
- userData.gifts.push({
-  name:name,
-  cost:cost,
-  createdAt:Date.now()
- });
-
- await saveUser();
-
- alert("🎁 "+name+" sent");
-}
-
-async function rechargeDemo(){
- userData.coins=(Number(userData.coins)||0)+10000;
- await saveUser();
- alert("🪙 Demo recharge: +10000 coins");
-}
-
-async function rocketEvent(){
- userData.coins=(Number(userData.coins)||0)+5000;
- await addExp(50);
-
- alert("🚀 ROCKET EVENT!\\n+5000 coins\\n+50 EXP");
-
- hideModal();
-}
-
-function familyCreate(){
- const name=prompt("Family name:");
- if(!name)return;
-
- db.ref("families").push({
-  name:name,
-  ownerUid:uid,
-  ownerName:userData.name||"Guest",
-  level:1,
-  exp:0,
-  createdAt:firebase.database.ServerValue.TIMESTAMP
- }).then(()=>{
-  alert("👨‍👩‍👧 Family created");
- });
-}
-
-function inviteFriend(){
- alert("📩 Invite link:\\n"+location.origin+location.pathname+"?invite="+uid);
-}
-
-function toggleSetting(key){
- const value=localStorage.getItem("pv_"+key)!=="1";
- localStorage.setItem("pv_"+key,value?"1":"0");
- alert(key+" "+(value?"ON":"OFF"));
-}
-
-updateUI();
 </script>
-
 </body>
 </html>
