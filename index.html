@@ -1,914 +1,4380 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>PawanVoice</title>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
-*{box-sizing:border-box}
-body{
- margin:0;background:#0b0b10;color:#fff;
- font-family:Arial,sans-serif;padding-bottom:75px
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
-button,input,select{font:inherit}
-button{cursor:pointer}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  min-height:100%;
+  background:#0d0d12;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+button,input,select{
+  font:inherit;
+}
+
+button{
+  border:0;
+  cursor:pointer;
+}
+
+.page{
+  display:none;
+  min-height:100vh;
+  padding-bottom:78px;
+}
+
+.page.active{
+  display:block;
+}
+
 .header{
- position:sticky;top:0;z-index:20;
- background:#15131d;border-bottom:1px solid #292535;
- padding:13px 15px;display:flex;align-items:center;
- justify-content:space-between
+  position:sticky;
+  top:0;
+  z-index:20;
+  height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 15px;
+  background:#15151d;
+  border-bottom:1px solid #292936;
 }
-.logo{font-size:21px;font-weight:800}
-.coins{background:#211b31;padding:7px 11px;border-radius:20px;color:#ffd75a}
-.page{display:none;padding:14px}
-.page.active{display:block}
 
-.banner{
- background:linear-gradient(135deg,#5b21b6,#9333ea);
- border-radius:17px;padding:18px;margin-bottom:12px;
- min-height:100px
+.logo{
+  font-size:20px;
+  font-weight:bold;
 }
-.banner h2{margin:0 0 7px;font-size:19px}
-.banner p{margin:0;color:#eee;font-size:13px}
 
-.banner-grid{
- display:grid;grid-template-columns:1fr 1fr;gap:10px
+.header-actions{
+  display:flex;
+  gap:8px;
 }
-.small-banner{
- background:#191622;border:1px solid #30283d;
- border-radius:15px;padding:14px;min-height:90px
+
+.icon-btn{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#242431;
+  color:#fff;
+  font-size:18px;
 }
-.small-banner b{display:block;margin-bottom:7px}
-.small-banner span{font-size:12px;color:#aaa}
+
+.container{
+  padding:12px;
+}
 
 .card{
- background:#15131b;border:1px solid #282431;
- border-radius:16px;padding:14px;margin:12px 0
+  background:#171720;
+  border:1px solid #292936;
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:12px;
 }
-.card h3{margin:0 0 12px;font-size:17px}
 
-.search{
- width:100%;padding:13px;border-radius:12px;
- background:#0e0d13;border:1px solid #302b38;color:white;
- outline:none
+.card-title{
+  font-size:17px;
+  font-weight:bold;
+  margin-bottom:10px;
 }
-.tabs{display:flex;gap:8px;margin:10px 0;overflow:auto}
-.tab{
- border:0;background:#211d29;color:#bbb;
- padding:9px 14px;border-radius:20px;white-space:nowrap
-}
-.tab.active{background:#7c3aed;color:#fff}
 
-.room{
- display:flex;align-items:center;gap:12px;
- background:#100f15;border:1px solid #292532;
- padding:12px;border-radius:14px;margin:8px 0
-}
-.room-avatar{
- width:52px;height:52px;border-radius:50%;
- background:#34234b;display:flex;align-items:center;
- justify-content:center;font-size:24px;overflow:hidden
-}
-.room-avatar img{width:100%;height:100%;object-fit:cover}
-.room-info{flex:1;min-width:0}
-.room-info b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.room-info small{color:#999}
-.join{
- background:#7c3aed;color:#fff;border:0;
- border-radius:10px;padding:9px 13px
+.small{
+  font-size:12px;
+  color:#aaa;
 }
 
 .btn{
- width:100%;padding:12px;border:0;border-radius:12px;
- background:#7c3aed;color:white;font-weight:bold
+  width:100%;
+  padding:13px;
+  border-radius:12px;
+  background:#7c3aed;
+  color:white;
+  font-weight:bold;
 }
-.btn.green{background:#16a34a}
-.btn.red{background:#dc2626}
-.btn.dark{background:#282331}
 
-.profile-top{text-align:center}
+.btn.green{
+  background:#16a34a;
+}
+
+.btn.red{
+  background:#dc2626;
+}
+
+.btn.gray{
+  background:#292936;
+}
+
+.input{
+  width:100%;
+  padding:13px;
+  border-radius:11px;
+  border:1px solid #363644;
+  background:#101016;
+  color:#fff;
+  outline:none;
+  margin-bottom:10px;
+}
+
+select.input{
+  appearance:auto;
+}
+
+.bottom-nav{
+  position:fixed;
+  z-index:100;
+  left:0;
+  right:0;
+  bottom:0;
+  height:70px;
+  display:flex;
+  background:#171720;
+  border-top:1px solid #30303c;
+}
+
+.nav-item{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  color:#888;
+  font-size:12px;
+  gap:4px;
+}
+
+.nav-item.active{
+  color:#a855f7;
+}
+
+.nav-icon{
+  font-size:22px;
+}
+
+/* BANNERS */
+
+.banner-wrap{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding:2px 1px 8px;
+  scrollbar-width:none;
+}
+
+.banner-wrap::-webkit-scrollbar{
+  display:none;
+}
+
+.banner{
+  min-width:285px;
+  height:112px;
+  border-radius:17px;
+  padding:15px;
+  position:relative;
+  overflow:hidden;
+  border:1px solid #383846;
+  background:linear-gradient(135deg,#251344,#11111a);
+}
+
+.banner:nth-child(2){
+  background:linear-gradient(135deg,#102c45,#11111a);
+}
+
+.banner:nth-child(3){
+  background:linear-gradient(135deg,#402414,#11111a);
+}
+
+.banner h3{
+  margin:0 0 7px;
+  font-size:18px;
+}
+
+.banner p{
+  margin:0;
+  color:#cfcfd8;
+  font-size:12px;
+}
+
+.banner .banner-icon{
+  position:absolute;
+  right:14px;
+  bottom:5px;
+  font-size:48px;
+  opacity:.75;
+}
+
+/* PROFILE */
+
+.profile-mini{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
 .avatar{
- width:90px;height:90px;border-radius:50%;
- background:#34234b;margin:auto;overflow:hidden;
- display:flex;align-items:center;justify-content:center;font-size:38px
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#7c3aed,#ec4899);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:25px;
+  flex-shrink:0;
 }
-.avatar img{width:100%;height:100%;object-fit:cover}
 
-.stat-grid{
- display:grid;grid-template-columns:repeat(3,1fr);
- gap:8px;text-align:center
+.profile-name{
+  font-weight:bold;
+  font-size:17px;
 }
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  margin-top:15px;
+  border-top:1px solid #292936;
+  padding-top:12px;
+}
+
 .stat{
- background:#100f15;padding:12px;border-radius:12px
+  text-align:center;
 }
-.stat b{display:block;font-size:17px}
-.stat span{font-size:11px;color:#999}
 
-.option{
- display:flex;align-items:center;justify-content:space-between;
- padding:15px 4px;border-bottom:1px solid #292631
+.stat b{
+  display:block;
+  font-size:16px;
 }
-.option:last-child{border-bottom:0}
-.option-left{display:flex;gap:12px;align-items:center}
-.option-icon{font-size:21px;width:28px}
 
-.bottom{
- position:fixed;bottom:0;left:0;right:0;z-index:30;
- background:#15131d;border-top:1px solid #2a2632;
- display:grid;grid-template-columns:repeat(5,1fr);
- padding:7px 4px
+.stat span{
+  color:#999;
+  font-size:11px;
 }
-.nav{
- background:none;border:0;color:#888;
- font-size:11px;padding:7px 2px
+
+/* ROOMS */
+
+.room-tabs{
+  display:flex;
+  background:#101016;
+  border-radius:11px;
+  padding:3px;
+  margin-bottom:10px;
 }
-.nav strong{display:block;font-size:20px;margin-bottom:2px}
-.nav.active{color:#a855f7}
+
+.room-tab{
+  flex:1;
+  padding:10px;
+  border-radius:9px;
+  background:transparent;
+  color:#999;
+}
+
+.room-tab.active{
+  background:#7c3aed;
+  color:white;
+}
+
+.room{
+  background:#101016;
+  border:1px solid #30303a;
+  border-radius:14px;
+  padding:12px;
+  margin-bottom:9px;
+}
+
+.room-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.room-info{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.room-avatar{
+  width:48px;
+  height:48px;
+  border-radius:13px;
+  background:linear-gradient(135deg,#7c3aed,#2563eb);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+}
+
+.room-name{
+  font-weight:bold;
+  font-size:15px;
+}
+
+.room-meta{
+  color:#999;
+  font-size:11px;
+  margin-top:4px;
+}
+
+.join-btn{
+  background:#7c3aed;
+  color:white;
+  border-radius:9px;
+  padding:9px 13px;
+  font-size:12px;
+  font-weight:bold;
+}
+
+/* FEATURE GRID */
+
+.feature-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.feature{
+  min-height:78px;
+  border-radius:13px;
+  background:#101016;
+  border:1px solid #292936;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:8px;
+  font-size:12px;
+}
+
+.feature-icon{
+  font-size:25px;
+  margin-bottom:6px;
+}
+
+/* ROOM PAGE */
+
+.room-page{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at top,#281344 0,#11111a 30%,#0b0b10 65%);
+  padding-bottom:90px;
+}
+
+.room-header{
+  height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 10px;
+}
+
+.room-title-area{
+  text-align:center;
+  flex:1;
+  padding:0 8px;
+}
+
+.room-title{
+  font-size:15px;
+  font-weight:bold;
+}
+
+.room-number{
+  font-size:10px;
+  color:#aaa;
+  margin-top:3px;
+}
+
+.room-head-btns{
+  display:flex;
+  gap:6px;
+}
+
+.room-head-btn{
+  width:37px;
+  height:37px;
+  border-radius:50%;
+  background:#27232f;
+  color:#fff;
+  font-size:16px;
+}
+
+.host-info{
+  text-align:center;
+  margin:2px 12px 10px;
+}
+
+.host-name{
+  font-size:13px;
+  font-weight:bold;
+}
+
+.host-sub{
+  font-size:10px;
+  color:#aaa;
+  margin-top:3px;
+}
+
+.seats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px 5px;
+  padding:10px 8px;
+}
+
+.seat{
+  min-height:88px;
+  text-align:center;
+}
+
+.seat-circle{
+  width:54px;
+  height:54px;
+  margin:0 auto 5px;
+  border-radius:50%;
+  background:#242431;
+  border:2px solid #454553;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+}
+
+.seat.owner .seat-circle{
+  border-color:#f59e0b;
+}
+
+.seat-name{
+  max-width:85px;
+  margin:auto;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font-size:10px;
+  color:#ddd;
+}
+
+.seat-id{
+  font-size:8px;
+  color:#777;
+  margin-top:2px;
+}
+
+.room-tools{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:5px;
+  padding:10px 8px;
+}
+
+.room-tool{
+  background:#191923;
+  border:1px solid #2d2d38;
+  border-radius:11px;
+  padding:9px 3px;
+  text-align:center;
+  font-size:9px;
+}
+
+.room-tool-icon{
+  font-size:21px;
+  display:block;
+  margin-bottom:4px;
+}
+
+.exp-card{
+  margin:8px;
+  padding:12px;
+  background:linear-gradient(135deg,#231044,#171720);
+  border:1px solid #3b2460;
+  border-radius:15px;
+}
+
+.exp-title{
+  text-align:center;
+  font-weight:bold;
+  font-size:13px;
+  margin-bottom:10px;
+}
+
+.exp-ranking{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+}
+
+.exp-user{
+  text-align:center;
+  background:#101016;
+  border-radius:11px;
+  padding:8px 3px;
+}
+
+.exp-medal{
+  font-size:23px;
+}
+
+.exp-user-name{
+  font-size:10px;
+  margin-top:3px;
+}
+
+.exp-value{
+  font-size:9px;
+  color:#aaa;
+  margin-top:3px;
+}
+
+.room-chat{
+  margin:8px;
+  height:170px;
+  overflow-y:auto;
+  padding:8px;
+  background:rgba(10,10,15,.5);
+  border-radius:13px;
+}
+
+.chat-msg{
+  margin-bottom:7px;
+  font-size:11px;
+}
+
+.chat-msg b{
+  color:#c084fc;
+}
+
+.room-bottom{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:110;
+  padding:8px;
+  background:#14141c;
+  border-top:1px solid #2c2c37;
+}
+
+.chat-row{
+  display:flex;
+  gap:6px;
+}
+
+.chat-input{
+  flex:1;
+  min-width:0;
+  padding:11px;
+  border-radius:20px;
+  border:1px solid #363642;
+  background:#0d0d13;
+  color:#fff;
+  outline:none;
+}
+
+.send-btn{
+  width:45px;
+  border-radius:50%;
+  background:#7c3aed;
+  color:#fff;
+}
+
+.room-controls{
+  display:flex;
+  justify-content:space-around;
+  padding-top:7px;
+}
+
+.room-control{
+  width:44px;
+  height:40px;
+  border-radius:13px;
+  background:#282832;
+  color:#fff;
+  font-size:18px;
+}
+
+.room-control.active{
+  background:#7c3aed;
+}
+
+.room-control.leave{
+  background:#dc2626;
+}
+
+.emoji-box{
+  display:none;
+  grid-template-columns:repeat(8,1fr);
+  gap:5px;
+  padding:8px;
+  background:#1a1a23;
+  border-radius:12px;
+  margin-bottom:7px;
+}
+
+.emoji-box.show{
+  display:grid;
+}
+
+.emoji-btn{
+  background:#282832;
+  border-radius:8px;
+  padding:6px;
+  font-size:19px;
+}
+
+/* INBOX */
+
+.inbox-item{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:12px 3px;
+  border-bottom:1px solid #292936;
+}
+
+.inbox-icon{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  background:#252531;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+}
+
+.inbox-content{
+  flex:1;
+}
+
+.inbox-content b{
+  font-size:14px;
+}
+
+.inbox-content p{
+  margin:4px 0 0;
+  font-size:11px;
+  color:#999;
+}
+
+.inbox-time{
+  color:#777;
+  font-size:9px;
+}
+
+.unread{
+  width:8px;
+  height:8px;
+  background:#a855f7;
+  border-radius:50%;
+}
+
+/* MODAL */
 
 .modal{
- display:none;position:fixed;inset:0;
- background:rgba(0,0,0,.75);z-index:100;
- align-items:flex-end
-}
-.modal.show{display:flex}
-.modal-box{
- width:100%;background:#17151e;
- border-radius:22px 22px 0 0;padding:18px;
- max-height:88%;overflow:auto
-}
-.modal-title{font-size:19px;font-weight:bold;margin-bottom:15px}
-.close{
- float:right;background:#282430;border:0;color:#fff;
- width:35px;height:35px;border-radius:50%
+  display:none;
+  position:fixed;
+  z-index:300;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  align-items:flex-end;
 }
 
-.empty{text-align:center;color:#777;padding:20px}
-.notice{
- background:#211a2d;color:#cbb8e8;
- padding:10px;border-radius:10px;font-size:12px;margin:10px 0
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:100%;
+  background:#181820;
+  border-radius:20px 20px 0 0;
+  padding:17px;
+  max-height:80vh;
+  overflow:auto;
+}
+
+.modal-title{
+  font-size:18px;
+  font-weight:bold;
+  margin-bottom:13px;
+}
+
+.action-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.action-btn{
+  padding:12px;
+  border-radius:11px;
+  background:#292936;
+  color:#fff;
+}
+
+.action-btn.red{
+  background:#991b1b;
+}
+
+/* SEARCH */
+
+.search-wrap{
+  position:relative;
+}
+
+.search-icon{
+  position:absolute;
+  right:12px;
+  top:11px;
+  color:#777;
+}
+
+/* TOAST */
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:85px;
+  transform:translateX(-50%);
+  z-index:500;
+  background:#272732;
+  color:#fff;
+  border:1px solid #41414e;
+  padding:10px 15px;
+  border-radius:20px;
+  font-size:12px;
+  display:none;
+  max-width:90%;
+  text-align:center;
+}
+
+.toast.show{
+  display:block;
+}
+
+/* RANKING */
+
+.rank-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#101016;
+  padding:10px;
+  border-radius:11px;
+  margin-bottom:7px;
+}
+
+.rank-number{
+  width:25px;
+  font-weight:bold;
+  text-align:center;
+}
+
+.rank-avatar{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#343443;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.rank-info{
+  flex:1;
+}
+
+.rank-info b{
+  font-size:13px;
+}
+
+.rank-info span{
+  display:block;
+  font-size:10px;
+  color:#888;
+  margin-top:3px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:380px){
+  .seats{
+    gap:7px 2px;
+  }
+
+  .seat-circle{
+    width:49px;
+    height:49px;
+  }
+
+  .room-tools{
+    gap:3px;
+  }
+
+  .feature-grid{
+    gap:5px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<header class="header">
- <div class="logo">🎙️ PawanVoice</div>
- <div class="coins">🪙 <span id="coinTop">0</span></div>
-</header>
+<!-- ================= HOME ================= -->
 
-<!-- HOME -->
-<section id="homePage" class="page active">
+<div id="homePage" class="page active">
 
- <div class="banner" onclick="openPage('eventsPage')">
-   <h2>ẁéĺćòmè ŧø PÅŴÂƝ ÃPP</h2>
-   <p>Live Voice • Family • CP • Ranking • Events</p>
- </div>
+  <div class="header">
+    <div class="logo">🎙️ PawanVoice</div>
 
- <div class="banner-grid">
-   <div class="small-banner" onclick="openPage('rankingPage')">
-     <b>👑 Family Ranking</b>
-     <span>Top families देखें</span>
-   </div>
-
-   <div class="small-banner" onclick="openPage('cpPage')">
-     <b>💞 CP Ranking</b>
-     <span>Top couples देखें</span>
-   </div>
-
-   <div class="small-banner" onclick="openPage('rankingPage')">
-     <b>💰 Rich King</b>
-     <span>Wealth ranking</span>
-   </div>
-
-   <div class="small-banner" onclick="openPage('eventsPage')">
-     <b>🚀 Rocket Event</b>
-     <span>Live events</span>
-   </div>
- </div>
-
- <div class="card">
-   <input id="roomSearch" class="search"
-          placeholder="🔎 Search room..."
-          oninput="renderRooms()">
- </div>
-
- <div class="card">
-   <h3>⚡ Quick Access</h3>
-   <div class="banner-grid">
-     <button class="btn dark" onclick="openPage('familyPage')">👨‍👩‍👧 Family</button>
-     <button class="btn dark" onclick="openPage('cpPage')">💞 CP</button>
-     <button class="btn dark" onclick="openPage('rankingPage')">🏆 Ranking</button>
-     <button class="btn dark" onclick="openPage('gamesPage')">🎮 Games</button>
-   </div>
- </div>
-
- <div class="card">
-   <h3>🎙️ Live Voice Rooms</h3>
-
-   <div class="tabs">
-    <button id="popularTab" class="tab active"
-            onclick="setRoomTab('popular')">Popular</button>
-    <button id="newTab" class="tab"
-            onclick="setRoomTab('new')">New</button>
-    <button id="allTab" class="tab"
-            onclick="setRoomTab('all')">All</button>
-   </div>
-
-   <div id="roomsList">
-     <div class="empty">Loading...</div>
-   </div>
- </div>
-
- <div class="card">
-   <h3>➕ Create Voice Room</h3>
-
-   <input id="createRoomName"
-          class="search"
-          placeholder="Room Name">
-
-   <br><br>
-
-   <select id="createRoomCategory" class="search">
-    <option>General</option>
-    <option>Music</option>
-    <option>Singing</option>
-    <option>Games</option>
-    <option>CP</option>
-    <option>Family</option>
-    <option>Event</option>
-    <option>Chat</option>
-   </select>
-
-   <br><br>
-
-   <button class="btn green" onclick="createRoom()">
-     Create Voice Room
-   </button>
- </div>
-</section>
-
-<!-- DISCOVER -->
-<section id="discoverPage" class="page">
- <div class="card">
-  <h2>🔍 Discover</h2>
-  <div class="option" onclick="filterRooms('all')">
-   <div class="option-left"><span class="option-icon">🔥</span><b>Trending</b></div>
-   <span>›</span>
-  </div>
-  <div class="option" onclick="filterRooms('all')">
-   <div class="option-left"><span class="option-icon">🟢</span><b>Live Now</b></div>
-   <span>›</span>
-  </div>
-  <div class="option" onclick="filterRooms('Music')">
-   <div class="option-left"><span class="option-icon">🎵</span><b>Music Rooms</b></div>
-   <span>›</span>
-  </div>
-  <div class="option" onclick="filterRooms('Games')">
-   <div class="option-left"><span class="option-icon">🎮</span><b>Games Rooms</b></div>
-   <span>›</span>
-  </div>
-  <div class="option" onclick="filterRooms('Family')">
-   <div class="option-left"><span class="option-icon">👨‍👩‍👧</span><b>Family Rooms</b></div>
-   <span>›</span>
-  </div>
- </div>
-</section>
-
-<!-- INBOX -->
-<section id="inboxPage" class="page">
- <div class="card">
-  <h2>📥 Inbox</h2>
-  <div id="inboxList" class="empty">No notifications</div>
- </div>
-</section>
-
-<!-- PROFILE -->
-<section id="profilePage" class="page">
-
- <div class="card profile-top">
-   <div id="profileAvatar" class="avatar">👤</div>
-   <br>
-   <b id="profileName">Guest</b>
-   <div style="color:#888;font-size:12px">
-    ID: <span id="profileId">...</span>
-   </div>
-
-   <br>
-
-   <button class="btn" onclick="openEditProfile()">
-    ✏️ Edit Profile
-   </button>
- </div>
-
- <div class="card">
-   <h3>📊 My Stats</h3>
-   <div class="stat-grid">
-    <div class="stat"><b id="following">0</b><span>Following</span></div>
-    <div class="stat"><b id="followers">0</b><span>Followers</span></div>
-    <div class="stat"><b id="visitors">0</b><span>Visitors</span></div>
-   </div>
- </div>
-
- <div class="card">
-  <h3>👤 Profile Features</h3>
-
-  <div class="option" onclick="openPage('familyPage')">
-   <div class="option-left"><span class="option-icon">👨‍👩‍👧</span><b>Family</b></div><span>›</span>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="openInbox()">📥</button>
+      <button class="icon-btn" onclick="openProfile()">👤</button>
+    </div>
   </div>
 
-  <div class="option" onclick="openPage('cpPage')">
-   <div class="option-left"><span class="option-icon">💞</span><b>CP / Couple</b></div><span>›</span>
+  <div class="container">
+
+    <!-- PROFILE -->
+    <div class="card">
+
+      <div class="card-title">👤 Your Profile</div>
+
+      <div class="profile-mini">
+        <div id="homeAvatar" class="avatar">👤</div>
+
+        <div style="flex:1">
+          <div id="homeProfileName" class="profile-name">Guest</div>
+          <div id="homeProfileId" class="small">ID: loading...</div>
+          <div id="homeProfileLevel" class="small">⭐ Level 1 · EXP 0/100</div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <b id="followingCount">0</b>
+          <span>Following</span>
+        </div>
+
+        <div class="stat">
+          <b id="followersCount">0</b>
+          <span>Followers</span>
+        </div>
+
+        <div class="stat">
+          <b id="visitorCount">0</b>
+          <span>Visitors</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TOP BANNERS -->
+    <div class="card">
+
+      <div class="card-title">🔥 Discover</div>
+
+      <div class="banner-wrap">
+
+        <div class="banner" onclick="showRanking('family')">
+          <h3>👨‍👩‍👧 Family</h3>
+          <p>Family members और family activity देखें</p>
+          <div class="banner-icon">👨‍👩‍👧</div>
+        </div>
+
+        <div class="banner" onclick="showRanking('cp')">
+          <h3>⭐ CP Ranking</h3>
+          <p>CP level और ranking देखें</p>
+          <div class="banner-icon">⭐</div>
+        </div>
+
+        <div class="banner" onclick="showRanking('rich')">
+          <h3>👑 Rich King Ranking</h3>
+          <p>Room और gift activity ranking</p>
+          <div class="banner-icon">👑</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- SEARCH -->
+    <div class="card">
+
+      <div class="card-title">🔎 Search Rooms</div>
+
+      <div class="search-wrap">
+        <input
+          id="roomSearch"
+          class="input"
+          placeholder="Search room..."
+          oninput="filterRooms()">
+        <span class="search-icon">🔍</span>
+      </div>
+
+    </div>
+
+    <!-- LIVE ROOMS -->
+    <div class="card">
+
+      <div class="card-title">🎙️ Live Voice Rooms</div>
+
+      <div class="room-tabs">
+
+        <button
+          id="popularTab"
+          class="room-tab active"
+          onclick="setRoomTab('popular')">
+          Popular
+        </button>
+
+        <button
+          id="newTab"
+          class="room-tab"
+          onclick="setRoomTab('new')">
+          New
+        </button>
+
+      </div>
+
+      <div id="roomsList">
+        Loading...
+      </div>
+
+    </div>
+
+    <!-- CREATE ROOM -->
+    <div class="card">
+
+      <div class="card-title">➕ Create Voice Room</div>
+
+      <input
+        id="roomName"
+        class="input"
+        placeholder="Room Name"
+        maxlength="35">
+
+      <select id="roomCategory" class="input">
+        <option>General</option>
+        <option>Music</option>
+        <option>Gaming</option>
+        <option>Friends</option>
+        <option>Chat</option>
+        <option>Study</option>
+      </select>
+
+      <button class="btn green" onclick="createRoom()">
+        🎙️ Create Voice Room
+      </button>
+
+    </div>
+
   </div>
 
-  <div class="option" onclick="openPage('rankingPage')">
-   <div class="option-left"><span class="option-icon">🏆</span><b>Ranking</b></div><span>›</span>
-  </div>
-
-  <div class="option" onclick="openPage('storePage')">
-   <div class="option-left"><span class="option-icon">🛍️</span><b>Store</b></div><span>›</span>
-  </div>
-
-  <div class="option" onclick="openPage('walletPage')">
-   <div class="option-left"><span class="option-icon">🪙</span><b>Wallet / Coins</b></div><span>›</span>
-  </div>
-
-  <div class="option" onclick="openPage('eventsPage')">
-   <div class="option-left"><span class="option-icon">🎉</span><b>Events</b></div><span>›</span>
-  </div>
-
-  <div class="option" onclick="openPage('gamesPage')">
-   <div class="option-left"><span class="option-icon">🎮</span><b>Games</b></div><span>›</span>
-  </div>
-
-  <div class="option" onclick="showNotice('VIP system backend setup के बाद activate होगा.')">
-   <div class="option-left"><span class="option-icon">💎</span><b>VIP</b></div><span>›</span>
-  </div>
-
-  <div class="option" onclick="showNotice('Bag system next database module में connected होगा.')">
-   <div class="option-left"><span class="option-icon">🎒</span><b>Bag</b></div><span>›</span>
-  </div>
-
-  <div class="option" onclick="showNotice('Settings module यहाँ से खुलेगा.')">
-   <div class="option-left"><span class="option-icon">⚙️</span><b>Settings</b></div><span>›</span>
-  </div>
-
- </div>
-</section>
-
-<!-- FAMILY -->
-<section id="familyPage" class="page">
- <div class="card">
-  <h2>👨‍👩‍👧 Family</h2>
-  <p style="color:#999">अपनी Family बनाएं या existing Family join करें.</p>
-
-  <input id="familyName" class="search" placeholder="Family Name">
-  <br><br>
-  <button class="btn" onclick="createFamily()">Create Family</button>
- </div>
-
- <div class="card">
-  <h3>🏆 Family Ranking</h3>
-  <div id="familyList" class="empty">No families yet</div>
- </div>
-</section>
-
-<!-- CP -->
-<section id="cpPage" class="page">
- <div class="card">
-  <h2>💞 CP / Couple</h2>
-  <p style="color:#999">Couple invitation और CP ranking.</p>
-
-  <input id="cpUserId" class="search" placeholder="Partner User ID">
-  <br><br>
-  <button class="btn" onclick="sendCPRequest()">💞 Send CP Request</button>
- </div>
-
- <div class="card">
-  <h3>🏆 CP Ranking</h3>
-  <div class="empty">CP ranking अभी खाली है.</div>
- </div>
-</section>
-
-<!-- RANKING -->
-<section id="rankingPage" class="page">
- <div class="card">
-  <h2>🏆 Ranking</h2>
-
-  <div class="tabs">
-   <button class="tab active">Rich King</button>
-   <button class="tab">Host</button>
-   <button class="tab">Family</button>
-   <button class="tab">CP</button>
-  </div>
-
-  <div class="empty">Ranking data आने पर यहाँ realtime दिखेगा.</div>
- </div>
-</section>
-
-<!-- EVENTS -->
-<section id="eventsPage" class="page">
- <div class="banner">
-  <h2>🚀 Rocket Event</h2>
-  <p>Event leaderboard और rewards</p>
- </div>
-
- <div class="card">
-  <div class="option">
-   <div class="option-left"><span class="option-icon">🎁</span><b>Daily Reward</b></div>
-   <button class="join" onclick="claimDaily()">Claim</button>
-  </div>
-
-  <div class="option">
-   <div class="option-left"><span class="option-icon">🔥</span><b>Gift Event</b></div>
-   <span>›</span>
-  </div>
-
-  <div class="option">
-   <div class="option-left"><span class="option-icon">👑</span><b>Family Battle</b></div>
-   <span>›</span>
-  </div>
-
-  <div class="option">
-   <div class="option-left"><span class="option-icon">🎤</span><b>Singing Event</b></div>
-   <span>›</span>
-  </div>
- </div>
-</section>
-
-<!-- STORE -->
-<section id="storePage" class="page">
- <div class="card">
-  <h2>🛍️ PawanVoice Store</h2>
-
-  <div class="option">
-   <div class="option-left"><span class="option-icon">🖼️</span><b>Avatar Frame</b></div>
-   <button class="join" onclick="buyItem('Avatar Frame')">View</button>
-  </div>
-
-  <div class="option">
-   <div class="option-left"><span class="option-icon">🚗</span><b>Vehicle</b></div>
-   <button class="join" onclick="buyItem('Vehicle')">View</button>
-  </div>
-
-  <div class="option">
-   <div class="option-left"><span class="option-icon">🎁</span><b>Gifts</b></div>
-   <button class="join" onclick="buyItem('Gifts')">View</button>
-  </div>
-
-  <div class="option">
-   <div class="option-left"><span class="option-icon">💎</span><b>VIP</b></div>
-   <button class="join" onclick="buyItem('VIP')">View</button>
-  </div>
- </div>
-</section>
-
-<!-- WALLET -->
-<section id="walletPage" class="page">
- <div class="card profile-top">
-  <h2>🪙 Wallet</h2>
-  <div style="font-size:38px;margin:20px">🪙</div>
-  <b id="walletCoins" style="font-size:25px">0</b>
-  <p style="color:#999">Coins</p>
- </div>
-
- <div class="card">
-  <button class="btn" onclick="showNotice('Recharge के लिए verified payment backend जोड़ना होगा.')">
-   💳 Recharge
-  </button>
- </div>
-</section>
-
-<!-- GAMES -->
-<section id="gamesPage" class="page">
- <div class="card">
-  <h2>🎮 Games</h2>
-
-  <div class="banner-grid">
-   <button class="btn dark" onclick="openGame('🎲 Dice')">🎲 Dice</button>
-   <button class="btn dark" onclick="openGame('🎡 Lucky Wheel')">🎡 Wheel</button>
-   <button class="btn dark" onclick="openGame('🧠 Quiz')">🧠 Quiz</button>
-   <button class="btn dark" onclick="openGame('🎯 Mini Game')">🎯 Mini</button>
-  </div>
- </div>
-</section>
-
-<div class="bottom">
- <button class="nav active" onclick="openPage('homePage',this)">
-  <strong>🏠</strong>Home
- </button>
- <button class="nav" onclick="openPage('discoverPage',this)">
-  <strong>🔎</strong>Discover
- </button>
- <button class="nav" onclick="openPage('inboxPage',this)">
-  <strong>📥</strong>Inbox
- </button>
- <button class="nav" onclick="openPage('profilePage',this)">
-  <strong>👤</strong>Profile
- </button>
- <button class="nav" onclick="openPage('eventsPage',this)">
-  <strong>🎉</strong>Events
- </button>
 </div>
 
-<!-- EDIT PROFILE MODAL -->
-<div id="editModal" class="modal">
- <div class="modal-box">
-  <button class="close" onclick="closeModal('editModal')">×</button>
-  <div class="modal-title">✏️ Edit Profile</div>
 
-  <input id="editName" class="search" placeholder="Your Name">
-  <br><br>
+<!-- ================= INBOX ================= -->
 
-  <select id="editGender" class="search">
-   <option>Male</option>
-   <option>Female</option>
-   <option>Other</option>
-  </select>
+<div id="inboxPage" class="page">
 
-  <br><br>
+  <div class="header">
 
-  <input id="editPhoto" type="file" accept="image/*"
-         style="width:100%;color:white">
+    <div class="logo">📥 Inbox</div>
 
-  <br><br>
+    <button class="icon-btn" onclick="showPage('homePage')">
+      ←
+    </button>
 
-  <button class="btn" onclick="saveProfile()">Save Profile</button>
- </div>
+  </div>
+
+  <div class="container">
+
+    <div class="card">
+
+      <div class="card-title">💌 Messages</div>
+
+      <div id="inboxList">
+
+        <div class="inbox-item">
+
+          <div class="inbox-icon">🎙️</div>
+
+          <div class="inbox-content">
+            <b>Welcome to PawanVoice</b>
+            <p>Voice room में आपका स्वागत है।</p>
+          </div>
+
+          <span class="inbox-time">Now</span>
+
+        </div>
+
+        <div class="inbox-item">
+
+          <div class="inbox-icon">🎁</div>
+
+          <div class="inbox-content">
+            <b>System Message</b>
+            <p>Your account is ready.</p>
+          </div>
+
+          <span class="inbox-time">Today</span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
 </div>
+
+
+<!-- ================= PROFILE ================= -->
+
+<div id="mePage" class="page">
+
+  <div class="header">
+
+    <div class="logo">👤 Profile</div>
+
+    <button class="icon-btn" onclick="showSettings()">
+      ⚙️
+    </button>
+
+  </div>
+
+  <div class="container">
+
+    <div class="card">
+
+      <div class="profile-mini">
+
+        <div id="profileAvatar" class="avatar">
+          👤
+        </div>
+
+        <div style="flex:1">
+
+          <div id="profileName" class="profile-name">
+            Guest
+          </div>
+
+          <div id="profileId" class="small">
+            ID: loading...
+          </div>
+
+          <div id="profileGenderText" class="small">
+            Gender: Male
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- LEVEL -->
+
+    <div class="card">
+
+      <div class="card-title">
+        ⭐ Level & EXP
+      </div>
+
+      <div style="font-size:25px;font-weight:bold">
+        Level <span id="levelNumber">1</span>
+      </div>
+
+      <div class="small">
+        EXP <span id="expNumber">0</span>/100
+      </div>
+
+      <div style="
+        height:9px;
+        background:#292936;
+        border-radius:10px;
+        margin-top:9px;
+        overflow:hidden;
+      ">
+        <div id="expBar"
+             style="
+               height:100%;
+               width:0%;
+               background:#a855f7;
+             ">
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- COINS -->
+
+    <div class="card">
+
+      <div class="card-title">
+        🪙 Account
+      </div>
+
+      <div class="feature-grid">
+
+        <div class="feature" onclick="showCoins()">
+          <div class="feature-icon">🪙</div>
+          Coins
+          <div class="small" id="coinText">0</div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🏅</div>
+          Level Medal
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🎖️</div>
+          Medal
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- PROFILE FEATURES -->
+
+    <div class="card">
+
+      <div class="card-title">
+        ✨ Profile Features
+      </div>
+
+      <div class="feature-grid">
+
+        <div class="feature" onclick="showCpSpace()">
+          <div class="feature-icon">⭐</div>
+          CP Space
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🎒</div>
+          Bag
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">👗</div>
+          Dress
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🔑</div>
+          CD-Key
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">👑</div>
+          VIP
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🪪</div>
+          Badge
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🚗</div>
+          Vehicle
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🖼️</div>
+          Avatar Frame
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🚀</div>
+          Entry Effect
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🎁</div>
+          Gifts
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">👥</div>
+          Invite Friend
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🌐</div>
+          Language
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🎧</div>
+          Customer Service
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">💬</div>
+          Help & Feedback
+        </div>
+
+        <div class="feature" onclick="showSettings()">
+          <div class="feature-icon">⚙️</div>
+          Settings
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- EDIT PROFILE -->
+
+    <div class="card">
+
+      <div class="card-title">
+        ✏️ Edit Profile
+      </div>
+
+      <input
+        id="userName"
+        class="input"
+        placeholder="Your Name"
+        maxlength="25">
+
+      <select id="gender" class="input">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <button class="btn" onclick="saveProfile()">
+        💾 Save Profile
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ================= BOTTOM NAV ================= -->
+
+<div class="bottom-nav">
+
+  <div id="navHome"
+       class="nav-item active"
+       onclick="showPage('homePage')">
+    <div class="nav-icon">🏠</div>
+    Home
+  </div>
+
+  <div id="navInbox"
+       class="nav-item"
+       onclick="openInbox()">
+    <div class="nav-icon">📥</div>
+    Inbox
+  </div>
+
+  <div id="navProfile"
+       class="nav-item"
+       onclick="openProfile()">
+    <div class="nav-icon">👤</div>
+    Profile
+  </div>
+
+</div>
+
+
+<!-- ================= ROOM PAGE ================= -->
+
+<div id="roomPage"
+     class="page room-page">
+
+  <div class="room-header">
+
+    <button class="room-head-btn"
+            onclick="leaveRoom()">
+      ←
+    </button>
+
+    <div class="room-title-area">
+
+      <div id="activeRoomName"
+           class="room-title">
+        Voice Room
+      </div>
+
+      <div id="activeRoomNumber"
+           class="room-number">
+        Room ID
+      </div>
+
+    </div>
+
+    <div class="room-head-btns">
+
+      <button class="room-head-btn"
+              onclick="inviteRoom()">
+        📤
+      </button>
+
+      <button class="room-head-btn"
+              onclick="roomSettings()">
+        ⚙️
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="host-info">
+
+    <div id="activeHost"
+         class="host-name">
+      👑 Host
+    </div>
+
+    <div id="activeRoomMeta"
+         class="host-sub">
+      1/9 · General
+    </div>
+
+  </div>
+
+
+  <!-- 9 SEATS -->
+
+  <div id="seats"
+       class="seats">
+
+    <!-- generated by JS -->
+
+  </div>
+
+
+  <!-- ROOM FEATURES -->
+
+  <div class="room-tools">
+
+    <div class="room-tool"
+         onclick="roomTool('support')">
+      <span class="room-tool-icon">💖</span>
+      Room Support
+    </div>
+
+    <div class="room-tool"
+         onclick="roomTool('lucky')">
+      <span class="room-tool-icon">🎡</span>
+      Lucky Wheel
+    </div>
+
+    <div class="room-tool"
+         onclick="roomTool('bounty')">
+      <span class="room-tool-icon">🎯</span>
+      Bounty Hunter
+    </div>
+
+    <div class="room-tool"
+         onclick="roomTool('reward')">
+      <span class="room-tool-icon">🎁</span>
+      Room Reward
+    </div>
+
+    <div class="room-tool"
+         onclick="roomTool('exclusive')">
+      <span class="room-tool-icon">✨</span>
+      Exclusive
+    </div>
+
+  </div>
+
+
+  <!-- EXP RANKING -->
+
+  <div class="exp-card">
+
+    <div class="exp-title">
+      🚀 Room EXP Ranking
+    </div>
+
+    <div class="exp-ranking">
+
+      <div class="exp-user">
+        <div class="exp-medal">🥇</div>
+        <div id="exp1Name" class="exp-user-name">---</div>
+        <div id="exp1Value" class="exp-value">0 EXP</div>
+      </div>
+
+      <div class="exp-user">
+        <div class="exp-medal">🥈</div>
+        <div id="exp2Name" class="exp-user-name">---</div>
+        <div id="exp2Value" class="exp-value">0 EXP</div>
+      </div>
+
+      <div class="exp-user">
+        <div class="exp-medal">🥉</div>
+        <div id="exp3Name" class="exp-user-name">---</div>
+        <div id="exp3Value" class="exp-value">0 EXP</div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- CHAT -->
+
+  <div id="chatBox"
+       class="room-chat">
+
+    <div class="chat-msg">
+      <b>System:</b> Welcome to PawanVoice room.
+    </div>
+
+  </div>
+
+
+  <!-- ROOM BOTTOM -->
+
+  <div class="room-bottom">
+
+    <div id="emojiBox"
+         class="emoji-box">
+
+      <button class="emoji-btn"
+              onclick="addEmoji('😀')">😀</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('😂')">😂</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('😍')">😍</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('😡')">😡</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('😭')">😭</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('😵')">😵</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('🔨')">🔨</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('😘')">😘</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('🤣')">🤣</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('😴')">😴</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('👻')">👻</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('❤️')">❤️</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('🔥')">🔥</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('👏')">👏</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('🎉')">🎉</button>
+
+      <button class="emoji-btn"
+              onclick="addEmoji('👍')">👍</button>
+
+    </div>
+
+
+    <div class="chat-row">
+
+      <button class="send-btn"
+              onclick="toggleEmoji()">
+        😊
+      </button>
+
+      <input
+        id="chatInput"
+        class="chat-input"
+        placeholder="Say something..."
+        onkeydown="chatKey(event)">
+
+      <button class="send-btn"
+              onclick="sendChat()">
+        ➤
+      </button>
+
+    </div>
+
+
+    <div class="room-controls">
+
+      <button id="speakerBtn"
+              class="room-control active"
+              onclick="toggleSpeaker()">
+        🔊
+      </button>
+
+      <button id="micBtn"
+              class="room-control active"
+              onclick="toggleMic()">
+        🎤
+      </button>
+
+      <button class="room-control"
+              onclick="openInbox()">
+        📥
+      </button>
+
+      <button class="room-control"
+              onclick="showGiftMenu()">
+        🎁
+      </button>
+
+      <button class="room-control"
+              onclick="showMoreMenu()">
+        ⋯
+      </button>
+
+      <button class="room-control leave"
+              onclick="leaveRoom()">
+        🚪
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ================= MODAL ================= -->
+
+<div id="modal"
+     class="modal"
+     onclick="closeModalOutside(event)">
+
+  <div class="modal-box">
+
+    <div id="modalTitle"
+         class="modal-title">
+      Menu
+    </div>
+
+    <div id="modalContent">
+    </div>
+
+    <br>
+
+    <button class="btn gray"
+            onclick="closeModal()">
+      Close
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- ================= TOAST ================= -->
+
+<div id="toast"
+     class="toast">
+</div>
+
+
+<!-- ================= AUDIO ================= -->
+
+<div id="audioContainer"
+     style="display:none">
+</div>
+
 
 <script>
-/* =========================
-   FIREBASE CONFIG
-========================= */
 
-const firebaseConfig={
- apiKey:"AIzaSyDnlTde5Gg5aPHrUIV6kTYnM521GtbrrE",
- authDomain:"pawanvoice-68c5e.firebaseapp.com",
- databaseURL:"https://pawanvoice-68c5e-default-rtdb.firebaseio.com/",
- projectId:"pawanvoice-68c5e",
- storageBucket:"pawanvoice-68c5e.firebasestorage.app",
- messagingSenderId:"148446327241",
- appId:"1:148446327241:web:6bac9cb9ad0fb530cbb818"
+/* =========================================================
+   FIREBASE CONFIG
+   ========================================================= */
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
-firebase.initializeApp(firebaseConfig);
+let firebaseReady = false;
+let db = null;
 
-const auth=firebase.auth();
-const db=firebase.database();
+try{
 
-let currentUser=null;
-let rooms={};
-let roomTab="popular";
+  if(firebaseConfig.apiKey !== "YOUR_API_KEY"){
 
-/* =========================
-   AUTH
-========================= */
+    firebase.initializeApp(firebaseConfig);
 
-auth.onAuthStateChanged(async user=>{
- if(!user){
-   try{
-     await auth.signInAnonymously();
-   }catch(e){
-     console.error(e);
-     showNotice("Firebase Authentication चालू नहीं है.");
-   }
-   return;
- }
+    db = firebase.database();
 
- currentUser=user;
- document.getElementById("profileId").textContent=user.uid.slice(0,10);
+    firebaseReady = true;
 
- loadProfile();
- loadRooms();
-});
+  }
 
-/* =========================
-   PAGE
-========================= */
+}catch(error){
 
-function openPage(id,nav){
- document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
- const page=document.getElementById(id);
- if(page) page.classList.add("active");
+  console.error(error);
 
- if(nav){
-   document.querySelectorAll(".nav").forEach(n=>n.classList.remove("active"));
-   nav.classList.add("active");
- }
- window.scrollTo(0,0);
 }
 
-/* =========================
+
+/* =========================================================
+   LOCAL USER
+   ========================================================= */
+
+let myId =
+  localStorage.getItem("pawanUserId");
+
+if(!myId){
+
+  myId =
+    "PV" +
+    Date.now().toString().slice(-8) +
+    Math.floor(Math.random()*90+10);
+
+  localStorage.setItem(
+    "pawanUserId",
+    myId
+  );
+
+}
+
+let myName =
+  localStorage.getItem("pawanName") ||
+  "Guest";
+
+let myGender =
+  localStorage.getItem("pawanGender") ||
+  "Male";
+
+let myCoins =
+  parseInt(
+    localStorage.getItem("pawanCoins") || "0"
+  );
+
+let myLevel =
+  parseInt(
+    localStorage.getItem("pawanLevel") || "1"
+  );
+
+let myExp =
+  parseInt(
+    localStorage.getItem("pawanExp") || "0"
+  );
+
+
+/* =========================================================
+   ROOM VARIABLES
+   ========================================================= */
+
+let currentRoomId = null;
+let currentRoomData = null;
+let currentRoomRef = null;
+
+let roomListeners = [];
+
+let roomUsers = {};
+
+let localStream = null;
+
+let micOn = true;
+let speakerOn = true;
+
+let peerConnections = {};
+
+let currentRoomIsHost = false;
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    updateProfileUI();
+
+    renderSeats();
+
+    loadRooms();
+
+    if(!firebaseReady){
+
+      showToast(
+        "Firebase config डालने के बाद online rooms चालू होंगे."
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   PAGE NAVIGATION
+   ========================================================= */
+
+function showPage(pageId){
+
+  document
+    .querySelectorAll(".page")
+    .forEach(function(page){
+
+      page.classList.remove("active");
+
+    });
+
+  const page =
+    document.getElementById(pageId);
+
+  if(page){
+
+    page.classList.add("active");
+
+  }
+
+  document
+    .querySelectorAll(".nav-item")
+    .forEach(function(item){
+
+      item.classList.remove("active");
+
+    });
+
+  if(pageId === "homePage"){
+
+    document
+      .getElementById("navHome")
+      .classList.add("active");
+
+  }
+
+  if(pageId === "inboxPage"){
+
+    document
+      .getElementById("navInbox")
+      .classList.add("active");
+
+  }
+
+  if(pageId === "mePage"){
+
+    document
+      .getElementById("navProfile")
+      .classList.add("active");
+
+  }
+
+}
+
+
+function openInbox(){
+
+  showPage("inboxPage");
+
+  loadInbox();
+
+}
+
+
+function openProfile(){
+
+  showPage("mePage");
+
+  updateProfileUI();
+
+}
+
+
+/* =========================================================
    PROFILE
-========================= */
+   ========================================================= */
 
-function loadProfile(){
- if(!currentUser)return;
+function updateProfileUI(){
 
- db.ref("users/"+currentUser.uid).on("value",snap=>{
-   const u=snap.val()||{};
+  const ids = [
 
-   const name=u.name||"Guest";
-   document.getElementById("profileName").textContent=name;
+    "homeProfileName",
+    "profileName"
 
-   document.getElementById("coinTop").textContent=u.coins||0;
-   document.getElementById("walletCoins").textContent=u.coins||0;
+  ];
 
-   if(u.photo){
-     document.getElementById("profileAvatar").innerHTML=
-       '<img src="'+u.photo+'">';
-   }else{
-     document.getElementById("profileAvatar").textContent=
-       u.gender==="Female"?"👩":"👤";
-   }
- });
+  ids.forEach(function(id){
+
+    const el =
+      document.getElementById(id);
+
+    if(el){
+
+      el.textContent = myName;
+
+    }
+
+  });
+
+
+  const idEls = [
+
+    "homeProfileId",
+    "profileId"
+
+  ];
+
+  idEls.forEach(function(id){
+
+    const el =
+      document.getElementById(id);
+
+    if(el){
+
+      el.textContent =
+        "ID: " + myId;
+
+    }
+
+  });
+
+
+  const genderText =
+    document.getElementById(
+      "profileGenderText"
+    );
+
+  if(genderText){
+
+    genderText.textContent =
+      "Gender: " + myGender;
+
+  }
+
+
+  const nameInput =
+    document.getElementById(
+      "userName"
+    );
+
+  if(nameInput){
+
+    nameInput.value = myName;
+
+  }
+
+
+  const genderInput =
+    document.getElementById(
+      "gender"
+    );
+
+  if(genderInput){
+
+    genderInput.value = myGender;
+
+  }
+
+
+  document
+    .getElementById("levelNumber")
+    .textContent = myLevel;
+
+  document
+    .getElementById("expNumber")
+    .textContent = myExp;
+
+
+  const expPercent =
+    Math.min(
+      100,
+      Math.round(
+        (myExp / 100) * 100
+      )
+    );
+
+  document
+    .getElementById("expBar")
+    .style.width =
+      expPercent + "%";
+
+
+  document
+    .getElementById("coinText")
+    .textContent =
+      myCoins;
+
+
+  document
+    .getElementById("homeProfileLevel")
+    .textContent =
+      "⭐ Level " +
+      myLevel +
+      " · EXP " +
+      myExp +
+      "/100";
+
 }
 
-function openEditProfile(){
- db.ref("users/"+currentUser.uid).once("value").then(s=>{
-   const u=s.val()||{};
-   document.getElementById("editName").value=u.name||"";
-   document.getElementById("editGender").value=u.gender||"Male";
-   document.getElementById("editModal").classList.add("show");
- });
-}
 
 function saveProfile(){
- const name=document.getElementById("editName").value.trim();
- const gender=document.getElementById("editGender").value;
- const file=document.getElementById("editPhoto").files[0];
 
- if(!name){
-   showNotice("Name डालिए.");
-   return;
- }
+  const name =
+    document
+      .getElementById("userName")
+      .value
+      .trim();
 
- if(file){
-   const reader=new FileReader();
+  const gender =
+    document
+      .getElementById("gender")
+      .value;
 
-   reader.onload=function(){
-     saveUserData(name,gender,reader.result);
-   };
+  if(!name){
 
-   reader.readAsDataURL(file);
- }else{
-   saveUserData(name,gender,null);
- }
+    showToast(
+      "Name डालिए."
+    );
+
+    return;
+
+  }
+
+  myName = name;
+  myGender = gender;
+
+  localStorage.setItem(
+    "pawanName",
+    myName
+  );
+
+  localStorage.setItem(
+    "pawanGender",
+    myGender
+  );
+
+
+  if(firebaseReady){
+
+    db.ref(
+      "users/" + myId
+    ).update({
+
+      name:myName,
+
+      gender:myGender,
+
+      level:myLevel,
+
+      exp:myExp,
+
+      coins:myCoins,
+
+      updatedAt:
+        firebase.database.ServerValue.TIMESTAMP
+
+    });
+
+  }
+
+  updateProfileUI();
+
+  showToast(
+    "Profile saved successfully."
+  );
+
 }
 
-function saveUserData(name,gender,photo){
- const data={
-   name:name,
-   gender:gender,
-   updatedAt:firebase.database.ServerValue.TIMESTAMP
- };
 
- if(photo)data.photo=photo;
-
- db.ref("users/"+currentUser.uid).update(data)
- .then(()=>{
-   closeModal("editModal");
-   showNotice("Profile saved.");
- });
-}
-
-/* =========================
+/* =========================================================
    ROOMS
-========================= */
+   ========================================================= */
 
-function loadRooms(){
- db.ref("rooms").on("value",snap=>{
-   rooms=snap.val()||{};
-   renderRooms();
- });
-}
+let allRooms = {};
+
+let roomTab = "popular";
+
 
 function setRoomTab(tab){
- roomTab=tab;
 
- document.querySelectorAll(".tabs .tab").forEach(x=>{
-   x.classList.remove("active");
- });
+  roomTab = tab;
 
- if(tab==="popular")
-   document.getElementById("popularTab").classList.add("active");
+  document
+    .getElementById("popularTab")
+    .classList.toggle(
+      "active",
+      tab === "popular"
+    );
 
- if(tab==="new")
-   document.getElementById("newTab").classList.add("active");
+  document
+    .getElementById("newTab")
+    .classList.toggle(
+      "active",
+      tab === "new"
+    );
 
- if(tab==="all")
-   document.getElementById("allTab").classList.add("active");
+  renderRooms();
 
- renderRooms();
 }
+
+
+function loadRooms(){
+
+  if(!firebaseReady){
+
+    document
+      .getElementById("roomsList")
+      .innerHTML = `
+        <div class="small"
+             style="padding:10px">
+          Firebase config required.
+        </div>
+      `;
+
+    return;
+
+  }
+
+
+  db.ref("rooms")
+    .on(
+      "value",
+      function(snapshot){
+
+        allRooms =
+          snapshot.val() || {};
+
+        renderRooms();
+
+      }
+    );
+
+}
+
 
 function renderRooms(){
- const box=document.getElementById("roomsList");
- const search=(document.getElementById("roomSearch").value||"")
-   .toLowerCase();
 
- let arr=Object.keys(rooms).map(id=>({
-   id:id,...rooms[id]
- }));
+  const list =
+    document.getElementById(
+      "roomsList"
+    );
 
- arr=arr.filter(r=>{
-   const text=((r.name||"")+" "+(r.category||"")).toLowerCase();
-   return text.includes(search);
- });
+  const search =
+    (
+      document
+        .getElementById("roomSearch")
+        .value || ""
+    )
+    .toLowerCase()
+    .trim();
 
- if(roomTab==="new"){
-   arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
- }
 
- if(roomTab==="popular"){
-   arr.sort((a,b)=>
-    (b.memberCount||0)-(a.memberCount||0)
-   );
- }
+  let rooms =
+    Object.keys(allRooms)
+    .map(function(id){
 
- if(!arr.length){
-   box.innerHTML='<div class="empty">कोई live room नहीं है.</div>';
-   return;
- }
+      return {
+        id:id,
+        data:allRooms[id]
+      };
 
- box.innerHTML=arr.map(r=>`
-   <div class="room">
-    <div class="room-avatar">
-      ${r.roomPhoto
-       ? `<img src="${escapeHtml(r.roomPhoto)}">`
-       : "🎙️"}
-    </div>
+    });
 
-    <div class="room-info">
-      <b>${escapeHtml(r.name||"Pawan Room")}</b>
-      <small>
-       🟢 ${r.memberCount||0}/9
-       · ${escapeHtml(r.category||"General")}
-      </small>
-    </div>
 
-    <button class="join"
-      onclick="joinRoom('${r.id}')">Join</button>
-   </div>
- `).join("");
+  rooms =
+    rooms.filter(function(room){
+
+      const name =
+        (
+          room.data.name ||
+          ""
+        ).toLowerCase();
+
+      return name.includes(search);
+
+    });
+
+
+  if(roomTab === "new"){
+
+    rooms.sort(function(a,b){
+
+      return (
+        (b.data.createdAt || 0) -
+        (a.data.createdAt || 0)
+      );
+
+    });
+
+  }else{
+
+    rooms.sort(function(a,b){
+
+      return (
+        (b.data.visitors || 0) -
+        (a.data.visitors || 0)
+      );
+
+    });
+
+  }
+
+
+  if(!rooms.length){
+
+    list.innerHTML = `
+      <div class="small"
+           style="padding:10px;text-align:center">
+        No live rooms found.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  list.innerHTML =
+    rooms
+      .slice(0,30)
+      .map(function(room){
+
+        const d =
+          room.data;
+
+        const users =
+          d.users
+            ? Object.keys(d.users).length
+            : 0;
+
+        return `
+
+          <div class="room">
+
+            <div class="room-top">
+
+              <div class="room-info">
+
+                <div class="room-avatar">
+                  🎙️
+                </div>
+
+                <div>
+
+                  <div class="room-name">
+                    ${escapeHtml(
+                      d.name || "Voice Room"
+                    )}
+                  </div>
+
+                  <div class="room-meta">
+                    👑 ${escapeHtml(
+                      d.hostName || "Host"
+                    )}
+                    · ${users}/9
+                    · ${escapeHtml(
+                      d.category || "General"
+                    )}
+                  </div>
+
+                  <div class="room-meta">
+                    #${escapeHtml(room.id)}
+                  </div>
+
+                </div>
+
+              </div>
+
+              <button
+                class="join-btn"
+                onclick="joinRoom('${room.id}')">
+                JOIN
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+      })
+      .join("");
+
 }
+
+
+function filterRooms(){
+
+  renderRooms();
+
+}
+
+
+/* =========================================================
+   CREATE ROOM
+   ========================================================= */
 
 function createRoom(){
- const name=document.getElementById("createRoomName").value.trim();
- const category=document.getElementById("createRoomCategory").value;
 
- if(!name){
-   showNotice("Room name डालिए.");
-   return;
- }
+  if(!firebaseReady){
 
- const ref=db.ref("rooms").push();
+    showToast(
+      "पहले Firebase config डालिए."
+    );
 
- const room={
-   name:name,
-   category:category,
-   hostUid:currentUser.uid,
-   hostName:document.getElementById("profileName").textContent||"Host",
-   memberCount:0,
-   maxSeats:9,
-   createdAt:firebase.database.ServerValue.TIMESTAMP,
-   level:1,
-   exp:0,
-   locked:false
- };
+    return;
 
- ref.set(room).then(()=>{
-   document.getElementById("createRoomName").value="";
-   showNotice("Room create हो गया.");
-   joinRoom(ref.key);
- });
+  }
+
+
+  const name =
+    document
+      .getElementById("roomName")
+      .value
+      .trim();
+
+  const category =
+    document
+      .getElementById("roomCategory")
+      .value;
+
+
+  if(!name){
+
+    showToast(
+      "Room Name डालिए."
+    );
+
+    return;
+
+  }
+
+
+  const roomId =
+    "PV" +
+    Math.floor(
+      100000 + Math.random()*900000
+    );
+
+
+  const room = {
+
+    name:name,
+
+    category:category,
+
+    hostId:myId,
+
+    hostName:myName,
+
+    createdAt:
+      firebase.database.ServerValue.TIMESTAMP,
+
+    visitors:1,
+
+    users:{
+
+      [myId]:{
+
+        id:myId,
+
+        name:myName,
+
+        gender:myGender,
+
+        seat:1,
+
+        isHost:true,
+
+        joinedAt:
+          firebase.database.ServerValue.TIMESTAMP
+
+      }
+
+    }
+
+  };
+
+
+  db.ref(
+    "rooms/" + roomId
+  )
+  .set(room)
+  .then(function(){
+
+    document
+      .getElementById("roomName")
+      .value = "";
+
+    joinRoom(roomId);
+
+  })
+  .catch(function(error){
+
+    console.error(error);
+
+    showToast(
+      "Room create नहीं हुआ."
+    );
+
+  });
+
 }
 
-function joinRoom(id){
- window.location.href="room.html?room="+encodeURIComponent(id);
+
+/* =========================================================
+   JOIN ROOM
+   ========================================================= */
+
+async function joinRoom(roomId){
+
+  if(!firebaseReady){
+
+    showToast(
+      "Firebase config required."
+    );
+
+    return;
+
+  }
+
+
+  const snap =
+    await db.ref(
+      "rooms/" + roomId
+    ).once("value");
+
+
+  if(!snap.exists()){
+
+    showToast(
+      "Room नहीं मिला."
+    );
+
+    return;
+
+  }
+
+
+  const room =
+    snap.val();
+
+
+  const users =
+    room.users || {};
+
+
+  const existing =
+    users[myId];
+
+
+  let seat = 0;
+
+
+  if(existing){
+
+    seat =
+      existing.seat || 1;
+
+  }else{
+
+    const usedSeats =
+      Object.keys(users)
+      .map(function(uid){
+
+        return users[uid].seat;
+
+      });
+
+
+    for(
+      let i=1;
+      i<=9;
+      i++
+    ){
+
+      if(
+        usedSeats.indexOf(i) === -1
+      ){
+
+        seat=i;
+        break;
+
+      }
+
+    }
+
+  }
+
+
+  if(!seat){
+
+    showToast(
+      "Room full है. 9/9 seats occupied."
+    );
+
+    return;
+
+  }
+
+
+  currentRoomId =
+    roomId;
+
+  currentRoomData =
+    room;
+
+
+  currentRoomIsHost =
+    room.hostId === myId;
+
+
+  await db.ref(
+    "rooms/" +
+    roomId +
+    "/users/" +
+    myId
+  ).set({
+
+    id:myId,
+
+    name:myName,
+
+    gender:myGender,
+
+    seat:seat,
+
+    isHost:
+      currentRoomIsHost,
+
+    joinedAt:
+      firebase.database.ServerValue.TIMESTAMP
+
+  });
+
+
+  db.ref(
+    "rooms/" +
+    roomId +
+    "/visitors"
+  ).transaction(function(value){
+
+    return (value || 0) + 1;
+
+  });
+
+
+  showPage("roomPage");
+
+  setupRoomUI();
+
+  listenRoomUsers();
+
+  listenRoomChat();
+
+  startVoice();
+
 }
 
-/* =========================
-   FAMILY
-========================= */
 
-function createFamily(){
- const name=document.getElementById("familyName").value.trim();
+/* =========================================================
+   ROOM UI
+   ========================================================= */
 
- if(!name){
-   showNotice("Family name डालिए.");
-   return;
- }
+function setupRoomUI(){
 
- const ref=db.ref("families").push();
+  const d =
+    currentRoomData;
 
- ref.set({
-   name:name,
-   ownerUid:currentUser.uid,
-   level:1,
-   exp:0,
-   createdAt:firebase.database.ServerValue.TIMESTAMP
- }).then(()=>{
-   document.getElementById("familyName").value="";
-   showNotice("Family create हो गई.");
- });
+
+  document
+    .getElementById("activeRoomName")
+    .textContent =
+      d.name || "Voice Room";
+
+
+  document
+    .getElementById("activeRoomNumber")
+    .textContent =
+      "Room #" + currentRoomId;
+
+
+  document
+    .getElementById("activeHost")
+    .textContent =
+      "👑 Host: " +
+      (d.hostName || "Host");
+
+
+  document
+    .getElementById("activeRoomMeta")
+    .textContent =
+      "1/9 · " +
+      (d.category || "General");
+
+
+  document
+    .getElementById("chatBox")
+    .innerHTML = `
+      <div class="chat-msg">
+        <b>System:</b>
+        Welcome to ${escapeHtml(
+          d.name || "PawanVoice"
+        )}
+      </div>
+    `;
+
 }
 
-function sendCPRequest(){
- const partner=document.getElementById("cpUserId").value.trim();
 
- if(!partner){
-   showNotice("Partner User ID डालिए.");
-   return;
- }
+/* =========================================================
+   ROOM USERS
+   ========================================================= */
 
- db.ref("cpRequests").push({
-   from:currentUser.uid,
-   to:partner,
-   status:"pending",
-   createdAt:firebase.database.ServerValue.TIMESTAMP
- }).then(()=>{
-   showNotice("CP request भेज दी गई.");
- });
+function listenRoomUsers(){
+
+  if(!currentRoomId) return;
+
+
+  db.ref(
+    "rooms/" +
+    currentRoomId +
+    "/users"
+  ).on(
+    "value",
+    function(snapshot){
+
+      roomUsers =
+        snapshot.val() || {};
+
+      renderSeats();
+
+      updateExpRanking();
+
+    }
+  );
+
 }
 
-/* =========================
-   DAILY REWARD
-========================= */
 
-function claimDaily(){
- const path="dailyRewards/"+currentUser.uid;
+function renderSeats(){
 
- db.ref(path).once("value").then(s=>{
-   const last=s.val()||0;
-   const today=new Date().toDateString();
+  const seats =
+    document.getElementById(
+      "seats"
+    );
 
-   if(last===today){
-     showNotice("आज का reward पहले ही ले चुके हैं.");
-     return;
-   }
+  if(!seats) return;
 
-   return db.ref(path).set(today).then(()=>{
-     showNotice("Daily reward claimed.");
-   });
- });
+
+  let html = "";
+
+
+  for(
+    let i=1;
+    i<=9;
+    i++
+  ){
+
+    let user = null;
+
+
+    Object.keys(roomUsers)
+      .some(function(uid){
+
+        const u =
+          roomUsers[uid];
+
+        if(
+          u &&
+          Number(u.seat) === i
+        ){
+
+          user = u;
+
+          return true;
+
+        }
+
+        return false;
+
+      });
+
+
+    if(user){
+
+      const isOwner =
+        user.isHost === true ||
+        i === 1;
+
+
+      html += `
+
+        <div class="seat ${
+          isOwner ? "owner" : ""
+        }"
+          onclick="userSeatClick('${escapeAttr(
+            user.id
+          )}')">
+
+          <div class="seat-circle">
+
+            ${
+              isOwner
+              ? "👑"
+              : (
+                user.gender === "Female"
+                ? "👩"
+                : "👤"
+              )
+            }
+
+          </div>
+
+          <div class="seat-name">
+            ${
+              escapeHtml(
+                user.name || "Guest"
+              )
+            }
+          </div>
+
+          <div class="seat-id">
+            ID: ${
+              escapeHtml(
+                String(user.id || "")
+                .slice(-6)
+              )
+            }
+          </div>
+
+        </div>
+
+      `;
+
+    }else{
+
+      html += `
+
+        <div class="seat">
+
+          <div class="seat-circle">
+            +
+          </div>
+
+          <div class="seat-name">
+            Seat ${i}
+          </div>
+
+        </div>
+
+      `;
+
+    }
+
+  }
+
+
+  seats.innerHTML =
+    html;
+
 }
 
-/* =========================
-   STORE / GAMES
-========================= */
 
-function buyItem(item){
- showNotice(item+" store में उपलब्ध होगा. Backend price/payment connect करना बाकी है.");
+/* =========================================================
+   USER CLICK / ADMIN
+   ========================================================= */
+
+function userSeatClick(uid){
+
+  if(!uid) return;
+
+
+  const user =
+    roomUsers[uid];
+
+
+  if(!user) return;
+
+
+  let buttons = "";
+
+
+  if(currentRoomIsHost){
+
+    buttons = `
+
+      <div class="action-grid">
+
+        <button
+          class="action-btn"
+          onclick="makeAdmin('${escapeAttr(uid)}')">
+          🛡️ Make Admin
+        </button>
+
+        <button
+          class="action-btn red"
+          onclick="kickUser('${escapeAttr(uid)}')">
+          🚫 Kick User
+        </button>
+
+      </div>
+
+    `;
+
+  }else{
+
+    buttons = `
+
+      <div class="small">
+        User ID: ${escapeHtml(uid)}
+      </div>
+
+    `;
+
+  }
+
+
+  openModal(
+    "👤 " +
+    (user.name || "User"),
+    buttons
+  );
+
 }
 
-function openGame(game){
- showNotice(game+" module open होगा. Game data Firebase में रहेगा.");
+
+function makeAdmin(uid){
+
+  if(!currentRoomIsHost){
+
+    showToast(
+      "Only room owner can make admin."
+    );
+
+    return;
+
+  }
+
+
+  if(
+    !currentRoomId ||
+    !roomUsers[uid]
+  ) return;
+
+
+  db.ref(
+    "rooms/" +
+    currentRoomId +
+    "/users/" +
+    uid
+  )
+  .update({
+
+    isAdmin:true
+
+  });
+
+
+  closeModal();
+
+  showToast(
+    "Admin बनाया गया."
+  );
+
 }
 
-/* =========================
-   DISCOVER FILTER
-========================= */
 
-function filterRooms(category){
- openPage("homePage");
+function kickUser(uid){
 
- if(category==="all"){
-   document.getElementById("roomSearch").value="";
- }else{
-   document.getElementById("roomSearch").value=category;
- }
+  if(!currentRoomIsHost){
 
- renderRooms();
+    showToast(
+      "Only room owner can kick."
+    );
+
+    return;
+
+  }
+
+
+  if(uid === myId){
+
+    showToast(
+      "आप खुद को kick नहीं कर सकते."
+    );
+
+    return;
+
+  }
+
+
+  db.ref(
+    "rooms/" +
+    currentRoomId +
+    "/users/" +
+    uid
+  )
+  .remove()
+  .then(function(){
+
+    closeModal();
+
+    showToast(
+      "User removed."
+    );
+
+  });
+
 }
 
-/* =========================
+
+/* =========================================================
+   ROOM CHAT
+   ========================================================= */
+
+function listenRoomChat(){
+
+  if(!currentRoomId) return;
+
+
+  db.ref(
+    "rooms/" +
+    currentRoomId +
+    "/chat"
+  )
+  .limitToLast(80)
+  .on(
+    "value",
+    function(snapshot){
+
+      const data =
+        snapshot.val() || {};
+
+      const box =
+        document.getElementById(
+          "chatBox"
+        );
+
+
+      let html = "";
+
+
+      Object.keys(data)
+        .forEach(function(key){
+
+          const msg =
+            data[key];
+
+
+          html += `
+
+            <div class="chat-msg">
+
+              <b>
+                ${escapeHtml(
+                  msg.name || "Guest"
+                )}:
+              </b>
+
+              ${escapeHtml(
+                msg.text || ""
+              )}
+
+            </div>
+
+          `;
+
+        });
+
+
+      box.innerHTML =
+        html ||
+        `
+          <div class="chat-msg">
+            <b>System:</b>
+            No messages yet.
+          </div>
+        `;
+
+
+      box.scrollTop =
+        box.scrollHeight;
+
+    }
+  );
+
+}
+
+
+function chatKey(event){
+
+  if(
+    event.key === "Enter"
+  ){
+
+    sendChat();
+
+  }
+
+}
+
+
+function sendChat(){
+
+  if(!currentRoomId) return;
+
+
+  const input =
+    document.getElementById(
+      "chatInput"
+    );
+
+
+  const text =
+    input.value.trim();
+
+
+  if(!text) return;
+
+
+  db.ref(
+    "rooms/" +
+    currentRoomId +
+    "/chat"
+  )
+  .push({
+
+    name:myName,
+
+    uid:myId,
+
+    text:text,
+
+    time:
+      firebase.database.ServerValue.TIMESTAMP
+
+  });
+
+
+  input.value = "";
+
+}
+
+
+function toggleEmoji(){
+
+  document
+    .getElementById("emojiBox")
+    .classList.toggle("show");
+
+}
+
+
+function addEmoji(emoji){
+
+  const input =
+    document.getElementById(
+      "chatInput"
+    );
+
+  input.value += emoji;
+
+  input.focus();
+
+}
+
+
+/* =========================================================
+   EXP RANKING
+   ========================================================= */
+
+function updateExpRanking(){
+
+  const users =
+    Object.keys(roomUsers)
+    .map(function(uid){
+
+      return roomUsers[uid];
+
+    });
+
+
+  users.sort(function(a,b){
+
+    return (
+      (b.exp || 0) -
+      (a.exp || 0)
+    );
+
+  });
+
+
+  for(
+    let i=0;
+    i<3;
+    i++
+  ){
+
+    const user =
+      users[i];
+
+
+    const nameEl =
+      document.getElementById(
+        "exp" + (i+1) + "Name"
+      );
+
+    const valueEl =
+      document.getElementById(
+        "exp" + (i+1) + "Value"
+      );
+
+
+    if(user){
+
+      nameEl.textContent =
+        user.name || "Guest";
+
+      valueEl.textContent =
+        (user.exp || 0) +
+        " EXP";
+
+    }else{
+
+      nameEl.textContent =
+        "---";
+
+      valueEl.textContent =
+        "0 EXP";
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   WEBRTC VOICE
+   ========================================================= */
+
+async function startVoice(){
+
+  try{
+
+    localStream =
+      await navigator.mediaDevices
+        .getUserMedia({
+
+          audio:true,
+
+          video:false
+
+        });
+
+
+    localStream
+      .getAudioTracks()
+      .forEach(function(track){
+
+        track.enabled =
+          micOn;
+
+      });
+
+
+    listenSignaling();
+
+
+    const users =
+      Object.keys(roomUsers);
+
+
+    for(
+      let i=0;
+      i<users.length;
+      i++
+    ){
+
+      const uid =
+        users[i];
+
+
+      if(uid !== myId){
+
+        await createPeerConnection(
+          uid,
+          true
+        );
+
+      }
+
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Microphone permission allow करें."
+    );
+
+  }
+
+}
+
+
+function createPeerConnection(
+  uid,
+  initiator
+){
+
+  if(peerConnections[uid]){
+
+    return peerConnections[uid];
+
+  }
+
+
+  const pc =
+    new RTCPeerConnection({
+
+      iceServers:[
+
+        {
+          urls:
+          "stun:stun.l.google.com:19302"
+        },
+
+        {
+          urls:
+          "stun:stun1.l.google.com:19302"
+        }
+
+      ]
+
+    });
+
+
+  peerConnections[uid] =
+    pc;
+
+
+  if(localStream){
+
+    localStream
+      .getTracks()
+      .forEach(function(track){
+
+        pc.addTrack(
+          track,
+          localStream
+        );
+
+      });
+
+  }
+
+
+  pc.ontrack =
+    function(event){
+
+      addRemoteAudio(
+        uid,
+        event.streams[0]
+      );
+
+    };
+
+
+  pc.onicecandidate =
+    function(event){
+
+      if(!event.candidate)
+        return;
+
+
+      db.ref(
+        "rooms/" +
+        currentRoomId +
+        "/signals/" +
+        uid +
+        "/" +
+        myId +
+        "/candidates"
+      )
+      .push(
+        event.candidate.toJSON()
+      );
+
+    };
+
+
+  if(initiator){
+
+    makeOffer(
+      uid,
+      pc
+    );
+
+  }
+
+
+  return pc;
+
+}
+
+
+async function makeOffer(
+  uid,
+  pc
+){
+
+  try{
+
+    const offer =
+      await pc.createOffer();
+
+    await pc.setLocalDescription(
+      offer
+    );
+
+
+    await db.ref(
+      "rooms/" +
+      currentRoomId +
+      "/signals/" +
+      uid +
+      "/" +
+      myId +
+      "/offer"
+    )
+    .set({
+
+      type:offer.type,
+
+      sdp:offer.sdp
+
+    });
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+}
+
+
+function listenSignaling(){
+
+  if(!currentRoomId) return;
+
+
+  db.ref(
+    "rooms/" +
+    currentRoomId +
+    "/signals/" +
+    myId
+  )
+  .on(
+    "value",
+    async function(snapshot){
+
+      const data =
+        snapshot.val() || {};
+
+
+      for(
+        const fromUid of Object.keys(data)
+      ){
+
+        if(
+          fromUid === myId
+        ) continue;
+
+
+        const signal =
+          data[fromUid];
+
+
+        const pc =
+          createPeerConnection(
+            fromUid,
+            false
+          );
+
+
+        try{
+
+          if(
+            signal.offer &&
+            !pc.currentRemoteDescription
+          ){
+
+            await pc.setRemoteDescription(
+              new RTCSessionDescription(
+                signal.offer
+              )
+            );
+
+
+            const answer =
+              await pc.createAnswer();
+
+
+            await pc.setLocalDescription(
+              answer
+            );
+
+
+            await db.ref(
+              "rooms/" +
+              currentRoomId +
+              "/signals/" +
+              fromUid +
+              "/" +
+              myId +
+              "/answer"
+            )
+            .set({
+
+              type:answer.type,
+
+              sdp:answer.sdp
+
+            });
+
+          }
+
+
+          if(
+            signal.answer &&
+            !pc.currentRemoteDescription
+          ){
+
+            await pc.setRemoteDescription(
+              new RTCSessionDescription(
+                signal.answer
+              )
+            );
+
+          }
+
+
+          if(signal.candidates){
+
+            Object.keys(
+              signal.candidates
+            ).forEach(
+              async function(key){
+
+                try{
+
+                  await pc.addIceCandidate(
+                    new RTCIceCandidate(
+                      signal.candidates[key]
+                    )
+                  );
+
+                }catch(e){
+
+                  console.log(e);
+
+                }
+
+              }
+            );
+
+          }
+
+        }catch(error){
+
+          console.error(
+            "WebRTC signal error",
+            error
+          );
+
+        }
+
+      }
+
+    }
+  );
+
+}
+
+
+function addRemoteAudio(
+  uid,
+  stream
+){
+
+  let audio =
+    document.getElementById(
+      "audio-" + uid
+    );
+
+
+  if(!audio){
+
+    audio =
+      document.createElement(
+        "audio"
+      );
+
+    audio.id =
+      "audio-" + uid;
+
+    audio.autoplay = true;
+
+    audio.playsInline = true;
+
+    document
+      .getElementById(
+        "audioContainer"
+      )
+      .appendChild(audio);
+
+  }
+
+
+  audio.srcObject =
+    stream;
+
+  audio.muted =
+    !speakerOn;
+
+}
+
+
+/* =========================================================
+   MIC / SPEAKER
+   ========================================================= */
+
+function toggleMic(){
+
+  micOn =
+    !micOn;
+
+
+  if(localStream){
+
+    localStream
+      .getAudioTracks()
+      .forEach(function(track){
+
+        track.enabled =
+          micOn;
+
+      });
+
+  }
+
+
+  const btn =
+    document.getElementById(
+      "micBtn"
+    );
+
+
+  btn.textContent =
+    micOn
+    ? "🎤"
+    : "🔇";
+
+
+  btn.classList.toggle(
+    "active",
+    micOn
+  );
+
+
+  if(currentRoomId){
+
+    db.ref(
+      "rooms/" +
+      currentRoomId +
+      "/users/" +
+      myId +
+      "/micOn"
+    ).set(micOn);
+
+  }
+
+}
+
+
+function toggleSpeaker(){
+
+  speakerOn =
+    !speakerOn;
+
+
+  document
+    .querySelectorAll(
+      "#audioContainer audio"
+    )
+    .forEach(function(audio){
+
+      audio.muted =
+        !speakerOn;
+
+    });
+
+
+  const btn =
+    document.getElementById(
+      "speakerBtn"
+    );
+
+
+  btn.textContent =
+    speakerOn
+    ? "🔊"
+    : "🔇";
+
+
+  btn.classList.toggle(
+    "active",
+    speakerOn
+  );
+
+}
+
+
+/* =========================================================
+   LEAVE ROOM
+   ========================================================= */
+
+async function leaveRoom(){
+
+  if(!currentRoomId){
+
+    showPage("homePage");
+
+    return;
+
+  }
+
+
+  try{
+
+    if(localStream){
+
+      localStream
+        .getTracks()
+        .forEach(function(track){
+
+          track.stop();
+
+        });
+
+    }
+
+
+    Object.keys(
+      peerConnections
+    )
+    .forEach(function(uid){
+
+      try{
+
+        peerConnections[uid]
+          .close();
+
+      }catch(e){}
+
+    });
+
+
+    peerConnections = {};
+
+
+    if(firebaseReady){
+
+      await db.ref(
+        "rooms/" +
+        currentRoomId +
+        "/users/" +
+        myId
+      ).remove();
+
+
+      await db.ref(
+        "rooms/" +
+        currentRoomId +
+        "/signals/" +
+        myId
+      ).remove();
+
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+
+  currentRoomId =
+    null;
+
+  currentRoomData =
+    null;
+
+  roomUsers = {};
+
+  currentRoomIsHost =
+    false;
+
+
+  document
+    .getElementById("audioContainer")
+    .innerHTML = "";
+
+
+  showPage("homePage");
+
+  showToast(
+    "Room छोड़ दिया."
+  );
+
+}
+
+
+/* =========================================================
+   ROOM TOOLS
+   ========================================================= */
+
+function roomTool(type){
+
+  const messages = {
+
+    support:
+      "Room Support opened.",
+
+    lucky:
+      "Lucky Wheel opened.",
+
+    bounty:
+      "Bounty Hunter opened.",
+
+    reward:
+      "Room Reward opened.",
+
+    exclusive:
+      "New app exclusive benefits."
+
+  };
+
+
+  showToast(
+    messages[type] ||
+    "Feature opened."
+  );
+
+}
+
+
+function inviteRoom(){
+
+  if(!currentRoomId) return;
+
+
+  const text =
+    "Join my PawanVoice room: " +
+    currentRoomData.name +
+    " #" +
+    currentRoomId;
+
+
+  if(
+    navigator.share
+  ){
+
+    navigator.share({
+
+      title:"PawanVoice Room",
+
+      text:text
+
+    })
+    .catch(function(){});
+
+  }else{
+
+    navigator.clipboard
+      .writeText(text)
+      .then(function(){
+
+        showToast(
+          "Room invite copied."
+        );
+
+      })
+      .catch(function(){
+
+        showToast(
+          text
+        );
+
+      });
+
+  }
+
+}
+
+
+function roomSettings(){
+
+  openModal(
+
+    "⚙️ Room Settings",
+
+    `
+
+      <div class="action-grid">
+
+        <button class="action-btn"
+                onclick="showToast('Room name settings')">
+          ✏️ Room Name
+        </button>
+
+        <button class="action-btn"
+                onclick="showToast('Room category settings')">
+          📂 Category
+        </button>
+
+        <button class="action-btn"
+                onclick="showToast('Seat settings')">
+          💺 Seat Settings
+        </button>
+
+        <button class="action-btn"
+                onclick="showToast('Room privacy settings')">
+          🔒 Privacy
+        </button>
+
+      </div>
+
+    `
+
+  );
+
+}
+
+
+function showGiftMenu(){
+
+  openModal(
+
+    "🎁 Gifts",
+
+    `
+
+      <div class="action-grid">
+
+        <button class="action-btn"
+                onclick="sendGift('❤️')">
+          ❤️ Heart
+        </button>
+
+        <button class="action-btn"
+                onclick="sendGift('🌹')">
+          🌹 Rose
+        </button>
+
+        <button class="action-btn"
+                onclick="sendGift('🎂')">
+          🎂 Cake
+        </button>
+
+        <button class="action-btn"
+                onclick="sendGift('🚀')">
+          🚀 Rocket
+        </button>
+
+      </div>
+
+    `
+
+  );
+
+}
+
+
+function sendGift(gift){
+
+  closeModal();
+
+  showToast(
+    gift + " Gift sent."
+  );
+
+}
+
+
+function showMoreMenu(){
+
+  openModal(
+
+    "⋯ More",
+
+    `
+
+      <div class="action-grid">
+
+        <button class="action-btn"
+                onclick="showToast('Report opened')">
+          🚩 Report
+        </button>
+
+        <button class="action-btn"
+                onclick="showToast('Share opened')">
+          📤 Share
+        </button>
+
+        <button class="action-btn"
+                onclick="showToast('Room information')">
+          ℹ️ Room Info
+        </button>
+
+        <button class="action-btn"
+                onclick="showToast('Feedback opened')">
+          💬 Feedback
+        </button>
+
+      </div>
+
+    `
+
+  );
+
+}
+
+
+/* =========================================================
+   INBOX
+   ========================================================= */
+
+function loadInbox(){
+
+  const list =
+    document.getElementById(
+      "inboxList"
+    );
+
+
+  if(
+    !firebaseReady
+  ){
+
+    return;
+
+  }
+
+
+  db.ref(
+    "inbox/" +
+    myId
+  )
+  .limitToLast(50)
+  .on(
+    "value",
+    function(snapshot){
+
+      const data =
+        snapshot.val() || {};
+
+      const keys =
+        Object.keys(data)
+        .reverse();
+
+
+      if(!keys.length){
+
+        return;
+
+      }
+
+
+      list.innerHTML =
+        keys.map(function(key){
+
+          const msg =
+            data[key];
+
+
+          return `
+
+            <div class="inbox-item">
+
+              <div class="inbox-icon">
+                ${
+                  msg.icon || "💌"
+                }
+              </div>
+
+              <div class="inbox-content">
+
+                <b>
+                  ${
+                    escapeHtml(
+                      msg.title ||
+                      "Message"
+                    )
+                  }
+                </b>
+
+                <p>
+                  ${
+                    escapeHtml(
+                      msg.text ||
+                      ""
+                    )
+                  }
+                </p>
+
+              </div>
+
+              <span class="inbox-time">
+                ${formatTime(
+                  msg.time
+                )}
+              </span>
+
+            </div>
+
+          `;
+
+        }).join("");
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   CP SPACE
+   ========================================================= */
+
+function showCpSpace(){
+
+  openModal(
+
+    "⭐ CP Space",
+
+    `
+
+      <div class="card">
+
+        <b>CP Level 1 से 100</b>
+
+        <p class="small">
+          CP Level आपके CP points के अनुसार बढ़ेगा।
+        </p>
+
+        <p class="small">
+          Level 2 = 1 लाख CP
+        </p>
+
+        <p class="small">
+          Level 3 = 3 लाख CP
+        </p>
+
+        <p class="small">
+          Level 5 = 5 लाख CP + Frame + Entry + VIP
+        </p>
+
+      </div>
+
+    `
+
+  );
+
+}
+
+
+function showCoins(){
+
+  openModal(
+
+    "🪙 Account Coins",
+
+    `
+
+      <div style="
+        text-align:center;
+        font-size:35px;
+        padding:20px;
+      ">
+        🪙
+        <br>
+        <b>${myCoins}</b>
+      </div>
+
+    `
+
+  );
+
+}
+
+
+/* =========================================================
+   RANKING
+   ========================================================= */
+
+function showRanking(type){
+
+  let title =
+    "Ranking";
+
+
+  if(type === "family"){
+
+    title =
+      "👨‍👩‍👧 Family Ranking";
+
+  }
+
+  if(type === "cp"){
+
+    title =
+      "⭐ CP Ranking";
+
+  }
+
+  if(type === "rich"){
+
+    title =
+      "👑 Rich King Ranking";
+
+  }
+
+
+  openModal(
+
+    title,
+
+    `
+
+      <div class="rank-row">
+
+        <div class="rank-number">
+          1
+        </div>
+
+        <div class="rank-avatar">
+          👑
+        </div>
+
+        <div class="rank-info">
+          <b>Coming Soon</b>
+          <span>
+            Ranking data will appear here
+          </span>
+        </div>
+
+      </div>
+
+      <div class="rank-row">
+
+        <div class="rank-number">
+          2
+        </div>
+
+        <div class="rank-avatar">
+          ⭐
+        </div>
+
+        <div class="rank-info">
+          <b>PawanVoice User</b>
+          <span>
+            Ranking points
+          </span>
+        </div>
+
+      </div>
+
+      <div class="rank-row">
+
+        <div class="rank-number">
+          3
+        </div>
+
+        <div class="rank-avatar">
+          💎
+        </div>
+
+        <div class="rank-info">
+          <b>Guest</b>
+          <span>
+            Ranking points
+          </span>
+        </div>
+
+      </div>
+
+    `
+
+  );
+
+}
+
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+
+function showSettings(){
+
+  openModal(
+
+    "⚙️ Settings",
+
+    `
+
+      <div class="action-grid">
+
+        <button class="action-btn">
+          🔔 Notifications
+        </button>
+
+        <button class="action-btn">
+          🌐 Language
+        </button>
+
+        <button class="action-btn">
+          🔒 Privacy
+        </button>
+
+        <button class="action-btn">
+          🛡️ Security
+        </button>
+
+        <button class="action-btn">
+          💬 Help
+        </button>
+
+        <button class="action-btn">
+          ℹ️ About
+        </button>
+
+      </div>
+
+    `
+
+  );
+
+}
+
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+function openModal(
+  title,
+  content
+){
+
+  document
+    .getElementById("modalTitle")
+    .textContent =
+      title;
+
+  document
+    .getElementById("modalContent")
+    .innerHTML =
+      content;
+
+  document
+    .getElementById("modal")
+    .classList.add("show");
+
+}
+
+
+function closeModal(){
+
+  document
+    .getElementById("modal")
+    .classList.remove("show");
+
+}
+
+
+function closeModalOutside(event){
+
+  if(
+    event.target.id === "modal"
+  ){
+
+    closeModal();
+
+  }
+
+}
+
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+let toastTimer = null;
+
+
+function showToast(message){
+
+  const toast =
+    document.getElementById(
+      "toast"
+    );
+
+
+  toast.textContent =
+    message;
+
+  toast.classList.add(
+    "show"
+  );
+
+
+  clearTimeout(
+    toastTimer
+  );
+
+
+  toastTimer =
+    setTimeout(function(){
+
+      toast.classList.remove(
+        "show"
+      );
+
+    },2500);
+
+}
+
+
+/* =========================================================
    HELPERS
-========================= */
-
-function closeModal(id){
- document.getElementById(id).classList.remove("show");
-}
-
-function showNotice(text){
- alert(text);
-}
+   ========================================================= */
 
 function escapeHtml(value){
- return String(value)
-  .replaceAll("&","&amp;")
-  .replaceAll("<","&lt;")
-  .replaceAll(">","&gt;")
-  .replaceAll('"',"&quot;")
-  .replaceAll("'","&#039;");
+
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
 }
+
+
+function escapeAttr(value){
+
+  return String(value)
+    .replace(/\\/g,"\\\\")
+    .replace(/'/g,"\\'");
+
+}
+
+
+function formatTime(timestamp){
+
+  if(!timestamp){
+
+    return "Now";
+
+  }
+
+
+  try{
+
+    return new Date(timestamp)
+      .toLocaleTimeString(
+        [],
+        {
+          hour:"2-digit",
+          minute:"2-digit"
+        }
+      );
+
+  }catch(e){
+
+    return "Now";
+
+  }
+
+}
+
+
+/* =========================================================
+   CLEANUP
+   ========================================================= */
+
+window.addEventListener(
+  "beforeunload",
+  function(){
+
+    if(
+      firebaseReady &&
+      currentRoomId
+    ){
+
+      db.ref(
+        "rooms/" +
+        currentRoomId +
+        "/users/" +
+        myId
+      ).remove();
+
+    }
+
+  }
+);
+
 </script>
 
 </body>
-   </html>
+       </html>
