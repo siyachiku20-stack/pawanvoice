@@ -1,700 +1,2238 @@
+```html
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>PawanVoice Room</title>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
-*{box-sizing:border-box}
-body{
- margin:0;background:#09080d;color:#fff;
- font-family:Arial,sans-serif;padding-bottom:90px
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
-.header{
- padding:12px;background:#15121d;
- display:flex;align-items:center;gap:10px;
- position:sticky;top:0;z-index:10
-}
-.back{
- border:0;background:#292331;color:white;
- border-radius:50%;width:38px;height:38px
-}
-.room-title{flex:1}
-.room-title b{display:block}
-.room-title small{color:#999}
 
-.event{
- margin:12px;background:linear-gradient(135deg,#7c3aed,#be185d);
- border-radius:16px;padding:15px
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  min-height:100%;
+  background:#09090e;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
 }
+
+button,input{
+  font:inherit;
+}
+
+button{
+  border:0;
+}
+
+.room-page{
+  min-height:100vh;
+  padding-bottom:155px;
+  background:
+    radial-gradient(circle at 50% 0%,#321052 0%,#15101e 28%,#09090e 70%);
+}
+
+/* ================= HEADER ================= */
+
+.room-header{
+  height:60px;
+  display:flex;
+  align-items:center;
+  padding:0 9px;
+  gap:8px;
+}
+
+.head-btn{
+  width:39px;
+  height:39px;
+  border-radius:50%;
+  background:#282431;
+  color:#fff;
+  font-size:18px;
+}
+
+.room-heading{
+  flex:1;
+  text-align:center;
+  min-width:0;
+}
+
+.room-name{
+  font-size:15px;
+  font-weight:bold;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.room-number{
+  margin-top:3px;
+  color:#999;
+  font-size:10px;
+}
+
+.head-actions{
+  display:flex;
+  gap:5px;
+}
+
+/* ================= ROOM INFO ================= */
+
+.room-info{
+  text-align:center;
+  padding:4px 10px 12px;
+}
+
+.host{
+  font-size:14px;
+  font-weight:bold;
+}
+
+.room-meta{
+  color:#aaa;
+  font-size:10px;
+  margin-top:4px;
+}
+
+/* ================= SEATS ================= */
 
 .seats{
- padding:10px;
- display:grid;
- gap:13px
-}
-
-.owner-row{
- display:flex;
- justify-content:center
-}
-
-.normal-row{
- display:grid;
- grid-template-columns:repeat(4,1fr);
- gap:8px
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px 3px;
+  padding:8px 7px 12px;
 }
 
 .seat{
- text-align:center;
- min-width:0
+  min-height:89px;
+  text-align:center;
 }
 
 .seat-circle{
- width:65px;height:65px;
- margin:auto;border-radius:50%;
- background:#241b31;
- border:2px solid #5b426d;
- display:flex;align-items:center;
- justify-content:center;
- overflow:hidden;font-size:27px
+  width:56px;
+  height:56px;
+  margin:auto;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#24232d;
+  border:2px solid #44434e;
+  font-size:24px;
+  box-shadow:0 4px 14px rgba(0,0,0,.25);
 }
 
-.seat-circle img{
- width:100%;height:100%;object-fit:cover
-}
-
-.owner .seat-circle{
- border-color:#f5c542;
- box-shadow:0 0 15px #8c6b16
+.seat.owner .seat-circle{
+  border-color:#f5b942;
+  background:linear-gradient(135deg,#3a2912,#29231a);
 }
 
 .seat-name{
- margin-top:5px;
- font-size:11px;
- overflow:hidden;
- text-overflow:ellipsis;
- white-space:nowrap
+  margin:5px auto 0;
+  max-width:78px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:10px;
 }
 
-.seat-mic{
- font-size:10px;color:#52e37d
+.seat-id{
+  color:#777;
+  font-size:8px;
+  margin-top:2px;
 }
 
-.tools{
- padding:12px;
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:8px
+.empty-seat{
+  color:#777;
 }
 
-.tool{
- background:#17141d;
- border:1px solid #2d2835;
- color:white;border-radius:13px;
- padding:12px 5px;font-size:12px
+/* ================= ROOM FEATURES ================= */
+
+.room-tools{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:5px;
+  padding:5px 7px 12px;
 }
 
-.chat{
- margin:12px;
- background:#121017;
- border-radius:16px;
- padding:12px
-}
-.messages{
- max-height:220px;overflow:auto
-}
-.msg{
- margin:7px 0;font-size:13px
-}
-.msg b{color:#c084fc}
-
-.chatbar{
- position:fixed;bottom:0;left:0;right:0;
- background:#15121d;border-top:1px solid #292432;
- padding:9px;display:flex;gap:7px;z-index:20
-}
-.chatbar input{
- flex:1;background:#25202d;border:0;
- color:white;border-radius:20px;padding:11px
-}
-.chatbar button{
- border:0;background:#7c3aed;color:white;
- border-radius:50%;width:43px
+.room-tool{
+  min-height:69px;
+  border-radius:12px;
+  background:#17161e;
+  border:1px solid #2b2934;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#ddd;
+  font-size:9px;
+  padding:5px 2px;
 }
 
-.panel{
- display:none;position:fixed;inset:0;
- background:rgba(0,0,0,.78);z-index:50;
- align-items:flex-end
+.tool-icon{
+  font-size:22px;
+  margin-bottom:5px;
 }
-.panel.show{display:flex}
-.panel-box{
- background:#18151f;width:100%;
- border-radius:22px 22px 0 0;
- padding:18px;max-height:85%;overflow:auto
+
+/* ================= EXP ================= */
+
+.exp-card{
+  margin:4px 8px 10px;
+  padding:12px;
+  border-radius:15px;
+  background:linear-gradient(135deg,#27103c,#15131b);
+  border:1px solid #412457;
 }
-.action{
- width:100%;padding:13px;margin:5px 0;
- border:0;border-radius:12px;
- background:#292431;color:white;text-align:left
+
+.exp-title{
+  text-align:center;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:10px;
 }
-.red{background:#8f2020}
-.green{background:#176a35}
+
+.exp-list{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+}
+
+.exp-user{
+  background:#0e0e14;
+  border-radius:11px;
+  padding:8px 3px;
+  text-align:center;
+}
+
+.exp-medal{
+  font-size:23px;
+}
+
+.exp-name{
+  font-size:10px;
+  margin-top:3px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.exp-value{
+  color:#999;
+  font-size:9px;
+  margin-top:3px;
+}
+
+/* ================= CHAT ================= */
+
+.chat-box{
+  margin:7px 8px;
+  height:155px;
+  overflow-y:auto;
+  padding:9px;
+  border-radius:14px;
+  background:rgba(8,8,13,.55);
+  border:1px solid #1d1c24;
+}
+
+.chat-message{
+  margin-bottom:8px;
+  font-size:11px;
+  line-height:1.4;
+}
+
+.chat-message b{
+  color:#c084fc;
+}
+
+/* ================= BOTTOM ================= */
+
+.bottom-panel{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:100;
+  padding:8px;
+  background:#15141c;
+  border-top:1px solid #2d2b36;
+}
+
+.emoji-box{
+  display:none;
+  grid-template-columns:repeat(8,1fr);
+  gap:4px;
+  padding:7px;
+  margin-bottom:7px;
+  background:#211f29;
+  border-radius:12px;
+}
+
+.emoji-box.show{
+  display:grid;
+}
+
+.emoji{
+  background:#302e38;
+  color:#fff;
+  border-radius:8px;
+  padding:5px;
+  font-size:18px;
+}
+
+.chat-row{
+  display:flex;
+  gap:6px;
+}
+
+.chat-input{
+  flex:1;
+  min-width:0;
+  height:42px;
+  border-radius:22px;
+  border:1px solid #393743;
+  background:#0d0d13;
+  color:#fff;
+  outline:none;
+  padding:0 14px;
+}
+
+.send{
+  width:43px;
+  height:42px;
+  border-radius:50%;
+  background:#7c3aed;
+  color:#fff;
+  font-size:17px;
+}
+
+.controls{
+  display:flex;
+  justify-content:space-around;
+  gap:5px;
+  padding-top:7px;
+}
+
+.control{
+  width:43px;
+  height:39px;
+  border-radius:12px;
+  background:#292832;
+  color:#fff;
+  font-size:17px;
+}
+
+.control.active{
+  background:#7c3aed;
+}
+
+.control.leave{
+  background:#dc2626;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:500;
+  background:rgba(0,0,0,.72);
+  align-items:flex-end;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:100%;
+  max-height:78vh;
+  overflow-y:auto;
+  padding:17px;
+  border-radius:20px 20px 0 0;
+  background:#191820;
+}
+
+.modal-title{
+  font-size:18px;
+  font-weight:bold;
+  margin-bottom:14px;
+}
+
+.modal-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.modal-btn{
+  padding:12px;
+  border-radius:11px;
+  background:#2b2934;
+  color:#fff;
+}
+
+.modal-btn.red{
+  background:#991b1b;
+}
+
+.close-btn{
+  width:100%;
+  padding:12px;
+  border-radius:11px;
+  background:#393743;
+  color:#fff;
+  margin-top:12px;
+}
+
+/* ================= TOAST ================= */
+
+.toast{
+  display:none;
+  position:fixed;
+  z-index:700;
+  left:50%;
+  bottom:165px;
+  transform:translateX(-50%);
+  max-width:90%;
+  padding:10px 15px;
+  border-radius:20px;
+  background:#292832;
+  border:1px solid #45434e;
+  color:#fff;
+  font-size:12px;
+  text-align:center;
+}
+
+.toast.show{
+  display:block;
+}
+
+@media(max-width:380px){
+  .seat-circle{
+    width:51px;
+    height:51px;
+  }
+
+  .room-tools{
+    gap:3px;
+  }
+
+  .room-tool{
+    font-size:8px;
+  }
+
+  .control{
+    width:40px;
+  }
+}
 </style>
 </head>
 
 <body>
 
-<div class="header">
- <button class="back" onclick="history.back()">‹</button>
+<div id="roomPage" class="room-page">
 
- <div class="room-title">
-  <b id="roomName">PawanVoice Room</b>
-  <small id="roomInfo">Loading...</small>
- </div>
+  <!-- ================= HEADER ================= -->
 
- <button class="back" onclick="openPanel('roomPanel')">⚙️</button>
+  <div class="room-header">
+
+    <button
+      class="head-btn"
+      onclick="leaveRoom()">
+      ←
+    </button>
+
+    <div class="room-heading">
+
+      <div
+        id="roomName"
+        class="room-name">
+        PawanVoice Room
+      </div>
+
+      <div
+        id="roomNumber"
+        class="room-number">
+        Room ID
+      </div>
+
+    </div>
+
+    <div class="head-actions">
+
+      <button
+        class="head-btn"
+        onclick="inviteRoom()">
+        📤
+      </button>
+
+      <button
+        class="head-btn"
+        onclick="roomSettings()">
+        ⚙️
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= HOST ================= -->
+
+  <div class="room-info">
+
+    <div
+      id="hostName"
+      class="host">
+      👑 Host
+    </div>
+
+    <div
+      id="roomMeta"
+      class="room-meta">
+      1/9 · General
+    </div>
+
+  </div>
+
+
+  <!-- ================= 9 SEATS ================= -->
+
+  <div
+    id="seats"
+    class="seats">
+  </div>
+
+
+  <!-- ================= ROOM FEATURES ================= -->
+
+  <div class="room-tools">
+
+    <button
+      class="room-tool"
+      onclick="roomFeature('support')">
+
+      <span class="tool-icon">💖</span>
+      Room Support
+
+    </button>
+
+    <button
+      class="room-tool"
+      onclick="roomFeature('lucky')">
+
+      <span class="tool-icon">🎡</span>
+      Lucky Wheel
+
+    </button>
+
+    <button
+      class="room-tool"
+      onclick="roomFeature('bounty')">
+
+      <span class="tool-icon">🎯</span>
+      Bounty Hunter
+
+    </button>
+
+    <button
+      class="room-tool"
+      onclick="roomFeature('reward')">
+
+      <span class="tool-icon">🎁</span>
+      Room Reward
+
+    </button>
+
+    <button
+      class="room-tool"
+      onclick="roomFeature('exclusive')">
+
+      <span class="tool-icon">✨</span>
+      Exclusive
+
+    </button>
+
+  </div>
+
+
+  <!-- ================= EXP RANKING ================= -->
+
+  <div class="exp-card">
+
+    <div class="exp-title">
+      🚀 Top Room EXP
+    </div>
+
+    <div class="exp-list">
+
+      <div class="exp-user">
+
+        <div class="exp-medal">🥇</div>
+
+        <div
+          id="exp1Name"
+          class="exp-name">
+          ---
+        </div>
+
+        <div
+          id="exp1Value"
+          class="exp-value">
+          0 EXP
+        </div>
+
+      </div>
+
+      <div class="exp-user">
+
+        <div class="exp-medal">🥈</div>
+
+        <div
+          id="exp2Name"
+          class="exp-name">
+          ---
+        </div>
+
+        <div
+          id="exp2Value"
+          class="exp-value">
+          0 EXP
+        </div>
+
+      </div>
+
+      <div class="exp-user">
+
+        <div class="exp-medal">🥉</div>
+
+        <div
+          id="exp3Name"
+          class="exp-name">
+          ---
+        </div>
+
+        <div
+          id="exp3Value"
+          class="exp-value">
+          0 EXP
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= CHAT ================= -->
+
+  <div
+    id="chatBox"
+    class="chat-box">
+
+    <div class="chat-message">
+      <b>System:</b>
+      Welcome to PawanVoice room.
+    </div>
+
+  </div>
+
+
+  <!-- ================= BOTTOM CONTROLS ================= -->
+
+  <div class="bottom-panel">
+
+    <div
+      id="emojiBox"
+      class="emoji-box">
+
+      <button class="emoji"
+              onclick="addEmoji('😀')">😀</button>
+      <button class="emoji"
+              onclick="addEmoji('😂')">😂</button>
+      <button class="emoji"
+              onclick="addEmoji('😍')">😍</button>
+      <button class="emoji"
+              onclick="addEmoji('😡')">😡</button>
+      <button class="emoji"
+              onclick="addEmoji('😭')">😭</button>
+      <button class="emoji"
+              onclick="addEmoji('😵')">😵</button>
+      <button class="emoji"
+              onclick="addEmoji('🔨')">🔨</button>
+      <button class="emoji"
+              onclick="addEmoji('😘')">😘</button>
+      <button class="emoji"
+              onclick="addEmoji('🤣')">🤣</button>
+      <button class="emoji"
+              onclick="addEmoji('😴')">😴</button>
+      <button class="emoji"
+              onclick="addEmoji('👻')">👻</button>
+      <button class="emoji"
+              onclick="addEmoji('❤️')">❤️</button>
+      <button class="emoji"
+              onclick="addEmoji('🔥')">🔥</button>
+      <button class="emoji"
+              onclick="addEmoji('👏')">👏</button>
+      <button class="emoji"
+              onclick="addEmoji('🎉')">🎉</button>
+      <button class="emoji"
+              onclick="addEmoji('👍')">👍</button>
+
+    </div>
+
+
+    <div class="chat-row">
+
+      <button
+        class="send"
+        onclick="toggleEmoji()">
+        😊
+      </button>
+
+      <input
+        id="chatInput"
+        class="chat-input"
+        placeholder="Say something..."
+        onkeydown="chatEnter(event)">
+
+      <button
+        class="send"
+        onclick="sendChat()">
+        ➤
+      </button>
+
+    </div>
+
+
+    <div class="controls">
+
+      <button
+        id="speakerBtn"
+        class="control active"
+        onclick="toggleSpeaker()">
+        🔊
+      </button>
+
+      <button
+        id="micBtn"
+        class="control active"
+        onclick="toggleMic()">
+        🎤
+      </button>
+
+      <button
+        class="control"
+        onclick="showGiftMenu()">
+        🎁
+      </button>
+
+      <button
+        class="control"
+        onclick="showMoreMenu()">
+        ⋯
+      </button>
+
+      <button
+        class="control leave"
+        onclick="leaveRoom()">
+        🚪
+      </button>
+
+    </div>
+
+  </div>
+
 </div>
 
-<div class="event">
- <b>🚀 PawanVoice Live Event</b>
- <div style="font-size:12px;margin-top:5px">
-  Room reward • CP • Family • Gifts
- </div>
+
+<!-- ================= MODAL ================= -->
+
+<div
+  id="modal"
+  class="modal"
+  onclick="outsideModal(event)">
+
+  <div class="modal-box">
+
+    <div
+      id="modalTitle"
+      class="modal-title">
+      Menu
+    </div>
+
+    <div id="modalContent">
+    </div>
+
+    <button
+      class="close-btn"
+      onclick="closeModal()">
+      Close
+    </button>
+
+  </div>
+
 </div>
 
-<div class="seats">
 
- <div class="owner-row">
-  <div class="seat owner" id="seat1"></div>
- </div>
-
- <div class="normal-row">
-  <div class="seat" id="seat2"></div>
-  <div class="seat" id="seat3"></div>
-  <div class="seat" id="seat4"></div>
-  <div class="seat" id="seat5"></div>
- </div>
-
- <div class="normal-row">
-  <div class="seat" id="seat6"></div>
-  <div class="seat" id="seat7"></div>
-  <div class="seat" id="seat8"></div>
-  <div class="seat" id="seat9"></div>
- </div>
-
+<div
+  id="toast"
+  class="toast">
 </div>
 
-<div class="tools">
- <button class="tool" onclick="requestSeat()">🎤<br>Request Mic</button>
- <button class="tool" onclick="toggleMic()">🎙️<br><span id="micText">Mic ON</span></button>
- <button class="tool" onclick="toggleSpeaker()">🔊<br><span id="speakerText">Speaker ON</span></button>
 
- <button class="tool" onclick="openPanel('giftPanel')">🎁<br>Gift</button>
- <button class="tool" onclick="openPanel('familyPanel')">👨‍👩‍👧<br>Family</button>
- <button class="tool" onclick="openPanel('cpPanel')">💞<br>CP</button>
-
- <button class="tool" onclick="openPanel('gamePanel')">🎮<br>Games</button>
- <button class="tool" onclick="openPanel('rankPanel')">🏆<br>Ranking</button>
- <button class="tool" onclick="shareRoom()">📤<br>Invite</button>
+<div
+  id="audioContainer"
+  style="display:none">
 </div>
 
-<div class="chat">
- <b>💬 Room Chat</b>
-
- <div id="messages" class="messages">
-  <div style="color:#777">Chat loading...</div>
- </div>
-</div>
-
-<div class="chatbar">
- <input id="chatInput" placeholder="Message...">
- <button onclick="sendMessage()">➤</button>
-</div>
-
-<!-- ROOM SETTINGS -->
-<div id="roomPanel" class="panel">
- <div class="panel-box">
-  <button class="action" onclick="closePanels()">✕ Close</button>
-  <h3>⚙️ Room Settings</h3>
-
-  <button class="action" onclick="renameRoom()">✏️ Rename Room</button>
-  <button class="action" onclick="toggleRoomLock()">🔒 Lock / Unlock Room</button>
-  <button class="action" onclick="openPanel('adminPanel')">👑 Admin Controls</button>
-  <button class="action red" onclick="leaveRoom()">🚪 Leave Room</button>
- </div>
-</div>
-
-<!-- ADMIN -->
-<div id="adminPanel" class="panel">
- <div class="panel-box">
-  <button class="action" onclick="closePanels()">✕ Close</button>
-  <h3>👑 Room Admin</h3>
-  <p style="color:#999;font-size:12px">
-   Member पर click करके action लिया जा सकता है.
-  </p>
-
-  <div id="adminMembers"></div>
- </div>
-</div>
-
-<!-- GIFTS -->
-<div id="giftPanel" class="panel">
- <div class="panel-box">
-  <button class="action" onclick="closePanels()">✕ Close</button>
-  <h3>🎁 Gifts</h3>
-
-  <button class="action" onclick="sendGift('Rose',10)">🌹 Rose — 10</button>
-  <button class="action" onclick="sendGift('Heart',50)">❤️ Heart — 50</button>
-  <button class="action" onclick="sendGift('Rocket',100)">🚀 Rocket — 100</button>
-  <button class="action" onclick="sendGift('Crown',500)">👑 Crown — 500</button>
- </div>
-</div>
-
-<!-- FAMILY -->
-<div id="familyPanel" class="panel">
- <div class="panel-box">
-  <button class="action" onclick="closePanels()">✕ Close</button>
-  <h3>👨‍👩‍👧 Family</h3>
-  <p style="color:#999">Family support और ranking.</p>
- </div>
-</div>
-
-<!-- CP -->
-<div id="cpPanel" class="panel">
- <div class="panel-box">
-  <button class="action" onclick="closePanels()">✕ Close</button>
-  <h3>💞 CP</h3>
-  <p style="color:#999">Couple support और CP ranking.</p>
- </div>
-</div>
-
-<!-- GAMES -->
-<div id="gamePanel" class="panel">
- <div class="panel-box">
-  <button class="action" onclick="closePanels()">✕ Close</button>
-  <h3>🎮 Room Games</h3>
-
-  <button class="action" onclick="game('🎲 Dice')">🎲 Dice</button>
-  <button class="action" onclick="game('🎡 Lucky Wheel')">🎡 Lucky Wheel</button>
-  <button class="action" onclick="game('🧠 Quiz')">🧠 Quiz</button>
- </div>
-</div>
-
-<!-- RANKING -->
-<div id="rankPanel" class="panel">
- <div class="panel-box">
-  <button class="action" onclick="closePanels()">✕ Close</button>
-  <h3>🏆 Room Ranking</h3>
-  <div class="action">👑 Rich King</div>
-  <div class="action">🎤 Host Ranking</div>
-  <div class="action">🎁 Gift Ranking</div>
- </div>
-</div>
 
 <script>
-const firebaseConfig={
- apiKey:"AIzaSyDnlTde5Gg5aPHrUIV6kTYnM521GtbrrE",
- authDomain:"pawanvoice-68c5e.firebaseapp.com",
- databaseURL:"https://pawanvoice-68c5e-default-rtdb.firebaseio.com/",
- projectId:"pawanvoice-68c5e",
- storageBucket:"pawanvoice-68c5e.firebasestorage.app",
- messagingSenderId:"148446327241",
- appId:"1:148446327241:web:6bac9cb9ad0fb530cbb818"
+
+/* =========================================================
+   FIREBASE
+   ========================================================= */
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
-firebase.initializeApp(firebaseConfig);
+let db = null;
+let firebaseReady = false;
 
-const auth=firebase.auth();
-const db=firebase.database();
+try{
 
-const params=new URLSearchParams(location.search);
-const roomId=params.get("room");
+  if(
+    firebaseConfig.apiKey !==
+    "YOUR_API_KEY"
+  ){
 
-let user=null;
-let room=null;
-let micOn=true;
-let speakerOn=true;
-let localStream=null;
-let peerConnections={};
+    firebase.initializeApp(firebaseConfig);
 
-if(!roomId){
- alert("Room ID नहीं मिला.");
- history.back();
+    db = firebase.database();
+
+    firebaseReady = true;
+
+  }
+
+}catch(error){
+
+  console.error(error);
+
 }
 
-auth.onAuthStateChanged(u=>{
- if(!u){
-   auth.signInAnonymously();
-   return;
- }
 
- user=u;
- loadRoom();
- loadMembers();
- loadChat();
-});
+/* =========================================================
+   USER
+   ========================================================= */
 
-/* =========================
-   ROOM
-========================= */
+let myId =
+  localStorage.getItem(
+    "pawanUserId"
+  );
+
+if(!myId){
+
+  myId =
+    "PV" +
+    Date.now()
+      .toString()
+      .slice(-8);
+
+  localStorage.setItem(
+    "pawanUserId",
+    myId
+  );
+
+}
+
+let myName =
+  localStorage.getItem(
+    "pawanName"
+  ) || "Guest";
+
+let myGender =
+  localStorage.getItem(
+    "pawanGender"
+  ) || "Male";
+
+
+/* =========================================================
+   ROOM ID
+   ========================================================= */
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+let currentRoomId =
+  params.get("room");
+
+
+if(!currentRoomId){
+
+  currentRoomId =
+    localStorage.getItem(
+      "pawanCurrentRoom"
+    );
+
+}
+
+
+if(currentRoomId){
+
+  localStorage.setItem(
+    "pawanCurrentRoom",
+    currentRoomId
+  );
+
+}
+
+
+/* =========================================================
+   ROOM VARIABLES
+   ========================================================= */
+
+let roomData = null;
+let roomUsers = {};
+
+let localStream = null;
+
+let micOn = true;
+let speakerOn = true;
+
+let peerConnections = {};
+
+let isHost = false;
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    if(!currentRoomId){
+
+      showToast(
+        "Room ID नहीं मिला."
+      );
+
+      return;
+
+    }
+
+    if(!firebaseReady){
+
+      showToast(
+        "Firebase config डालना जरूरी है."
+      );
+
+      return;
+
+    }
+
+    loadRoom();
+
+  }
+);
+
+
+/* =========================================================
+   LOAD ROOM
+   ========================================================= */
 
 function loadRoom(){
- db.ref("rooms/"+roomId).on("value",snap=>{
-   room=snap.val();
 
-   if(!room){
-     alert("Room नहीं मिला.");
-     history.back();
-     return;
-   }
+  db.ref(
+    "rooms/" +
+    currentRoomId
+  ).on(
+    "value",
+    function(snapshot){
 
-   document.getElementById("roomName").textContent=
-     room.name||"PawanVoice Room";
+      if(!snapshot.exists()){
 
-   document.getElementById("roomInfo").textContent=
-     (room.memberCount||0)+"/9 · "+
-     (room.category||"General");
- });
+        showToast(
+          "Room मौजूद नहीं है."
+        );
+
+        return;
+
+      }
+
+      roomData =
+        snapshot.val();
+
+      isHost =
+        roomData.hostId === myId;
+
+      updateRoomHeader();
+
+      loadUsers();
+
+    }
+  );
+
 }
 
-/* =========================
-   MEMBERS
-========================= */
 
-function loadMembers(){
- db.ref("rooms/"+roomId+"/members").on("value",snap=>{
-   const members=snap.val()||{};
+/* =========================================================
+   HEADER
+   ========================================================= */
 
-   for(let i=1;i<=9;i++){
-     const el=document.getElementById("seat"+i);
-     el.innerHTML="";
-     el.dataset.uid="";
-   }
+function updateRoomHeader(){
 
-   Object.keys(members).forEach(uid=>{
-     const m=members[uid];
-     const seat=Number(m.seat);
+  document
+    .getElementById("roomName")
+    .textContent =
+      roomData.name ||
+      "PawanVoice Room";
 
-     if(seat<1||seat>9)return;
 
-     const el=document.getElementById("seat"+seat);
+  document
+    .getElementById("roomNumber")
+    .textContent =
+      "Room #" +
+      currentRoomId;
 
-     el.dataset.uid=uid;
 
-     const avatar=m.photo
-       ? `<img src="${escapeHtml(m.photo)}">`
-       : "👤";
+  document
+    .getElementById("hostName")
+    .textContent =
+      "👑 Host: " +
+      (
+        roomData.hostName ||
+        "Host"
+      );
 
-     el.innerHTML=`
-      <div class="seat-circle">${avatar}</div>
-      <div class="seat-name">${escapeHtml(m.name||"Guest")}</div>
-      <div class="seat-mic">${m.micOn?"🎙️":"🔇"}</div>
-     `;
 
-     el.onclick=()=>memberAction(uid,m);
-   });
+  document
+    .getElementById("roomMeta")
+    .textContent =
+      getUserCount() +
+      "/9 · " +
+      (
+        roomData.category ||
+        "General"
+      );
 
-   renderAdminMembers(members);
- });
 }
 
-/* =========================
-   JOIN
-========================= */
 
-async function requestSeat(){
- if(!user)return;
+/* =========================================================
+   USERS
+   ========================================================= */
 
- const snap=await db.ref("rooms/"+roomId+"/members").once("value");
- const members=snap.val()||{};
+function loadUsers(){
 
- if(members[user.uid]){
-   alert("आप पहले से room में हैं.");
-   return;
- }
+  db.ref(
+    "rooms/" +
+    currentRoomId +
+    "/users"
+  ).on(
+    "value",
+    function(snapshot){
 
- let seat=0;
+      roomUsers =
+        snapshot.val() || {};
 
- for(let i=1;i<=9;i++){
-   const used=Object.values(members)
-      .some(x=>Number(x.seat)===i);
+      renderSeats();
 
-   if(!used){
-     seat=i;
-     break;
-   }
- }
+      renderExp();
 
- if(!seat){
-   alert("Room full है.");
-   return;
- }
+    }
+  );
 
- const profileSnap=
-   await db.ref("users/"+user.uid).once("value");
-
- const p=profileSnap.val()||{};
-
- await db.ref(
-   "rooms/"+roomId+"/members/"+user.uid
- ).set({
-   uid:user.uid,
-   name:p.name||"Guest",
-   photo:p.photo||"",
-   seat:seat,
-   micOn:true,
-   joinedAt:firebase.database.ServerValue.TIMESTAMP
- });
-
- await db.ref("rooms/"+roomId+"/memberCount")
-   .transaction(v=>(v||0)+1);
-
- await startMicrophone();
-
- alert("आप Seat "+seat+" पर join हो गए.");
 }
 
-/* =========================
+
+function getUserCount(){
+
+  return Object.keys(
+    roomUsers
+  ).length;
+
+}
+
+
+/* =========================================================
+   SEATS
+   ========================================================= */
+
+function renderSeats(){
+
+  const box =
+    document.getElementById(
+      "seats"
+    );
+
+  let html = "";
+
+
+  for(
+    let seat=1;
+    seat<=9;
+    seat++
+  ){
+
+    let user = null;
+
+
+    Object.keys(roomUsers)
+      .some(function(uid){
+
+        const u =
+          roomUsers[uid];
+
+        if(
+          u &&
+          Number(u.seat) === seat
+        ){
+
+          user = u;
+
+          return true;
+
+        }
+
+        return false;
+
+      });
+
+
+    if(user){
+
+      const owner =
+        user.isHost === true ||
+        seat === 1;
+
+
+      const icon =
+        owner
+        ? "👑"
+        : (
+          user.gender === "Female"
+          ? "👩"
+          : "👤"
+        );
+
+
+      html += `
+
+        <div
+          class="seat ${
+            owner ? "owner" : ""
+          }"
+          onclick="userClicked('${attr(user.id)}')">
+
+          <div class="seat-circle">
+            ${icon}
+          </div>
+
+          <div class="seat-name">
+            ${safe(
+              user.name ||
+              "Guest"
+            )}
+          </div>
+
+          <div class="seat-id">
+            ID:
+            ${safe(
+              String(
+                user.id || ""
+              ).slice(-6)
+            )}
+          </div>
+
+        </div>
+
+      `;
+
+    }else{
+
+      html += `
+
+        <div class="seat">
+
+          <div class="seat-circle empty-seat">
+            +
+          </div>
+
+          <div class="seat-name">
+            Seat ${seat}
+          </div>
+
+        </div>
+
+      `;
+
+    }
+
+  }
+
+
+  box.innerHTML =
+    html;
+
+}
+
+
+/* =========================================================
+   USER MENU
+   ========================================================= */
+
+function userClicked(uid){
+
+  const user =
+    roomUsers[uid];
+
+  if(!user) return;
+
+
+  let content = `
+
+    <div style="
+      background:#101016;
+      border-radius:12px;
+      padding:12px;
+      margin-bottom:10px;
+    ">
+
+      <div style="
+        font-size:15px;
+        font-weight:bold;
+      ">
+        👤 ${safe(user.name || "Guest")}
+      </div>
+
+      <div style="
+        color:#999;
+        font-size:11px;
+        margin-top:5px;
+      ">
+        User ID: ${safe(user.id)}
+      </div>
+
+      <div style="
+        color:#999;
+        font-size:11px;
+        margin-top:4px;
+      ">
+        Seat: ${user.seat || "-"}
+      </div>
+
+    </div>
+
+  `;
+
+
+  if(isHost && uid !== myId){
+
+    content += `
+
+      <div class="modal-grid">
+
+        <button
+          class="modal-btn"
+          onclick="makeAdmin('${attr(uid)}')">
+          🛡️ Make Admin
+        </button>
+
+        <button
+          class="modal-btn red"
+          onclick="kickUser('${attr(uid)}')">
+          🚫 Kick User
+        </button>
+
+      </div>
+
+    `;
+
+  }
+
+
+  openModal(
+    "👤 User Profile",
+    content
+  );
+
+}
+
+
+/* =========================================================
+   ADMIN
+   ========================================================= */
+
+function makeAdmin(uid){
+
+  if(!isHost){
+
+    showToast(
+      "Only Owner can make Admin."
+    );
+
+    return;
+
+  }
+
+
+  db.ref(
+    "rooms/" +
+    currentRoomId +
+    "/users/" +
+    uid
+  )
+  .update({
+    isAdmin:true
+  })
+  .then(function(){
+
+    closeModal();
+
+    showToast(
+      "User को Admin बना दिया."
+    );
+
+  });
+
+}
+
+
+function kickUser(uid){
+
+  if(!isHost){
+
+    showToast(
+      "Only Owner can kick."
+    );
+
+    return;
+
+  }
+
+
+  if(uid === myId){
+
+    return;
+
+  }
+
+
+  db.ref(
+    "rooms/" +
+    currentRoomId +
+    "/users/" +
+    uid
+  )
+  .remove()
+  .then(function(){
+
+    closeModal();
+
+    showToast(
+      "User room से remove हो गया."
+    );
+
+  });
+
+}
+
+
+/* =========================================================
+   CHAT
+   ========================================================= */
+
+function listenChat(){
+
+  db.ref(
+    "rooms/" +
+    currentRoomId +
+    "/chat"
+  )
+  .limitToLast(80)
+  .on(
+    "value",
+    function(snapshot){
+
+      const data =
+        snapshot.val() || {};
+
+      const box =
+        document.getElementById(
+          "chatBox"
+        );
+
+
+      let html = "";
+
+
+      Object.keys(data)
+        .forEach(function(key){
+
+          const msg =
+            data[key];
+
+
+          html += `
+
+            <div class="chat-message">
+
+              <b>
+                ${safe(
+                  msg.name ||
+                  "Guest"
+                )}:
+              </b>
+
+              ${safe(
+                msg.text ||
+                ""
+              )}
+
+            </div>
+
+          `;
+
+        });
+
+
+      box.innerHTML =
+        html ||
+        `
+          <div class="chat-message">
+            <b>System:</b>
+            No messages yet.
+          </div>
+        `;
+
+
+      box.scrollTop =
+        box.scrollHeight;
+
+    }
+  );
+
+}
+
+
+function sendChat(){
+
+  const input =
+    document.getElementById(
+      "chatInput"
+    );
+
+  const text =
+    input.value.trim();
+
+
+  if(!text) return;
+
+
+  db.ref(
+    "rooms/" +
+    currentRoomId +
+    "/chat"
+  )
+  .push({
+
+    uid:myId,
+
+    name:myName,
+
+    text:text,
+
+    time:
+      firebase.database.ServerValue.TIMESTAMP
+
+  });
+
+
+  input.value = "";
+
+}
+
+
+function chatEnter(event){
+
+  if(
+    event.key === "Enter"
+  ){
+
+    sendChat();
+
+  }
+
+}
+
+
+/* =========================================================
+   EMOJI
+   ========================================================= */
+
+function toggleEmoji(){
+
+  document
+    .getElementById("emojiBox")
+    .classList.toggle(
+      "show"
+    );
+
+}
+
+
+function addEmoji(emoji){
+
+  const input =
+    document.getElementById(
+      "chatInput"
+    );
+
+  input.value += emoji;
+
+  input.focus();
+
+}
+
+
+/* =========================================================
+   EXP
+   ========================================================= */
+
+function renderExp(){
+
+  const users =
+    Object.keys(roomUsers)
+      .map(function(uid){
+
+        return roomUsers[uid];
+
+      });
+
+
+  users.sort(function(a,b){
+
+    return (
+      Number(b.exp || 0) -
+      Number(a.exp || 0)
+    );
+
+  });
+
+
+  for(
+    let i=0;
+    i<3;
+    i++
+  ){
+
+    const name =
+      document.getElementById(
+        "exp" +
+        (i+1) +
+        "Name"
+      );
+
+    const value =
+      document.getElementById(
+        "exp" +
+        (i+1) +
+        "Value"
+      );
+
+
+    if(users[i]){
+
+      name.textContent =
+        users[i].name ||
+        "Guest";
+
+      value.textContent =
+        Number(
+          users[i].exp || 0
+        ) +
+        " EXP";
+
+    }else{
+
+      name.textContent =
+        "---";
+
+      value.textContent =
+        "0 EXP";
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
    MICROPHONE
-========================= */
+   ========================================================= */
 
 async function startMicrophone(){
- try{
-   localStream=await navigator.mediaDevices.getUserMedia({
-     audio:true,
-     video:false
-   });
 
-   micOn=true;
-   updateMic();
+  try{
 
-   /*
-    WebRTC signaling foundation:
-    आगे SDP/ICE RTDB nodes इसी room के अंदर रखे जाएंगे.
-   */
- }catch(e){
-   console.error(e);
-   alert("Microphone permission नहीं मिली.");
- }
+    localStream =
+      await navigator.mediaDevices
+        .getUserMedia({
+          audio:true,
+          video:false
+        });
+
+
+    localStream
+      .getAudioTracks()
+      .forEach(function(track){
+
+        track.enabled =
+          micOn;
+
+      });
+
+
+    showToast(
+      "Microphone connected."
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Microphone permission Allow करें."
+    );
+
+  }
+
 }
+
 
 function toggleMic(){
- micOn=!micOn;
 
- if(localStream){
-   localStream.getAudioTracks().forEach(t=>{
-     t.enabled=micOn;
-   });
- }
+  micOn =
+    !micOn;
 
- updateMic();
 
- if(user){
-   db.ref(
-     "rooms/"+roomId+"/members/"+user.uid+"/micOn"
-   ).set(micOn);
- }
+  if(localStream){
+
+    localStream
+      .getAudioTracks()
+      .forEach(function(track){
+
+        track.enabled =
+          micOn;
+
+      });
+
+  }
+
+
+  const button =
+    document.getElementById(
+      "micBtn"
+    );
+
+
+  button.textContent =
+    micOn
+    ? "🎤"
+    : "🔇";
+
+
+  button.classList.toggle(
+    "active",
+    micOn
+  );
+
+
+  if(
+    firebaseReady &&
+    currentRoomId
+  ){
+
+    db.ref(
+      "rooms/" +
+      currentRoomId +
+      "/users/" +
+      myId +
+      "/micOn"
+    ).set(micOn);
+
+  }
+
 }
 
-function updateMic(){
- document.getElementById("micText").textContent=
-   micOn?"Mic ON":"Mic OFF";
-}
+
+/* =========================================================
+   SPEAKER
+   ========================================================= */
 
 function toggleSpeaker(){
- speakerOn=!speakerOn;
- document.getElementById("speakerText").textContent=
-   speakerOn?"Speaker ON":"Speaker OFF";
 
- document.querySelectorAll("audio").forEach(a=>{
-   a.muted=!speakerOn;
- });
+  speakerOn =
+    !speakerOn;
+
+
+  document
+    .querySelectorAll(
+      "#audioContainer audio"
+    )
+    .forEach(function(audio){
+
+      audio.muted =
+        !speakerOn;
+
+    });
+
+
+  const button =
+    document.getElementById(
+      "speakerBtn"
+    );
+
+
+  button.textContent =
+    speakerOn
+    ? "🔊"
+    : "🔇";
+
+
+  button.classList.toggle(
+    "active",
+    speakerOn
+  );
+
 }
 
-/* =========================
-   CHAT
-========================= */
 
-function loadChat(){
- db.ref("rooms/"+roomId+"/chat")
- .limitToLast(100)
- .on("value",snap=>{
-   const data=snap.val()||{};
-   const box=document.getElementById("messages");
+/* =========================================================
+   INVITE
+   ========================================================= */
 
-   const arr=Object.values(data);
+function inviteRoom(){
 
-   if(!arr.length){
-     box.innerHTML=
-       '<div style="color:#777">No messages</div>';
-     return;
-   }
+  const roomName =
+    roomData &&
+    roomData.name
+    ? roomData.name
+    : "PawanVoice Room";
 
-   box.innerHTML=arr.map(m=>`
-     <div class="msg">
-      <b>${escapeHtml(m.name||"Guest")}:</b>
-      ${escapeHtml(m.text||"")}
-     </div>
-   `).join("");
 
-   box.scrollTop=box.scrollHeight;
- });
+  const text =
+    "🎙️ Join my PawanVoice room\n" +
+    roomName +
+    "\nRoom #" +
+    currentRoomId;
+
+
+  if(
+    navigator.share
+  ){
+
+    navigator.share({
+      title:"PawanVoice Room",
+      text:text
+    })
+    .catch(function(){});
+
+  }else if(
+    navigator.clipboard
+  ){
+
+    navigator.clipboard
+      .writeText(text)
+      .then(function(){
+
+        showToast(
+          "Room invite copied."
+        );
+
+      });
+
+  }else{
+
+    showToast(text);
+
+  }
+
 }
 
-function sendMessage(){
- const input=document.getElementById("chatInput");
- const text=input.value.trim();
 
- if(!text)return;
+/* =========================================================
+   ROOM SETTINGS
+   ========================================================= */
 
- db.ref("rooms/"+roomId+"/chat").push({
-   uid:user.uid,
-   name:"Guest",
-   text:text.slice(0,250),
-   createdAt:firebase.database.ServerValue.TIMESTAMP
- }).then(()=>{
-   input.value="";
- });
+function roomSettings(){
+
+  let content = `
+
+    <div class="modal-grid">
+
+      <button
+        class="modal-btn"
+        onclick="showToast('Room name settings')">
+        ✏️ Room Name
+      </button>
+
+      <button
+        class="modal-btn"
+        onclick="showToast('Category settings')">
+        📂 Category
+      </button>
+
+      <button
+        class="modal-btn"
+        onclick="showToast('Seat settings')">
+        💺 Seat Settings
+      </button>
+
+      <button
+        class="modal-btn"
+        onclick="showToast('Privacy settings')">
+        🔒 Privacy
+      </button>
+
+    </div>
+
+  `;
+
+
+  if(isHost){
+
+    content += `
+
+      <br>
+
+      <button
+        class="modal-btn red"
+        style="width:100%"
+        onclick="closeRoom()">
+        🗑️ Close Room
+      </button>
+
+    `;
+
+  }
+
+
+  openModal(
+    "⚙️ Room Settings",
+    content
+  );
+
 }
 
-/* =========================
+
+function closeRoom(){
+
+  if(!isHost){
+
+    showToast(
+      "Only Owner can close room."
+    );
+
+    return;
+
+  }
+
+
+  db.ref(
+    "rooms/" +
+    currentRoomId
+  )
+  .remove()
+  .then(function(){
+
+    showToast(
+      "Room closed."
+    );
+
+    setTimeout(function(){
+
+      goHome();
+
+    },700);
+
+  });
+
+}
+
+
+/* =========================================================
+   FEATURES
+   ========================================================= */
+
+function roomFeature(type){
+
+  const text = {
+
+    support:
+      "💖 Room Support opened.",
+
+    lucky:
+      "🎡 Lucky Wheel opened.",
+
+    bounty:
+      "🎯 Bounty Hunter opened.",
+
+    reward:
+      "🎁 Room Reward opened.",
+
+    exclusive:
+      "✨ New App Exclusive Benefits."
+
+  };
+
+
+  showToast(
+    text[type] ||
+    "Feature opened."
+  );
+
+}
+
+
+/* =========================================================
    GIFTS
-========================= */
+   ========================================================= */
 
-function sendGift(name,cost){
- alert(
-  "Gift: "+name+
-  "\nCost: "+cost+
-  "\n\nReal coin transaction backend से होगा."
- );
+function showGiftMenu(){
+
+  openModal(
+
+    "🎁 Send Gift",
+
+    `
+
+      <div class="modal-grid">
+
+        <button
+          class="modal-btn"
+          onclick="sendGift('❤️')">
+          ❤️ Heart
+        </button>
+
+        <button
+          class="modal-btn"
+          onclick="sendGift('🌹')">
+          🌹 Rose
+        </button>
+
+        <button
+          class="modal-btn"
+          onclick="sendGift('🎂')">
+          🎂 Cake
+        </button>
+
+        <button
+          class="modal-btn"
+          onclick="sendGift('🚀')">
+          🚀 Rocket
+        </button>
+
+      </div>
+
+    `
+
+  );
+
 }
 
-/* =========================
-   ADMIN
-========================= */
 
-function renderAdminMembers(members){
- const box=document.getElementById("adminMembers");
+function sendGift(gift){
 
- box.innerHTML=Object.keys(members).map(uid=>{
-   const m=members[uid];
+  closeModal();
 
-   return `
-    <button class="action"
-      onclick="memberAction('${uid}',${JSON.stringify(m).replaceAll('"','&quot;')})">
-      👤 ${escapeHtml(m.name||"Guest")}
-      · Seat ${m.seat}
-    </button>
-   `;
- }).join("");
+  showToast(
+    gift +
+    " Gift sent."
+  );
+
 }
 
-function memberAction(uid,m){
- if(uid===user.uid){
-   return;
- }
 
- const action=prompt(
-   "User: "+(m.name||"Guest")+
-   "\n\n1 = Make Admin\n2 = Kick\n3 = Close"
- );
+/* =========================================================
+   MORE
+   ========================================================= */
 
- if(action==="2"){
-   db.ref(
-    "rooms/"+roomId+"/members/"+uid
-   ).remove();
- }
+function showMoreMenu(){
+
+  openModal(
+
+    "⋯ More",
+
+    `
+
+      <div class="modal-grid">
+
+        <button
+          class="modal-btn"
+          onclick="showToast('Room Info')">
+          ℹ️ Room Info
+        </button>
+
+        <button
+          class="modal-btn"
+          onclick="inviteRoom()">
+          📤 Share
+        </button>
+
+        <button
+          class="modal-btn"
+          onclick="showToast('Report opened')">
+          🚩 Report
+        </button>
+
+        <button
+          class="modal-btn"
+          onclick="showToast('Feedback opened')">
+          💬 Feedback
+        </button>
+
+      </div>
+
+    `
+
+  );
+
 }
 
-/* =========================
-   ROOM CONTROLS
-========================= */
 
-function renameRoom(){
- const name=prompt("New room name:");
+/* =========================================================
+   MODAL
+   ========================================================= */
 
- if(!name)return;
+function openModal(
+  title,
+  content
+){
 
- db.ref("rooms/"+roomId+"/name").set(name);
+  document
+    .getElementById("modalTitle")
+    .textContent =
+      title;
+
+
+  document
+    .getElementById("modalContent")
+    .innerHTML =
+      content;
+
+
+  document
+    .getElementById("modal")
+    .classList.add(
+      "show"
+    );
+
 }
 
-function toggleRoomLock(){
- const newValue=!Boolean(room.locked);
 
- db.ref("rooms/"+roomId+"/locked").set(newValue);
+function closeModal(){
 
- alert(newValue?"Room locked":"Room unlocked");
+  document
+    .getElementById("modal")
+    .classList.remove(
+      "show"
+    );
+
 }
 
-function shareRoom(){
- const url=location.href;
 
- if(navigator.share){
-   navigator.share({
-     title:"PawanVoice Room",
-     text:"Join my PawanVoice room",
-     url:url
-   });
- }else{
-   prompt("Room link:",url);
- }
+function outsideModal(event){
+
+  if(
+    event.target.id === "modal"
+  ){
+
+    closeModal();
+
+  }
+
 }
 
-function leaveRoom(){
- if(!user)return;
 
- db.ref(
-  "rooms/"+roomId+"/members/"+user.uid
- ).remove().then(()=>{
-   db.ref("rooms/"+roomId+"/memberCount")
-   .transaction(v=>Math.max(0,(v||0)-1));
+/* =========================================================
+   LEAVE
+   ========================================================= */
 
-   if(localStream){
-     localStream.getTracks().forEach(t=>t.stop());
-   }
+async function leaveRoom(){
 
-   history.back();
- });
+  try{
+
+    if(
+      firebaseReady &&
+      currentRoomId
+    ){
+
+      await db.ref(
+        "rooms/" +
+        currentRoomId +
+        "/users/" +
+        myId
+      ).remove();
+
+    }
+
+
+    if(localStream){
+
+      localStream
+        .getTracks()
+        .forEach(function(track){
+
+          track.stop();
+
+        });
+
+    }
+
+
+    Object.keys(
+      peerConnections
+    ).forEach(function(uid){
+
+      try{
+
+        peerConnections[uid]
+          .close();
+
+      }catch(e){}
+
+    });
+
+
+    peerConnections = {};
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+
+  goHome();
+
 }
 
-/* =========================
-   UI
-========================= */
 
-function openPanel(id){
- document.querySelectorAll(".panel")
-   .forEach(p=>p.classList.remove("show"));
+function goHome(){
 
- document.getElementById(id).classList.add("show");
+  window.location.href =
+    "index.html";
+
 }
 
-function closePanels(){
- document.querySelectorAll(".panel")
-   .forEach(p=>p.classList.remove("show"));
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+function safe(value){
+
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
 }
 
-function game(name){
- alert(name+" selected.");
+
+function attr(value){
+
+  return String(value)
+    .replace(/\\/g,"\\\\")
+    .replace(/'/g,"\\'");
+
 }
 
-function escapeHtml(value){
- return String(value)
-  .replaceAll("&","&amp;")
-  .replaceAll("<","&lt;")
-  .replaceAll(">","&gt;")
-  .replaceAll('"',"&quot;")
-  .replaceAll("'","&#039;");
+
+/* =========================================================
+   START ROOM
+   ========================================================= */
+
+function startRoom(){
+
+  if(!currentRoomId){
+
+    return;
+
+  }
+
+
+  listenChat();
+
+  startMicrophone();
+
 }
+
+
+/* =========================================================
+   AUTO START
+   ========================================================= */
+
+setTimeout(
+  startRoom,
+  700
+);
+
+
+/* =========================================================
+   CLEANUP
+   ========================================================= */
+
+window.addEventListener(
+  "beforeunload",
+  function(){
+
+    if(
+      firebaseReady &&
+      currentRoomId
+    ){
+
+      db.ref(
+        "rooms/" +
+        currentRoomId +
+        "/users/" +
+        myId
+      ).remove();
+
+    }
+
+  }
+);
+
 </script>
 
 </body>
 </html>
+```
