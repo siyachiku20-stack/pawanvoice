@@ -1,384 +1,1710 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>PawanVoice Room</title>
+
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
 body{
- margin:0;background:#171522;color:white;font-family:Arial,sans-serif
+  font-family:Arial,sans-serif;
+  background:#130d25;
+  color:#fff;
+  min-height:100vh;
+  overflow-x:hidden;
 }
-.roomApp{max-width:480px;margin:auto;min-height:100vh;background:#211e2d}
-.header{
- padding:12px;display:flex;align-items:center;gap:10px;
- background:#292538
+
+button{
+  border:0;
+  color:#fff;
+  cursor:pointer;
 }
-.back{font-size:24px;background:none;border:0;color:white}
-.roomDp{
- width:48px;height:48px;border-radius:50%;object-fit:cover;background:#555
+
+.top{
+  padding:12px;
+  background:linear-gradient(135deg,#29104d,#70245e);
+  position:relative;
 }
-.roomTitle{flex:1}
-.roomTitle b{display:block;font-size:16px}
-.roomTitle small{color:#aaa}
+
+.room-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.room-dp{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#555;
+  border:2px solid #ffd76a;
+}
+
+.room-name{
+  font-size:18px;
+  font-weight:bold;
+}
+
+.room-id{
+  color:#ddd;
+  font-size:12px;
+  margin-top:4px;
+}
+
+.host-name{
+  color:#ffd76a;
+  font-size:12px;
+  margin-top:4px;
+}
+
+.top-right{
+  position:absolute;
+  right:10px;
+  top:10px;
+  display:flex;
+  gap:5px;
+  align-items:center;
+}
+
+.small-btn{
+  background:#ffffff20;
+  border:1px solid #ffffff35;
+  padding:7px 9px;
+  border-radius:18px;
+  font-size:11px;
+}
+
 .count{
- background:#363143;padding:8px 10px;border-radius:15px;font-size:12px
+  background:#00000035;
+  padding:7px 9px;
+  border-radius:18px;
+  font-size:12px;
 }
-.headerBtn{
- border:0;background:#393447;color:white;padding:8px;border-radius:12px
+
+.seats-area{
+  padding:18px 8px 8px;
+  min-height:350px;
+  background:
+  radial-gradient(circle at 50% 20%,#5d2672 0,#26123e 38%,#130d25 75%);
 }
-.hostBox{text-align:center;padding:15px 0 8px}
-.seats{
- display:grid;grid-template-columns:repeat(4,1fr);
- gap:15px 7px;padding:8px 10px 12px
+
+.seat-host{
+  display:flex;
+  justify-content:center;
+  margin-bottom:18px;
 }
-.seatWrap{text-align:center;min-width:0}
-.seat{
- width:62px;height:62px;margin:auto;border-radius:50%;
- background:#393548;border:2px solid #625b73;
- display:flex;align-items:center;justify-content:center;
- position:relative;font-size:25px
+
+.seat-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px 7px;
+  max-width:430px;
+  margin:auto;
 }
-.seat img{
- width:100%;height:100%;border-radius:50%;object-fit:cover
+
+.seat-box{
+  text-align:center;
+  min-width:0;
 }
-.seatNo{
- position:absolute;bottom:-7px;right:-4px;
- background:#70678b;border-radius:10px;padding:2px 6px;font-size:10px
+
+.avatar-wrap{
+  width:62px;
+  height:62px;
+  margin:auto;
+  position:relative;
 }
-.seatName{
- margin-top:8px;font-size:11px;color:#ddd;
- white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+
+.avatar{
+  width:62px;
+  height:62px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#312642;
+  border:2px solid #8c6cff;
 }
+
+.empty{
+  opacity:.65;
+}
+
+.seat-number{
+  position:absolute;
+  bottom:-5px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#241a38;
+  border:1px solid #9a7aff;
+  border-radius:10px;
+  padding:2px 7px;
+  font-size:9px;
+  white-space:nowrap;
+}
+
+.user-name{
+  margin-top:8px;
+  font-size:11px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.mic-status{
+  font-size:10px;
+  margin-top:3px;
+  color:#bbb;
+}
+
 .tools{
- display:grid;grid-template-columns:repeat(5,1fr);gap:8px;
- padding:10px
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
+  padding:10px;
 }
+
 .tool{
- border:0;border-radius:13px;background:#302c3d;color:white;
- padding:10px 4px;font-size:11px
+  background:#241936;
+  border:1px solid #493364;
+  border-radius:12px;
+  padding:10px 3px;
+  font-size:10px;
+  text-align:center;
 }
+
 .exp{
- margin:8px 10px;padding:14px;border-radius:16px;
- background:#302b3d;text-align:center
+  margin:8px 10px;
+  background:#241936;
+  border-radius:15px;
+  padding:12px;
+  border:1px solid #493364;
 }
+
+.exp-title{
+  text-align:center;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.exp-list{
+  display:flex;
+  justify-content:space-around;
+  text-align:center;
+}
+
+.exp-item{
+  font-size:11px;
+}
+
+.exp-item b{
+  display:block;
+  font-size:18px;
+  color:#ffd76a;
+}
+
 .chat{
- position:fixed;bottom:0;left:50%;transform:translateX(-50%);
- width:min(480px,100%);background:#252131;padding:8px;
- display:flex;gap:6px;z-index:20
+  margin:8px 10px 95px;
+  background:#191126;
+  border-radius:15px;
+  border:1px solid #39264e;
+  min-height:170px;
+  overflow:hidden;
 }
-.chat input{
- flex:1;min-width:0;border:0;border-radius:20px;padding:11px 13px;
- background:#393448;color:white;outline:0
+
+.messages{
+  height:150px;
+  overflow-y:auto;
+  padding:10px;
 }
-.chat button{
- width:42px;border:0;border-radius:50%;background:#393448;color:white
+
+.message{
+  margin-bottom:7px;
+  font-size:12px;
 }
-.emojiPanel{
- position:fixed;bottom:64px;left:50%;transform:translateX(-50%);
- width:min(480px,100%);background:#2d293a;padding:10px;
- display:none;grid-template-columns:repeat(8,1fr);gap:5px;z-index:30
+
+.message b{
+  color:#ffcb62;
 }
-.emojiPanel button{
- border:0;background:none;color:white;font-size:23px;padding:5px
+
+.system{
+  color:#9d8fac;
+  font-size:11px;
 }
-.messages{padding:5px 12px;height:90px;overflow:auto;color:#ddd;font-size:12px}
+
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#181022;
+  border-top:1px solid #3a284d;
+  padding:8px;
+  z-index:50;
+}
+
+.input-row{
+  display:flex;
+  gap:6px;
+}
+
+.message-input{
+  flex:1;
+  min-width:0;
+  background:#2a2037;
+  color:#fff;
+  border:1px solid #4b3b5e;
+  border-radius:22px;
+  padding:11px 14px;
+  outline:none;
+}
+
+.action{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:#332343;
+  font-size:18px;
+}
+
+.mic-on{
+  background:#d83c73;
+}
+
+.emoji-panel{
+  display:none;
+  max-height:180px;
+  overflow-y:auto;
+  padding:10px 5px;
+  grid-template-columns:repeat(8,1fr);
+  gap:7px;
+}
+
+.emoji-panel button{
+  background:#292036;
+  border-radius:8px;
+  padding:7px 2px;
+  font-size:20px;
+}
+
+.more-panel{
+  display:none;
+  position:fixed;
+  bottom:65px;
+  right:10px;
+  background:#271a35;
+  border:1px solid #59416c;
+  border-radius:15px;
+  padding:8px;
+  z-index:100;
+}
+
+.more-panel button{
+  display:block;
+  width:150px;
+  background:#332343;
+  padding:10px;
+  margin:4px;
+  border-radius:9px;
+  text-align:left;
+}
+
 .modal{
- position:fixed;inset:0;background:#0009;display:none;
- align-items:flex-end;z-index:50
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#0009;
+  z-index:200;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
 }
-.modalBox{
- width:min(480px,100%);background:#292538;border-radius:20px 20px 0 0;
- padding:20px
+
+.modal-box{
+  width:100%;
+  max-width:340px;
+  background:#241833;
+  border:1px solid #65477c;
+  border-radius:18px;
+  padding:18px;
 }
-.modalBox button{
- width:100%;padding:13px;margin-top:8px;border:0;border-radius:12px
+
+.modal-box h3{
+  margin-bottom:12px;
+}
+
+.modal-box button{
+  width:100%;
+  padding:12px;
+  margin-top:7px;
+  border-radius:10px;
+  background:#39264c;
+}
+
+.close{
+  background:#d83c73!important;
+}
+
+.toast{
+  position:fixed;
+  top:15px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#000d;
+  padding:10px 15px;
+  border-radius:20px;
+  display:none;
+  z-index:500;
+  font-size:12px;
 }
 </style>
 </head>
 
 <body>
-<div class="roomApp">
 
-  <div class="header">
-    <button class="back" onclick="leave()">‹</button>
+<div class="toast" id="toast"></div>
 
-    <img id="roomDp" class="roomDp"
-         src="https://placehold.co/100x100?text=PV">
+<header class="top">
 
-    <div class="roomTitle">
-      <b id="roomName">PawanVoice Room</b>
-      <small>Room ID: <span id="roomIdText"></span></small>
+  <div class="room-title">
+
+    <img id="roomDp"
+         class="room-dp"
+         src="https://i.pravatar.cc/150">
+
+    <div>
+      <div class="room-name" id="roomName">
+        PawanVoice Room
+      </div>
+
+      <div class="room-id" id="roomIdText">
+        Room ID: main
+      </div>
+
+      <div class="host-name" id="hostName">
+        Host: -
+      </div>
     </div>
 
-    <div class="count"><span id="peopleCount">0</span>/9</div>
-
-    <button class="headerBtn" onclick="settings()">⚙️</button>
-    <button class="headerBtn" onclick="invite()">↗</button>
   </div>
 
-  <div class="hostBox">
-    <div id="hostSeat"></div>
+  <div class="top-right">
+    <span class="count" id="userCount">0/9</span>
+
+    <button class="small-btn"
+            onclick="roomSettings()">
+      ⚙️
+    </button>
+
+    <button class="small-btn"
+            onclick="inviteRoom()">
+      📩
+    </button>
   </div>
 
-  <div id="seats" class="seats"></div>
+</header>
 
-  <div class="tools">
-    <button class="tool">🛟<br>Support</button>
-    <button class="tool">🎡<br>Lucky Wheel</button>
-    <button class="tool">🎯<br>Bounty</button>
-    <button class="tool">🎁<br>Reward</button>
-    <button class="tool">🚀<br>Exclusive</button>
+
+<section class="seats-area">
+
+  <div class="seat-host">
+    <div class="seat-box" id="seat1"></div>
   </div>
 
-  <div class="exp">
-    🚀 &nbsp; TOP EXP
-    <br><br>
-    🥇 1 &nbsp;&nbsp; 🥈 2 &nbsp;&nbsp; 🥉 3
+  <div class="seat-grid">
+    <div class="seat-box" id="seat2"></div>
+    <div class="seat-box" id="seat3"></div>
+    <div class="seat-box" id="seat4"></div>
+    <div class="seat-box" id="seat5"></div>
+
+    <div class="seat-box" id="seat6"></div>
+    <div class="seat-box" id="seat7"></div>
+    <div class="seat-box" id="seat8"></div>
+    <div class="seat-box" id="seat9"></div>
   </div>
 
-  <div id="messages" class="messages"></div>
+</section>
 
-  <div id="emojiPanel" class="emojiPanel"></div>
 
-  <div class="chat">
-    <input id="message" placeholder="Say something...">
-    <button onclick="toggleEmoji()">😊</button>
-    <button onclick="toggleSpeaker()">🔊</button>
-    <button id="micBtn" onclick="toggleMic()">🎤</button>
-    <button onclick="showInbox()">📥</button>
-    <button onclick="more()">•••</button>
+<section class="tools">
+
+  <button class="tool"
+          onclick="showToast('Room Support')">
+    🛟<br>Support
+  </button>
+
+  <button class="tool"
+          onclick="showToast('Lucky Wheel')">
+    🎡<br>Lucky Wheel
+  </button>
+
+  <button class="tool"
+          onclick="showToast('Bounty Hunter')">
+    🎯<br>Bounty
+  </button>
+
+  <button class="tool"
+          onclick="showToast('Room Reward')">
+    🎁<br>Reward
+  </button>
+
+  <button class="tool"
+          onclick="showToast('Exclusive Benefits')">
+    🚀<br>Exclusive
+  </button>
+
+</section>
+
+
+<section class="exp">
+
+  <div class="exp-title">
+    🚀 Room EXP
+  </div>
+
+  <div class="exp-list">
+
+    <div class="exp-item">
+      <b>🥇</b>
+      TOP 1
+    </div>
+
+    <div class="exp-item">
+      <b>🥈</b>
+      TOP 2
+    </div>
+
+    <div class="exp-item">
+      <b>🥉</b>
+      TOP 3
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="chat">
+
+  <div class="messages" id="messages"></div>
+
+</section>
+
+
+<div class="more-panel" id="morePanel">
+
+  <button onclick="inviteRoom()">
+    📤 Share Room
+  </button>
+
+  <button onclick="showToast('Bag')">
+    🎒 Bag
+  </button>
+
+  <button onclick="leaveRoom()">
+    🚪 Leave Room
+  </button>
+
+</div>
+
+
+<div class="bottom">
+
+  <div class="emoji-panel" id="emojiPanel">
+
+    <button onclick="emoji('😡')">😡</button>
+    <button onclick="emoji('😭')">😭</button>
+    <button onclick="emoji('😵')">😵</button>
+    <button onclick="emoji('🔨')">🔨</button>
+    <button onclick="emoji('😊')">😊</button>
+    <button onclick="emoji('😘')">😘</button>
+    <button onclick="emoji('💋')">💋</button>
+    <button onclick="emoji('😂')">😂</button>
+
+    <button onclick="emoji('😴')">😴</button>
+    <button onclick="emoji('😧')">😧</button>
+    <button onclick="emoji('😁')">😁</button>
+    <button onclick="emoji('👻')">👻</button>
+    <button onclick="emoji('😀')">😀</button>
+    <button onclick="emoji('🥵')">🥵</button>
+    <button onclick="emoji('🤗')">🤗</button>
+    <button onclick="emoji('❤️')">❤️</button>
+
+    <button onclick="emoji('💰')">💰</button>
+    <button onclick="emoji('🥳')">🥳</button>
+    <button onclick="emoji('🥺')">🥺</button>
+    <button onclick="emoji('😡')">😡</button>
+    <button onclick="emoji('❓')">❓</button>
+    <button onclick="emoji('🙄')">🙄</button>
+    <button onclick="emoji('🤣')">🤣</button>
+    <button onclick="emoji('😎')">😎</button>
+    <button onclick="emoji('🤔')">🤔</button>
+
+  </div>
+
+  <div class="input-row">
+
+    <button class="action"
+            onclick="toggleEmoji()">
+      😊
+    </button>
+
+    <input id="messageInput"
+           class="message-input"
+           placeholder="Type a message..."
+           maxlength="500"
+           onkeydown="if(event.key==='Enter')sendMessage()">
+
+    <button class="action"
+            id="speakerBtn"
+            onclick="toggleSpeaker()">
+      🔊
+    </button>
+
+    <button class="action"
+            id="micBtn"
+            onclick="toggleMic()">
+      🎤
+    </button>
+
+    <button class="action"
+            onclick="showToast('Inbox')">
+      💌
+    </button>
+
+    <button class="action"
+            onclick="toggleMore()">
+      ⋯
+    </button>
+
   </div>
 
 </div>
 
-<div id="modal" class="modal" onclick="closeModal()">
-  <div class="modalBox" onclick="event.stopPropagation()">
-    <h3 id="modalTitle">Menu</h3>
-    <div id="modalContent"></div>
-    <button onclick="closeModal()">Close</button>
+
+<div class="modal" id="userModal">
+
+  <div class="modal-box">
+
+    <h3 id="selectedUserName">
+      User
+    </h3>
+
+    <p id="selectedUserId"
+       style="font-size:12px;color:#aaa;margin-bottom:8px">
+      ID: -
+    </p>
+
+    <button onclick="showToast('Profile')">
+      👤 View Profile
+    </button>
+
+    <button id="adminBtn"
+            onclick="makeSelectedAdmin()">
+      👑 Make Admin
+    </button>
+
+    <button id="muteBtn"
+            onclick="muteSelectedUser()">
+      🔇 Mute User
+    </button>
+
+    <button id="kickBtn"
+            onclick="kickSelectedUser()">
+      🚫 Kick User
+    </button>
+
+    <button onclick="closeUserModal()"
+            class="close">
+      Close
+    </button>
+
   </div>
+
 </div>
+
 
 <script>
-const SERVER="https://pawanvoice-1.onrender.com";
-const socket=io(SERVER);
 
-const params=new URLSearchParams(location.search);
-const ROOM_ID=params.get("room") || "main";
+/* ==================================================
+   PAWANVOICE ROOM CLIENT
+================================================== */
 
-let me=JSON.parse(localStorage.getItem("pv_user")||"null");
-if(!me){
- me={userId:"U"+Date.now(),name:"Guest",dp:""};
- localStorage.setItem("pv_user",JSON.stringify(me));
+const SERVER =
+  "https://pawanvoice-1.onrender.com";
+
+const socket =
+  io(SERVER, {
+    transports:["websocket","polling"]
+  });
+
+
+/* ==================================================
+   ROOM ID
+================================================== */
+
+const params =
+  new URLSearchParams(location.search);
+
+const ROOM_ID =
+  params.get("room") || "main";
+
+
+/* ==================================================
+   USER DATA
+================================================== */
+
+let userId =
+  localStorage.getItem("pawanvoice_user_id");
+
+if(!userId){
+
+  userId =
+    "PV" +
+    Date.now().toString().slice(-8);
+
+  localStorage.setItem(
+    "pawanvoice_user_id",
+    userId
+  );
 }
 
-let micOn=false;
-let speakerOn=true;
-let currentRoom=null;
 
-roomIdText.textContent=ROOM_ID;
+let userName =
+  localStorage.getItem("pawanvoice_name") ||
+  "Pawan";
 
-const emojis=[
-"😡","😭","😵","🔨","😄","😘","💋","😂",
-"😴","😧","😁","👻","😀","🥵","🤗","❤️",
-"💰","🥳","🥺","😡","❓","🙄","🤣","😎","🤔"
-];
 
-emojiPanel.innerHTML=emojis.map(e=>
- `<button onclick="sendEmoji('${e}')">${e}</button>`
-).join("");
+let userDp =
+  localStorage.getItem("pawanvoice_dp") ||
+  "https://i.pravatar.cc/150?img=12";
 
-socket.on("connect",()=>{
- socket.emit("joinRoom",{
-   roomId:ROOM_ID,
-   userId:me.userId,
-   name:me.name
- });
+
+let currentRoom = null;
+
+let currentUser = null;
+
+let selectedUser = null;
+
+let micOn = false;
+
+let speakerOn = true;
+
+
+/* ==================================================
+   DISPLAY ROOM ID
+================================================== */
+
+document.getElementById(
+  "roomIdText"
+).textContent =
+  "Room ID: " + ROOM_ID;
+
+
+/* ==================================================
+   SOCKET CONNECT
+================================================== */
+
+socket.on("connect", () => {
+
+  console.log(
+    "Connected:",
+    socket.id
+  );
+
+  joinRoom();
+
 });
 
-socket.on("joinedRoom",data=>{
- currentRoom=data.room;
- renderRoom(data.room);
-});
 
-socket.on("roomUpdated",room=>{
- currentRoom=room;
- renderRoom(room);
-});
+/* ==================================================
+   JOIN ROOM
+================================================== */
 
-socket.on("roomError",data=>{
- alert(data.message);
-});
+function joinRoom(){
 
-socket.on("giftReceived",gift=>{
- addMessage("🎁 "+gift.senderName+" sent "+gift.giftName);
-});
+  socket.emit(
+    "joinRoom",
+    {
+      roomId:ROOM_ID,
+      userId:userId,
+      name:userName,
+      dp:userDp,
+      roomName:"PawanVoice Room"
+    }
+  );
+
+}
+
+
+/* ==================================================
+   JOINED
+================================================== */
+
+socket.on(
+  "joinedRoom",
+  data => {
+
+    currentRoom =
+      data.room;
+
+    currentUser =
+      data.user;
+
+    renderRoom(
+      currentRoom
+    );
+
+    addSystemMessage(
+      "You joined the room."
+    );
+
+  }
+);
+
+
+/* ==================================================
+   ROOM UPDATED
+================================================== */
+
+socket.on(
+  "roomUpdated",
+  room => {
+
+    currentRoom =
+      room;
+
+    currentUser =
+      room.users.find(
+        u => u.userId === userId
+      ) || currentUser;
+
+    renderRoom(room);
+
+  }
+);
+
+
+/* ==================================================
+   ROOM ERROR
+================================================== */
+
+socket.on(
+  "roomError",
+  data => {
+
+    showToast(
+      data.message || "Room error"
+    );
+
+  }
+);
+
+
+/* ==================================================
+   RENDER ROOM
+================================================== */
 
 function renderRoom(room){
- const users=room.users||[];
 
- peopleCount.textContent=users.length;
+  if(!room) return;
 
- seats.innerHTML="";
 
- for(let i=0;i<8;i++){
-   const seatNumber=i+2;
-   const userId=room.seats ? room.seats[i+1] : null;
-   const user=users.find(u=>u.userId===userId);
+  document.getElementById(
+    "roomName"
+  ).textContent =
+    room.name || "PawanVoice Room";
 
-   seats.innerHTML+=seatHTML(seatNumber,user);
- }
 
- const hostId=room.seats ? room.seats[0] : null;
- const host=users.find(u=>u.userId===hostId);
+  document.getElementById(
+    "userCount"
+  ).textContent =
+    `${room.users.length}/9`;
 
- hostSeat.innerHTML=seatHTML(1,host,true);
+
+  const host =
+    room.users.find(
+      u => u.isHost
+    );
+
+
+  document.getElementById(
+    "hostName"
+  ).textContent =
+    "Host: " +
+    (host ? host.name : "-");
+
+
+  for(
+    let i=1;
+    i<=9;
+    i++
+  ){
+
+    const box =
+      document.getElementById(
+        "seat"+i
+      );
+
+    const user =
+      room.users.find(
+        u => Number(u.seat) === i
+      );
+
+
+    if(user){
+
+      box.innerHTML = `
+
+        <div class="avatar-wrap">
+
+          <img
+            class="avatar"
+            src="${safeImage(user.dp)}"
+            onclick="openUser('${escapeJs(user.userId)}')"
+          >
+
+          <span class="seat-number">
+            Seat ${i}
+          </span>
+
+        </div>
+
+        <div class="user-name">
+          ${escapeHtml(user.name)}
+          ${user.isHost ? " 👑" : ""}
+          ${user.isAdmin && !user.isHost ? " ⭐" : ""}
+        </div>
+
+        <div class="mic-status">
+          ${user.micOn ? "🎤 ON" : "🎤 OFF"}
+        </div>
+      `;
+
+    }else{
+
+      box.innerHTML = `
+
+        <div
+          class="avatar-wrap empty"
+          onclick="selectSeat(${i})"
+        >
+
+          <img
+            class="avatar"
+            src="https://i.pravatar.cc/150?u=seat${i}"
+          >
+
+          <span class="seat-number">
+            Seat ${i}
+          </span>
+
+        </div>
+
+        <div class="user-name">
+          Empty
+        </div>
+
+        <div class="mic-status">
+          Tap to sit
+        </div>
+      `;
+
+    }
+
+  }
+
+
+  if(room.messages){
+
+    const messages =
+      document.getElementById(
+        "messages"
+      );
+
+    messages.innerHTML = "";
+
+    room.messages.forEach(
+      m => {
+
+        if(m.type === "system"){
+
+          const div =
+            document.createElement(
+              "div"
+            );
+
+          div.className =
+            "message system";
+
+          div.textContent =
+            m.message;
+
+          messages.appendChild(
+            div
+          );
+
+        }else{
+
+          addMessageToScreen(
+            m,
+            false
+          );
+
+        }
+
+      }
+    );
+
+    messages.scrollTop =
+      messages.scrollHeight;
+
+  }
+
 }
 
-function seatHTML(number,user,isHost=false){
- const dp=(user && user.dp) ? user.dp :
-   "https://placehold.co/120x120?text="+number;
 
- const name=user ? user.name : "Empty";
+/* ==================================================
+   SELECT SEAT
+================================================== */
 
- return `
- <div class="seatWrap" onclick="seatClick(${number})">
-   <div class="seat">
-     <img src="${dp}">
-     <span class="seatNo">${number}</span>
-   </div>
-   <div class="seatName">${name}</div>
- </div>`;
+function selectSeat(seat){
+
+  socket.emit(
+    "selectSeat",
+    {
+      seat:seat
+    }
+  );
+
 }
 
-function seatClick(number){
- if(!currentRoom)return;
 
- const existingId=currentRoom.seats[number-1];
+/* ==================================================
+   MIC
+================================================== */
 
- if(existingId && existingId!==me.userId){
-   const user=currentRoom.users.find(u=>u.userId===existingId);
-   userMenu(user);
-   return;
- }
+async function toggleMic(){
 
- socket.emit("selectSeat",{seat:number});
+  if(!currentUser){
+
+    showToast(
+      "Room connect ho raha hai..."
+    );
+
+    return;
+  }
+
+
+  if(currentUser.mutedByAdmin){
+
+    showToast(
+      "Admin ne mic mute kiya hai."
+    );
+
+    return;
+  }
+
+
+  if(!micOn){
+
+    try{
+
+      await navigator.mediaDevices
+        .getUserMedia({
+          audio:true
+        });
+
+      micOn = true;
+
+    }catch(error){
+
+      showToast(
+        "Microphone permission allow karo."
+      );
+
+      return;
+
+    }
+
+  }else{
+
+    micOn = false;
+
+  }
+
+
+  document.getElementById(
+    "micBtn"
+  ).classList.toggle(
+    "mic-on",
+    micOn
+  );
+
+
+  socket.emit(
+    "micToggle",
+    {
+      on:micOn
+    }
+  );
+
 }
 
-function userMenu(user){
- if(!user)return;
 
- modalTitle.textContent=user.name;
- modalContent.innerHTML=`
-   <button onclick="alert('User ID: ${user.userId}')">
-     👤 View User ID
-   </button>
-   <button onclick="alert('Profile: ${user.name}')">
-     Profile
-   </button>
-   <button onclick="alert('Host/Admin permission required')">
-     🛡️ Admin
-   </button>
-   <button onclick="alert('Host permission required')">
-     🚫 Kick
-   </button>
- `;
- modal.style.display="flex";
-}
-
-function toggleMic(){
- micOn=!micOn;
- micBtn.textContent=micOn?"🎙️":"🎤";
-
- // WebRTC microphone hook
- navigator.mediaDevices?.getUserMedia({audio:true})
- .then(stream=>{
-   stream.getTracks().forEach(t=>t.enabled=micOn);
- })
- .catch(()=>{
-   alert("Microphone permission allow karo.");
- });
-}
+/* ==================================================
+   SPEAKER
+================================================== */
 
 function toggleSpeaker(){
- speakerOn=!speakerOn;
- alert(speakerOn?"Speaker ON":"Speaker OFF");
+
+  speakerOn =
+    !speakerOn;
+
+
+  document.getElementById(
+    "speakerBtn"
+  ).textContent =
+    speakerOn ? "🔊" : "🔇";
+
+
+  socket.emit(
+    "speakerToggle",
+    {
+      on:speakerOn
+    }
+  );
+
 }
+
+
+/* ==================================================
+   CHAT
+================================================== */
+
+function sendMessage(){
+
+  const input =
+    document.getElementById(
+      "messageInput"
+    );
+
+  const message =
+    input.value.trim();
+
+
+  if(!message) return;
+
+
+  socket.emit(
+    "sendMessage",
+    {
+      message:message
+    }
+  );
+
+
+  input.value = "";
+
+}
+
+
+/* ==================================================
+   MESSAGE RECEIVED
+================================================== */
+
+socket.on(
+  "messageReceived",
+  message => {
+
+    addMessageToScreen(
+      message,
+      true
+    );
+
+  }
+);
+
+
+/* ==================================================
+   ADD MESSAGE
+================================================== */
+
+function addMessageToScreen(
+  message,
+  scroll=true
+){
+
+  const box =
+    document.getElementById(
+      "messages"
+    );
+
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.className =
+    "message";
+
+
+  div.innerHTML =
+    `<b>${escapeHtml(message.name || "")}</b>: ${escapeHtml(message.message || "")}`;
+
+
+  box.appendChild(div);
+
+
+  if(scroll){
+
+    box.scrollTop =
+      box.scrollHeight;
+
+  }
+
+}
+
+
+/* ==================================================
+   SYSTEM MESSAGE
+================================================== */
+
+function addSystemMessage(text){
+
+  const box =
+    document.getElementById(
+      "messages"
+    );
+
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.className =
+    "message system";
+
+
+  div.textContent =
+    text;
+
+
+  box.appendChild(
+    div
+  );
+
+
+  box.scrollTop =
+    box.scrollHeight;
+
+}
+
+
+/* ==================================================
+   EMOJI
+================================================== */
 
 function toggleEmoji(){
- emojiPanel.style.display=
- emojiPanel.style.display==="grid"?"none":"grid";
+
+  const panel =
+    document.getElementById(
+      "emojiPanel"
+    );
+
+  panel.style.display =
+    panel.style.display === "grid"
+      ? "none"
+      : "grid";
+
 }
 
-function sendEmoji(e){
- message.value+=e;
+
+function emoji(e){
+
+  const input =
+    document.getElementById(
+      "messageInput"
+    );
+
+  input.value += e;
+
+  input.focus();
+
 }
 
-function addMessage(text){
- messages.innerHTML+=`<div>${text}</div>`;
- messages.scrollTop=messages.scrollHeight;
+
+/* ==================================================
+   MORE
+================================================== */
+
+function toggleMore(){
+
+  const panel =
+    document.getElementById(
+      "morePanel"
+    );
+
+  panel.style.display =
+    panel.style.display === "block"
+      ? "none"
+      : "block";
+
 }
 
-message.addEventListener("keydown",e=>{
- if(e.key==="Enter"){
-   const t=message.value.trim();
-   if(!t)return;
 
-   addMessage(me.name+": "+t);
-   message.value="";
- }
-});
+/* ==================================================
+   USER MODAL
+================================================== */
 
-function invite(){
- navigator.clipboard?.writeText(location.href);
- alert("Room link copy ho gaya.");
+function openUser(id){
+
+  if(!currentRoom) return;
+
+
+  selectedUser =
+    currentRoom.users.find(
+      u => u.userId === id
+    );
+
+
+  if(!selectedUser) return;
+
+
+  document.getElementById(
+    "selectedUserName"
+  ).textContent =
+    selectedUser.name;
+
+
+  document.getElementById(
+    "selectedUserId"
+  ).textContent =
+    "ID: " +
+    selectedUser.userId;
+
+
+  const me =
+    currentRoom.users.find(
+      u => u.userId === userId
+    );
+
+
+  const canAdmin =
+    me &&
+    (me.isHost || me.isAdmin);
+
+
+  document.getElementById(
+    "adminBtn"
+  ).style.display =
+    me && me.isHost
+      ? "block"
+      : "none";
+
+
+  document.getElementById(
+    "muteBtn"
+  ).style.display =
+    canAdmin &&
+    selectedUser.userId !== userId
+      ? "block"
+      : "none";
+
+
+  document.getElementById(
+    "kickBtn"
+  ).style.display =
+    canAdmin &&
+    selectedUser.userId !== userId
+      ? "block"
+      : "none";
+
+
+  document.getElementById(
+    "userModal"
+  ).style.display =
+    "flex";
+
 }
 
-function settings(){
- modalTitle.textContent="Room Setting";
- modalContent.innerHTML=`
-   <button>🔒 Room Lock</button>
-   <button>🎤 Mic Permission</button>
-   <button>👑 Admin Management</button>
-   <button>🚫 Kick / Mute Users</button>
- `;
- modal.style.display="flex";
+
+function closeUserModal(){
+
+  document.getElementById(
+    "userModal"
+  ).style.display =
+    "none";
+
 }
 
-function showInbox(){
- modalTitle.textContent="Inbox";
- modalContent.innerHTML=`
-   <p>📩 Abhi koi new message nahi hai.</p>
- `;
- modal.style.display="flex";
+
+/* ==================================================
+   MAKE ADMIN
+================================================== */
+
+function makeSelectedAdmin(){
+
+  if(!selectedUser) return;
+
+
+  socket.emit(
+    "makeAdmin",
+    {
+      userId:
+        selectedUser.userId
+    }
+  );
+
+
+  closeUserModal();
+
 }
 
-function more(){
- modalTitle.textContent="More";
- modalContent.innerHTML=`
-   <button>🎁 Send Gift</button>
-   <button>👜 Bag</button>
-   <button onclick="invite()">↗ Share Room</button>
-   <button>⚠️ Report</button>
- `;
- modal.style.display="flex";
+
+/* ==================================================
+   MUTE
+================================================== */
+
+function muteSelectedUser(){
+
+  if(!selectedUser) return;
+
+
+  socket.emit(
+    "muteUser",
+    {
+      userId:
+        selectedUser.userId,
+      muted:true
+    }
+  );
+
+
+  closeUserModal();
+
 }
 
-function closeModal(){
- modal.style.display="none";
+
+/* ==================================================
+   KICK
+================================================== */
+
+function kickSelectedUser(){
+
+  if(!selectedUser) return;
+
+
+  if(
+    !confirm(
+      "Is user ko room se kick karna hai?"
+    )
+  ){
+    return;
+  }
+
+
+  socket.emit(
+    "kickUser",
+    {
+      userId:
+        selectedUser.userId
+    }
+  );
+
+
+  closeUserModal();
+
 }
 
-function leave(){
- socket.emit("leaveRoom");
- location.href="index.html";
+
+/* ==================================================
+   KICKED
+================================================== */
+
+socket.on(
+  "kicked",
+  data => {
+
+    showToast(
+      data.message ||
+      "You were kicked."
+    );
+
+    setTimeout(
+      () => {
+        location.href =
+          "index.html";
+      },
+      1200
+    );
+
+  }
+);
+
+
+/* ==================================================
+   BANNED
+================================================== */
+
+socket.on(
+  "banned",
+  data => {
+
+    alert(
+      data.message ||
+      "You are banned."
+    );
+
+    location.href =
+      "index.html";
+
+  }
+);
+
+
+/* ==================================================
+   INVITE
+================================================== */
+
+function inviteRoom(){
+
+  const url =
+    location.origin +
+    location.pathname +
+    "?room=" +
+    encodeURIComponent(
+      ROOM_ID
+    );
+
+
+  if(
+    navigator.share
+  ){
+
+    navigator.share({
+      title:"PawanVoice Room",
+      text:"Join my PawanVoice room",
+      url:url
+    }).catch(()=>{});
+
+  }else{
+
+    navigator.clipboard
+      .writeText(url)
+      .then(
+        () => showToast(
+          "Room link copied"
+        )
+      )
+      .catch(
+        () => showToast(
+          url
+        )
+      );
+
+  }
+
 }
 
-window.addEventListener("beforeunload",()=>{
- socket.emit("leaveRoom");
-});
+
+/* ==================================================
+   ROOM SETTINGS
+================================================== */
+
+function roomSettings(){
+
+  if(!currentUser){
+
+    showToast(
+      "Room connect nahi hua."
+    );
+
+    return;
+  }
+
+
+  if(currentUser.isHost){
+
+    const newName =
+      prompt(
+        "New room name:",
+        currentRoom.name
+      );
+
+
+    if(
+      newName &&
+      newName.trim()
+    ){
+
+      socket.emit(
+        "changeRoomName",
+        {
+          name:newName.trim()
+        }
+      );
+
+    }
+
+  }else{
+
+    showToast(
+      "Only Host can change room name."
+    );
+
+  }
+
+}
+
+
+/* ==================================================
+   LEAVE ROOM
+================================================== */
+
+function leaveRoom(){
+
+  socket.emit(
+    "leaveRoom"
+  );
+
+  setTimeout(
+    () => {
+
+      location.href =
+        "index.html";
+
+    },
+    300
+  );
+
+}
+
+
+/* ==================================================
+   TOAST
+================================================== */
+
+function showToast(text){
+
+  const toast =
+    document.getElementById(
+      "toast"
+    );
+
+  toast.textContent =
+    text;
+
+  toast.style.display =
+    "block";
+
+
+  clearTimeout(
+    window.toastTimer
+  );
+
+
+  window.toastTimer =
+    setTimeout(
+      () => {
+
+        toast.style.display =
+          "none";
+
+      },
+      2000
+    );
+
+}
+
+
+/* ==================================================
+   SAFE IMAGE
+================================================== */
+
+function safeImage(url){
+
+  if(!url){
+    return "https://i.pravatar.cc/150";
+  }
+
+  return String(url)
+    .replace(/"/g,"")
+    .replace(/'/g,"");
+
+}
+
+
+/* ==================================================
+   ESCAPE HTML
+================================================== */
+
+function escapeHtml(text){
+
+  return String(text)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* ==================================================
+   ESCAPE JS
+================================================== */
+
+function escapeJs(text){
+
+  return String(text)
+    .replace(/\\/g,"\\\\")
+    .replace(/'/g,"\\'");
+}
+
+
+/* ==================================================
+   DISCONNECT
+================================================== */
+
+socket.on(
+  "disconnect",
+  () => {
+
+    showToast(
+      "Server disconnected..."
+    );
+
+  }
+);
+
+
+/* ==================================================
+   GIFT RECEIVED
+================================================== */
+
+socket.on(
+  "giftReceived",
+  gift => {
+
+    addSystemMessage(
+      `${gift.senderName} sent 🎁 ${gift.giftName}`
+    );
+
+  }
+);
+
 </script>
+
 </body>
 </html>
