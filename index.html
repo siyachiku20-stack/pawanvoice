@@ -1,247 +1,68 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>PawanVoice</title>
-<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+class VoiceRoom {
+  constructor(roomId, seatCount = 5) {
+    this.roomId = roomId;
+    this.seats = Array.from({ length: seatCount }, (_, i) => ({
+      seatNo: i + 1,
+      user: null,
+    }));
+    this.users = new Map();
+  }
 
-<style>
-*{box-sizing:border-box}
-body{
-  margin:0;background:#f5f5f8;color:#20202a;
-  font-family:Arial,sans-serif;
-}
-.app{max-width:480px;margin:auto;min-height:100vh;background:#fff}
-.top{
-  padding:14px 16px 8px;display:flex;align-items:center;
-  justify-content:space-between;position:sticky;top:0;background:#fff;z-index:5
-}
-.logo{font-size:23px;font-weight:800}
-.top button,.icon{
-  border:0;background:#f1f1f5;border-radius:20px;padding:9px 12px
-}
-.banner{
-  margin:8px 12px;padding:17px;border-radius:18px;
-  background:linear-gradient(135deg,#7b4cff,#d44dff);
-  color:white
-}
-.banner b{font-size:20px}.banner p{margin:6px 0 0}
-.tabs{display:flex;gap:10px;padding:10px 12px;overflow:auto}
-.tabs button{
-  border:0;background:#f0f0f4;border-radius:20px;padding:9px 15px;
-  white-space:nowrap
-}
-.tabs .active{background:#252331;color:#fff}
-.title{padding:8px 14px;font-size:18px;font-weight:bold}
-.rooms{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 12px 90px}
-.room{
-  border:1px solid #eee;border-radius:18px;padding:12px;
-  background:#fff;box-shadow:0 3px 12px #0000000b
-}
-.roomAvatar{
-  width:58px;height:58px;border-radius:50%;background:#ddd;
-  display:block;object-fit:cover;margin-bottom:8px
-}
-.roomName{font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.roomHost{font-size:12px;color:#777;margin:4px 0 8px}
-.join{
-  width:100%;border:0;border-radius:15px;padding:9px;
-  background:#252331;color:white
-}
-.bottom{
-  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
-  width:min(480px,100%);height:66px;background:#fff;
-  border-top:1px solid #eee;display:flex;justify-content:space-around;
-  align-items:center;z-index:20
-}
-.nav{border:0;background:none;font-size:12px;color:#777}
-.nav b{display:block;font-size:20px;margin-bottom:2px}
-.profilePage{padding:15px 15px 90px;display:none}
-.profileHead{display:flex;gap:14px;align-items:center}
-.dp{
-  width:82px;height:82px;border-radius:50%;object-fit:cover;
-  background:#ddd;border:3px solid #eee
-}
-input{
-  width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;
-  margin:7px 0
-}
-.card{
-  margin-top:15px;padding:15px;border-radius:17px;background:#f7f7fa
-}
-.action{
-  width:100%;padding:13px;margin-top:8px;border:0;border-radius:12px;
-  text-align:left;background:#fff
-}
-.hidden{display:none!important}
-</style>
-</head>
+  join(userId, nickname) {
+    this.users.set(userId, { userId, nickname, coins: 0 });
+    console.log(`[VoiceRoom] ${nickname} joined room ${this.roomId}`);
+  }
 
-<body>
-<div class="app">
+  takeSeat(userId, seatNo) {
+    const user = this.users.get(userId);
+    const seat = this.seats.find((s) => s.seatNo === seatNo);
+    if (!user || !seat || seat.user) return false;
 
-  <div id="homePage">
-    <div class="top">
-      <div class="logo">🎙️ PawanVoice</div>
-      <button onclick="createRoom()">＋ Room</button>
-    </div>
+    seat.user = user;
+    console.log(`[VoiceRoom] ${user.nickname} took seat ${seatNo}`);
+    return true;
+  }
 
-    <div class="banner">
-      <b>Family • CP Ranking • Rich King</b>
-      <p>Live voice rooms aur naye friends se connect ho.</p>
-    </div>
+  sendGift(fromUserId, toUserId, giftName, amount) {
+    const from = this.users.get(fromUserId);
+    const to = this.users.get(toUserId);
+    if (!from || !to) return;
 
-    <div class="tabs">
-      <button class="active">Popular</button>
-      <button>Following</button>
-      <button>New</button>
-      <button>Family</button>
-    </div>
+    to.coins += amount;
+    console.log(
+      `[VoiceRoom][Gift] ${from.nickname} -> ${to.nickname}, gift=${giftName}, amount=${amount}`
+    );
+  }
 
-    <div class="title">Live Rooms</div>
-    <div id="rooms" class="rooms"></div>
-  </div>
+  printState() {
+    console.log("\n[VoiceRoom] Current seats:");
+    this.seats.forEach((seat) => {
+      const name = seat.user ? seat.user.nickname : "Empty";
+      console.log(`  seat ${seat.seatNo}: ${name}`);
+    });
 
-  <div id="profilePage" class="profilePage">
-    <h2>My Profile</h2>
-
-    <div class="profileHead">
-      <img id="profileDp" class="dp" src="">
-      <div style="flex:1">
-        <b id="profileName">Guest</b>
-        <div style="font-size:13px;color:#777">ID: <span id="profileId"></span></div>
-        <div style="margin-top:5px">⭐ Level <span id="levelText">1</span></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <b>Profile Change</b>
-      <input id="nameInput" placeholder="Apna naam">
-      <input id="dpInput" type="file" accept="image/*">
-      <button class="action" onclick="saveProfile()">💾 Save Profile</button>
-    </div>
-
-    <button class="action">⭐ Level / EXP — Level 1–100</button>
-    <button class="action">💎 CP Space</button>
-    <button class="action">🎒 Bag</button>
-    <button class="action">👗 My Dress</button>
-    <button class="action">👑 VIP</button>
-    <button class="action">🏅 Medal</button>
-    <button class="action">🪙 Coins</button>
-    <button class="action">🎁 Gifts</button>
-    <button class="action">⚙️ Settings</button>
-    <button class="action">💬 Customer Service</button>
-  </div>
-
-  <div class="bottom">
-    <button class="nav" onclick="showHome()"><b>🏠</b>Home</button>
-    <button class="nav"><b>📥</b>Inbox</button>
-    <button class="nav" onclick="createRoom()"><b>🎙️</b>Room</button>
-    <button class="nav" onclick="showProfile()"><b>👤</b>Profile</button>
-  </div>
-</div>
-
-<script>
-const SERVER = "https://pawanvoice-1.onrender.com";
-
-let me = JSON.parse(localStorage.getItem("pv_user") || "null");
-
-if(!me){
-  me = {
-    userId:"U"+Date.now(),
-    name:"Guest",
-    dp:""
-  };
-  localStorage.setItem("pv_user",JSON.stringify(me));
-}
-
-function showHome(){
-  document.getElementById("homePage").style.display="block";
-  document.getElementById("profilePage").style.display="none";
-}
-
-function showProfile(){
-  document.getElementById("homePage").style.display="none";
-  document.getElementById("profilePage").style.display="block";
-
-  profileName.textContent=me.name;
-  profileId.textContent=me.userId;
-  nameInput.value=me.name;
-
-  if(me.dp) profileDp.src=me.dp;
-  else profileDp.src="https://placehold.co/160x160?text=DP";
-}
-
-function saveProfile(){
-  const n=nameInput.value.trim();
-  if(n) me.name=n;
-
-  const file=dpInput.files[0];
-
-  if(file){
-    const reader=new FileReader();
-    reader.onload=()=>{
-      me.dp=reader.result;
-      localStorage.setItem("pv_user",JSON.stringify(me));
-      showProfile();
-      loadRooms();
-    };
-    reader.readAsDataURL(file);
-  }else{
-    localStorage.setItem("pv_user",JSON.stringify(me));
-    showProfile();
-    loadRooms();
+    console.log("\n[VoiceRoom] User coins:");
+    this.users.forEach((user) => {
+      console.log(`  ${user.nickname}: ${user.coins}`);
+    });
   }
 }
 
-function createRoom(){
-  const roomId="room_"+Math.floor(Math.random()*999999);
-  location.href="room.html?room="+encodeURIComponent(roomId);
+function runDemo() {
+  const room = new VoiceRoom("room_1001", 5);
+
+  room.join("u1", "Host_Alice");
+  room.join("u2", "Mike_Bob");
+  room.join("u3", "Luna_Chris");
+
+  room.takeSeat("u1", 1);
+  room.takeSeat("u2", 2);
+  room.takeSeat("u3", 3);
+
+  room.sendGift("u2", "u1", "Rocket", 200);
+  room.sendGift("u3", "u1", "Crown", 500);
+
+  room.printState();
 }
 
-function joinRoom(id){
-  location.href="room.html?room="+encodeURIComponent(id);
-}
-
-function loadRooms(){
-  const box=document.getElementById("rooms");
-
-  /*
-    Demo room list.
-    Real users/rooms ko server/database se load karne ke liye
-    isi function ko Firebase/Socket room discovery se connect kiya ja sakta hai.
-  */
-
-  const demo=[
-    {id:"main",name:"PawanVoice Room",host:"Host • Pawan"},
-    {id:"fun1",name:"Fun Friends Room",host:"Host • Rajput"},
-    {id:"music1",name:"Music & Chat",host:"Host • Suriya"},
-    {id:"friend1",name:"New Friends",host:"Host • Singh"}
-  ];
-
-  box.innerHTML="";
-
-  demo.forEach(r=>{
-    const div=document.createElement("div");
-    div.className="room";
-
-    div.innerHTML=`
-      <img class="roomAvatar"
-       src="${me.dp || 'https://placehold.co/120x120?text=Room'}">
-      <div class="roomName">${r.name}</div>
-      <div class="roomHost">${r.host}</div>
-      <button class="join" onclick="joinRoom('${r.id}')">
-        Join Room
-      </button>
-    `;
-
-    box.appendChild(div);
-  });
-}
-
-loadRooms();
-showHome();
-</script>
-</body>
-</html>
+runDemo();
