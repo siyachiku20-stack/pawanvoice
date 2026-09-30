@@ -1,2238 +1,1284 @@
-```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1">
 
 <title>PawanVoice Room</title>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ background:#08080d;
+ color:#fff;
+ font-family:Arial,sans-serif
 }
 
-html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  min-height:100%;
-  background:#09090e;
-  color:#fff;
-  font-family:Arial,Helvetica,sans-serif;
+.app{
+ max-width:520px;
+ margin:auto;
+ min-height:100vh;
+ background:
+ radial-gradient(
+  circle at 50% 10%,
+  #35194f,
+  #11111a 45%,
+  #09090e 85%
+ );
+ padding-bottom:80px
 }
 
-button,input{
-  font:inherit;
+.top{
+ padding:11px;
+ display:flex;
+ align-items:center;
+ gap:9px
 }
 
-button{
-  border:0;
+.back,.icon{
+ background:#25252f;
+ color:#fff;
+ padding:8px 10px;
+ border-radius:9px
 }
 
-.room-page{
-  min-height:100vh;
-  padding-bottom:155px;
-  background:
-    radial-gradient(circle at 50% 0%,#321052 0%,#15101e 28%,#09090e 70%);
+.roomDP{
+ width:49px;
+ height:49px;
+ border-radius:13px;
+ object-fit:cover;
+ background:#292933
 }
 
-/* ================= HEADER ================= */
-
-.room-header{
-  height:60px;
-  display:flex;
-  align-items:center;
-  padding:0 9px;
-  gap:8px;
+.info{
+ flex:1;
+ min-width:0
 }
 
-.head-btn{
-  width:39px;
-  height:39px;
-  border-radius:50%;
-  background:#282431;
-  color:#fff;
-  font-size:18px;
+.info b{
+ font-size:16px
 }
 
-.room-heading{
-  flex:1;
-  text-align:center;
-  min-width:0;
+.muted{
+ color:#9999a5;
+ font-size:10px
 }
 
-.room-name{
-  font-size:15px;
-  font-weight:bold;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
 
-.room-number{
-  margin-top:3px;
-  color:#999;
-  font-size:10px;
-}
-
-.head-actions{
-  display:flex;
-  gap:5px;
-}
-
-/* ================= ROOM INFO ================= */
-
-.room-info{
-  text-align:center;
-  padding:4px 10px 12px;
-}
-
-.host{
-  font-size:14px;
-  font-weight:bold;
-}
-
-.room-meta{
-  color:#aaa;
-  font-size:10px;
-  margin-top:4px;
-}
-
-/* ================= SEATS ================= */
+/* OWNER */
 
 .seats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px 3px;
-  padding:8px 7px 12px;
+ padding:5px 12px
+}
+
+.owner{
+ text-align:center;
+ margin-bottom:15px
+}
+
+.circle{
+ width:61px;
+ height:61px;
+ border-radius:50%;
+ object-fit:cover;
+ background:#20202a;
+ border:2px solid #575762;
+ margin:auto;
+ display:block
+}
+
+.name{
+ font-size:11px;
+ margin-top:5px;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis
+}
+
+.id{
+ font-size:9px;
+ color:#777
+}
+
+.badge{
+ display:inline-block;
+ background:#3c205d;
+ border-radius:7px;
+ padding:2px 5px;
+ font-size:9px;
+ margin-top:2px
+}
+
+
+/* 8 OTHER SEATS */
+
+.seatGrid{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:10px
 }
 
 .seat{
-  min-height:89px;
-  text-align:center;
+ text-align:center;
+ min-width:0;
+ cursor:pointer
 }
 
-.seat-circle{
-  width:56px;
-  height:56px;
-  margin:auto;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#24232d;
-  border:2px solid #44434e;
-  font-size:24px;
-  box-shadow:0 4px 14px rgba(0,0,0,.25);
+
+/* ROOM FEATURES */
+
+.tools{
+ display:grid;
+ grid-template-columns:repeat(5,1fr);
+ gap:6px;
+ padding:15px 12px
 }
 
-.seat.owner .seat-circle{
-  border-color:#f5b942;
-  background:linear-gradient(135deg,#3a2912,#29231a);
+.tool{
+ background:#1b1b25;
+ border:1px solid #2c2c36;
+ border-radius:12px;
+ padding:8px 2px;
+ text-align:center;
+ font-size:9px
 }
 
-.seat-name{
-  margin:5px auto 0;
-  max-width:78px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  font-size:10px;
+.tool div{
+ font-size:21px;
+ margin-bottom:3px
 }
 
-.seat-id{
-  color:#777;
-  font-size:8px;
-  margin-top:2px;
+
+/* TOP AREA */
+
+.rank{
+ margin:0 12px 10px;
+ padding:11px;
+ background:#181220;
+ border:1px solid #3a2251;
+ border-radius:13px;
+ text-align:center;
+ font-size:11px
 }
 
-.empty-seat{
-  color:#777;
+
+/* CHAT */
+
+.chat{
+ height:210px;
+ margin:0 12px;
+ background:#101017;
+ border:1px solid #292934;
+ border-radius:14px;
+ padding:10px;
+ overflow:auto
 }
 
-/* ================= ROOM FEATURES ================= */
-
-.room-tools{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:5px;
-  padding:5px 7px 12px;
+.msg{
+ padding:4px 0;
+ font-size:12px
 }
 
-.room-tool{
-  min-height:69px;
-  border-radius:12px;
-  background:#17161e;
-  border:1px solid #2b2934;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  color:#ddd;
-  font-size:9px;
-  padding:5px 2px;
+.msg b{
+ color:#c8a4ff
 }
 
-.tool-icon{
-  font-size:22px;
-  margin-bottom:5px;
+
+/* BOTTOM */
+
+.bar{
+ position:fixed;
+ bottom:0;
+ left:50%;
+ transform:translateX(-50%);
+ width:min(520px,100%);
+ background:#16161f;
+ border-top:1px solid #2b2b35;
+ padding:8px;
+ display:flex;
+ gap:6px;
+ z-index:10
 }
 
-/* ================= EXP ================= */
-
-.exp-card{
-  margin:4px 8px 10px;
-  padding:12px;
-  border-radius:15px;
-  background:linear-gradient(135deg,#27103c,#15131b);
-  border:1px solid #412457;
+.bar input{
+ flex:1;
+ background:#24242e;
+ border:0;
+ color:#fff;
+ border-radius:20px;
+ padding:10px
 }
 
-.exp-title{
-  text-align:center;
-  font-size:13px;
-  font-weight:bold;
-  margin-bottom:10px;
+.bar button{
+ background:#7c3aed;
+ color:#fff;
+ border-radius:20px;
+ padding:8px 12px
 }
 
-.exp-list{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:6px;
-}
 
-.exp-user{
-  background:#0e0e14;
-  border-radius:11px;
-  padding:8px 3px;
-  text-align:center;
-}
-
-.exp-medal{
-  font-size:23px;
-}
-
-.exp-name{
-  font-size:10px;
-  margin-top:3px;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
-
-.exp-value{
-  color:#999;
-  font-size:9px;
-  margin-top:3px;
-}
-
-/* ================= CHAT ================= */
-
-.chat-box{
-  margin:7px 8px;
-  height:155px;
-  overflow-y:auto;
-  padding:9px;
-  border-radius:14px;
-  background:rgba(8,8,13,.55);
-  border:1px solid #1d1c24;
-}
-
-.chat-message{
-  margin-bottom:8px;
-  font-size:11px;
-  line-height:1.4;
-}
-
-.chat-message b{
-  color:#c084fc;
-}
-
-/* ================= BOTTOM ================= */
-
-.bottom-panel{
-  position:fixed;
-  left:0;
-  right:0;
-  bottom:0;
-  z-index:100;
-  padding:8px;
-  background:#15141c;
-  border-top:1px solid #2d2b36;
-}
-
-.emoji-box{
-  display:none;
-  grid-template-columns:repeat(8,1fr);
-  gap:4px;
-  padding:7px;
-  margin-bottom:7px;
-  background:#211f29;
-  border-radius:12px;
-}
-
-.emoji-box.show{
-  display:grid;
-}
-
-.emoji{
-  background:#302e38;
-  color:#fff;
-  border-radius:8px;
-  padding:5px;
-  font-size:18px;
-}
-
-.chat-row{
-  display:flex;
-  gap:6px;
-}
-
-.chat-input{
-  flex:1;
-  min-width:0;
-  height:42px;
-  border-radius:22px;
-  border:1px solid #393743;
-  background:#0d0d13;
-  color:#fff;
-  outline:none;
-  padding:0 14px;
-}
-
-.send{
-  width:43px;
-  height:42px;
-  border-radius:50%;
-  background:#7c3aed;
-  color:#fff;
-  font-size:17px;
-}
-
-.controls{
-  display:flex;
-  justify-content:space-around;
-  gap:5px;
-  padding-top:7px;
-}
-
-.control{
-  width:43px;
-  height:39px;
-  border-radius:12px;
-  background:#292832;
-  color:#fff;
-  font-size:17px;
-}
-
-.control.active{
-  background:#7c3aed;
-}
-
-.control.leave{
-  background:#dc2626;
-}
-
-/* ================= MODAL ================= */
+/* MODAL */
 
 .modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:500;
-  background:rgba(0,0,0,.72);
-  align-items:flex-end;
+ position:fixed;
+ inset:0;
+ background:#000b;
+ display:none;
+ align-items:flex-end;
+ z-index:30
 }
 
 .modal.show{
-  display:flex;
+ display:flex
 }
 
-.modal-box{
-  width:100%;
-  max-height:78vh;
-  overflow-y:auto;
-  padding:17px;
-  border-radius:20px 20px 0 0;
-  background:#191820;
+.sheet{
+ width:min(520px,100%);
+ max-height:80vh;
+ overflow:auto;
+ background:#18181f;
+ border-radius:20px 20px 0 0;
+ padding:16px
 }
 
-.modal-title{
-  font-size:18px;
-  font-weight:bold;
-  margin-bottom:14px;
+.sheet input,
+.sheet select{
+ width:100%;
+ padding:11px;
+ background:#101017;
+ border:1px solid #333;
+ color:#fff;
+ border-radius:9px;
+ margin:5px 0
 }
 
-.modal-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
+.sheet button{
+ padding:10px;
+ border:0;
+ border-radius:9px;
+ background:#7c3aed;
+ color:#fff;
+ margin:4px
 }
 
-.modal-btn{
-  padding:12px;
-  border-radius:11px;
-  background:#2b2934;
-  color:#fff;
+.close{
+ float:right;
+ background:#292933!important
 }
 
-.modal-btn.red{
-  background:#991b1b;
-}
-
-.close-btn{
-  width:100%;
-  padding:12px;
-  border-radius:11px;
-  background:#393743;
-  color:#fff;
-  margin-top:12px;
-}
-
-/* ================= TOAST ================= */
-
-.toast{
-  display:none;
-  position:fixed;
-  z-index:700;
-  left:50%;
-  bottom:165px;
-  transform:translateX(-50%);
-  max-width:90%;
-  padding:10px 15px;
-  border-radius:20px;
-  background:#292832;
-  border:1px solid #45434e;
-  color:#fff;
-  font-size:12px;
-  text-align:center;
-}
-
-.toast.show{
-  display:block;
-}
-
-@media(max-width:380px){
-  .seat-circle{
-    width:51px;
-    height:51px;
-  }
-
-  .room-tools{
-    gap:3px;
-  }
-
-  .room-tool{
-    font-size:8px;
-  }
-
-  .control{
-    width:40px;
-  }
-}
 </style>
+
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
 </head>
+
 
 <body>
 
-<div id="roomPage" class="room-page">
+<div class="app">
 
-  <!-- ================= HEADER ================= -->
 
-  <div class="room-header">
+<!-- TOP -->
 
-    <button
-      class="head-btn"
-      onclick="leaveRoom()">
-      ←
-    </button>
+<div class="top">
 
-    <div class="room-heading">
+<button class="back"
+ onclick="location.href='index.html'">
+ ←
+</button>
 
-      <div
-        id="roomName"
-        class="room-name">
-        PawanVoice Room
-      </div>
+<img id="roomDP"
+     class="roomDP">
 
-      <div
-        id="roomNumber"
-        class="room-number">
-        Room ID
-      </div>
+<div class="info">
 
-    </div>
+<b id="roomName">
+ Loading...
+</b>
 
-    <div class="head-actions">
+<div class="muted"
+     id="roomMeta">
+ #- · General · 0/9
+</div>
 
-      <button
-        class="head-btn"
-        onclick="inviteRoom()">
-        📤
-      </button>
+<div class="muted">
+ Host:
+ <span id="hostName">-</span>
+</div>
 
-      <button
-        class="head-btn"
-        onclick="roomSettings()">
-        ⚙️
-      </button>
+</div>
 
-    </div>
+<button class="icon"
+ onclick="shareRoom()">
+ ↗
+</button>
 
-  </div>
-
-
-  <!-- ================= HOST ================= -->
-
-  <div class="room-info">
-
-    <div
-      id="hostName"
-      class="host">
-      👑 Host
-    </div>
-
-    <div
-      id="roomMeta"
-      class="room-meta">
-      1/9 · General
-    </div>
-
-  </div>
-
-
-  <!-- ================= 9 SEATS ================= -->
-
-  <div
-    id="seats"
-    class="seats">
-  </div>
-
-
-  <!-- ================= ROOM FEATURES ================= -->
-
-  <div class="room-tools">
-
-    <button
-      class="room-tool"
-      onclick="roomFeature('support')">
-
-      <span class="tool-icon">💖</span>
-      Room Support
-
-    </button>
-
-    <button
-      class="room-tool"
-      onclick="roomFeature('lucky')">
-
-      <span class="tool-icon">🎡</span>
-      Lucky Wheel
-
-    </button>
-
-    <button
-      class="room-tool"
-      onclick="roomFeature('bounty')">
-
-      <span class="tool-icon">🎯</span>
-      Bounty Hunter
-
-    </button>
-
-    <button
-      class="room-tool"
-      onclick="roomFeature('reward')">
-
-      <span class="tool-icon">🎁</span>
-      Room Reward
-
-    </button>
-
-    <button
-      class="room-tool"
-      onclick="roomFeature('exclusive')">
-
-      <span class="tool-icon">✨</span>
-      Exclusive
-
-    </button>
-
-  </div>
-
-
-  <!-- ================= EXP RANKING ================= -->
-
-  <div class="exp-card">
-
-    <div class="exp-title">
-      🚀 Top Room EXP
-    </div>
-
-    <div class="exp-list">
-
-      <div class="exp-user">
-
-        <div class="exp-medal">🥇</div>
-
-        <div
-          id="exp1Name"
-          class="exp-name">
-          ---
-        </div>
-
-        <div
-          id="exp1Value"
-          class="exp-value">
-          0 EXP
-        </div>
-
-      </div>
-
-      <div class="exp-user">
-
-        <div class="exp-medal">🥈</div>
-
-        <div
-          id="exp2Name"
-          class="exp-name">
-          ---
-        </div>
-
-        <div
-          id="exp2Value"
-          class="exp-value">
-          0 EXP
-        </div>
-
-      </div>
-
-      <div class="exp-user">
-
-        <div class="exp-medal">🥉</div>
-
-        <div
-          id="exp3Name"
-          class="exp-name">
-          ---
-        </div>
-
-        <div
-          id="exp3Value"
-          class="exp-value">
-          0 EXP
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- ================= CHAT ================= -->
-
-  <div
-    id="chatBox"
-    class="chat-box">
-
-    <div class="chat-message">
-      <b>System:</b>
-      Welcome to PawanVoice room.
-    </div>
-
-  </div>
-
-
-  <!-- ================= BOTTOM CONTROLS ================= -->
-
-  <div class="bottom-panel">
-
-    <div
-      id="emojiBox"
-      class="emoji-box">
-
-      <button class="emoji"
-              onclick="addEmoji('😀')">😀</button>
-      <button class="emoji"
-              onclick="addEmoji('😂')">😂</button>
-      <button class="emoji"
-              onclick="addEmoji('😍')">😍</button>
-      <button class="emoji"
-              onclick="addEmoji('😡')">😡</button>
-      <button class="emoji"
-              onclick="addEmoji('😭')">😭</button>
-      <button class="emoji"
-              onclick="addEmoji('😵')">😵</button>
-      <button class="emoji"
-              onclick="addEmoji('🔨')">🔨</button>
-      <button class="emoji"
-              onclick="addEmoji('😘')">😘</button>
-      <button class="emoji"
-              onclick="addEmoji('🤣')">🤣</button>
-      <button class="emoji"
-              onclick="addEmoji('😴')">😴</button>
-      <button class="emoji"
-              onclick="addEmoji('👻')">👻</button>
-      <button class="emoji"
-              onclick="addEmoji('❤️')">❤️</button>
-      <button class="emoji"
-              onclick="addEmoji('🔥')">🔥</button>
-      <button class="emoji"
-              onclick="addEmoji('👏')">👏</button>
-      <button class="emoji"
-              onclick="addEmoji('🎉')">🎉</button>
-      <button class="emoji"
-              onclick="addEmoji('👍')">👍</button>
-
-    </div>
-
-
-    <div class="chat-row">
-
-      <button
-        class="send"
-        onclick="toggleEmoji()">
-        😊
-      </button>
-
-      <input
-        id="chatInput"
-        class="chat-input"
-        placeholder="Say something..."
-        onkeydown="chatEnter(event)">
-
-      <button
-        class="send"
-        onclick="sendChat()">
-        ➤
-      </button>
-
-    </div>
-
-
-    <div class="controls">
-
-      <button
-        id="speakerBtn"
-        class="control active"
-        onclick="toggleSpeaker()">
-        🔊
-      </button>
-
-      <button
-        id="micBtn"
-        class="control active"
-        onclick="toggleMic()">
-        🎤
-      </button>
-
-      <button
-        class="control"
-        onclick="showGiftMenu()">
-        🎁
-      </button>
-
-      <button
-        class="control"
-        onclick="showMoreMenu()">
-        ⋯
-      </button>
-
-      <button
-        class="control leave"
-        onclick="leaveRoom()">
-        🚪
-      </button>
-
-    </div>
-
-  </div>
+<button class="icon"
+ onclick="openSettings()">
+ ⚙️
+</button>
 
 </div>
 
 
-<!-- ================= MODAL ================= -->
+<!-- OWNER -->
 
-<div
-  id="modal"
-  class="modal"
-  onclick="outsideModal(event)">
+<div class="seats">
 
-  <div class="modal-box">
+<div class="owner">
 
-    <div
-      id="modalTitle"
-      class="modal-title">
-      Menu
-    </div>
+<img id="ownerDP"
+     class="circle">
 
-    <div id="modalContent">
-    </div>
+<div id="ownerName"
+     class="name">
+ 👑 Owner
+</div>
 
-    <button
-      class="close-btn"
-      onclick="closeModal()">
-      Close
-    </button>
+<div id="ownerID"
+     class="id">
+ -
+</div>
 
-  </div>
+<div class="badge">
+ 👑 Owner
+</div>
 
 </div>
 
 
-<div
-  id="toast"
-  class="toast">
+<!-- SEAT 2-9 -->
+
+<div id="seatGrid"
+     class="seatGrid">
+</div>
+
 </div>
 
 
-<div
-  id="audioContainer"
-  style="display:none">
+<!-- ROOM FEATURES -->
+
+<div class="tools">
+
+<div class="tool"
+ onclick="toast('🛟 Room Support')">
+ <div>🛟</div>
+ Support
+</div>
+
+<div class="tool"
+ onclick="toast('🎡 Lucky Wheel')">
+ <div>🎡</div>
+ Lucky
+</div>
+
+<div class="tool"
+ onclick="toast('🎯 Bounty Hunter')">
+ <div>🎯</div>
+ Bounty
+</div>
+
+<div class="tool"
+ onclick="toast('🎁 Room Reward')">
+ <div>🎁</div>
+ Reward
+</div>
+
+<div class="tool"
+ onclick="toast('🚀 New App Benefits')">
+ <div>🚀</div>
+ Benefits
+</div>
+
+</div>
+
+
+<!-- TOP EXP -->
+
+<div class="rank">
+
+🚀 <b>TOP EXP</b>
+
+<br>
+
+Family · CP Ranking · Rich King Ranking
+
+</div>
+
+
+<!-- CHAT -->
+
+<div id="chat"
+     class="chat">
+
+<div class="muted">
+ Room chat started.
+</div>
+
+</div>
+
+</div>
+
+
+<!-- BOTTOM BAR -->
+
+<div class="bar">
+
+<button id="micButton"
+ onclick="toggleMic()">
+ 🎙️
+</button>
+
+<input id="message"
+       placeholder="Message...">
+
+<button onclick="sendMessage()">
+ ➤
+</button>
+
+<button onclick="toast('🎁 Gifts')">
+ 🎁
+</button>
+
+<button onclick="toast('😊 Emoji')">
+ 😊
+</button>
+
+</div>
+
+
+<!-- SETTINGS -->
+
+<div id="settingsModal"
+     class="modal"
+     onclick="if(event.target===this)closeModal()">
+
+<div class="sheet">
+
+<button class="close"
+ onclick="closeModal()">
+ ✕
+</button>
+
+<h3>
+ ⚙️ Room Settings
+</h3>
+
+<input id="editName"
+       placeholder="Room Name">
+
+<input id="editDP"
+       placeholder="Room DP image URL">
+
+<select id="editCategory">
+
+<option>General</option>
+<option>Music</option>
+<option>Chat</option>
+<option>Games</option>
+<option>Family</option>
+
+</select>
+
+<button onclick="saveRoomSettings()">
+ Save Room
+</button>
+
+</div>
+
+</div>
+
+
+<!-- USER -->
+
+<div id="userModal"
+     class="modal"
+     onclick="if(event.target===this)closeModal()">
+
+<div class="sheet">
+
+<button class="close"
+ onclick="closeModal()">
+ ✕
+</button>
+
+<h3 id="userTitle">
+ User
+</h3>
+
+<div id="userInfo">
+</div>
+
+<button onclick="makeAdmin()">
+ 🛡️ Make Admin
+</button>
+
+<button onclick="kickUser()">
+ 🚫 Kick
+</button>
+
+</div>
+
 </div>
 
 
 <script>
 
-/* =========================================================
-   FIREBASE
-   ========================================================= */
+/* ==================================================
+   FIREBASE CONFIG
+   Same Firebase project as index.html
+================================================== */
 
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+const firebaseConfig={
+
+ apiKey:"YOUR_FIREBASE_API_KEY",
+
+ authDomain:
+ "YOUR_PROJECT.firebaseapp.com",
+
+ databaseURL:
+ "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+
+ projectId:
+ "YOUR_PROJECT",
+
+ storageBucket:
+ "YOUR_PROJECT.appspot.com",
+
+ messagingSenderId:
+ "YOUR_SENDER_ID",
+
+ appId:
+ "YOUR_APP_ID"
+
 };
 
-let db = null;
-let firebaseReady = false;
 
-try{
+/* ROOM ID */
 
-  if(
-    firebaseConfig.apiKey !==
-    "YOUR_API_KEY"
-  ){
-
-    firebase.initializeApp(firebaseConfig);
-
-    db = firebase.database();
-
-    firebaseReady = true;
-
-  }
-
-}catch(error){
-
-  console.error(error);
-
-}
+const roomId=
+ new URLSearchParams(location.search)
+ .get("room");
 
 
-/* =========================================================
-   USER
-   ========================================================= */
+/* USER */
 
-let myId =
-  localStorage.getItem(
-    "pawanUserId"
-  );
+const uid=
+ localStorage.getItem("pawanUid") ||
+ ("PV"+Date.now());
 
-if(!myId){
+let me=
+ JSON.parse(
+  localStorage.getItem("pawanProfile") ||
+  '{"name":"Guest","level":1,"dp":"","gender":"Male"}'
+ );
 
-  myId =
-    "PV" +
-    Date.now()
-      .toString()
-      .slice(-8);
-
-  localStorage.setItem(
-    "pawanUserId",
-    myId
-  );
-
-}
-
-let myName =
-  localStorage.getItem(
-    "pawanName"
-  ) || "Guest";
-
-let myGender =
-  localStorage.getItem(
-    "pawanGender"
-  ) || "Male";
+me.uid=uid;
 
 
-/* =========================================================
-   ROOM ID
-   ========================================================= */
+/* VARIABLES */
 
-const params =
-  new URLSearchParams(
-    window.location.search
-  );
+let db=null;
 
-let currentRoomId =
-  params.get("room");
+let room=null;
+
+let members={};
+
+let selectedUser=null;
+
+let micOn=false;
+
+let audioStream=null;
 
 
-if(!currentRoomId){
+/* HELPERS */
 
-  currentRoomId =
-    localStorage.getItem(
-      "pawanCurrentRoom"
-    );
+function toast(x){
+
+ alert(x);
 
 }
 
 
-if(currentRoomId){
+function esc(s){
 
-  localStorage.setItem(
-    "pawanCurrentRoom",
-    currentRoomId
-  );
+ return String(s||"")
+ .replace(/[&<>"']/g,m=>({
 
-}
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#039;"
 
-
-/* =========================================================
-   ROOM VARIABLES
-   ========================================================= */
-
-let roomData = null;
-let roomUsers = {};
-
-let localStream = null;
-
-let micOn = true;
-let speakerOn = true;
-
-let peerConnections = {};
-
-let isHost = false;
-
-
-/* =========================================================
-   START
-   ========================================================= */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  function(){
-
-    if(!currentRoomId){
-
-      showToast(
-        "Room ID नहीं मिला."
-      );
-
-      return;
-
-    }
-
-    if(!firebaseReady){
-
-      showToast(
-        "Firebase config डालना जरूरी है."
-      );
-
-      return;
-
-    }
-
-    loadRoom();
-
-  }
-);
-
-
-/* =========================================================
-   LOAD ROOM
-   ========================================================= */
-
-function loadRoom(){
-
-  db.ref(
-    "rooms/" +
-    currentRoomId
-  ).on(
-    "value",
-    function(snapshot){
-
-      if(!snapshot.exists()){
-
-        showToast(
-          "Room मौजूद नहीं है."
-        );
-
-        return;
-
-      }
-
-      roomData =
-        snapshot.val();
-
-      isHost =
-        roomData.hostId === myId;
-
-      updateRoomHeader();
-
-      loadUsers();
-
-    }
-  );
+ }[m]));
 
 }
 
 
-/* =========================================================
-   HEADER
-   ========================================================= */
-
-function updateRoomHeader(){
-
-  document
-    .getElementById("roomName")
-    .textContent =
-      roomData.name ||
-      "PawanVoice Room";
-
-
-  document
-    .getElementById("roomNumber")
-    .textContent =
-      "Room #" +
-      currentRoomId;
-
-
-  document
-    .getElementById("hostName")
-    .textContent =
-      "👑 Host: " +
-      (
-        roomData.hostName ||
-        "Host"
-      );
-
-
-  document
-    .getElementById("roomMeta")
-    .textContent =
-      getUserCount() +
-      "/9 · " +
-      (
-        roomData.category ||
-        "General"
-      );
-
-}
-
-
-/* =========================================================
-   USERS
-   ========================================================= */
-
-function loadUsers(){
-
-  db.ref(
-    "rooms/" +
-    currentRoomId +
-    "/users"
-  ).on(
-    "value",
-    function(snapshot){
-
-      roomUsers =
-        snapshot.val() || {};
-
-      renderSeats();
-
-      renderExp();
-
-    }
-  );
-
-}
-
-
-function getUserCount(){
-
-  return Object.keys(
-    roomUsers
-  ).length;
-
-}
-
-
-/* =========================================================
-   SEATS
-   ========================================================= */
+/* RENDER SEATS */
 
 function renderSeats(){
 
-  const box =
-    document.getElementById(
-      "seats"
-    );
+ const list=
+ Object.values(members)
+ .sort(
+  (a,b)=>
+  (a.seat||99)-
+  (b.seat||99)
+ );
 
-  let html = "";
+ let owner=
+ list.find(x=>
+  x.uid===room.hostId
+ );
 
-
-  for(
-    let seat=1;
-    seat<=9;
-    seat++
-  ){
-
-    let user = null;
-
-
-    Object.keys(roomUsers)
-      .some(function(uid){
-
-        const u =
-          roomUsers[uid];
-
-        if(
-          u &&
-          Number(u.seat) === seat
-        ){
-
-          user = u;
-
-          return true;
-
-        }
-
-        return false;
-
-      });
+ if(!owner)
+ owner=
+ list.find(x=>
+  x.seat===1
+ );
 
 
-    if(user){
+ if(owner){
 
-      const owner =
-        user.isHost === true ||
-        seat === 1;
+  ownerDP.src=
+   owner.dp||"";
 
+  ownerName.textContent=
+   owner.name||"Owner";
 
-      const icon =
-        owner
-        ? "👑"
-        : (
-          user.gender === "Female"
-          ? "👩"
-          : "👤"
-        );
+  ownerID.textContent=
+   "ID: "+owner.uid+
+   (owner.uid===uid?
+   " · You":"");
 
-
-      html += `
-
-        <div
-          class="seat ${
-            owner ? "owner" : ""
-          }"
-          onclick="userClicked('${attr(user.id)}')">
-
-          <div class="seat-circle">
-            ${icon}
-          </div>
-
-          <div class="seat-name">
-            ${safe(
-              user.name ||
-              "Guest"
-            )}
-          </div>
-
-          <div class="seat-id">
-            ID:
-            ${safe(
-              String(
-                user.id || ""
-              ).slice(-6)
-            )}
-          </div>
-
-        </div>
-
-      `;
-
-    }else{
-
-      html += `
-
-        <div class="seat">
-
-          <div class="seat-circle empty-seat">
-            +
-          </div>
-
-          <div class="seat-name">
-            Seat ${seat}
-          </div>
-
-        </div>
-
-      `;
-
-    }
-
-  }
+ }
 
 
-  box.innerHTML =
-    html;
-
-}
-
-
-/* =========================================================
-   USER MENU
-   ========================================================= */
-
-function userClicked(uid){
-
-  const user =
-    roomUsers[uid];
-
-  if(!user) return;
+ let others=
+ list.filter(
+  x=>x.uid!==owner?.uid
+ );
 
 
-  let content = `
+ let html="";
 
-    <div style="
-      background:#101016;
-      border-radius:12px;
-      padding:12px;
-      margin-bottom:10px;
-    ">
 
-      <div style="
-        font-size:15px;
-        font-weight:bold;
-      ">
-        👤 ${safe(user.name || "Guest")}
-      </div>
+ for(let i=0;i<8;i++){
 
-      <div style="
-        color:#999;
-        font-size:11px;
-        margin-top:5px;
-      ">
-        User ID: ${safe(user.id)}
-      </div>
+  const x=others[i];
 
-      <div style="
-        color:#999;
-        font-size:11px;
-        margin-top:4px;
-      ">
-        Seat: ${user.seat || "-"}
-      </div>
+  if(x){
 
+   html+=`
+
+   <div class="seat"
+        onclick="openUser('${x.uid}')">
+
+    <img class="circle"
+         src="${esc(x.dp||"")}">
+
+    <div class="name">
+     ${esc(x.name||"User")}
     </div>
 
-  `;
+    <div class="id">
+     ID: ${esc(x.uid)}
+    </div>
 
+    <div class="badge">
+     ⭐ Lv.${x.level||1}
+    </div>
 
-  if(isHost && uid !== myId){
+   </div>
 
-    content += `
-
-      <div class="modal-grid">
-
-        <button
-          class="modal-btn"
-          onclick="makeAdmin('${attr(uid)}')">
-          🛡️ Make Admin
-        </button>
-
-        <button
-          class="modal-btn red"
-          onclick="kickUser('${attr(uid)}')">
-          🚫 Kick User
-        </button>
-
-      </div>
-
-    `;
-
-  }
-
-
-  openModal(
-    "👤 User Profile",
-    content
-  );
-
-}
-
-
-/* =========================================================
-   ADMIN
-   ========================================================= */
-
-function makeAdmin(uid){
-
-  if(!isHost){
-
-    showToast(
-      "Only Owner can make Admin."
-    );
-
-    return;
-
-  }
-
-
-  db.ref(
-    "rooms/" +
-    currentRoomId +
-    "/users/" +
-    uid
-  )
-  .update({
-    isAdmin:true
-  })
-  .then(function(){
-
-    closeModal();
-
-    showToast(
-      "User को Admin बना दिया."
-    );
-
-  });
-
-}
-
-
-function kickUser(uid){
-
-  if(!isHost){
-
-    showToast(
-      "Only Owner can kick."
-    );
-
-    return;
-
-  }
-
-
-  if(uid === myId){
-
-    return;
-
-  }
-
-
-  db.ref(
-    "rooms/" +
-    currentRoomId +
-    "/users/" +
-    uid
-  )
-  .remove()
-  .then(function(){
-
-    closeModal();
-
-    showToast(
-      "User room से remove हो गया."
-    );
-
-  });
-
-}
-
-
-/* =========================================================
-   CHAT
-   ========================================================= */
-
-function listenChat(){
-
-  db.ref(
-    "rooms/" +
-    currentRoomId +
-    "/chat"
-  )
-  .limitToLast(80)
-  .on(
-    "value",
-    function(snapshot){
-
-      const data =
-        snapshot.val() || {};
-
-      const box =
-        document.getElementById(
-          "chatBox"
-        );
-
-
-      let html = "";
-
-
-      Object.keys(data)
-        .forEach(function(key){
-
-          const msg =
-            data[key];
-
-
-          html += `
-
-            <div class="chat-message">
-
-              <b>
-                ${safe(
-                  msg.name ||
-                  "Guest"
-                )}:
-              </b>
-
-              ${safe(
-                msg.text ||
-                ""
-              )}
-
-            </div>
-
-          `;
-
-        });
-
-
-      box.innerHTML =
-        html ||
-        `
-          <div class="chat-message">
-            <b>System:</b>
-            No messages yet.
-          </div>
-        `;
-
-
-      box.scrollTop =
-        box.scrollHeight;
-
-    }
-  );
-
-}
-
-
-function sendChat(){
-
-  const input =
-    document.getElementById(
-      "chatInput"
-    );
-
-  const text =
-    input.value.trim();
-
-
-  if(!text) return;
-
-
-  db.ref(
-    "rooms/" +
-    currentRoomId +
-    "/chat"
-  )
-  .push({
-
-    uid:myId,
-
-    name:myName,
-
-    text:text,
-
-    time:
-      firebase.database.ServerValue.TIMESTAMP
-
-  });
-
-
-  input.value = "";
-
-}
-
-
-function chatEnter(event){
-
-  if(
-    event.key === "Enter"
-  ){
-
-    sendChat();
-
-  }
-
-}
-
-
-/* =========================================================
-   EMOJI
-   ========================================================= */
-
-function toggleEmoji(){
-
-  document
-    .getElementById("emojiBox")
-    .classList.toggle(
-      "show"
-    );
-
-}
-
-
-function addEmoji(emoji){
-
-  const input =
-    document.getElementById(
-      "chatInput"
-    );
-
-  input.value += emoji;
-
-  input.focus();
-
-}
-
-
-/* =========================================================
-   EXP
-   ========================================================= */
-
-function renderExp(){
-
-  const users =
-    Object.keys(roomUsers)
-      .map(function(uid){
-
-        return roomUsers[uid];
-
-      });
-
-
-  users.sort(function(a,b){
-
-    return (
-      Number(b.exp || 0) -
-      Number(a.exp || 0)
-    );
-
-  });
-
-
-  for(
-    let i=0;
-    i<3;
-    i++
-  ){
-
-    const name =
-      document.getElementById(
-        "exp" +
-        (i+1) +
-        "Name"
-      );
-
-    const value =
-      document.getElementById(
-        "exp" +
-        (i+1) +
-        "Value"
-      );
-
-
-    if(users[i]){
-
-      name.textContent =
-        users[i].name ||
-        "Guest";
-
-      value.textContent =
-        Number(
-          users[i].exp || 0
-        ) +
-        " EXP";
-
-    }else{
-
-      name.textContent =
-        "---";
-
-      value.textContent =
-        "0 EXP";
-
-    }
-
-  }
-
-}
-
-
-/* =========================================================
-   MICROPHONE
-   ========================================================= */
-
-async function startMicrophone(){
-
-  try{
-
-    localStream =
-      await navigator.mediaDevices
-        .getUserMedia({
-          audio:true,
-          video:false
-        });
-
-
-    localStream
-      .getAudioTracks()
-      .forEach(function(track){
-
-        track.enabled =
-          micOn;
-
-      });
-
-
-    showToast(
-      "Microphone connected."
-    );
-
-  }catch(error){
-
-    console.error(error);
-
-    showToast(
-      "Microphone permission Allow करें."
-    );
-
-  }
-
-}
-
-
-function toggleMic(){
-
-  micOn =
-    !micOn;
-
-
-  if(localStream){
-
-    localStream
-      .getAudioTracks()
-      .forEach(function(track){
-
-        track.enabled =
-          micOn;
-
-      });
-
-  }
-
-
-  const button =
-    document.getElementById(
-      "micBtn"
-    );
-
-
-  button.textContent =
-    micOn
-    ? "🎤"
-    : "🔇";
-
-
-  button.classList.toggle(
-    "active",
-    micOn
-  );
-
-
-  if(
-    firebaseReady &&
-    currentRoomId
-  ){
-
-    db.ref(
-      "rooms/" +
-      currentRoomId +
-      "/users/" +
-      myId +
-      "/micOn"
-    ).set(micOn);
-
-  }
-
-}
-
-
-/* =========================================================
-   SPEAKER
-   ========================================================= */
-
-function toggleSpeaker(){
-
-  speakerOn =
-    !speakerOn;
-
-
-  document
-    .querySelectorAll(
-      "#audioContainer audio"
-    )
-    .forEach(function(audio){
-
-      audio.muted =
-        !speakerOn;
-
-    });
-
-
-  const button =
-    document.getElementById(
-      "speakerBtn"
-    );
-
-
-  button.textContent =
-    speakerOn
-    ? "🔊"
-    : "🔇";
-
-
-  button.classList.toggle(
-    "active",
-    speakerOn
-  );
-
-}
-
-
-/* =========================================================
-   INVITE
-   ========================================================= */
-
-function inviteRoom(){
-
-  const roomName =
-    roomData &&
-    roomData.name
-    ? roomData.name
-    : "PawanVoice Room";
-
-
-  const text =
-    "🎙️ Join my PawanVoice room\n" +
-    roomName +
-    "\nRoom #" +
-    currentRoomId;
-
-
-  if(
-    navigator.share
-  ){
-
-    navigator.share({
-      title:"PawanVoice Room",
-      text:text
-    })
-    .catch(function(){});
-
-  }else if(
-    navigator.clipboard
-  ){
-
-    navigator.clipboard
-      .writeText(text)
-      .then(function(){
-
-        showToast(
-          "Room invite copied."
-        );
-
-      });
+   `;
 
   }else{
 
-    showToast(text);
+   html+=`
 
-  }
+   <div class="seat">
 
-}
+    <div class="circle"
+         style="
+         display:flex;
+         align-items:center;
+         justify-content:center;
+         ">
 
-
-/* =========================================================
-   ROOM SETTINGS
-   ========================================================= */
-
-function roomSettings(){
-
-  let content = `
-
-    <div class="modal-grid">
-
-      <button
-        class="modal-btn"
-        onclick="showToast('Room name settings')">
-        ✏️ Room Name
-      </button>
-
-      <button
-        class="modal-btn"
-        onclick="showToast('Category settings')">
-        📂 Category
-      </button>
-
-      <button
-        class="modal-btn"
-        onclick="showToast('Seat settings')">
-        💺 Seat Settings
-      </button>
-
-      <button
-        class="modal-btn"
-        onclick="showToast('Privacy settings')">
-        🔒 Privacy
-      </button>
+     ＋
 
     </div>
 
-  `;
+    <div class="name">
+     Seat ${i+2}
+    </div>
 
+    <div class="id">
+     Empty
+    </div>
 
-  if(isHost){
+   </div>
 
-    content += `
-
-      <br>
-
-      <button
-        class="modal-btn red"
-        style="width:100%"
-        onclick="closeRoom()">
-        🗑️ Close Room
-      </button>
-
-    `;
+   `;
 
   }
 
+ }
 
-  openModal(
-    "⚙️ Room Settings",
-    content
-  );
+ seatGrid.innerHTML=html;
 
 }
 
 
-function closeRoom(){
+/* USER CLICK */
 
-  if(!isHost){
+function openUser(id){
 
-    showToast(
-      "Only Owner can close room."
-    );
+ selectedUser=id;
 
-    return;
+ const x=
+ members[id];
 
-  }
+ if(!x)return;
 
+ userTitle.textContent=
+  x.name||"User";
 
-  db.ref(
-    "rooms/" +
-    currentRoomId
-  )
-  .remove()
-  .then(function(){
+ userInfo.innerHTML=`
 
-    showToast(
-      "Room closed."
-    );
+ <p>
+ <b>Name:</b>
+ ${esc(x.name)}
+ </p>
 
-    setTimeout(function(){
+ <p>
+ <b>ID:</b>
+ ${esc(x.uid)}
+ </p>
 
-      goHome();
+ <p>
+ <b>Level:</b>
+ ${x.level||1}
+ </p>
 
-    },700);
+ <p>
+ <b>Gender:</b>
+ ${esc(x.gender||"-")}
+ </p>
 
-  });
+ <p>
+ <b>Admin:</b>
+ ${x.admin?"Yes":"No"}
+ </p>
 
-}
+ `;
 
-
-/* =========================================================
-   FEATURES
-   ========================================================= */
-
-function roomFeature(type){
-
-  const text = {
-
-    support:
-      "💖 Room Support opened.",
-
-    lucky:
-      "🎡 Lucky Wheel opened.",
-
-    bounty:
-      "🎯 Bounty Hunter opened.",
-
-    reward:
-      "🎁 Room Reward opened.",
-
-    exclusive:
-      "✨ New App Exclusive Benefits."
-
-  };
-
-
-  showToast(
-    text[type] ||
-    "Feature opened."
-  );
+ userModal.classList.add(
+  "show"
+ );
 
 }
 
 
-/* =========================================================
-   GIFTS
-   ========================================================= */
-
-function showGiftMenu(){
-
-  openModal(
-
-    "🎁 Send Gift",
-
-    `
-
-      <div class="modal-grid">
-
-        <button
-          class="modal-btn"
-          onclick="sendGift('❤️')">
-          ❤️ Heart
-        </button>
-
-        <button
-          class="modal-btn"
-          onclick="sendGift('🌹')">
-          🌹 Rose
-        </button>
-
-        <button
-          class="modal-btn"
-          onclick="sendGift('🎂')">
-          🎂 Cake
-        </button>
-
-        <button
-          class="modal-btn"
-          onclick="sendGift('🚀')">
-          🚀 Rocket
-        </button>
-
-      </div>
-
-    `
-
-  );
-
-}
-
-
-function sendGift(gift){
-
-  closeModal();
-
-  showToast(
-    gift +
-    " Gift sent."
-  );
-
-}
-
-
-/* =========================================================
-   MORE
-   ========================================================= */
-
-function showMoreMenu(){
-
-  openModal(
-
-    "⋯ More",
-
-    `
-
-      <div class="modal-grid">
-
-        <button
-          class="modal-btn"
-          onclick="showToast('Room Info')">
-          ℹ️ Room Info
-        </button>
-
-        <button
-          class="modal-btn"
-          onclick="inviteRoom()">
-          📤 Share
-        </button>
-
-        <button
-          class="modal-btn"
-          onclick="showToast('Report opened')">
-          🚩 Report
-        </button>
-
-        <button
-          class="modal-btn"
-          onclick="showToast('Feedback opened')">
-          💬 Feedback
-        </button>
-
-      </div>
-
-    `
-
-  );
-
-}
-
-
-/* =========================================================
-   MODAL
-   ========================================================= */
-
-function openModal(
-  title,
-  content
-){
-
-  document
-    .getElementById("modalTitle")
-    .textContent =
-      title;
-
-
-  document
-    .getElementById("modalContent")
-    .innerHTML =
-      content;
-
-
-  document
-    .getElementById("modal")
-    .classList.add(
-      "show"
-    );
-
-}
-
+/* CLOSE */
 
 function closeModal(){
 
-  document
-    .getElementById("modal")
-    .classList.remove(
-      "show"
-    );
+ document
+ .querySelectorAll(".modal")
+ .forEach(x=>
+  x.classList.remove("show")
+ );
 
 }
 
 
-function outsideModal(event){
+/* SETTINGS */
 
-  if(
-    event.target.id === "modal"
-  ){
+function openSettings(){
 
-    closeModal();
+ if(!room)return;
+
+ editName.value=
+  room.name||"";
+
+ editDP.value=
+  room.dp||"";
+
+ editCategory.value=
+  room.category||
+  "General";
+
+ settingsModal.classList.add(
+  "show"
+ );
+
+}
+
+
+/* SAVE ROOM SETTINGS */
+
+async function saveRoomSettings(){
+
+ if(room.hostId!==uid){
+
+  alert(
+   "Only room owner can change settings."
+  );
+
+  return;
+ }
+
+ await db
+ .ref("rooms/"+roomId)
+ .update({
+
+  name:
+   editName.value.trim(),
+
+  dp:
+   editDP.value.trim(),
+
+  category:
+   editCategory.value
+
+ });
+
+ closeModal();
+
+}
+
+
+/* ADMIN */
+
+async function makeAdmin(){
+
+ if(room.hostId!==uid){
+
+  alert(
+   "Only room owner can make admin."
+  );
+
+  return;
+ }
+
+ await db
+ .ref(
+  "rooms/"+roomId+
+  "/members/"+selectedUser
+ )
+ .update({
+  admin:true
+ });
+
+ closeModal();
+
+}
+
+
+/* KICK */
+
+async function kickUser(){
+
+ if(room.hostId!==uid){
+
+  alert(
+   "Only room owner can kick."
+  );
+
+  return;
+ }
+
+ await db
+ .ref(
+  "rooms/"+roomId+
+  "/members/"+selectedUser
+ )
+ .remove();
+
+ closeModal();
+
+}
+
+
+/* SHARE */
+
+function shareRoom(){
+
+ if(navigator.share){
+
+  navigator.share({
+
+   title:room.name,
+
+   text:
+   "Join my PawanVoice room",
+
+   url:
+   location.href
+
+  });
+
+ }else{
+
+  navigator.clipboard?.writeText(
+   location.href
+  );
+
+  alert(
+   "Room link copied"
+  );
+
+ }
+
+}
+
+
+/* CHAT */
+
+async function sendMessage(){
+
+ const text=
+ document
+ .getElementById("message")
+ .value.trim();
+
+ if(!text)return;
+
+ await db
+ .ref(
+  "rooms/"+roomId+
+  "/messages"
+ )
+ .push({
+
+  uid:uid,
+
+  name:
+   me.name||"Guest",
+
+  text:text,
+
+  createdAt:
+   Date.now()
+
+ });
+
+ message.value="";
+
+}
+
+
+function renderChat(snapshot){
+
+ let html="";
+
+ snapshot.forEach(c=>{
+
+  const x=c.val();
+
+  html+=`
+
+  <div class="msg">
+
+   <b>
+    ${esc(x.name)}
+   </b>:
+
+   ${esc(x.text)}
+
+  </div>
+
+  `;
+
+ });
+
+ chat.innerHTML=
+  html||
+  "<div class='muted'>Room chat started.</div>";
+
+ chat.scrollTop=
+  chat.scrollHeight;
+
+}
+
+
+/* MICROPHONE */
+
+async function toggleMic(){
+
+ if(micOn){
+
+  if(audioStream){
+
+   audioStream
+   .getTracks()
+   .forEach(
+    t=>t.stop()
+   );
 
   }
 
-}
+  audioStream=null;
 
+  micOn=false;
 
-/* =========================================================
-   LEAVE
-   ========================================================= */
+  micButton.textContent=
+   "🎙️";
 
-async function leaveRoom(){
+  return;
 
-  try{
+ }
 
-    if(
-      firebaseReady &&
-      currentRoomId
-    ){
+ try{
 
-      await db.ref(
-        "rooms/" +
-        currentRoomId +
-        "/users/" +
-        myId
-      ).remove();
+  audioStream=
+   await navigator.mediaDevices
+   .getUserMedia({
+    audio:true
+   });
 
-    }
+  micOn=true;
 
+  micButton.textContent=
+   "🔴";
 
-    if(localStream){
+ }catch(e){
 
-      localStream
-        .getTracks()
-        .forEach(function(track){
+  alert(
+   "Microphone permission denied."
+  );
 
-          track.stop();
-
-        });
-
-    }
-
-
-    Object.keys(
-      peerConnections
-    ).forEach(function(uid){
-
-      try{
-
-        peerConnections[uid]
-          .close();
-
-      }catch(e){}
-
-    });
-
-
-    peerConnections = {};
-
-  }catch(error){
-
-    console.error(error);
-
-  }
-
-
-  goHome();
+ }
 
 }
 
 
-function goHome(){
+/* JOIN */
 
-  window.location.href =
+async function joinRoom(){
+
+ if(!room)return;
+
+ let arr=
+  Object.values(members)
+  .filter(
+   x=>x.uid!==uid
+  );
+
+ let taken=
+  new Set(
+   arr.map(x=>x.seat)
+  );
+
+ let seat=2;
+
+ while(
+  taken.has(seat)&&
+  seat<=9
+ ){
+  seat++;
+ }
+
+ if(room.hostId===uid)
+  seat=1;
+
+ if(seat>9){
+
+  alert("Room full");
+
+  return;
+ }
+
+ await db
+ .ref(
+  "rooms/"+roomId+
+  "/members/"+uid
+ )
+ .set({
+
+  uid:uid,
+
+  name:
+   me.name||"Guest",
+
+  dp:
+   me.dp||"",
+
+  gender:
+   me.gender||"Male",
+
+  level:
+   me.level||1,
+
+  seat:seat,
+
+  admin:
+   room.hostId===uid,
+
+  joinedAt:
+   Date.now()
+
+ });
+
+ await db
+ .ref("rooms/"+roomId)
+ .update({
+
+  online:
+   Object.keys(members)
+   .length+1
+
+ });
+
+}
+
+
+/* INIT */
+
+async function init(){
+
+ if(!roomId){
+
+  alert(
+   "Room ID नहीं मिला."
+  );
+
+  return;
+
+ }
+
+ if(
+  firebaseConfig.apiKey===
+  "YOUR_FIREBASE_API_KEY"
+ ){
+
+  alert(
+   "Firebase config अभी भरना बाकी है."
+  );
+
+  return;
+
+ }
+
+ firebase.initializeApp(
+  firebaseConfig
+ );
+
+ db=
+  firebase.database();
+
+ firebase.auth()
+ .signInAnonymously()
+ .catch(console.log);
+
+
+ /* ROOM */
+
+ db.ref(
+  "rooms/"+roomId
+ )
+ .on("value",s=>{
+
+  room=s.val();
+
+  if(!room){
+
+   alert(
+    "Room नहीं मिला."
+   );
+
+   location.href=
     "index.html";
 
-}
-
-
-/* =========================================================
-   HELPERS
-   ========================================================= */
-
-function safe(value){
-
-  return String(value)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
-
-function attr(value){
-
-  return String(value)
-    .replace(/\\/g,"\\\\")
-    .replace(/'/g,"\\'");
-
-}
-
-
-/* =========================================================
-   START ROOM
-   ========================================================= */
-
-function startRoom(){
-
-  if(!currentRoomId){
-
-    return;
+   return;
 
   }
 
+  roomName.textContent=
+   room.name||
+   "Voice Room";
 
-  listenChat();
+  roomMeta.textContent=
+   "#"+
+   (room.roomNo||roomId)+
+   " · "+
+   (room.category||
+    "General")+
+   " · "+
+   (room.online||0)+
+   "/9";
 
-  startMicrophone();
+  hostName.textContent=
+   room.hostName||
+   "-";
+
+  roomDP.src=
+   room.dp||"";
+
+ });
+
+
+ /* MEMBERS */
+
+ db.ref(
+  "rooms/"+roomId+
+  "/members"
+ )
+ .on("value",s=>{
+
+  members={};
+
+  s.forEach(c=>{
+
+   members[c.key]=
+    c.val();
+
+  });
+
+  renderSeats();
+
+ });
+
+
+ /* CHAT */
+
+ db.ref(
+  "rooms/"+roomId+
+  "/messages"
+ )
+ .limitToLast(50)
+ .on(
+  "value",
+  renderChat
+ );
+
+
+ setTimeout(
+  joinRoom,
+  800
+ );
 
 }
 
 
-/* =========================================================
-   AUTO START
-   ========================================================= */
-
-setTimeout(
-  startRoom,
-  700
-);
-
-
-/* =========================================================
-   CLEANUP
-   ========================================================= */
-
-window.addEventListener(
-  "beforeunload",
-  function(){
-
-    if(
-      firebaseReady &&
-      currentRoomId
-    ){
-
-      db.ref(
-        "rooms/" +
-        currentRoomId +
-        "/users/" +
-        myId
-      ).remove();
-
-    }
-
-  }
-);
+init();
 
 </script>
 
 </body>
 </html>
-```
