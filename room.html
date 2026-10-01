@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>PawanVoice Room</title>
 
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
@@ -13,52 +10,50 @@
 <style>
 *{
   box-sizing:border-box;
+  margin:0;
+  padding:0;
   -webkit-tap-highlight-color:transparent;
 }
 
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
+body{
   font-family:Arial,Helvetica,sans-serif;
+  background:
+    radial-gradient(circle at 50% 18%,rgba(112,72,190,.35),transparent 35%),
+    linear-gradient(180deg,#160d2d 0%,#0d1029 55%,#08091a 100%);
   color:#fff;
-  background:#09051b;
+  min-height:100vh;
+  overflow:hidden;
 }
 
-body{
-  background:
-    radial-gradient(
-      circle at 50% 10%,
-      #392277,
-      #171044 40%,
-      #09051b 80%
-    );
+button,input{
+  font:inherit;
 }
 
 button{
   border:0;
-  color:#fff;
+  color:white;
+  cursor:pointer;
 }
 
 .app{
-  width:100%;
-  height:100%;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
   position:relative;
   overflow:hidden;
 }
 
 /* HEADER */
-
 .header{
   height:76px;
+  padding:10px 12px;
   display:flex;
   align-items:center;
   gap:9px;
-  padding:9px 11px;
-  background:rgba(17,9,43,.85);
-  backdrop-filter:blur(12px);
+  background:rgba(18,12,40,.72);
   border-bottom:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(12px);
+  flex-shrink:0;
 }
 
 .back{
@@ -69,96 +64,113 @@ button{
   font-size:23px;
 }
 
-.roomDp{
-  width:46px;
-  height:46px;
-  border-radius:14px;
+.room-dp{
+  width:48px;
+  height:48px;
+  border-radius:50%;
   object-fit:cover;
+  border:2px solid #a778ff;
+  background:#302050;
 }
 
-.roomInfo{
+.room-info{
   flex:1;
   min-width:0;
 }
 
-.roomName{
-  font-size:16px;
-  font-weight:bold;
+.room-name{
+  font-size:15px;
+  font-weight:700;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 
-.roomId{
+.room-id{
   margin-top:4px;
-  font-size:10px;
-  opacity:.5;
+  color:#b8afd0;
+  font-size:11px;
 }
 
-.headerRight{
+.header-actions{
   display:flex;
-  align-items:center;
-  gap:5px;
+  gap:6px;
+}
+
+.header-btn{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  background:rgba(255,255,255,.09);
+  font-size:18px;
 }
 
 .count{
-  font-size:10px;
-  padding:7px 8px;
-  border-radius:14px;
-  background:rgba(255,255,255,.1);
+  font-size:11px;
+  color:#d8cef0;
+  text-align:center;
+  min-width:30px;
 }
 
-.hBtn{
-  width:35px;
-  height:35px;
-  border-radius:50%;
-  background:rgba(255,255,255,.1);
-}
-
-/* CONTENT */
-
-.content{
-  height:calc(100% - 76px);
+/* MAIN */
+.main{
+  flex:1;
   overflow-y:auto;
-  padding:12px 10px 88px;
+  overflow-x:hidden;
+  padding:8px 10px 90px;
 }
 
-.content::-webkit-scrollbar{
-  display:none;
+/* TOP INFO */
+.room-title{
+  text-align:center;
+  color:#cfc2ed;
+  font-size:12px;
+  margin:3px 0 8px;
 }
 
-/* HOST */
+/* SEATS */
+.seats{
+  width:100%;
+}
 
-.hostArea{
+.host-row{
   display:flex;
   justify-content:center;
-  margin-bottom:17px;
+  margin-bottom:12px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px 6px;
+}
+
+.seat-wrap{
+  min-width:0;
+  text-align:center;
 }
 
 .seat{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  min-width:65px;
-}
-
-.avatarWrap{
-  width:63px;
-  height:63px;
-  padding:3px;
-  border-radius:50%;
-  background:linear-gradient(
-    135deg,
-    #ffd66b,
-    #b05fff,
-    #568cff
-  );
   position:relative;
+  width:62px;
+  height:62px;
+  margin:auto;
+  border-radius:50%;
+  padding:3px;
+  background:linear-gradient(135deg,#9e67ff,#4c82ff);
+  box-shadow:0 4px 20px rgba(103,79,255,.22);
 }
 
-.hostSeat .avatarWrap{
-  width:83px;
-  height:83px;
+.host-seat .seat{
+  width:82px;
+  height:82px;
+  background:linear-gradient(135deg,#ffd86b,#b66cff,#6e8cff);
+}
+
+.seat.empty{
+  background:rgba(255,255,255,.08);
+  border:2px dashed rgba(255,255,255,.18);
+  padding:0;
 }
 
 .avatar{
@@ -166,2304 +178,1301 @@ button{
   height:100%;
   border-radius:50%;
   object-fit:cover;
-  background:#251c42;
+  background:#21163d;
 }
 
-.crown{
-  position:absolute;
-  top:-15px;
-  left:50%;
-  transform:translateX(-50%);
-  font-size:20px;
-}
-
-.mic{
+.mic-status{
   position:absolute;
   right:-2px;
   bottom:0;
-  width:22px;
-  height:22px;
+  width:21px;
+  height:21px;
   border-radius:50%;
   display:flex;
   justify-content:center;
   align-items:center;
-  background:#17102f;
-  border:2px solid #09051b;
-  font-size:10px;
+  font-size:11px;
+  background:#30264b;
+  border:1px solid rgba(255,255,255,.25);
 }
 
-.userName{
-  margin-top:7px;
-  max-width:88px;
+.seat-number{
+  position:absolute;
+  left:-2px;
+  top:1px;
+  min-width:20px;
+  height:20px;
+  padding:0 5px;
+  border-radius:10px;
+  background:rgba(0,0,0,.55);
+  font-size:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.user-name{
+  margin-top:5px;
+  color:#eee8fa;
   font-size:11px;
+  line-height:14px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  text-align:center;
 }
 
-.seatNo{
-  font-size:9px;
-  opacity:.4;
+.host-label{
   margin-top:3px;
-}
-
-/* GRID */
-
-.seatGrid{
-  max-width:430px;
-  margin:auto;
-  display:grid;
-  grid-template-columns:
-    repeat(4,1fr);
-  gap:21px 3px;
-}
-
-.emptySeat .avatarWrap{
-  background:rgba(255,255,255,.07);
-  border:2px dashed rgba(255,255,255,.13);
-  padding:2px;
-}
-
-.emptyIcon{
-  width:100%;
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:50%;
-  font-size:22px;
-  color:rgba(255,255,255,.3);
+  font-size:10px;
+  color:#ffd66f;
 }
 
 /* FEATURES */
-
 .features{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  margin-top:23px;
-  padding-bottom:5px;
-}
-
-.features::-webkit-scrollbar{
-  display:none;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:6px;
+  margin-top:18px;
 }
 
 .feature{
-  flex:0 0 auto;
-  padding:9px 12px;
-  border-radius:18px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.06);
-  font-size:10px;
+  min-height:53px;
+  border-radius:13px;
+  background:linear-gradient(180deg,rgba(113,75,176,.32),rgba(255,255,255,.06));
+  border:1px solid rgba(255,255,255,.07);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:4px;
+  font-size:9px;
+  color:#ddd5ee;
+}
+
+.feature-icon{
+  font-size:19px;
 }
 
 /* EXP */
-
-.exp{
-  margin-top:8px;
-  padding:11px;
-  border-radius:17px;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(106,58,205,.4),
-      rgba(45,105,194,.2)
-    );
+.exp-box{
+  margin-top:13px;
+  border-radius:16px;
+  padding:9px 12px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.06);
 }
 
-.expTop{
+.exp-top{
   display:flex;
   justify-content:space-between;
+  align-items:center;
   font-size:11px;
+  color:#ddd3ef;
 }
 
-.bar{
+.exp-bar{
   height:7px;
-  margin-top:8px;
-  border-radius:7px;
-  background:rgba(255,255,255,.1);
+  margin-top:7px;
+  border-radius:10px;
   overflow:hidden;
+  background:rgba(255,255,255,.1);
 }
 
-.fill{
-  width:38%;
+.exp-fill{
+  width:22%;
   height:100%;
-  border-radius:7px;
-  background:linear-gradient(
-    90deg,
-    #ffc94d,
-    #ae64e9
-  );
+  border-radius:10px;
+  background:linear-gradient(90deg,#9d61ff,#ff75ce);
 }
 
-.rank{
+.exp-ranks{
   display:flex;
   justify-content:space-between;
-  margin-top:7px;
-  font-size:9px;
-  opacity:.6;
+  margin-top:8px;
+  font-size:10px;
+  color:#bcb1d4;
 }
 
 /* CHAT */
-
-.chat{
+.chat-area{
   margin-top:12px;
-  max-height:120px;
+  min-height:45px;
+  max-height:125px;
   overflow-y:auto;
 }
 
-.chat::-webkit-scrollbar{
-  display:none;
-}
-
-.msg{
+.message{
+  display:flex;
+  gap:7px;
   margin:5px 0;
+  align-items:flex-start;
 }
 
-.msgBubble{
-  display:inline-block;
+.message-avatar{
+  width:25px;
+  height:25px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.message-bubble{
+  max-width:75%;
   padding:7px 10px;
-  border-radius:13px;
-  background:rgba(0,0,0,.28);
+  border-radius:11px;
+  background:rgba(255,255,255,.09);
   font-size:11px;
-  max-width:85%;
+  line-height:15px;
 }
 
-.msgBubble b{
-  color:#e3b8ff;
+.message-name{
+  color:#b887ff;
+  font-size:10px;
+  margin-bottom:2px;
 }
 
 /* BOTTOM */
-
 .bottom{
   position:absolute;
   left:0;
   right:0;
   bottom:0;
-  min-height:72px;
-  padding:9px 8px
-    calc(9px + env(safe-area-inset-bottom));
-  background:rgba(10,6,29,.96);
-  backdrop-filter:blur(14px);
+  padding:8px 8px calc(8px + env(safe-area-inset-bottom));
+  background:rgba(11,9,27,.94);
   border-top:1px solid rgba(255,255,255,.08);
-  display:flex;
-  align-items:center;
-  gap:5px;
+  backdrop-filter:blur(15px);
   z-index:20;
 }
 
-.inputWrap{
+.bottom-row{
+  display:flex;
+  gap:7px;
+  align-items:center;
+}
+
+.chat-input{
   flex:1;
-  height:41px;
+  height:42px;
+  min-width:0;
+  border:1px solid rgba(255,255,255,.1);
+  outline:none;
   border-radius:22px;
+  padding:0 14px;
+  color:white;
   background:rgba(255,255,255,.08);
 }
 
-.input{
-  width:100%;
-  height:100%;
-  padding:0 13px;
-  border:0;
-  outline:0;
-  background:transparent;
-  color:#fff;
+.chat-input::placeholder{
+  color:#958ca8;
 }
 
-.input::placeholder{
-  color:rgba(255,255,255,.4);
-}
-
-.icon{
-  width:39px;
-  height:39px;
-  flex:0 0 39px;
+.control{
+  width:42px;
+  height:42px;
+  flex-shrink:0;
   border-radius:50%;
-  background:rgba(255,255,255,.09);
-  font-size:17px;
+  background:rgba(255,255,255,.1);
+  font-size:18px;
+}
+
+.control.active{
+  background:linear-gradient(135deg,#8655ff,#c15fff);
+}
+
+.control.off{
+  background:#4b2735;
 }
 
 /* EMOJI */
-
-.emojiPanel{
+.emoji-panel{
+  display:none;
   position:absolute;
   left:8px;
   right:8px;
-  bottom:78px;
+  bottom:63px;
   padding:10px;
-  border-radius:19px;
-  background:#17102f;
+  border-radius:16px;
+  background:#18132c;
   border:1px solid rgba(255,255,255,.1);
-  display:none;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+  grid-template-columns:repeat(8,1fr);
+  gap:7px;
   z-index:30;
 }
 
-.emojiPanel.show{
-  display:block;
-}
-
-.emojis{
+.emoji-panel.show{
   display:grid;
-  grid-template-columns:
-    repeat(8,1fr);
-  gap:6px;
-  max-height:190px;
-  overflow-y:auto;
 }
 
 .emoji{
-  height:36px;
+  height:35px;
   border-radius:9px;
   background:rgba(255,255,255,.06);
   font-size:20px;
 }
 
 /* MODAL */
-
-.modal{
+.overlay{
+  display:none;
   position:fixed;
   inset:0;
-  display:none;
-  align-items:flex-end;
+  z-index:100;
   background:rgba(0,0,0,.65);
-  z-index:60;
+  align-items:flex-end;
+  justify-content:center;
 }
 
-.modal.show{
+.overlay.show{
   display:flex;
 }
 
-.box{
+.modal{
   width:100%;
-  max-width:600px;
-  margin:auto;
-  padding:18px;
-  border-radius:24px 24px 0 0;
-  background:#18102f;
-  max-height:80vh;
+  max-width:520px;
+  max-height:82vh;
   overflow-y:auto;
+  border-radius:22px 22px 0 0;
+  background:#18132c;
+  padding:18px;
+  border-top:1px solid rgba(255,255,255,.12);
 }
 
-.close{
-  float:right;
-  width:33px;
-  height:33px;
-  border-radius:50%;
-  background:rgba(255,255,255,.08);
-  color:#fff;
-}
-
-.title{
-  font-size:18px;
+.modal-title{
+  font-size:17px;
   font-weight:bold;
-  margin-bottom:15px;
+  margin-bottom:14px;
 }
 
-.profile{
+.modal-close{
+  float:right;
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:rgba(255,255,255,.1);
+}
+
+.user-card{
   display:flex;
   align-items:center;
   gap:12px;
+  padding:10px;
+  border-radius:14px;
+  background:rgba(255,255,255,.06);
 }
 
-.profile img{
-  width:60px;
-  height:60px;
+.user-card img{
+  width:55px;
+  height:55px;
   border-radius:50%;
   object-fit:cover;
 }
 
-.profileName{
+.user-card-info{
+  flex:1;
+}
+
+.user-card-name{
   font-weight:bold;
 }
 
-.profileId{
-  font-size:10px;
-  opacity:.5;
+.user-card-id{
+  color:#aaa0ba;
+  font-size:11px;
   margin-top:4px;
 }
 
+.action-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+  margin-top:14px;
+}
+
 .action{
-  width:100%;
-  height:43px;
-  margin-top:8px;
-  border-radius:13px;
-  text-align:left;
-  padding:0 12px;
+  padding:12px;
+  border-radius:12px;
   background:rgba(255,255,255,.08);
+  text-align:center;
 }
 
-.danger{
-  background:rgba(255,50,70,.13);
+.action.danger{
+  background:rgba(255,60,90,.18);
 }
 
-/* LOADING */
-
-.loading{
-  position:fixed;
-  inset:0;
-  background:#09051b;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  z-index:100;
+.setting{
+  margin:9px 0;
 }
 
-.loading b{
-  font-size:27px;
+.setting label{
+  display:block;
+  font-size:12px;
+  color:#bbb1ca;
+  margin-bottom:6px;
 }
 
-.loading span{
-  margin-top:8px;
-  font-size:11px;
-  opacity:.55;
+.setting input{
+  width:100%;
+  height:42px;
+  border:0;
+  outline:none;
+  border-radius:11px;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  padding:0 12px;
+}
+
+.primary{
+  width:100%;
+  height:44px;
+  margin-top:10px;
+  border-radius:12px;
+  background:linear-gradient(90deg,#7652ff,#b75fff);
 }
 
 /* TOAST */
-
 .toast{
   position:fixed;
   left:50%;
-  bottom:85px;
-  transform:translateX(-50%);
-  background:rgba(20,15,35,.96);
-  padding:10px 14px;
-  border-radius:20px;
-  font-size:11px;
+  bottom:90px;
+  transform:translateX(-50%) translateY(20px);
   opacity:0;
-  z-index:100;
   pointer-events:none;
+  z-index:300;
+  padding:10px 16px;
+  border-radius:20px;
+  background:rgba(0,0,0,.82);
+  font-size:12px;
+  transition:.25s;
+  white-space:nowrap;
 }
 
 .toast.show{
   opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+/* LOADING */
+.loading{
+  position:fixed;
+  inset:0;
+  z-index:500;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#0c0920;
+  flex-direction:column;
+  gap:12px;
+}
+
+.spinner{
+  width:38px;
+  height:38px;
+  border:3px solid rgba(255,255,255,.15);
+  border-top-color:#a36aff;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+/* RESPONSIVE */
+@media(max-width:360px){
+  .seat{
+    width:55px;
+    height:55px;
+  }
+
+  .host-seat .seat{
+    width:74px;
+    height:74px;
+  }
+
+  .features{
+    gap:4px;
+  }
+
+  .feature{
+    font-size:8px;
+  }
+
+  .control{
+    width:39px;
+    height:39px;
+  }
 }
 </style>
 </head>
 
 <body>
 
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <div>Connecting to PawanVoice...</div>
+</div>
+
 <div class="app">
 
   <!-- HEADER -->
+  <header class="header">
 
-  <div class="header">
+    <button class="back" onclick="goHome()">‹</button>
 
-    <button
-      class="back"
-      onclick="goHome()">
-      ‹
-    </button>
+    <img id="roomDP" class="room-dp" src="" alt="Room">
 
+    <div class="room-info">
+      <div class="room-name" id="roomName">PawanVoice Room</div>
+      <div class="room-id" id="roomIdText">Room: PV824991</div>
+    </div>
 
-    <img
-      id="roomDp"
-      class="roomDp"
-      src=""
-      alt="Room">
+    <div class="count" id="count">0/9</div>
 
+    <div class="header-actions">
+      <button class="header-btn" onclick="openSettings()">⚙️</button>
+      <button class="header-btn" onclick="inviteRoom()">↗️</button>
+    </div>
 
-    <div class="roomInfo">
+  </header>
 
-      <div
-        id="roomName"
-        class="roomName">
-        PawanVoice Room
+  <main class="main">
+
+    <div class="room-title" id="hostText">
+      PawanVoice • 9 Seat Room
+    </div>
+
+    <!-- HOST -->
+    <div class="host-row">
+      <div class="seat-wrap host-seat" id="seatWrap1">
       </div>
-
-      <div
-        id="roomId"
-        class="roomId">
-        Room:
-      </div>
-
     </div>
 
+    <!-- SEATS 2-9 -->
+    <div class="grid" id="seatGrid"></div>
 
-    <div class="headerRight">
-
-      <div
-        id="count"
-        class="count">
-        0/9
-      </div>
-
-      <button
-        class="hBtn"
-        onclick="openSettings()">
-        ⚙️
-      </button>
-
-      <button
-        class="hBtn"
-        onclick="inviteRoom()">
-        ↗️
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- CONTENT -->
-
-  <div class="content">
-
-    <div
-      id="hostArea"
-      class="hostArea">
-    </div>
-
-
-    <div
-      id="seatGrid"
-      class="seatGrid">
-    </div>
-
-
+    <!-- FEATURES -->
     <div class="features">
 
-      <button
-        class="feature"
-        onclick="feature('Room Support')">
-        🛟 Room Support
+      <button class="feature" onclick="featureMessage('Room Support')">
+        <span class="feature-icon">🛟</span>
+        <span>Support</span>
       </button>
 
-      <button
-        class="feature"
-        onclick="feature('Lucky Wheel')">
-        🎡 Lucky Wheel
+      <button class="feature" onclick="featureMessage('Lucky Wheel')">
+        <span class="feature-icon">🎡</span>
+        <span>Lucky Wheel</span>
       </button>
 
-      <button
-        class="feature"
-        onclick="feature('Bounty Hunter')">
-        🎯 Bounty Hunter
+      <button class="feature" onclick="featureMessage('Bounty Hunter')">
+        <span class="feature-icon">🎯</span>
+        <span>Bounty</span>
       </button>
 
-      <button
-        class="feature"
-        onclick="feature('Room Reward')">
-        🎁 Room Reward
+      <button class="feature" onclick="featureMessage('Room Reward')">
+        <span class="feature-icon">🎁</span>
+        <span>Reward</span>
       </button>
 
-      <button
-        class="feature"
-        onclick="feature('Exclusive Benefits')">
-        ⭐ Exclusive Benefits
+      <button class="feature" onclick="featureMessage('Exclusive Benefits')">
+        <span class="feature-icon">🚀</span>
+        <span>Benefits</span>
       </button>
 
     </div>
 
+    <!-- EXP -->
+    <div class="exp-box">
 
-    <div class="exp">
-
-      <div class="expTop">
-
-        <b>
-          🚀 Room EXP
-        </b>
-
-        <span>
-          Top Room
-        </span>
-
+      <div class="exp-top">
+        <span>🚀 Room EXP</span>
+        <span id="levelText">LV.1</span>
       </div>
 
-
-      <div class="bar">
-        <div class="fill"></div>
+      <div class="exp-bar">
+        <div class="exp-fill" id="expFill"></div>
       </div>
 
-
-      <div class="rank">
-
-        <span>
-          🥇 Top 1
-        </span>
-
-        <span>
-          🥈 Top 2
-        </span>
-
-        <span>
-          🥉 Top 3
-        </span>
-
+      <div class="exp-ranks">
+        <span>🏆 Top 1</span>
+        <span>🥈 Top 2</span>
+        <span>🥉 Top 3</span>
       </div>
 
     </div>
 
+    <!-- CHAT -->
+    <div class="chat-area" id="chatArea"></div>
 
-    <div
-      id="chat"
-      class="chat">
-    </div>
-
-  </div>
-
+  </main>
 
   <!-- EMOJI -->
+  <div class="emoji-panel" id="emojiPanel">
 
-  <div
-    id="emojiPanel"
-    class="emojiPanel">
+    <button class="emoji" onclick="sendEmoji('😡')">😡</button>
+    <button class="emoji" onclick="sendEmoji('😭')">😭</button>
+    <button class="emoji" onclick="sendEmoji('😵')">😵</button>
+    <button class="emoji" onclick="sendEmoji('🔨')">🔨</button>
+    <button class="emoji" onclick="sendEmoji('😊')">😊</button>
+    <button class="emoji" onclick="sendEmoji('😘')">😘</button>
+    <button class="emoji" onclick="sendEmoji('😂')">😂</button>
+    <button class="emoji" onclick="sendEmoji('😴')">😴</button>
 
-    <div
-      id="emojis"
-      class="emojis">
-    </div>
+    <button class="emoji" onclick="sendEmoji('😧')">😧</button>
+    <button class="emoji" onclick="sendEmoji('😁')">😁</button>
+    <button class="emoji" onclick="sendEmoji('👻')">👻</button>
+    <button class="emoji" onclick="sendEmoji('😎')">😎</button>
+    <button class="emoji" onclick="sendEmoji('🥵')">🥵</button>
+    <button class="emoji" onclick="sendEmoji('🤗')">🤗</button>
+    <button class="emoji" onclick="sendEmoji('❤️')">❤️</button>
+    <button class="emoji" onclick="sendEmoji('💰')">💰</button>
+
+    <button class="emoji" onclick="sendEmoji('🥳')">🥳</button>
+    <button class="emoji" onclick="sendEmoji('🥺')">🥺</button>
+    <button class="emoji" onclick="sendEmoji('😤')">😤</button>
+    <button class="emoji" onclick="sendEmoji('❓')">❓</button>
+    <button class="emoji" onclick="sendEmoji('🙄')">🙄</button>
+    <button class="emoji" onclick="sendEmoji('🤣')">🤣</button>
+    <button class="emoji" onclick="sendEmoji('🕶️')">🕶️</button>
+    <button class="emoji" onclick="sendEmoji('🤔')">🤔</button>
 
   </div>
 
-
-  <!-- BOTTOM -->
-
+  <!-- BOTTOM CONTROLS -->
   <div class="bottom">
 
-    <div class="inputWrap">
+    <div class="bottom-row">
 
       <input
         id="messageInput"
-        class="input"
+        class="chat-input"
         placeholder="Say something..."
         maxlength="300"
-        onkeydown="messageKey(event)">
+        onkeydown="handleChatKey(event)"
+      >
+
+      <button class="control" onclick="toggleEmoji()">😊</button>
+
+      <button
+        id="speakerBtn"
+        class="control active"
+        onclick="toggleSpeaker()"
+      >🔊</button>
+
+      <button
+        id="micBtn"
+        class="control off"
+        onclick="toggleMic()"
+      >🎙️</button>
+
+      <button
+        class="control"
+        onclick="openInbox()"
+      >💌</button>
+
+      <button
+        class="control"
+        onclick="openMore()"
+      >•••</button>
 
     </div>
-
-
-    <button
-      class="icon"
-      onclick="toggleEmoji()">
-      😊
-    </button>
-
-
-    <button
-      id="speakerBtn"
-      class="icon"
-      onclick="toggleSpeaker()">
-      🔊
-    </button>
-
-
-    <button
-      id="micBtn"
-      class="icon"
-      onclick="toggleMic()">
-      🔇
-    </button>
-
-
-    <button
-      class="icon"
-      onclick="goHome()">
-      🏠
-    </button>
-
-
-    <button
-      class="icon"
-      onclick="openMore()">
-      •••
-    </button>
 
   </div>
 
 </div>
 
-
 <!-- USER MODAL -->
+<div class="overlay" id="userOverlay" onclick="closeOverlay(event,'userOverlay')">
 
-<div
-  id="userModal"
-  class="modal">
+  <div class="modal">
 
-  <div class="box">
+    <button class="modal-close" onclick="hide('userOverlay')">×</button>
 
-    <button
-      class="close"
-      onclick="closeModal('userModal')">
-      ✕
-    </button>
+    <div class="modal-title">User Profile</div>
 
-    <div class="title">
-      User Profile
-    </div>
+    <div class="user-card">
 
+      <img id="modalUserDP" src="" alt="DP">
 
-    <div class="profile">
-
-      <img
-        id="selectedDp"
-        src="">
-
-      <div>
-
-        <div
-          id="selectedName"
-          class="profileName">
-          User
-        </div>
-
-        <div
-          id="selectedId"
-          class="profileId">
-          ID:
-        </div>
-
+      <div class="user-card-info">
+        <div class="user-card-name" id="modalUserName">User</div>
+        <div class="user-card-id" id="modalUserId">ID: -</div>
       </div>
 
     </div>
 
+    <div class="action-grid" id="userActions">
 
-    <button
-      id="adminBtn"
-      class="action"
-      onclick="makeAdmin()">
-      👑 Make Admin
-    </button>
+      <button class="action" onclick="viewUser()">👤 View Profile</button>
+      <button class="action" onclick="giftUser()">🎁 Gift</button>
+      <button class="action" onclick="makeAdmin()">🛡️ Make Admin</button>
+      <button class="action" onclick="removeAdmin()">🔓 Remove Admin</button>
+      <button class="action" onclick="kickUser()">🚪 Kick</button>
+      <button class="action danger" onclick="banUser()">🚫 Ban</button>
 
-
-    <button
-      id="removeAdminBtn"
-      class="action"
-      onclick="removeAdmin()">
-      👤 Remove Admin
-    </button>
-
-
-    <button
-      id="kickBtn"
-      class="action danger"
-      onclick="kickUser()">
-      🚪 Kick
-    </button>
-
-
-    <button
-      id="banBtn"
-      class="action danger"
-      onclick="banUser()">
-      🚫 Ban
-    </button>
+    </div>
 
   </div>
 
 </div>
-
 
 <!-- SETTINGS -->
+<div class="overlay" id="settingsOverlay" onclick="closeOverlay(event,'settingsOverlay')">
 
-<div
-  id="settingsModal"
-  class="modal">
+  <div class="modal">
 
-  <div class="box">
+    <button class="modal-close" onclick="hide('settingsOverlay')">×</button>
 
-    <button
-      class="close"
-      onclick="closeModal('settingsModal')">
-      ✕
-    </button>
+    <div class="modal-title">Room Settings</div>
 
-    <div class="title">
-      Room Settings
+    <div class="setting">
+      <label>Room Name</label>
+      <input id="newRoomName" maxlength="40" placeholder="Room name">
     </div>
 
-
-    <input
-      id="newRoomName"
-      class="input"
-      placeholder="Room name">
-
-
-    <button
-      class="action"
-      onclick="saveRoomName()">
-      💾 Save Room Name
+    <button class="primary" onclick="changeRoomName()">
+      Save Room Name
     </button>
 
-
-    <button
-      class="action"
-      onclick="inviteRoom()">
-      🔗 Copy Invite Link
-    </button>
-
-
-    <button
-      class="action danger"
-      onclick="leaveRoom()">
-      🚪 Leave Room
+    <button class="primary" onclick="leaveRoom()">
+      Leave Room
     </button>
 
   </div>
 
 </div>
 
-
-<!-- MORE -->
-
-<div
-  id="moreModal"
-  class="modal">
-
-  <div class="box">
-
-    <button
-      class="close"
-      onclick="closeModal('moreModal')">
-      ✕
-    </button>
-
-    <div class="title">
-      More
-    </div>
-
-
-    <button
-      class="action"
-      onclick="feature('Gifts')">
-      🎁 Gifts
-    </button>
-
-
-    <button
-      class="action"
-      onclick="feature('Bag')">
-      🎒 Bag
-    </button>
-
-
-    <button
-      class="action"
-      onclick="inviteRoom()">
-      📤 Invite Friends
-    </button>
-
-
-    <button
-      class="action"
-      onclick="leaveRoom()">
-      🚪 Leave Room
-    </button>
-
-  </div>
-
-</div>
-
-
-<div
-  id="toast"
-  class="toast">
-</div>
-
-
-<div
-  id="loading"
-  class="loading">
-
-  <b>
-    PawanVoice
-  </b>
-
-  <span>
-    Connecting to room...
-  </span>
-
-</div>
-
+<div class="toast" id="toast"></div>
 
 <script>
 
 /* =========================================================
-   PAWANVOICE CONNECTED ROOM
-   ========================================================= */
+   PAWANVOICE SERVER
+========================================================= */
 
-const SERVER =
-  "https://pawanvoice-1.onrender.com";
+const SERVER = "https://pawanvoice-1.onrender.com";
 
-
-const params =
-  new URLSearchParams(
-    location.search
-  );
-
-
-const ROOM_ID =
-  params.get("room") ||
-  localStorage.getItem(
-    "pawanvoice_room"
-  ) ||
-  "PV824991";
+const socket = io(SERVER,{
+  transports:["websocket","polling"],
+  reconnection:true,
+  reconnectionAttempts:Infinity,
+  reconnectionDelay:1000
+});
 
 
-let USER_ID =
-  localStorage.getItem(
-    "pawanvoice_user_id"
-  );
+/* =========================================================
+   LOCAL USER
+========================================================= */
 
+let userId =
+  localStorage.getItem("pawanvoice_user_id") ||
+  ("PVU" + Date.now() + Math.random().toString(36).slice(2,7));
 
-if(!USER_ID){
-
-  USER_ID =
-    "PVU" +
-    Date.now().toString(36) +
-    Math.random()
-      .toString(36)
-      .slice(2,6);
-
-  localStorage.setItem(
-    "pawanvoice_user_id",
-    USER_ID
-  );
-
-}
-
-
-let USER_NAME =
-  localStorage.getItem(
-    "pawanvoice_name"
-  ) ||
+let userName =
+  localStorage.getItem("pawanvoice_name") ||
   "Pawan";
 
+let userDP =
+  localStorage.getItem("pawanvoice_dp") ||
+  createAvatar(userName);
 
-let USER_DP =
-  localStorage.getItem(
-    "pawanvoice_dp"
-  ) ||
-  createAvatar(
-    USER_NAME
-  );
+localStorage.setItem("pawanvoice_user_id",userId);
+localStorage.setItem("pawanvoice_name",userName);
+localStorage.setItem("pawanvoice_dp",userDP);
 
 
-let socket = null;
+/* =========================================================
+   ROOM ID
+========================================================= */
+
+const params = new URLSearchParams(location.search);
+
+const roomId =
+  params.get("room") ||
+  localStorage.getItem("pawanvoice_room") ||
+  "PV824991";
+
+localStorage.setItem("pawanvoice_room",roomId);
+
+document.getElementById("roomIdText").textContent =
+  "Room: " + roomId;
+
+
+/* =========================================================
+   STATE
+========================================================= */
 
 let roomState = null;
-
 let selectedUser = null;
 
 let micOn = false;
-
 let speakerOn = true;
 
 let localStream = null;
 
 const peers = {};
 
-const remoteAudio = {};
+let joined = false;
 
 
-/* HEADER */
+/* =========================================================
+   AVATAR
+========================================================= */
 
-document.getElementById(
-  "roomId"
-).textContent =
-  "Room: " +
-  ROOM_ID;
-
-document.getElementById(
-  "roomDp"
-).src =
-  USER_DP;
-
-
-/* EMOJIS */
-
-const emojiList = [
-  "😀","😂","🤣","😊","😍","🥰","😘","😎",
-  "🤩","🥳","🥺","😭","😢","😡","🤬","😱",
-  "😴","🤔","🤭","🤫","👻","🤖","👑","💎",
-  "🔥","❤️","💕","💖","💔","💰","🎁","🎉",
-  "🚀","⭐","✨","👏","👍","👎","🙏","💪",
-  "👌","✌️","🤝","😇","😌","😋","😜","🤪"
-];
-
-
-const emojiBox =
-  document.getElementById(
-    "emojis"
-  );
-
-
-emojiList.forEach(
-  emoji=>{
-
-    const button =
-      document.createElement(
-        "button"
-      );
-
-    button.className =
-      "emoji";
-
-    button.textContent =
-      emoji;
-
-    button.onclick =
-      ()=>{
-        const input =
-          document.getElementById(
-            "messageInput"
-          );
-
-        input.value +=
-          emoji;
-
-        input.focus();
-      };
-
-    emojiBox.appendChild(
-      button
-    );
-
-  }
-);
-
-
-/* CONNECT */
-
-connect();
-
-
-function connect(){
-
-  socket =
-    io(
-      SERVER,
-      {
-        transports:[
-          "websocket",
-          "polling"
-        ],
-        reconnection:true
-      }
-    );
-
-
-  socket.on(
-    "connect",
-    ()=>{
-
-      socket.emit(
-        "join-room",
-        {
-          roomId:
-            ROOM_ID,
-
-          userId:
-            USER_ID,
-
-          name:
-            USER_NAME,
-
-          dp:
-            USER_DP
-        }
-      );
-
-    }
-  );
-
-
-  socket.on(
-    "connect_error",
-    ()=>{
-      document.querySelector(
-        "#loading span"
-      ).textContent =
-        "Server connection problem";
-    }
-  );
-
-
-  socket.on(
-    "room-state",
-    state=>{
-      roomState =
-        state;
-
-      renderRoom();
-
-      hideLoading();
-
-      setTimeout(
-        startConnections,
-        600
-      );
-    }
-  );
-
-
-  socket.on(
-    "room-updated",
-    state=>{
-      roomState =
-        state;
-
-      renderRoom();
-
-      startConnections();
-    }
-  );
-
-
-  socket.on(
-    "user-joined",
-    user=>{
-
-      toast(
-        user.name +
-        " joined"
-      );
-
-      startConnections();
-
-    }
-  );
-
-
-  socket.on(
-    "user-left",
-    user=>{
-
-      toast(
-        user.name +
-        " left"
-      );
-
-    }
-  );
-
-
-  socket.on(
-    "message",
-    message=>{
-
-      addMessage(
-        message.name,
-        message.text
-      );
-
-    }
-  );
-
-
-  socket.on(
-    "kicked",
-    ()=>{
-      alert(
-        "You were kicked from the room."
-      );
-
-      goHome();
-    }
-  );
-
-
-  socket.on(
-    "banned",
-    ()=>{
-      alert(
-        "You are banned from this room."
-      );
-
-      goHome();
-    }
-  );
-
-
-  socket.on(
-    "error-message",
-    message=>{
-      toast(
-        message
-      );
-    }
-  );
-
-
-  /* WEBRTC */
-
-  socket.on(
-    "webrtc-offer",
-    handleOffer
-  );
-
-  socket.on(
-    "webrtc-answer",
-    handleAnswer
-  );
-
-  socket.on(
-    "webrtc-ice-candidate",
-    handleIce
-  );
-
-}
-
-
-/* RENDER */
-
-function renderRoom(){
-
-  if(!roomState)
-    return;
-
-
-  document.getElementById(
-    "roomName"
-  ).textContent =
-    roomState.roomName ||
-    "PawanVoice Room";
-
-
-  document.getElementById(
-    "newRoomName"
-  ).value =
-    roomState.roomName ||
-    "PawanVoice Room";
-
-
-  const users =
-    Array.isArray(
-      roomState.users
-    )
-      ? roomState.users
-      : [];
-
-
-  document.getElementById(
-    "count"
-  ).textContent =
-    users.length +
-    "/9";
-
-
-  if(roomState.roomDp){
-
-    document.getElementById(
-      "roomDp"
-    ).src =
-      roomState.roomDp;
-
-  }
-
-
-  let seats =
-    Array.isArray(
-      roomState.seats
-    )
-      ? roomState.seats
-      : [];
-
-
-  while(
-    seats.length < 9
-  ){
-
-    seats.push({
-      seatNo:
-        seats.length + 1,
-      user:null
-    });
-
-  }
-
-
-  /* HOST */
-
-  const hostSeat =
-    seats.find(
-      s =>
-        Number(s.seatNo) === 1
-    );
-
-
-  document.getElementById(
-    "hostArea"
-  ).innerHTML =
-    seatHTML(
-      hostSeat,
-      true
-    );
-
-
-  /* 2-9 */
-
-  const grid =
-    document.getElementById(
-      "seatGrid"
-    );
-
-  grid.innerHTML =
-    "";
-
-
-  for(
-    let i=2;
-    i<=9;
-    i++
-  ){
-
-    const seat =
-      seats.find(
-        s =>
-          Number(s.seatNo) === i
-      );
-
-
-    const wrapper =
-      document.createElement(
-        "div"
-      );
-
-
-    wrapper.innerHTML =
-      seatHTML(
-        seat,
-        false
-      );
-
-
-    grid.appendChild(
-      wrapper.firstElementChild
-    );
-
-  }
-
-
-  const me =
-    users.find(
-      u =>
-        String(u.userId) ===
-        String(USER_ID)
-    );
-
-
-  if(me){
-
-    micOn =
-      !!me.micOn;
-
-    speakerOn =
-      me.speakerOn !== false;
-
-    updateButtons();
-
-  }
-
-}
-
-
-/* SEAT */
-
-function seatHTML(
-  seat,
-  host
-){
-
-  if(
-    !seat ||
-    !seat.user
-  ){
-
-    return `
-      <div
-        class="seat emptySeat"
-        onclick="takeSeat(
-          ${Number(
-            seat?.seatNo || 1
-          )}
-        )">
-
-        <div class="avatarWrap">
-
-          <div class="emptyIcon">
-            +
-          </div>
-
-        </div>
-
-        <div class="userName">
-          Empty
-        </div>
-
-        <div class="seatNo">
-          Seat ${Number(
-            seat?.seatNo || 1
-          )}
-        </div>
-
-      </div>
-    `;
-
-  }
-
-
-  const user =
-    seat.user;
-
-
-  const dp =
-    user.dp ||
-    createAvatar(
-      user.name
-    );
-
-
-  return `
-    <div
-      class="seat ${
-        host
-          ? "hostSeat"
-          : ""
-      }"
-      onclick="openUser(
-        '${escapeAttr(
-          user.userId
-        )}'
-      )">
-
-      <div class="avatarWrap">
-
-        ${
-          host ||
-          user.isHost
-            ? `<div class="crown">
-                 👑
-               </div>`
-            : ""
-        }
-
-        <img
-          class="avatar"
-          src="${escapeAttr(
-            dp
-          )}">
-
-        <div class="mic">
-          ${
-            user.micOn
-              ? "🎙️"
-              : "🔇"
-          }
-        </div>
-
-      </div>
-
-      <div class="userName">
-        ${escapeHTML(
-          user.name ||
-          "User"
-        )}
-      </div>
-
-      <div class="seatNo">
-        Seat ${Number(
-          seat.seatNo
-        )}
-      </div>
-
-    </div>
-  `;
-
-}
-
-
-/* TAKE SEAT */
-
-function takeSeat(
-  seatNo
-){
-
-  socket.emit(
-    "take-seat",
-    {
-      roomId:
-        ROOM_ID,
-
-      userId:
-        USER_ID,
-
-      seatNo:
-        Number(seatNo)
-    }
-  );
-
-}
-
-
-/* MIC */
-
-async function toggleMic(){
-
-  if(!localStream){
-
-    const ok =
-      await getMicrophone();
-
-    if(!ok)
-      return;
-
-  }
-
-
-  micOn =
-    !micOn;
-
-
-  localStream
-    .getAudioTracks()
-    .forEach(
-      track=>{
-        track.enabled =
-          micOn;
-      }
-    );
-
-
-  socket.emit(
-    "mic-toggle",
-    {
-      roomId:
-        ROOM_ID,
-
-      userId:
-        USER_ID,
-
-      micOn:
-        micOn
-    }
-  );
-
-
-  updateButtons();
-
-}
-
-
-async function getMicrophone(){
-
-  try{
-
-    localStream =
-      await navigator
-        .mediaDevices
-        .getUserMedia({
-          audio:{
-            echoCancellation:true,
-            noiseSuppression:true,
-            autoGainControl:true
-          },
-          video:false
-        });
-
-
-    localStream
-      .getAudioTracks()
-      .forEach(
-        track=>{
-          track.enabled =
-            false;
-        }
-      );
-
-
-    return true;
-
-  }catch(error){
-
-    toast(
-      "Microphone permission denied"
-    );
-
-    return false;
-
-  }
-
-}
-
-
-/* SPEAKER */
-
-function toggleSpeaker(){
-
-  speakerOn =
-    !speakerOn;
-
-
-  Object.values(
-    remoteAudio
-  ).forEach(
-    audio=>{
-      audio.muted =
-        !speakerOn;
-    }
-  );
-
-
-  socket.emit(
-    "speaker-toggle",
-    {
-      roomId:
-        ROOM_ID,
-
-      userId:
-        USER_ID,
-
-      speakerOn:
-        speakerOn
-    }
-  );
-
-
-  updateButtons();
-
-}
-
-
-function updateButtons(){
-
-  document.getElementById(
-    "micBtn"
-  ).textContent =
-    micOn
-      ? "🎙️"
-      : "🔇";
-
-
-  document.getElementById(
-    "speakerBtn"
-  ).textContent =
-    speakerOn
-      ? "🔊"
-      : "🔇";
-
-}
-
-
-/* CHAT */
-
-function messageKey(
-  event
-){
-
-  if(
-    event.key ===
-    "Enter"
-  ){
-
-    event.preventDefault();
-
-    sendMessage();
-
-  }
-
-}
-
-
-function sendMessage(){
-
-  const input =
-    document.getElementById(
-      "messageInput"
-    );
-
-
-  const text =
-    input.value.trim();
-
-
-  if(!text)
-    return;
-
-
-  socket.emit(
-    "send-message",
-    {
-      roomId:
-        ROOM_ID,
-
-      userId:
-        USER_ID,
-
-      text:
-        text
-    }
-  );
-
-
-  input.value =
-    "";
-
-}
-
-
-function addMessage(
-  name,
-  text
-){
-
-  const chat =
-    document.getElementById(
-      "chat"
-    );
-
-
-  const div =
-    document.createElement(
-      "div"
-    );
-
-  div.className =
-    "msg";
-
-
-  const bubble =
-    document.createElement(
-      "div"
-    );
-
-  bubble.className =
-    "msgBubble";
-
-
-  const b =
-    document.createElement(
-      "b"
-    );
-
-  b.textContent =
-    name + ":";
-
-
-  bubble.appendChild(
-    b
-  );
-
-
-  bubble.appendChild(
-    document.createTextNode(
-      " " + text
-    )
-  );
-
-
-  div.appendChild(
-    bubble
-  );
-
-
-  chat.appendChild(
-    div
-  );
-
-
-  chat.scrollTop =
-    chat.scrollHeight;
-
-}
-
-
-/* EMOJI */
-
-function toggleEmoji(){
-
-  document
-    .getElementById(
-      "emojiPanel"
-    )
-    .classList.toggle(
-      "show"
-    );
-
-}
-
-
-/* USER */
-
-function openUser(
-  userId
-){
-
-  if(!roomState)
-    return;
-
-
-  const user =
-    roomState.users.find(
-      u =>
-        String(u.userId) ===
-        String(userId)
-    );
-
-
-  if(!user)
-    return;
-
-
-  selectedUser =
-    user;
-
-
-  document.getElementById(
-    "selectedDp"
-  ).src =
-    user.dp ||
-    createAvatar(
-      user.name
-    );
-
-
-  document.getElementById(
-    "selectedName"
-  ).textContent =
-    user.name;
-
-
-  document.getElementById(
-    "selectedId"
-  ).textContent =
-    "ID: " +
-    user.userId;
-
-
-  const me =
-    roomState.users.find(
-      u =>
-        String(u.userId) ===
-        String(USER_ID)
-    );
-
-
-  const admin =
-    me &&
-    (
-      me.isHost ||
-      me.isAdmin
-    );
-
-
-  document.getElementById(
-    "adminBtn"
-  ).style.display =
-    admin &&
-    !user.isAdmin
-      ? "block"
-      : "none";
-
-
-  document.getElementById(
-    "removeAdminBtn"
-  ).style.display =
-    admin &&
-    user.isAdmin &&
-    !user.isHost
-      ? "block"
-      : "none";
-
-
-  document.getElementById(
-    "kickBtn"
-  ).style.display =
-    admin &&
-    !user.isHost
-      ? "block"
-      : "none";
-
-
-  document.getElementById(
-    "banBtn"
-  ).style.display =
-    admin &&
-    !user.isHost
-      ? "block"
-      : "none";
-
-
-  document.getElementById(
-    "userModal"
-  ).classList.add(
-    "show"
-  );
-
-}
-
-
-/* ADMIN */
-
-function makeAdmin(){
-
-  if(!selectedUser)
-    return;
-
-
-  socket.emit(
-    "make-admin",
-    {
-      roomId:
-        ROOM_ID,
-
-      userId:
-        USER_ID,
-
-      targetUserId:
-        selectedUser.userId
-    }
-  );
-
-
-  closeModal(
-    "userModal"
-  );
-
-}
-
-
-function removeAdmin(){
-
-  if(!selectedUser)
-    return;
-
-
-  socket.emit(
-    "remove-admin",
-    {
-      roomId:
-        ROOM_ID,
-
-      userId:
-        USER_ID,
-
-      targetUserId:
-        selectedUser.userId
-    }
-  );
-
-
-  closeModal(
-    "userModal"
-  );
-
-}
-
-
-function kickUser(){
-
-  if(!selectedUser)
-    return;
-
-
-  if(
-    !confirm(
-      "Kick " +
-      selectedUser.name +
-      "?"
-    )
-  )
-    return;
-
-
-  socket.emit(
-    "kick-user",
-    {
-      roomId:
-        ROOM_ID,
-
-      userId:
-        USER_ID,
-
-      targetUserId:
-        selectedUser.userId
-    }
-  );
-
-
-  closeModal(
-    "userModal"
-  );
-
-}
-
-
-function banUser(){
-
-  if(!selectedUser)
-    return;
-
-
-  if(
-    !confirm(
-      "Ban " +
-      selectedUser.name +
-      "?"
-    )
-  )
-    return;
-
-
-  socket.emit(
-    "ban-user",
-    {
-      roomId:
-        ROOM_ID,
-
-      userId:
-        USER_ID,
-
-      targetUserId:
-        selectedUser.userId
-    }
-  );
-
-
-  closeModal(
-    "userModal"
-  );
-
-}
-
-
-/* SETTINGS */
-
-function openSettings(){
-
-  document
-    .getElementById(
-      "settingsModal"
-    )
-    .classList.add(
-      "show"
-    );
-
-}
-
-
-function saveRoomName(){
-
-  const name =
-    document.getElementById(
-      "newRoomName"
-    )
-    .value
-    .trim();
-
-
-  if(!name)
-    return;
-
-
-  socket.emit(
-    "change-room-name",
-    {
-      roomId:
-        ROOM_ID,
-
-      userId:
-        USER_ID,
-
-      roomName:
-        name
-    }
-  );
-
-
-  closeModal(
-    "settingsModal"
-  );
-
-}
-
-
-/* INVITE */
-
-function inviteRoom(){
-
-  const link =
-    location.origin +
-    location.pathname +
-    "?room=" +
-    encodeURIComponent(
-      ROOM_ID
-    );
-
-
-  if(
-    navigator.share
-  ){
-
-    navigator.share({
-      title:
-        "PawanVoice Room",
-      text:
-        "Join my PawanVoice room",
-      url:
-        link
-    }).catch(()=>{});
-
-  }else{
-
-    navigator.clipboard
-      .writeText(
-        link
-      )
-      .then(
-        ()=>{
-          toast(
-            "Room link copied"
-          );
-        }
-      );
-
-  }
-
-}
-
-
-/* MORE */
-
-function openMore(){
-
-  document
-    .getElementById(
-      "moreModal"
-    )
-    .classList.add(
-      "show"
-    );
-
-}
-
-
-/* LEAVE */
-
-function leaveRoom(){
-
-  socket.emit(
-    "leave-room",
-    {
-      roomId:
-        ROOM_ID,
-
-      userId:
-        USER_ID
-    }
-  );
-
-
-  goHome();
-
-}
-
-
-function goHome(){
-
-  location.href =
-    "index.html";
-
-}
-
-
-/* FEATURE */
-
-function feature(
-  name
-){
-
-  toast(
-    name +
-    " module"
-  );
-
-}
-
-
-/* MODAL */
-
-function closeModal(
-  id
-){
-
-  document
-    .getElementById(
-      id
-    )
-    .classList.remove(
-      "show"
-    );
-
-}
-
-
-/* TOAST */
-
-let toastTimer;
-
-function toast(
-  text
-){
-
-  const el =
-    document.getElementById(
-      "toast"
-    );
-
-
-  el.textContent =
-    text;
-
-
-  el.classList.add(
-    "show"
-  );
-
-
-  clearTimeout(
-    toastTimer
-  );
-
-
-  toastTimer =
-    setTimeout(
-      ()=>{
-        el.classList.remove(
-          "show"
-        );
-      },
-      2200
-    );
-
-}
-
-
-/* LOADING */
-
-function hideLoading(){
-
-  document
-    .getElementById(
-      "loading"
-    )
-    .style.display =
-    "none";
-
-}
-
-
-/* AVATAR */
-
-function createAvatar(
-  name
-){
+function createAvatar(name){
 
   const letter =
-    String(
-      name || "P"
-    )
-    .charAt(0)
-    .toUpperCase();
-
+    String(name || "P")
+      .trim()
+      .charAt(0)
+      .toUpperCase() || "P";
 
   const svg = `
   <svg xmlns="http://www.w3.org/2000/svg"
        width="200"
        height="200">
+    <rect width="200" height="200" rx="100" fill="#39235f"/>
+    <text x="100"
+          y="120"
+          text-anchor="middle"
+          font-size="95"
+          font-family="Arial"
+          fill="white">${letter}</text>
+  </svg>`;
 
-    <defs>
-
-      <linearGradient
-        id="g"
-        x1="0"
-        x2="1"
-        y1="0"
-        y2="1">
-
-        <stop
-          offset="0"
-          stop-color="#7047e8"/>
-
-        <stop
-          offset="1"
-          stop-color="#d258dc"/>
-
-      </linearGradient>
-
-    </defs>
-
-    <rect
-      width="200"
-      height="200"
-      rx="100"
-      fill="url(#g)"/>
-
-    <text
-      x="100"
-      y="128"
-      text-anchor="middle"
-      font-family="Arial"
-      font-size="90"
-      fill="white">
-      ${letter}
-    </text>
-
-  </svg>
-  `;
+  return "data:image/svg+xml;charset=UTF-8," +
+    encodeURIComponent(svg);
+}
 
 
-  return (
-    "data:image/svg+xml;charset=UTF-8," +
-    encodeURIComponent(
-      svg
+/* =========================================================
+   ROOM DP
+========================================================= */
+
+document.getElementById("roomDP").src =
+  createAvatar("P");
+
+
+/* =========================================================
+   SOCKET CONNECT
+========================================================= */
+
+socket.on("connect",()=>{
+
+  console.log("Connected:",socket.id);
+
+  hideLoading();
+
+  socket.emit("join-room",{
+    roomId:roomId,
+    userId:userId,
+    name:userName,
+    dp:userDP
+  });
+
+});
+
+
+socket.on("connect_error",(error)=>{
+
+  console.error(error);
+
+  showToast("Server connection error");
+
+  hideLoading();
+
+});
+
+
+socket.on("disconnect",()=>{
+
+  showToast("Disconnected. Reconnecting...");
+
+});
+
+
+socket.on("room-state",(room)=>{
+
+  roomState = room;
+
+  joined = true;
+
+  hideLoading();
+
+  renderRoom(room);
+
+});
+
+
+socket.on("room-created",(room)=>{
+
+  roomState = room;
+
+  renderRoom(room);
+
+});
+
+
+socket.on("error-message",(message)=>{
+
+  showToast(message || "Something went wrong");
+
+});
+
+
+socket.on("kicked",()=>{
+
+  alert("You were removed from this room.");
+
+  goHome();
+
+});
+
+
+socket.on("banned",()=>{
+
+  alert("You are banned from this room.");
+
+  goHome();
+
+});
+
+
+socket.on("user-left",(user)=>{
+
+  if(user && user.userId){
+
+    closePeer(user.userId);
+
+  }
+
+});
+
+
+/* =========================================================
+   ROOM RENDER
+========================================================= */
+
+function renderRoom(room){
+
+  if(!room) return;
+
+  const users =
+    Array.isArray(room.users)
+      ? room.users
+      : [];
+
+  document.getElementById("count").textContent =
+    users.length + "/9";
+
+  document.getElementById("roomName").textContent =
+    room.roomName || "PawanVoice Room";
+
+  document.getElementById("newRoomName").value =
+    room.roomName || "PawanVoice Room";
+
+  const host =
+    users.find(u=>u.isHost) || null;
+
+  document.getElementById("hostText").textContent =
+    host
+      ? "Host: " + host.name
+      : "PawanVoice • 9 Seat Room";
+
+  renderSeat(1,host,true);
+
+  const grid =
+    document.getElementById("seatGrid");
+
+  grid.innerHTML = "";
+
+  for(let i=2;i<=9;i++){
+
+    const user =
+      users.find(u=>Number(u.seatNo) === i) || null;
+
+    const wrap =
+      document.createElement("div");
+
+    wrap.className = "seat-wrap";
+
+    wrap.id = "seatWrap" + i;
+
+    grid.appendChild(wrap);
+
+    renderSeat(i,user,false);
+
+  }
+
+  /*
+    Update room DP using host DP if available.
+  */
+
+  if(host && host.dp){
+
+    document.getElementById("roomDP").src =
+      host.dp;
+
+  }
+
+  /*
+    Keep current mic button synchronized.
+  */
+
+  const me =
+    users.find(u=>u.userId === userId);
+
+  if(me){
+
+    micOn = !!me.micOn;
+
+    speakerOn =
+      me.speakerOn !== false;
+
+    updateControls();
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER SINGLE SEAT
+========================================================= */
+
+function renderSeat(number,user,isHost){
+
+  const wrap =
+    document.getElementById("seatWrap" + number);
+
+  if(!wrap) return;
+
+  wrap.innerHTML = "";
+
+  const seat =
+    document.createElement("div");
+
+  seat.className =
+    "seat" + (!user ? " empty" : "");
+
+  if(isHost){
+
+    seat.classList.add("host-seat");
+
+  }
+
+  if(user){
+
+    seat.innerHTML = `
+
+      <img
+        class="avatar"
+        src="${safeImage(user.dp,user.name)}"
+        alt=""
+      >
+
+      <div class="seat-number">
+        ${number}
+      </div>
+
+      <div class="mic-status">
+        ${user.micOn ? "🎙️" : "🔇"}
+      </div>
+
+    `;
+
+    seat.onclick = ()=>openUser(user);
+
+  }else{
+
+    seat.innerHTML = `
+
+      <div
+        style="
+          width:100%;
+          height:100%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:24px;
+          color:#716986;
+        "
+      >
+        +
+      </div>
+
+      <div class="seat-number">
+        ${number}
+      </div>
+
+    `;
+
+    seat.onclick = ()=>takeSeat(number);
+
+  }
+
+  wrap.appendChild(seat);
+
+  const name =
+    document.createElement("div");
+
+  name.className = "user-name";
+
+  name.textContent =
+    user
+      ? user.name
+      : "Seat " + number;
+
+  wrap.appendChild(name);
+
+  if(isHost && user){
+
+    const label =
+      document.createElement("div");
+
+    label.className = "host-label";
+
+    label.textContent =
+      user.isAdmin ? "HOST • ADMIN" : "HOST";
+
+    wrap.appendChild(label);
+
+  }
+
+}
+
+
+/* =========================================================
+   SAFE IMAGE
+========================================================= */
+
+function safeImage(src,name){
+
+  if(
+    typeof src === "string" &&
+    (
+      src.startsWith("http://") ||
+      src.startsWith("https://") ||
+      src.startsWith("data:image/")
     )
-  );
+  ){
+
+    return src;
+
+  }
+
+  return createAvatar(name);
 
 }
 
 
-/* ESCAPE */
+/* =========================================================
+   TAKE SEAT
+========================================================= */
 
-function escapeHTML(
-  value
-){
+function takeSeat(seatNo){
 
-  return String(
-    value ?? ""
-  )
-  .replaceAll(
-    "&",
-    "&amp;"
-  )
-  .replaceAll(
-    "<",
-    "&lt;"
-  )
-  .replaceAll(
-    ">",
-    "&gt;"
-  )
-  .replaceAll(
-    '"',
-    "&quot;"
-  )
-  .replaceAll(
-    "'",
-    "&#039;"
-  );
+  if(!joined){
+
+    showToast("Room is not connected");
+
+    return;
+
+  }
+
+  socket.emit("take-seat",{
+    roomId:roomId,
+    userId:userId,
+    seatNo:seatNo
+  });
 
 }
 
 
-function escapeAttr(
-  value
-){
+/* =========================================================
+   LEAVE SEAT
+========================================================= */
 
-  return escapeHTML(
-    value
+function leaveSeat(){
+
+  socket.emit("leave-seat",{
+    roomId:roomId,
+    userId:userId
+  });
+
+}
+
+
+/* =========================================================
+   MIC
+========================================================= */
+
+async function toggleMic(){
+
+  try{
+
+    if(!micOn){
+
+      await startMic();
+
+    }else{
+
+      stopMic();
+
+    }
+
+    micOn = !micOn;
+
+    socket.emit("mic-toggle",{
+      roomId:roomId,
+      userId:userId,
+      micOn:micOn
+    });
+
+    updateControls();
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Microphone permission allow karein"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   START MIC
+========================================================= */
+
+async function startMic(){
+
+  if(localStream){
+
+    localStream.getTracks()
+      .forEach(track=>{
+        track.enabled = true;
+      });
+
+    return localStream;
+
+  }
+
+  localStream =
+    await navigator.mediaDevices.getUserMedia({
+      audio:{
+        echoCancellation:true,
+        noiseSuppression:true,
+        autoGainControl:true
+      },
+      video:false
+    });
+
+  /*
+    Existing peers receive our audio.
+  */
+
+  for(const id in peers){
+
+    const pc = peers[id];
+
+    localStream.getTracks()
+      .forEach(track=>{
+
+        try{
+
+          pc.addTrack(
+            track,
+            localStream
+          );
+
+        }catch(e){}
+
+      });
+
+  }
+
+  return localStream;
+
+}
+
+
+/* =========================================================
+   STOP MIC
+========================================================= */
+
+function stopMic(){
+
+  if(localStream){
+
+    localStream.getTracks()
+      .forEach(track=>{
+        track.enabled = false;
+      });
+
+  }
+
+}
+
+
+/* =========================================================
+   SPEAKER
+========================================================= */
+
+function toggleSpeaker(){
+
+  speakerOn = !speakerOn;
+
+  socket.emit("speaker-toggle",{
+    roomId:roomId,
+    userId:userId,
+    speakerOn:speakerOn
+  });
+
+  document
+    .querySelectorAll("audio")
+    .forEach(audio=>{
+      audio.muted = !speakerOn;
+    });
+
+  updateControls();
+
+}
+
+
+/* =========================================================
+   CONTROL UI
+========================================================= */
+
+function updateControls(){
+
+  const mic =
+    document.getElementById("micBtn");
+
+  const speaker =
+    document.getElementById("speakerBtn");
+
+  mic.classList.toggle(
+    "active",
+    micOn
   );
+
+  mic.classList.toggle(
+    "off",
+    !micOn
+  );
+
+  mic.textContent =
+    micOn ? "🎙️" : "🔇";
+
+  speaker.classList.toggle(
+    "active",
+    speakerOn
+  );
+
+  speaker.textContent =
+    speakerOn ? "🔊" : "🔇";
 
 }
 
@@ -2476,489 +1485,929 @@ const rtcConfig = {
 
   iceServers:[
     {
-      urls:
-        "stun:stun.l.google.com:19302"
+      urls:"stun:stun.l.google.com:19302"
     },
     {
-      urls:
-        "stun:stun1.l.google.com:19302"
+      urls:"stun:stun1.l.google.com:19302"
     }
   ]
 
 };
 
 
-async function startConnections(){
+/* =========================================================
+   CREATE PEER
+========================================================= */
 
-  if(
-    !socket ||
-    !socket.connected ||
-    !roomState
-  )
-    return;
+function createPeer(otherUserId){
 
+  if(peers[otherUserId]){
 
-  const users =
-    roomState.users ||
-    [];
-
-
-  for(
-    const user of users
-  ){
-
-    if(
-      String(
-        user.userId
-      ) ===
-      String(
-        USER_ID
-      )
-    )
-      continue;
-
-
-    /*
-      Prevent duplicate connections.
-    */
-    if(
-      peers[user.userId]
-    )
-      continue;
-
-
-    /*
-      Only the lexicographically
-      smaller ID creates offer.
-    */
-    if(
-      String(USER_ID) <
-      String(user.userId)
-    ){
-
-      await makeOffer(
-        user.userId
-      );
-
-    }
+    return peers[otherUserId];
 
   }
-
-}
-
-
-async function makeOffer(
-  targetId
-){
-
-  try{
-
-    await getMicrophone();
-
-
-    const pc =
-      createPeer(
-        targetId
-      );
-
-
-    if(
-      localStream &&
-      pc.getSenders().length === 0
-    ){
-
-      localStream
-        .getTracks()
-        .forEach(
-          track=>{
-            pc.addTrack(
-              track,
-              localStream
-            );
-          }
-        );
-
-    }
-
-
-    const offer =
-      await pc.createOffer();
-
-
-    await pc.setLocalDescription(
-      offer
-    );
-
-
-    socket.emit(
-      "webrtc-offer",
-      {
-        roomId:
-          ROOM_ID,
-
-        fromUserId:
-          USER_ID,
-
-        toUserId:
-          targetId,
-
-        offer:
-          offer
-      }
-    );
-
-  }catch(error){
-
-    console.error(
-      error
-    );
-
-  }
-
-}
-
-
-function createPeer(
-  userId
-){
-
-  if(
-    peers[userId]
-  ){
-
-    return peers[userId];
-
-  }
-
 
   const pc =
-    new RTCPeerConnection(
-      rtcConfig
-    );
+    new RTCPeerConnection(rtcConfig);
 
+  peers[otherUserId] = pc;
 
-  peers[userId] =
-    pc;
+  if(localStream){
 
-
-  pc.onicecandidate =
-    event=>{
-
-      if(
-        event.candidate
-      ){
-
-        socket.emit(
-          "webrtc-ice-candidate",
-          {
-            roomId:
-              ROOM_ID,
-
-            fromUserId:
-              USER_ID,
-
-            toUserId:
-              userId,
-
-            candidate:
-              event.candidate
-          }
-        );
-
-      }
-
-    };
-
-
-  pc.ontrack =
-    event=>{
-
-      let audio =
-        remoteAudio[userId];
-
-
-      if(!audio){
-
-        audio =
-          document.createElement(
-            "audio"
-          );
-
-        audio.autoplay =
-          true;
-
-        audio.playsInline =
-          true;
-
-        audio.muted =
-          !speakerOn;
-
-        audio.style.display =
-          "none";
-
-
-        document.body
-          .appendChild(
-            audio
-          );
-
-
-        remoteAudio[userId] =
-          audio;
-
-      }
-
-
-      if(
-        event.streams &&
-        event.streams[0]
-      ){
-
-        audio.srcObject =
-          event.streams[0];
-
-        audio.play()
-          .catch(
-            ()=>{}
-          );
-
-      }
-
-    };
-
-
-  pc.onconnectionstatechange =
-    ()=>{
-
-      if(
-        [
-          "failed",
-          "closed",
-          "disconnected"
-        ].includes(
-          pc.connectionState
-        )
-      ){
+    localStream.getTracks()
+      .forEach(track=>{
 
         try{
-          pc.close();
+
+          pc.addTrack(
+            track,
+            localStream
+          );
+
         }catch(e){}
 
-        delete peers[
-          userId
-        ];
+      });
 
-      }
+  }
 
-    };
+  pc.onicecandidate = event=>{
 
+    if(event.candidate){
+
+      socket.emit(
+        "webrtc-ice-candidate",
+        {
+          roomId:roomId,
+          to:otherUserId,
+          candidate:event.candidate
+        }
+      );
+
+    }
+
+  };
+
+  pc.ontrack = event=>{
+
+    const stream =
+      event.streams &&
+      event.streams[0];
+
+    if(!stream) return;
+
+    let audio =
+      document.getElementById(
+        "audio-" + otherUserId
+      );
+
+    if(!audio){
+
+      audio =
+        document.createElement("audio");
+
+      audio.id =
+        "audio-" + otherUserId;
+
+      audio.autoplay = true;
+
+      audio.playsInline = true;
+
+      document.body.appendChild(audio);
+
+    }
+
+    audio.srcObject = stream;
+
+    audio.muted = !speakerOn;
+
+    audio.play().catch(()=>{});
+
+  };
+
+  pc.onconnectionstatechange = ()=>{
+
+    if(
+      pc.connectionState === "failed" ||
+      pc.connectionState === "closed"
+    ){
+
+      closePeer(otherUserId);
+
+    }
+
+  };
 
   return pc;
 
 }
 
 
-async function handleOffer(
-  data
-){
+/* =========================================================
+   MAKE OFFERS
+========================================================= */
 
-  if(
-    !data ||
-    String(
-      data.toUserId
-    ) !==
-    String(
-      USER_ID
-    )
-  )
-    return;
+async function connectToUsers(){
 
+  if(!roomState) return;
 
-  try{
+  const users =
+    roomState.users || [];
 
-    await getMicrophone();
+  for(const user of users){
 
+    if(!user || user.userId === userId)
+      continue;
 
-    const pc =
-      createPeer(
-        data.fromUserId
-      );
+    /*
+      Prevent both sides from continuously
+      creating offers.
+    */
 
+    if(user.userId < userId){
 
-    if(
-      localStream &&
-      pc.getSenders().length === 0
-    ){
-
-      localStream
-        .getTracks()
-        .forEach(
-          track=>{
-            pc.addTrack(
-              track,
-              localStream
-            );
-          }
-        );
+      continue;
 
     }
 
+    try{
 
-    await pc.setRemoteDescription(
-      new RTCSessionDescription(
-        data.offer
-      )
-    );
+      const pc =
+        createPeer(user.userId);
+
+      const offer =
+        await pc.createOffer();
+
+      await pc.setLocalDescription(
+        offer
+      );
+
+      socket.emit(
+        "webrtc-offer",
+        {
+          roomId:roomId,
+          to:user.userId,
+          offer:offer
+        }
+      );
+
+    }catch(error){
+
+      console.error(
+        "Offer error",
+        error
+      );
+
+    }
+
+  }
+
+}
 
 
-    const answer =
-      await pc.createAnswer();
+/* =========================================================
+   WEBRTC OFFER
+========================================================= */
 
+socket.on(
+  "webrtc-offer",
+  async data=>{
 
-    await pc.setLocalDescription(
-      answer
-    );
+    try{
 
+      if(!data || !data.from)
+        return;
 
-    socket.emit(
-      "webrtc-answer",
-      {
-        roomId:
-          ROOM_ID,
+      /*
+        For receiving audio we don't strictly
+        need microphone permission.
+      */
 
-        fromUserId:
-          USER_ID,
+      const pc =
+        createPeer(data.from);
 
-        toUserId:
-          data.fromUserId,
+      await pc.setRemoteDescription(
+        new RTCSessionDescription(
+          data.offer
+        )
+      );
 
-        answer:
-          answer
+      if(localStream){
+
+        localStream.getTracks()
+          .forEach(track=>{
+
+            const exists =
+              pc.getSenders()
+                .some(sender=>
+                  sender.track === track
+                );
+
+            if(!exists){
+
+              pc.addTrack(
+                track,
+                localStream
+              );
+
+            }
+
+          });
+
       }
+
+      const answer =
+        await pc.createAnswer();
+
+      await pc.setLocalDescription(
+        answer
+      );
+
+      socket.emit(
+        "webrtc-answer",
+        {
+          roomId:roomId,
+          to:data.from,
+          answer:answer
+        }
+      );
+
+    }catch(error){
+
+      console.error(
+        "Offer handling error",
+        error
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   WEBRTC ANSWER
+========================================================= */
+
+socket.on(
+  "webrtc-answer",
+  async data=>{
+
+    try{
+
+      const pc =
+        peers[data.from];
+
+      if(!pc) return;
+
+      await pc.setRemoteDescription(
+        new RTCSessionDescription(
+          data.answer
+        )
+      );
+
+    }catch(error){
+
+      console.error(
+        "Answer error",
+        error
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   ICE
+========================================================= */
+
+socket.on(
+  "webrtc-ice-candidate",
+  async data=>{
+
+    try{
+
+      const pc =
+        peers[data.from];
+
+      if(!pc || !data.candidate)
+        return;
+
+      await pc.addIceCandidate(
+        new RTCIceCandidate(
+          data.candidate
+        )
+      );
+
+    }catch(error){
+
+      console.error(
+        "ICE error",
+        error
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   CLOSE PEER
+========================================================= */
+
+function closePeer(id){
+
+  const pc =
+    peers[id];
+
+  if(pc){
+
+    try{
+      pc.close();
+    }catch(e){}
+
+    delete peers[id];
+
+  }
+
+  const audio =
+    document.getElementById(
+      "audio-" + id
     );
 
-  }catch(error){
+  if(audio){
 
-    console.error(
-      "offer",
-      error
-    );
+    audio.remove();
 
   }
 
 }
 
 
-async function handleAnswer(
-  data
-){
+/* =========================================================
+   ROOM STATE -> CONNECT AUDIO
+========================================================= */
 
-  if(
-    !data ||
-    String(
-      data.toUserId
-    ) !==
-    String(
-      USER_ID
-    )
-  )
+let connectTimer = null;
+
+socket.on("room-state",()=>{
+
+  clearTimeout(connectTimer);
+
+  connectTimer =
+    setTimeout(
+      connectToUsers,
+      700
+    );
+
+});
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+function handleChatKey(event){
+
+  if(event.key !== "Enter")
     return;
 
+  event.preventDefault();
 
-  const pc =
-    peers[
-      data.fromUserId
-    ];
+  sendMessage();
+
+}
 
 
-  if(!pc)
+function sendMessage(){
+
+  const input =
+    document.getElementById(
+      "messageInput"
+    );
+
+  const message =
+    input.value.trim();
+
+  if(!message)
     return;
 
+  socket.emit("send-message",{
+    roomId:roomId,
+    userId:userId,
+    message:message
+  });
+
+  input.value = "";
+
+}
+
+
+socket.on("message",(data)=>{
+
+  addMessage(data);
+
+});
+
+
+socket.on("chat-message",(data)=>{
+
+  addMessage(data);
+
+});
+
+
+function addMessage(data){
+
+  if(!data) return;
+
+  const area =
+    document.getElementById(
+      "chatArea"
+    );
+
+  const div =
+    document.createElement("div");
+
+  div.className =
+    "message";
+
+  const avatar =
+    safeImage(
+      data.dp,
+      data.name
+    );
+
+  div.innerHTML = `
+
+    <img
+      class="message-avatar"
+      src="${avatar}"
+    >
+
+    <div class="message-bubble">
+
+      <div class="message-name">
+        ${escapeHTML(data.name || "User")}
+      </div>
+
+      ${escapeHTML(data.message || "")}
+
+    </div>
+
+  `;
+
+  area.appendChild(div);
+
+  while(area.children.length > 25){
+
+    area.removeChild(
+      area.firstChild
+    );
+
+  }
+
+  area.scrollTop =
+    area.scrollHeight;
+
+}
+
+
+/* =========================================================
+   EMOJI
+========================================================= */
+
+function toggleEmoji(){
+
+  document
+    .getElementById("emojiPanel")
+    .classList.toggle("show");
+
+}
+
+
+function sendEmoji(emoji){
+
+  const input =
+    document.getElementById(
+      "messageInput"
+    );
+
+  input.value += emoji;
+
+  input.focus();
+
+  document
+    .getElementById("emojiPanel")
+    .classList.remove("show");
+
+}
+
+
+/* =========================================================
+   USER PROFILE
+========================================================= */
+
+function openUser(user){
+
+  if(!user) return;
+
+  selectedUser = user;
+
+  document.getElementById(
+    "modalUserDP"
+  ).src =
+    safeImage(
+      user.dp,
+      user.name
+    );
+
+  document.getElementById(
+    "modalUserName"
+  ).textContent =
+    user.name || "User";
+
+  document.getElementById(
+    "modalUserId"
+  ).textContent =
+    "ID: " + (user.userId || "-");
+
+  document
+    .getElementById("userOverlay")
+    .classList.add("show");
+
+}
+
+
+function viewUser(){
+
+  if(!selectedUser)
+    return;
+
+  showToast(
+    "User ID: " +
+    selectedUser.userId
+  );
+
+}
+
+
+function giftUser(){
+
+  if(!selectedUser)
+    return;
+
+  socket.emit("send-gift",{
+    roomId:roomId,
+    fromUserId:userId,
+    toUserId:selectedUser.userId,
+    giftName:"Rose",
+    amount:10
+  });
+
+  showToast("🎁 Gift sent");
+
+}
+
+
+function makeAdmin(){
+
+  if(!selectedUser)
+    return;
+
+  socket.emit("make-admin",{
+    roomId:roomId,
+    userId:selectedUser.userId,
+    targetUserId:selectedUser.userId
+  });
+
+  hide("userOverlay");
+
+}
+
+
+function removeAdmin(){
+
+  if(!selectedUser)
+    return;
+
+  socket.emit("remove-admin",{
+    roomId:roomId,
+    userId:selectedUser.userId,
+    targetUserId:selectedUser.userId
+  });
+
+  hide("userOverlay");
+
+}
+
+
+function kickUser(){
+
+  if(!selectedUser)
+    return;
+
+  socket.emit("kick-user",{
+    roomId:roomId,
+    userId:userId,
+    targetUserId:selectedUser.userId
+  });
+
+  hide("userOverlay");
+
+}
+
+
+function banUser(){
+
+  if(!selectedUser)
+    return;
+
+  socket.emit("ban-user",{
+    roomId:roomId,
+    userId:userId,
+    targetUserId:selectedUser.userId
+  });
+
+  hide("userOverlay");
+
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+function openSettings(){
+
+  document
+    .getElementById("settingsOverlay")
+    .classList.add("show");
+
+}
+
+
+function changeRoomName(){
+
+  const name =
+    document.getElementById(
+      "newRoomName"
+    ).value.trim();
+
+  if(!name){
+
+    showToast("Room name required");
+
+    return;
+
+  }
+
+  socket.emit("change-room-name",{
+    roomId:roomId,
+    userId:userId,
+    roomName:name
+  });
+
+  hide("settingsOverlay");
+
+}
+
+
+function leaveRoom(){
+
+  socket.emit("leave-room",{
+    roomId:roomId,
+    userId:userId
+  });
+
+  goHome();
+
+}
+
+
+/* =========================================================
+   INVITE
+========================================================= */
+
+async function inviteRoom(){
+
+  const url =
+    location.origin +
+    location.pathname +
+    "?room=" +
+    encodeURIComponent(roomId);
 
   try{
 
-    await pc.setRemoteDescription(
-      new RTCSessionDescription(
-        data.answer
-      )
-    );
+    if(navigator.share){
+
+      await navigator.share({
+        title:"PawanVoice Room",
+        text:"Join my PawanVoice room",
+        url:url
+      });
+
+    }else{
+
+      await navigator.clipboard.writeText(
+        url
+      );
+
+      showToast(
+        "Room link copied"
+      );
+
+    }
 
   }catch(error){
 
-    console.error(
-      "answer",
-      error
-    );
+    try{
+
+      await navigator.clipboard.writeText(
+        url
+      );
+
+      showToast(
+        "Room link copied"
+      );
+
+    }catch(e){
+
+      showToast(url);
+
+    }
 
   }
 
 }
 
 
-async function handleIce(
-  data
-){
+/* =========================================================
+   MORE
+========================================================= */
 
-  if(
-    !data ||
-    String(
-      data.toUserId
-    ) !==
-    String(
-      USER_ID
-    )
-  )
-    return;
+function openMore(){
 
-
-  const pc =
-    peers[
-      data.fromUserId
-    ];
-
-
-  if(!pc)
-    return;
-
-
-  try{
-
-    await pc.addIceCandidate(
-      new RTCIceCandidate(
-        data.candidate
-      )
+  const choice =
+    confirm(
+      "Share room link?\n\nOK = Share\nCancel = Leave room"
     );
 
-  }catch(error){
+  if(choice){
 
-    console.error(
-      "ice",
-      error
-    );
+    inviteRoom();
+
+  }else{
+
+    leaveRoom();
 
   }
 
 }
 
 
-/* CLEANUP */
+/* =========================================================
+   INBOX
+========================================================= */
+
+function openInbox(){
+
+  location.href =
+    "index.html#inbox";
+
+}
+
+
+/* =========================================================
+   HOME
+========================================================= */
+
+function goHome(){
+
+  location.href =
+    "index.html";
+
+}
+
+
+/* =========================================================
+   FEATURE MESSAGE
+========================================================= */
+
+function featureMessage(name){
+
+  showToast(
+    name + " — coming soon"
+  );
+
+}
+
+
+/* =========================================================
+   UI HELPERS
+========================================================= */
+
+function hide(id){
+
+  document
+    .getElementById(id)
+    .classList.remove("show");
+
+}
+
+
+function closeOverlay(event,id){
+
+  if(event.target.id === id){
+
+    hide(id);
+
+  }
+
+}
+
+
+function showToast(message){
+
+  const toast =
+    document.getElementById(
+      "toast"
+    );
+
+  toast.textContent =
+    message;
+
+  toast.classList.add("show");
+
+  clearTimeout(
+    window.toastTimer
+  );
+
+  window.toastTimer =
+    setTimeout(()=>{
+
+      toast.classList.remove(
+        "show"
+      );
+
+    },2200);
+
+}
+
+
+function hideLoading(){
+
+  const loading =
+    document.getElementById(
+      "loading"
+    );
+
+  loading.style.display =
+    "none";
+
+}
+
+
+function escapeHTML(value){
+
+  return String(value || "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================================================
+   PAGE EXIT
+========================================================= */
 
 window.addEventListener(
   "beforeunload",
   ()=>{
-    Object.values(
-      peers
-    ).forEach(
-      pc=>{
-        try{
-          pc.close();
-        }catch(e){}
-      }
-    );
+    try{
+
+      socket.emit("leave-room",{
+        roomId:roomId,
+        userId:userId
+      });
+
+    }catch(e){}
   }
 );
+
+
+/* =========================================================
+   START
+========================================================= */
+
+updateControls();
 
 </script>
 
 </body>
-  </html>
+          </html>
