@@ -2,23 +2,35 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>PawanVoice</title>
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1">
 
-<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+<title>PawanVoice</title>
 
 <style>
 *{
   box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
   margin:0;
   padding:0;
+  width:100%;
+  min-height:100%;
+  background:#09051b;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
 }
 
 body{
-  font-family:Arial,sans-serif;
-  background:#120b20;
-  color:#fff;
-  min-height:100vh;
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      #392277 0,
+      #171044 35%,
+      #09051b 75%
+    );
 }
 
 button{
@@ -27,543 +39,456 @@ button{
   cursor:pointer;
 }
 
-input{
-  color:#fff;
-}
-
 .app{
   max-width:600px;
   margin:auto;
   min-height:100vh;
-  background:#160e25;
-  padding-bottom:75px;
+  padding-bottom:80px;
 }
 
 /* HEADER */
 
 .header{
-  height:65px;
-  padding:10px 14px;
+  height:70px;
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  background:linear-gradient(135deg,#321151,#8b245e);
+  padding:10px 13px;
+  gap:10px;
   position:sticky;
   top:0;
   z-index:20;
+  background:rgba(12,7,32,.82);
+  backdrop-filter:blur(15px);
 }
 
 .logo{
-  display:flex;
-  align-items:center;
-  gap:9px;
+  font-size:20px;
+  font-weight:800;
+  flex:1;
 }
 
-.logo-icon{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(135deg,#ff4f91,#7d48ff);
-  font-size:22px;
-  border:2px solid #ffd66b;
-}
-
-.logo-text{
-  font-size:19px;
-  font-weight:bold;
-}
-
-.logo-sub{
-  font-size:9px;
-  color:#ddd;
-  margin-top:2px;
-}
-
-.header-actions{
-  display:flex;
-  gap:6px;
-}
-
-.header-btn{
+.headerBtn{
   width:38px;
   height:38px;
   border-radius:50%;
-  background:#ffffff20;
+  background:rgba(255,255,255,.1);
   font-size:18px;
+}
+
+.myDp{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  object-fit:cover;
 }
 
 /* BANNERS */
 
-.banner-title{
-  padding:13px 12px 7px;
-  font-size:15px;
-  font-weight:bold;
-}
-
-.banner-scroll{
+.bannerRow{
   display:flex;
-  overflow-x:auto;
   gap:9px;
-  padding:0 10px 10px;
-  scrollbar-width:none;
+  overflow-x:auto;
+  padding:13px;
 }
 
-.banner-scroll::-webkit-scrollbar{
+.bannerRow::-webkit-scrollbar{
   display:none;
 }
 
 .banner{
-  min-width:180px;
-  height:75px;
-  border-radius:14px;
-  padding:11px;
-  position:relative;
-  overflow:hidden;
-  border:1px solid #ffffff22;
+  flex:0 0 31%;
+  min-height:88px;
+  padding:12px;
+  border-radius:18px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(111,68,222,.7),
+      rgba(38,104,190,.35)
+    );
+  border:1px solid rgba(255,255,255,.08);
 }
 
-.banner:nth-child(1){
-  background:linear-gradient(135deg,#642b9e,#e4458a);
+.bannerIcon{
+  font-size:24px;
 }
 
-.banner:nth-child(2){
-  background:linear-gradient(135deg,#164f9c,#5d3ee8);
-}
-
-.banner:nth-child(3){
-  background:linear-gradient(135deg,#a55a12,#d52f61);
-}
-
-.banner b{
-  display:block;
-  font-size:15px;
-  margin-bottom:6px;
-}
-
-.banner span{
-  font-size:10px;
-  color:#eee;
-}
-
-/* TABS */
-
-.tabs{
-  display:flex;
-  padding:5px 10px;
-  gap:5px;
-  overflow-x:auto;
-}
-
-.tab{
-  padding:9px 16px;
-  background:#261832;
-  border-radius:20px;
+.bannerTitle{
+  margin-top:7px;
   font-size:12px;
-  white-space:nowrap;
+  font-weight:bold;
 }
 
-.tab.active{
-  background:linear-gradient(90deg,#e74383,#7b4cff);
+.bannerSub{
+  margin-top:3px;
+  font-size:9px;
+  opacity:.65;
 }
 
-/* ROOMS */
+/* ACTIONS */
 
-.section-head{
-  padding:14px 12px 8px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  padding:0 13px 12px;
 }
 
-.section-head b{
-  font-size:16px;
+.action{
+  padding:13px;
+  border-radius:17px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.06);
+  font-size:13px;
+  text-align:left;
 }
 
-.section-head span{
-  color:#aaa;
-  font-size:11px;
-}
-
-.rooms{
-  padding:0 10px;
-}
-
-.room-card{
-  display:flex;
-  align-items:center;
-  gap:11px;
-  background:#21152e;
-  border:1px solid #392749;
-  border-radius:15px;
-  padding:10px;
-  margin-bottom:8px;
-}
-
-.room-image{
-  width:55px;
-  height:55px;
-  border-radius:14px;
-  object-fit:cover;
-  background:#392749;
-}
-
-.room-info{
-  flex:1;
-  min-width:0;
-}
-
-.room-info b{
+.action strong{
   display:block;
   font-size:14px;
+}
+
+.action span{
+  display:block;
+  margin-top:4px;
+  opacity:.55;
+  font-size:10px;
+}
+
+/* SECTION */
+
+.section{
+  padding:8px 13px;
+}
+
+.sectionHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:9px;
+}
+
+.sectionTitle{
+  font-size:17px;
+  font-weight:700;
+}
+
+.sectionMore{
+  font-size:11px;
+  opacity:.55;
+}
+
+/* SEARCH */
+
+.search{
+  margin:0 13px 10px;
+  height:43px;
+  border-radius:22px;
+  background:rgba(255,255,255,.08);
+  display:flex;
+  align-items:center;
+  padding:0 14px;
+}
+
+.search input{
+  flex:1;
+  border:0;
+  outline:none;
+  background:transparent;
+  color:#fff;
+  font-size:13px;
+}
+
+.search input::placeholder{
+  color:rgba(255,255,255,.45);
+}
+
+/* ROOM LIST */
+
+.rooms{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.roomCard{
+  min-height:150px;
+  border-radius:20px;
+  overflow:hidden;
+  position:relative;
+  background:
+    linear-gradient(
+      145deg,
+      #31205e,
+      #171039
+    );
+  border:1px solid rgba(255,255,255,.07);
+}
+
+.roomCardTop{
+  height:86px;
+  position:relative;
+  background:
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(151,103,255,.5),
+      transparent 65%
+    );
+}
+
+.roomCardDp{
+  width:54px;
+  height:54px;
+  border-radius:15px;
+  object-fit:cover;
+  position:absolute;
+  left:12px;
+  bottom:-8px;
+  border:2px solid rgba(255,255,255,.2);
+}
+
+.live{
+  position:absolute;
+  top:9px;
+  right:9px;
+  padding:4px 7px;
+  border-radius:10px;
+  background:#e74b68;
+  font-size:9px;
+}
+
+.roomCount{
+  position:absolute;
+  bottom:9px;
+  right:9px;
+  padding:4px 7px;
+  border-radius:10px;
+  background:rgba(0,0,0,.35);
+  font-size:9px;
+}
+
+.roomBody{
+  padding:15px 10px 10px;
+}
+
+.roomTitle{
+  font-size:13px;
+  font-weight:bold;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 
-.room-info small{
-  display:block;
-  color:#aaa;
-  font-size:10px;
-  margin-top:5px;
+.roomNumber{
+  font-size:9px;
+  opacity:.45;
+  margin-top:4px;
 }
 
-.room-host{
-  color:#ffd260!important;
-}
-
-.join-btn{
-  background:linear-gradient(90deg,#eb4281,#744bff);
-  padding:9px 13px;
-  border-radius:20px;
+.joinBtn{
+  width:100%;
+  height:32px;
+  border-radius:13px;
+  margin-top:8px;
+  background:linear-gradient(
+    90deg,
+    #7448e8,
+    #a457dc
+  );
   font-size:11px;
+  font-weight:bold;
 }
 
 /* EMPTY */
 
 .empty{
+  grid-column:1/-1;
   text-align:center;
   padding:35px 15px;
-  color:#9b91a5;
-  background:#21152e;
-  border-radius:15px;
-  border:1px dashed #4b3857;
-}
-
-.refresh{
-  background:#30203f;
-  padding:7px 11px;
-  border-radius:18px;
-  font-size:10px;
+  opacity:.55;
+  font-size:12px;
 }
 
 /* PROFILE */
 
-.profile{
-  display:none;
-  padding:15px 10px;
-}
-
-.profile-card{
-  background:linear-gradient(135deg,#302044,#562653);
-  border-radius:18px;
-  padding:18px;
-  text-align:center;
-}
-
-.profile-dp{
-  width:88px;
-  height:88px;
-  border-radius:50%;
-  object-fit:cover;
-  border:3px solid #ffd263;
-  background:#333;
-}
-
-.profile-name{
-  font-size:20px;
-  font-weight:bold;
-  margin-top:10px;
-}
-
-.profile-id{
-  color:#aaa;
-  font-size:11px;
-  margin-top:5px;
-}
-
-.edit-btn{
-  margin-top:10px;
-  padding:9px 18px;
-  background:#ffffff20;
-  border-radius:20px;
-  font-size:11px;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:7px;
-  margin-top:12px;
-}
-
-.stat{
-  background:#ffffff12;
-  border-radius:12px;
-  padding:11px 4px;
-}
-
-.stat b{
-  display:block;
-  color:#ffd263;
-  font-size:17px;
-}
-
-.stat span{
-  font-size:10px;
-  color:#bbb;
-}
-
-/* PROFILE MENU */
-
-.profile-menu{
-  margin-top:10px;
-  background:#21152e;
-  border-radius:16px;
-  overflow:hidden;
-}
-
-.menu-row{
-  padding:14px;
-  border-bottom:1px solid #332440;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  font-size:13px;
-}
-
-.menu-row:last-child{
-  border-bottom:0;
-}
-
-.menu-icon{
-  width:30px;
-  text-align:center;
-  font-size:18px;
-}
-
-.menu-arrow{
-  margin-left:auto;
-  color:#777;
-}
-
-/* INBOX */
-
-.inbox{
-  display:none;
-  padding:10px;
-}
-
-.inbox-card{
-  background:#21152e;
-  border:1px solid #392749;
-  border-radius:15px;
-  padding:16px;
-  margin-bottom:8px;
-}
-
-.inbox-card b{
-  font-size:14px;
-}
-
-.inbox-card p{
-  color:#aaa;
-  font-size:11px;
-  margin-top:5px;
-}
-
-/* LEVEL */
-
-.level-page{
-  display:none;
-  padding:10px;
-}
-
-.level-card{
-  background:linear-gradient(135deg,#312047,#552454);
-  border-radius:18px;
-  padding:18px;
-  text-align:center;
-}
-
-.level-number{
-  width:90px;
-  height:90px;
-  border-radius:50%;
-  margin:auto;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(135deg,#ffcf4c,#ff7a35);
-  font-size:32px;
-  font-weight:bold;
-  color:#38162a;
-  border:4px solid #ffe29a;
-}
-
-.level-card h2{
-  margin-top:10px;
-}
-
-.exp-bar{
-  height:10px;
-  background:#ffffff20;
-  border-radius:10px;
-  overflow:hidden;
-  margin-top:15px;
-}
-
-.exp-fill{
-  width:35%;
-  height:100%;
-  background:linear-gradient(90deg,#ffcf4c,#ff5f91);
-}
-
-.level-text{
-  display:flex;
-  justify-content:space-between;
-  font-size:10px;
-  color:#aaa;
-  margin-top:6px;
-}
-
-.level-list{
-  margin-top:10px;
-}
-
-.level-row{
-  display:flex;
-  justify-content:space-between;
-  padding:13px;
-  background:#21152e;
-  border-radius:12px;
-  margin-bottom:6px;
-  font-size:12px;
-}
-
-.level-row span{
-  color:#aaa;
-}
-
-/* EDIT MODAL */
-
-.modal{
-  display:none;
+.profilePanel{
   position:fixed;
   inset:0;
-  background:#000b;
-  z-index:100;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-
-.modal-box{
-  width:100%;
-  max-width:350px;
-  background:#251735;
-  border:1px solid #604575;
-  border-radius:18px;
-  padding:18px;
-}
-
-.modal-box h3{
-  margin-bottom:14px;
-}
-
-.modal-box input{
-  width:100%;
-  padding:12px;
-  background:#181022;
-  border:1px solid #4b3858;
-  border-radius:10px;
-  outline:none;
-  margin-bottom:8px;
-}
-
-.modal-btn{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  margin-top:6px;
-  background:#39264d;
-}
-
-.save{
-  background:linear-gradient(90deg,#e94583,#764cff);
-}
-
-.close{
-  background:#42293d;
-}
-
-/* BOTTOM */
-
-.bottom-nav{
-  position:fixed;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:100%;
-  max-width:600px;
-  height:68px;
-  background:#1b1127;
-  border-top:1px solid #382644;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
+  background:rgba(0,0,0,.65);
+  display:none;
+  align-items:flex-end;
   z-index:50;
 }
 
-.nav-btn{
-  background:none;
-  color:#80758c;
+.profilePanel.show{
+  display:flex;
+}
+
+.profileBox{
+  width:100%;
+  max-width:600px;
+  margin:auto;
+  background:#18102f;
+  border-radius:25px 25px 0 0;
+  padding:20px;
+}
+
+.profileTop{
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+
+.profileTop img{
+  width:68px;
+  height:68px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.profileName{
+  font-size:18px;
+  font-weight:bold;
+}
+
+.profileId{
   font-size:10px;
-  padding-top:8px;
+  opacity:.5;
+  margin-top:5px;
 }
 
-.nav-btn div{
-  font-size:22px;
+.profileAction{
+  width:100%;
+  height:44px;
+  border-radius:14px;
+  background:rgba(255,255,255,.08);
+  margin-top:9px;
+  text-align:left;
+  padding:0 13px;
+}
+
+.close{
+  float:right;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:rgba(255,255,255,.08);
+}
+
+/* CREATE */
+
+.createPanel{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  display:none;
+  align-items:flex-end;
+  z-index:60;
+}
+
+.createPanel.show{
+  display:flex;
+}
+
+.createBox{
+  width:100%;
+  max-width:600px;
+  margin:auto;
+  background:#18102f;
+  border-radius:25px 25px 0 0;
+  padding:20px;
+}
+
+.input{
+  width:100%;
+  height:44px;
+  border:1px solid rgba(255,255,255,.1);
+  outline:none;
+  border-radius:13px;
+  background:rgba(255,255,255,.07);
+  color:#fff;
+  padding:0 12px;
+  margin:5px 0;
+}
+
+.primary{
+  width:100%;
+  height:45px;
+  border-radius:14px;
+  margin-top:9px;
+  background:linear-gradient(
+    90deg,
+    #7145e8,
+    #a257df
+  );
+  font-weight:bold;
+}
+
+/* NAV */
+
+.bottomNav{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:0;
+  width:100%;
+  max-width:600px;
+  height:67px;
+  display:flex;
+  background:rgba(11,7,29,.96);
+  border-top:1px solid rgba(255,255,255,.08);
+  z-index:30;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+
+.navItem{
+  flex:1;
+  background:transparent;
+  font-size:10px;
+  opacity:.65;
+}
+
+.navItem.active{
+  opacity:1;
+}
+
+.navIcon{
+  font-size:20px;
+  display:block;
   margin-bottom:3px;
-}
-
-.nav-btn.active{
-  color:#ff5c98;
 }
 
 /* TOAST */
 
 .toast{
-  display:none;
   position:fixed;
-  top:75px;
   left:50%;
+  bottom:85px;
   transform:translateX(-50%);
-  background:#000d;
-  padding:10px 16px;
-  border-radius:22px;
-  z-index:500;
-  font-size:12px;
+  padding:10px 15px;
+  background:rgba(20,15,35,.95);
+  border-radius:20px;
+  font-size:11px;
+  opacity:0;
+  pointer-events:none;
+  transition:.2s;
+  z-index:100;
 }
 
-/* LOADING */
+.toast.show{
+  opacity:1;
+}
 
-.loading{
-  text-align:center;
-  padding:25px;
-  color:#aaa;
-  font-size:12px;
+/* RESPONSIVE */
+
+@media(max-width:380px){
+  .banner{
+    flex-basis:34%;
+  }
+
+  .rooms{
+    gap:8px;
+  }
 }
 </style>
 </head>
@@ -572,479 +497,301 @@ input{
 
 <div class="app">
 
-<div class="toast" id="toast"></div>
+  <!-- HEADER -->
 
-<!-- HEADER -->
+  <div class="header">
 
-<header class="header">
-
-  <div class="logo">
-
-    <div class="logo-icon">
-      🎙️
+    <div class="logo">
+      PawanVoice
     </div>
-
-    <div>
-      <div class="logo-text">
-        PawanVoice
-      </div>
-
-      <div class="logo-sub">
-        Voice • Friends • Fun
-      </div>
-    </div>
-
-  </div>
-
-  <div class="header-actions">
 
     <button
-      class="header-btn"
+      class="headerBtn"
       onclick="openInbox()">
       💌
     </button>
 
-    <button
-      class="header-btn"
-      onclick="openProfile()">
-      👤
-    </button>
-
-  </div>
-
-</header>
-
-
-<!-- HOME -->
-
-<main id="homePage">
-
-  <div class="banner-title">
-    🔥 Popular Events
-  </div>
-
-  <div class="banner-scroll">
-
-    <div class="banner">
-      <b>👨‍👩‍👧 Family</b>
-      <span>Join family and make new friends</span>
-    </div>
-
-    <div class="banner">
-      <b>💞 CP Ranking</b>
-      <span>Check today's CP ranking</span>
-    </div>
-
-    <div class="banner">
-      <b>👑 Rich King Ranking</b>
-      <span>Top rich users & rewards</span>
-    </div>
-
-  </div>
-
-
-  <div class="tabs">
-
-    <button
-      class="tab active"
-      onclick="loadRooms('all',this)">
-      All
-    </button>
-
-    <button
-      class="tab"
-      onclick="loadRooms('popular',this)">
-      Popular
-    </button>
-
-    <button
-      class="tab"
-      onclick="loadRooms('new',this)">
-      New
-    </button>
-
-    <button
-      class="tab"
-      onclick="loadRooms('friends',this)">
-      Friends
-    </button>
-
-  </div>
-
-
-  <div class="section-head">
-
-    <b>🎙️ Live Rooms</b>
-
-    <button
-      class="refresh"
-      onclick="requestRooms()">
-      🔄 Refresh
-    </button>
-
-  </div>
-
-
-  <div class="rooms" id="rooms">
-
-    <div class="loading">
-      Rooms load ho rahe hain...
-    </div>
-
-  </div>
-
-</main>
-
-
-<!-- INBOX -->
-
-<section class="inbox" id="inboxPage">
-
-  <div class="section-head">
-    <b>💌 Inbox</b>
-  </div>
-
-  <div class="inbox-card">
-    <b>🎁 Welcome to PawanVoice</b>
-    <p>
-      PawanVoice me aapka swagat hai.
-    </p>
-  </div>
-
-  <div class="inbox-card">
-    <b>📢 Room Notification</b>
-    <p>
-      Live rooms yahan se join karein.
-    </p>
-  </div>
-
-  <div class="inbox-card">
-    <b>⭐ Level System</b>
-    <p>
-      Voice room activity se EXP earn karein.
-    </p>
-  </div>
-
-</section>
-
-
-<!-- PROFILE -->
-
-<section class="profile" id="profilePage">
-
-  <div class="profile-card">
-
     <img
-      id="profileDp"
-      class="profile-dp"
-      src="https://i.pravatar.cc/150?img=12">
+      id="headerDp"
+      class="myDp"
+      onclick="openProfile()"
+      src=""
+      alt="Profile">
+
+  </div>
+
+
+  <!-- BANNERS -->
+
+  <div class="bannerRow">
 
     <div
-      class="profile-name"
-      id="profileName">
-      Pawan
+      class="banner"
+      onclick="showToast('Family')">
+
+      <div class="bannerIcon">
+        👨‍👩‍👧
+      </div>
+
+      <div class="bannerTitle">
+        Family
+      </div>
+
+      <div class="bannerSub">
+        Family Ranking
+      </div>
+
     </div>
 
+
     <div
-      class="profile-id"
-      id="profileId">
-      ID: -
+      class="banner"
+      onclick="showToast('CP Ranking')">
+
+      <div class="bannerIcon">
+        💕
+      </div>
+
+      <div class="bannerTitle">
+        CP Ranking
+      </div>
+
+      <div class="bannerSub">
+        Couple Ranking
+      </div>
+
     </div>
+
+
+    <div
+      class="banner"
+      onclick="showToast('Rich King')">
+
+      <div class="bannerIcon">
+        👑
+      </div>
+
+      <div class="bannerTitle">
+        Rich King
+      </div>
+
+      <div class="bannerSub">
+        Rich Ranking
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ACTIONS -->
+
+  <div class="actions">
 
     <button
-      class="edit-btn"
-      onclick="openEditProfile()">
-      ✏️ Edit Profile
+      class="action"
+      onclick="openCreate()">
+
+      <strong>
+        🎙️ Create Room
+      </strong>
+
+      <span>
+        Start your voice room
+      </span>
+
     </button>
 
 
-    <div class="stats">
+    <button
+      class="action"
+      onclick="joinRoom()">
 
-      <div class="stat">
-        <b id="coinStat">0</b>
-        <span>Coins</span>
+      <strong>
+        🚪 Join Room
+      </strong>
+
+      <span>
+        Enter room ID
+      </span>
+
+    </button>
+
+  </div>
+
+
+  <!-- SEARCH -->
+
+  <div class="search">
+
+    🔎
+
+    <input
+      id="searchInput"
+      placeholder="Search rooms..."
+      oninput="filterRooms()">
+
+  </div>
+
+
+  <!-- POPULAR -->
+
+  <div class="section">
+
+    <div class="sectionHead">
+
+      <div class="sectionTitle">
+        🔥 Popular Rooms
       </div>
 
-      <div class="stat">
-        <b>1</b>
-        <span>Level</span>
-      </div>
-
-      <div class="stat">
-        <b>0</b>
-        <span>Fans</span>
+      <div
+        class="sectionMore"
+        onclick="loadRooms()">
+        Refresh
       </div>
 
     </div>
 
-  </div>
-
-
-  <div class="profile-menu">
-
     <div
-      class="menu-row"
-      onclick="openLevel()">
-      <div class="menu-icon">⭐</div>
-      Level
-      <div class="menu-arrow">›</div>
-    </div>
+      id="roomList"
+      class="rooms">
 
-    <div
-      class="menu-row"
-      onclick="showToast('CP Space')">
-      <div class="menu-icon">💞</div>
-      CP Space
-      <div class="menu-arrow">›</div>
-    </div>
+      <div class="empty">
+        Loading rooms...
+      </div>
 
-    <div
-      class="menu-row"
-      onclick="showToast('Bag')">
-      <div class="menu-icon">🎒</div>
-      Bag
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <div
-      class="menu-row"
-      onclick="showToast('Dress')">
-      <div class="menu-icon">👕</div>
-      Dress
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <div
-      class="menu-row"
-      onclick="showToast('VIP')">
-      <div class="menu-icon">👑</div>
-      VIP
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <div
-      class="menu-row"
-      onclick="showToast('Medal')">
-      <div class="menu-icon">🏅</div>
-      Medal
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <div
-      class="menu-row"
-      onclick="showToast('Avatar Frame')">
-      <div class="menu-icon">🖼️</div>
-      Avatar Frame
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <div
-      class="menu-row"
-      onclick="showToast('Personal Badge')">
-      <div class="menu-icon">🎖️</div>
-      Personal Badge
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <div
-      class="menu-row"
-      onclick="showToast('Vehicle')">
-      <div class="menu-icon">🚗</div>
-      Vehicle
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <div
-      class="menu-row"
-      onclick="showToast('Entry Effect')">
-      <div class="menu-icon">✨</div>
-      Entry Effect
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <div
-      class="menu-row"
-      onclick="showToast('Gifts')">
-      <div class="menu-icon">🎁</div>
-      Gifts
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <div
-      class="menu-row"
-      onclick="showToast('Invite Friend')">
-      <div class="menu-icon">👥</div>
-      Invite Friend
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <div
-      class="menu-row"
-      onclick="showToast('CD-Key')">
-      <div class="menu-icon">🔑</div>
-      CD-Key
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <div
-      class="menu-row"
-      onclick="showToast('Customer Service')">
-      <div class="menu-icon">🎧</div>
-      Customer Service
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <div
-      class="menu-row"
-      onclick="showToast('Help & Feedback')">
-      <div class="menu-icon">❓</div>
-      Help & Feedback
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <div
-      class="menu-row"
-      onclick="showToast('Settings')">
-      <div class="menu-icon">⚙️</div>
-      Settings
-      <div class="menu-arrow">›</div>
     </div>
 
   </div>
 
-</section>
+</div>
 
 
-<!-- LEVEL -->
-
-<section
-  class="level-page"
-  id="levelPage">
-
-  <div class="section-head">
-    <b>⭐ Level & EXP</b>
-  </div>
-
-  <div class="level-card">
-
-    <div class="level-number">
-      1
-    </div>
-
-    <h2>
-      Level 1
-    </h2>
-
-    <p
-      style="color:#aaa;font-size:11px;margin-top:5px">
-      PawanVoice Experience
-    </p>
-
-    <div class="exp-bar">
-      <div class="exp-fill"></div>
-    </div>
-
-    <div class="level-text">
-      <span>EXP 350</span>
-      <span>1000 EXP</span>
-    </div>
-
-  </div>
-
-
-  <div class="level-list">
-
-    <div class="level-row">
-      <b>Level 1</b>
-      <span>0 EXP</span>
-    </div>
-
-    <div class="level-row">
-      <b>Level 2</b>
-      <span>1,000 EXP</span>
-    </div>
-
-    <div class="level-row">
-      <b>Level 3</b>
-      <span>3,000 EXP</span>
-    </div>
-
-    <div class="level-row">
-      <b>Level 4</b>
-      <span>5,000 EXP</span>
-    </div>
-
-    <div class="level-row">
-      <b>Level 5</b>
-      <span>10,000 EXP</span>
-    </div>
-
-    <div class="level-row">
-      <b>Level 10</b>
-      <span>50,000 EXP</span>
-    </div>
-
-    <div class="level-row">
-      <b>Level 20</b>
-      <span>150,000 EXP</span>
-    </div>
-
-    <div class="level-row">
-      <b>Level 30</b>
-      <span>300,000 EXP</span>
-    </div>
-
-    <div class="level-row">
-      <b>Level 50</b>
-      <span>750,000 EXP</span>
-    </div>
-
-    <div class="level-row">
-      <b>Level 75</b>
-      <span>1,500,000 EXP</span>
-    </div>
-
-    <div class="level-row">
-      <b>Level 100</b>
-      <span>3,000,000 EXP</span>
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- EDIT PROFILE MODAL -->
+<!-- PROFILE PANEL -->
 
 <div
-  class="modal"
-  id="editModal">
+  id="profilePanel"
+  class="profilePanel"
+  onclick="backdropClose(event)">
 
-  <div class="modal-box">
-
-    <h3>
-      ✏️ Edit Profile
-    </h3>
-
-    <input
-      id="editName"
-      placeholder="Your name"
-      maxlength="30">
-
-    <input
-      id="editDp"
-      placeholder="DP image URL">
+  <div class="profileBox">
 
     <button
-      class="modal-btn save"
-      onclick="saveProfile()">
-      💾 Save
+      class="close"
+      onclick="closeProfile()">
+      ✕
     </button>
 
+    <div class="profileTop">
+
+      <img
+        id="profileDp"
+        src=""
+        alt="DP">
+
+      <div>
+
+        <div
+          id="profileName"
+          class="profileName">
+          Pawan
+        </div>
+
+        <div
+          id="profileId"
+          class="profileId">
+          ID:
+        </div>
+
+      </div>
+
+    </div>
+
+
     <button
-      class="modal-btn close"
-      onclick="closeEditProfile()">
-      Cancel
+      class="profileAction"
+      onclick="editProfile()">
+      ✏️ Edit Name / DP
+    </button>
+
+
+    <button
+      class="profileAction"
+      onclick="showToast('Level system')">
+      ⭐ Level 1–100
+    </button>
+
+
+    <button
+      class="profileAction"
+      onclick="showToast('Coins')">
+      🪙 Coins
+    </button>
+
+
+    <button
+      class="profileAction"
+      onclick="showToast('VIP')">
+      💎 VIP
+    </button>
+
+
+    <button
+      class="profileAction"
+      onclick="showToast('CP Space')">
+      💕 CP Space
+    </button>
+
+
+    <button
+      class="profileAction"
+      onclick="showToast('Bag')">
+      🎒 Bag
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- CREATE PANEL -->
+
+<div
+  id="createPanel"
+  class="createPanel"
+  onclick="createBackdrop(event)">
+
+  <div class="createBox">
+
+    <button
+      class="close"
+      onclick="closeCreate()">
+      ✕
+    </button>
+
+    <h2>
+      Create Room
+    </h2>
+
+    <input
+      id="createRoomName"
+      class="input"
+      maxlength="50"
+      placeholder="Room name"
+      value="PawanVoice Room">
+
+
+    <input
+      id="createRoomId"
+      class="input"
+      maxlength="20"
+      placeholder="Room ID (optional)">
+
+
+    <button
+      class="primary"
+      onclick="createRoom()">
+      Create Room
     </button>
 
   </div>
@@ -1054,270 +801,350 @@ input{
 
 <!-- BOTTOM NAV -->
 
-<nav class="bottom-nav">
+<div class="bottomNav">
 
   <button
-    class="nav-btn active"
-    id="navHome"
-    onclick="openHome()">
+    class="navItem active"
+    onclick="goHome()">
 
-    <div>🏠</div>
+    <span class="navIcon">
+      🏠
+    </span>
+
     Home
 
   </button>
 
 
   <button
-    class="nav-btn"
-    id="navInbox"
+    class="navItem"
+    onclick="showToast('Popular')">
+
+    <span class="navIcon">
+      🔥
+    </span>
+
+    Popular
+
+  </button>
+
+
+  <button
+    class="navItem"
     onclick="openInbox()">
 
-    <div>💌</div>
+    <span class="navIcon">
+      💌
+    </span>
+
     Inbox
 
   </button>
 
 
   <button
-    class="nav-btn"
-    onclick="createRoom()">
-
-    <div>🎙️</div>
-    Room
-
-  </button>
-
-
-  <button
-    class="nav-btn"
-    id="navProfile"
+    class="navItem"
     onclick="openProfile()">
 
-    <div>👤</div>
+    <span class="navIcon">
+      👤
+    </span>
+
     Profile
 
   </button>
 
-</nav>
-
 </div>
+
+
+<div id="toast" class="toast"></div>
 
 
 <script>
 
-/* ==================================================
+/* =========================================================
    PAWANVOICE HOME
-================================================== */
+   ========================================================= */
 
 const SERVER =
   "https://pawanvoice-1.onrender.com";
 
 
-let socket =
-  io(SERVER,{
-    transports:["websocket","polling"]
-  });
+/* USER */
 
-
-/* ==================================================
-   USER
-================================================== */
-
-let userId =
+let USER_ID =
   localStorage.getItem(
     "pawanvoice_user_id"
   );
 
+if(!USER_ID){
 
-if(!userId){
-
-  userId =
-    "PV" +
-    Date.now()
-      .toString()
-      .slice(-8);
+  USER_ID =
+    "PVU" +
+    Date.now().toString(36) +
+    Math.random()
+      .toString(36)
+      .slice(2,6);
 
   localStorage.setItem(
     "pawanvoice_user_id",
-    userId
+    USER_ID
   );
 
 }
 
 
-let userName =
+let USER_NAME =
   localStorage.getItem(
     "pawanvoice_name"
   ) ||
   "Pawan";
 
 
-let userDp =
+let USER_DP =
   localStorage.getItem(
     "pawanvoice_dp"
   ) ||
-  "https://i.pravatar.cc/150?img=12";
+  createAvatar(USER_NAME);
 
 
-/* ==================================================
-   SOCKET CONNECT
-================================================== */
+/* ROOM DATA */
 
-socket.on(
-  "connect",
-  () => {
+let allRooms = [];
 
-    requestRooms();
+
+/* INIT */
+
+document.getElementById(
+  "headerDp"
+).src = USER_DP;
+
+
+loadRooms();
+
+
+/* LOAD ROOMS */
+
+async function loadRooms(){
+
+  const list =
+    document.getElementById(
+      "roomList"
+    );
+
+  list.innerHTML =
+    `<div class="empty">
+      Loading rooms...
+    </div>`;
+
+
+  try{
+
+    const response =
+      await fetch(
+        SERVER +
+        "/api/rooms",
+        {
+          cache:"no-store"
+        }
+      );
+
+
+    if(!response.ok){
+      throw new Error(
+        "Room API error"
+      );
+    }
+
+
+    allRooms =
+      await response.json();
+
+
+    renderRooms(
+      allRooms
+    );
+
+
+  }catch(error){
+
+    console.error(error);
+
+    list.innerHTML =
+      `<div class="empty">
+        Unable to load rooms.<br>
+        Please refresh.
+      </div>`;
 
   }
-);
-
-
-/* ==================================================
-   GET ROOMS
-================================================== */
-
-function requestRooms(){
-
-  socket.emit(
-    "getRooms"
-  );
 
 }
 
 
-/* ==================================================
-   ROOMS RECEIVED
-================================================== */
+/* RENDER */
 
-socket.on(
-  "roomsList",
-  rooms => {
+function renderRooms(
+  rooms
+){
 
-    renderRooms(
-      rooms || []
-    );
-
-  }
-);
-
-
-/* ==================================================
-   RENDER ROOMS
-================================================== */
-
-function renderRooms(rooms){
-
-  const container =
+  const list =
     document.getElementById(
-      "rooms"
+      "roomList"
     );
 
 
   if(!rooms.length){
 
-    container.innerHTML = `
-
-      <div class="empty">
-
-        <div style="font-size:35px">
-          🎙️
-        </div>
-
-        <div style="margin-top:10px">
-          Abhi koi live room nahi hai
-        </div>
-
-        <div style="font-size:10px;margin-top:6px">
-          Pehla room aap bana sakte hain.
-        </div>
-
-        <button
-          class="join-btn"
-          style="margin-top:12px"
-          onclick="createRoom()">
-          Create Room
-        </button>
-
-      </div>
-
-    `;
+    list.innerHTML =
+      `<div class="empty">
+        No rooms yet.<br>
+        Create the first PawanVoice room.
+      </div>`;
 
     return;
 
   }
 
 
-  container.innerHTML = "";
+  list.innerHTML = "";
 
 
-  rooms.forEach(
-    room => {
+  rooms.forEach(room=>{
 
-      const host =
-        room.host || {};
+    const card =
+      document.createElement(
+        "div"
+      );
 
-
-      const card =
-        document.createElement(
-          "div"
-        );
+    card.className =
+      "roomCard";
 
 
-      card.className =
-        "room-card";
+    const dp =
+      room.roomDp ||
+      createAvatar(
+        room.roomName ||
+        "P"
+      );
 
 
-      card.innerHTML = `
+    card.innerHTML = `
+
+      <div class="roomCardTop">
 
         <img
-          class="room-image"
-          src="${safeImage(host.dp)}"
-        >
+          class="roomCardDp"
+          src="${escapeAttr(dp)}">
 
-        <div class="room-info">
+        ${
+          room.online
+            ? `<div class="live">
+                 LIVE
+               </div>`
+            : ""
+        }
 
-          <b>
-            ${escapeHtml(room.name || "PawanVoice Room")}
-          </b>
+        <div class="roomCount">
+          👥 ${Number(
+            room.onlineCount || 0
+          )}/9
+        </div>
 
-          <small class="room-host">
-            👑 Host:
-            ${escapeHtml(host.name || "Unknown")}
-          </small>
+      </div>
 
-          <small>
-            👥 ${room.users}/${room.maxSeats || 9}
-            &nbsp; • &nbsp;
-            ID: ${escapeHtml(room.id)}
-          </small>
 
+      <div class="roomBody">
+
+        <div class="roomTitle">
+          ${escapeHTML(
+            room.roomName ||
+            "PawanVoice Room"
+          )}
+        </div>
+
+        <div class="roomNumber">
+          ID: ${escapeHTML(
+            room.roomId
+          )}
         </div>
 
         <button
-          class="join-btn"
-          onclick="joinRoom('${escapeJs(room.id)}')">
-          Join
+          class="joinBtn"
+          onclick="openRoom(
+            '${escapeAttr(
+              room.roomId
+            )}'
+          )">
+
+          JOIN ROOM
+
         </button>
 
-      `;
+      </div>
+    `;
 
 
-      container.appendChild(
-        card
-      );
+    list.appendChild(card);
 
-    }
+  });
+
+}
+
+
+/* SEARCH */
+
+function filterRooms(){
+
+  const q =
+    document.getElementById(
+      "searchInput"
+    )
+    .value
+    .trim()
+    .toLowerCase();
+
+
+  if(!q){
+
+    renderRooms(
+      allRooms
+    );
+
+    return;
+
+  }
+
+
+  renderRooms(
+    allRooms.filter(room =>
+      String(
+        room.roomName || ""
+      )
+      .toLowerCase()
+      .includes(q) ||
+
+      String(
+        room.roomId || ""
+      )
+      .toLowerCase()
+      .includes(q)
+    )
   );
 
 }
 
 
-/* ==================================================
-   JOIN ROOM
-================================================== */
+/* OPEN ROOM */
 
-function joinRoom(roomId){
+function openRoom(
+  roomId
+){
+
+  localStorage.setItem(
+    "pawanvoice_room",
+    roomId
+  );
+
 
   location.href =
     "room.html?room=" +
@@ -1328,155 +1155,333 @@ function joinRoom(roomId){
 }
 
 
-/* ==================================================
-   CREATE ROOM
-================================================== */
+/* JOIN MANUALLY */
 
-function createRoom(){
+function joinRoom(){
 
-  const roomId =
-    "PV" +
-    Math.floor(
-      100000 +
-      Math.random() *
-      900000
+  const id =
+    prompt(
+      "Enter Room ID"
     );
 
 
-  location.href =
-    "room.html?room=" +
-    roomId;
+  if(!id) return;
+
+
+  openRoom(
+    id.trim()
+  );
 
 }
 
 
-/* ==================================================
-   PROFILE
-================================================== */
+/* CREATE PANEL */
 
-function updateProfile(){
+function openCreate(){
+
+  document
+    .getElementById(
+      "createPanel"
+    )
+    .classList.add(
+      "show"
+    );
+
+}
+
+
+function closeCreate(){
+
+  document
+    .getElementById(
+      "createPanel"
+    )
+    .classList.remove(
+      "show"
+    );
+
+}
+
+
+async function createRoom(){
+
+  const roomName =
+    document.getElementById(
+      "createRoomName"
+    )
+    .value
+    .trim();
+
+
+  let roomId =
+    document.getElementById(
+      "createRoomId"
+    )
+    .value
+    .trim();
+
+
+  if(!roomName){
+
+    showToast(
+      "Enter room name"
+    );
+
+    return;
+
+  }
+
+
+  if(!roomId){
+
+    roomId =
+      "PV" +
+      Math.floor(
+        100000 +
+        Math.random() *
+        900000
+      );
+
+  }
+
+
+  try{
+
+    const response =
+      await fetch(
+        SERVER +
+        "/api/create-room",
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
+              roomId,
+              roomName,
+              userId:
+                USER_ID,
+              name:
+                USER_NAME,
+              dp:
+                USER_DP
+            })
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if(!response.ok){
+
+      showToast(
+        data.error ||
+        "Room create failed"
+      );
+
+      return;
+
+    }
+
+
+    closeCreate();
+
+
+    openRoom(
+      data.room.roomId
+    );
+
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Server connection error"
+    );
+
+  }
+
+}
+
+
+/* PROFILE */
+
+function openProfile(){
 
   document.getElementById(
     "profileDp"
   ).src =
-    safeImage(userDp);
+    USER_DP;
 
 
   document.getElementById(
     "profileName"
   ).textContent =
-    userName;
+    USER_NAME;
 
 
   document.getElementById(
     "profileId"
   ).textContent =
-    "ID: " + userId;
+    "ID: " +
+    USER_ID;
+
+
+  document
+    .getElementById(
+      "profilePanel"
+    )
+    .classList.add(
+      "show"
+    );
 
 }
 
 
-function openProfile(){
+function closeProfile(){
 
-  hideAll();
-
-  document.getElementById(
-    "profilePage"
-  ).style.display =
-    "block";
-
-
-  document.getElementById(
-    "navProfile"
-  ).classList.add(
-    "active"
-  );
-
-
-  updateProfile();
+  document
+    .getElementById(
+      "profilePanel"
+    )
+    .classList.remove(
+      "show"
+    );
 
 }
 
 
-function openEditProfile(){
+/* EDIT PROFILE */
 
-  document.getElementById(
-    "editName"
-  ).value =
-    userName;
-
-
-  document.getElementById(
-    "editDp"
-  ).value =
-    userDp;
-
-
-  document.getElementById(
-    "editModal"
-  ).style.display =
-    "flex";
-
-}
-
-
-function closeEditProfile(){
-
-  document.getElementById(
-    "editModal"
-  ).style.display =
-    "none";
-
-}
-
-
-/* ==================================================
-   SAVE PROFILE
-================================================== */
-
-function saveProfile(){
+async function editProfile(){
 
   const name =
-    document.getElementById(
-      "editName"
-    ).value.trim();
+    prompt(
+      "Enter your name",
+      USER_NAME
+    );
+
+
+  if(!name) return;
+
+
+  const newName =
+    name.trim();
+
+
+  if(!newName) return;
 
 
   const dp =
-    document.getElementById(
-      "editDp"
-    ).value.trim();
-
-
-  if(name){
-
-    userName =
-      name;
-
-    localStorage.setItem(
-      "pawanvoice_name",
-      userName
+    prompt(
+      "Paste DP image URL",
+      USER_DP.startsWith(
+        "data:"
+      )
+        ? ""
+        : USER_DP
     );
+
+
+  USER_NAME =
+    newName.slice(
+      0,
+      40
+    );
+
+
+  if(dp !== null){
+
+    if(
+      dp.trim()
+    ){
+
+      USER_DP =
+        dp.trim();
+
+    }else{
+
+      USER_DP =
+        createAvatar(
+          USER_NAME
+        );
+
+    }
 
   }
 
 
-  if(dp){
+  localStorage.setItem(
+    "pawanvoice_name",
+    USER_NAME
+  );
 
-    userDp =
-      dp;
+  localStorage.setItem(
+    "pawanvoice_dp",
+    USER_DP
+  );
 
-    localStorage.setItem(
-      "pawanvoice_dp",
-      userDp
+
+  document.getElementById(
+    "headerDp"
+  ).src =
+    USER_DP;
+
+
+  document.getElementById(
+    "profileDp"
+  ).src =
+    USER_DP;
+
+
+  document.getElementById(
+    "profileName"
+  ).textContent =
+    USER_NAME;
+
+
+  try{
+
+    await fetch(
+      SERVER +
+      "/api/user/" +
+      encodeURIComponent(
+        USER_ID
+      ),
+      {
+        method:"PUT",
+
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+
+        body:
+          JSON.stringify({
+            name:
+              USER_NAME,
+            dp:
+              USER_DP
+          })
+      }
+    );
+
+  }catch(e){
+
+    console.log(
+      "Profile save:",
+      e
     );
 
   }
 
-
-  updateProfile();
-
-  closeEditProfile();
 
   showToast(
     "Profile updated"
@@ -1485,148 +1490,68 @@ function saveProfile(){
 }
 
 
-/* ==================================================
-   HOME
-================================================== */
-
-function openHome(){
-
-  hideAll();
-
-  document.getElementById(
-    "homePage"
-  ).style.display =
-    "block";
-
-
-  document.getElementById(
-    "navHome"
-  ).classList.add(
-    "active"
-  );
-
-
-  requestRooms();
-
-}
-
-
-/* ==================================================
-   INBOX
-================================================== */
+/* INBOX */
 
 function openInbox(){
 
-  hideAll();
-
-  document.getElementById(
-    "inboxPage"
-  ).style.display =
-    "block";
-
-
-  document.getElementById(
-    "navInbox"
-  ).classList.add(
-    "active"
+  showToast(
+    "Inbox system connected next"
   );
 
 }
 
 
-/* ==================================================
-   LEVEL
-================================================== */
+/* HOME */
 
-function openLevel(){
-
-  hideAll();
-
-  document.getElementById(
-    "levelPage"
-  ).style.display =
-    "block";
-
-}
-
-
-/* ==================================================
-   HIDE ALL
-================================================== */
-
-function hideAll(){
-
-  document.getElementById(
-    "homePage"
-  ).style.display =
-    "none";
-
-
-  document.getElementById(
-    "inboxPage"
-  ).style.display =
-    "none";
-
-
-  document.getElementById(
-    "profilePage"
-  ).style.display =
-    "none";
-
-
-  document.getElementById(
-    "levelPage"
-  ).style.display =
-    "none";
-
-
-  document
-    .querySelectorAll(
-      ".nav-btn"
-    )
-    .forEach(
-      btn =>
-        btn.classList.remove(
-          "active"
-        )
-    );
-
-}
-
-
-/* ==================================================
-   TABS
-================================================== */
-
-function loadRooms(type,button){
-
-  document
-    .querySelectorAll(
-      ".tab"
-    )
-    .forEach(
-      b =>
-        b.classList.remove(
-          "active"
-        )
-    );
-
-
-  button.classList.add(
-    "active"
+function goHome(){
+  window.scrollTo(
+    0,
+    0
   );
+}
 
 
-  requestRooms();
+/* BACKDROP */
+
+function backdropClose(e){
+
+  if(
+    e.target ===
+    document.getElementById(
+      "profilePanel"
+    )
+  ){
+
+    closeProfile();
+
+  }
 
 }
 
 
-/* ==================================================
-   TOAST
-================================================== */
+function createBackdrop(e){
 
-function showToast(text){
+  if(
+    e.target ===
+    document.getElementById(
+      "createPanel"
+    )
+  ){
+
+    closeCreate();
+
+  }
+
+}
+
+
+/* TOAST */
+
+let toastTimer;
+
+function showToast(
+  text
+){
 
   const toast =
     document.getElementById(
@@ -1638,89 +1563,139 @@ function showToast(text){
     text;
 
 
-  toast.style.display =
-    "block";
-
-
-  clearTimeout(
-    window.toastTimer
+  toast.classList.add(
+    "show"
   );
 
 
-  window.toastTimer =
-    setTimeout(
-      () => {
-
-        toast.style.display =
-          "none";
-
-      },
-      2000
-    );
-
-}
+  clearTimeout(
+    toastTimer
+  );
 
 
-/* ==================================================
-   IMAGE
-================================================== */
-
-function safeImage(url){
-
-  if(!url){
-    return "https://i.pravatar.cc/150";
-  }
-
-  return String(url)
-    .replace(/"/g,"")
-    .replace(/'/g,"");
+  toastTimer =
+    setTimeout(()=>{
+      toast.classList.remove(
+        "show"
+      );
+    },2200);
 
 }
 
 
-/* ==================================================
-   HTML ESCAPE
-================================================== */
+/* AVATAR */
 
-function escapeHtml(text){
+function createAvatar(
+  name
+){
 
-  return String(text)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+  const letter =
+    String(
+      name || "P"
+    )
+    .trim()
+    .charAt(0)
+    .toUpperCase();
+
+
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg"
+         width="200"
+         height="200">
+
+      <defs>
+
+        <linearGradient
+          id="g"
+          x1="0"
+          x2="1"
+          y1="0"
+          y2="1">
+
+          <stop
+            offset="0"
+            stop-color="#7047e8"/>
+
+          <stop
+            offset="1"
+            stop-color="#d258dc"/>
+
+        </linearGradient>
+
+      </defs>
+
+      <rect
+        width="200"
+        height="200"
+        rx="100"
+        fill="url(#g)"/>
+
+      <text
+        x="100"
+        y="128"
+        text-anchor="middle"
+        font-family="Arial"
+        font-size="90"
+        fill="white">
+        ${letter}
+      </text>
+
+    </svg>
+  `;
+
+
+  return (
+    "data:image/svg+xml;charset=UTF-8," +
+    encodeURIComponent(
+      svg
+    )
+  );
 
 }
 
 
-/* ==================================================
-   JS ESCAPE
-================================================== */
+/* ESCAPE */
 
-function escapeJs(text){
+function escapeHTML(
+  value
+){
 
-  return String(text)
-    .replace(/\\/g,"\\\\")
-    .replace(/'/g,"\\'");
+  return String(
+    value ?? ""
+  )
+  .replaceAll(
+    "&",
+    "&amp;"
+  )
+  .replaceAll(
+    "<",
+    "&lt;"
+  )
+  .replaceAll(
+    ">",
+    "&gt;"
+  )
+  .replaceAll(
+    '"',
+    "&quot;"
+  )
+  .replaceAll(
+    "'",
+    "&#039;"
+  );
 
 }
 
 
-/* ==================================================
-   SOCKET ERROR
-================================================== */
+function escapeAttr(
+  value
+){
 
-socket.on(
-  "connect_error",
-  () => {
+  return escapeHTML(
+    value
+  );
 
-    showToast(
-      "Server connect nahi hua"
-    );
-
-  }
-);
+}
 
 </script>
 
