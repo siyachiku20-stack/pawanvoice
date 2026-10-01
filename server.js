@@ -12,1227 +12,470 @@ const io = new Server(server, {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
-/*
-====================================================
-PAWANVOICE SERVER
-====================================================
-Features:
-- 9 seat voice rooms
-- Host
-- Users
-- Seat change
-- Mic ON/OFF state
-- Admin
-- Mute
-- Kick
-- Ban
-- Room chat
-- Gifts
-- Room list
-- Room information
-- Socket.IO real-time updates
-====================================================
-*/
-
-const rooms = {};
-const bannedUsers = {};
-
-/* ==================================================
-   ROOM CREATE
-================================================== */
+const rooms = new Map();
 
 function createRoom(roomId, roomName = "PawanVoice Room") {
-  if (!rooms[roomId]) {
-    rooms[roomId] = {
-      id: roomId,
-      name: roomName,
-      maxSeats: 9,
-
-      seats: Array(9).fill(null),
-
-      users: {},
-
-      admins: {},
-
-      gifts: [],
-
-      messages: [],
-
-      createdAt: new Date().toISOString()
-    };
+  if (!rooms.has(roomId)) {
+    rooms.set(roomId, {
+      roomId,
+      roomName,
+      users: new Map(),
+      admins: new Set(),
+      bannedUsers: new Set()
+    });
   }
 
-  return rooms[roomId];
+  return rooms.get(roomId);
 }
 
+function publicUser(user) {
+  if (!user) return null;
 
-/* ==================================================
-   ROOM DATA
-================================================== */
-
-function getRoomData(room) {
   return {
-    id: room.id,
-    name: room.name,
-    maxSeats: room.maxSeats,
-
-    seats: room.seats,
-
-    users: Object.values(room.users),
-
-    admins: Object.keys(room.admins),
-
-    gifts: room.gifts.slice(-50),
-
-    messages: room.messages.slice(-50),
-
-    createdAt: room.createdAt
+    userId: user.userId,
+    name: user.name,
+    dp: user.dp || "",
+    seatNo: user.seatNo || null,
+    micOn: !!user.micOn,
+    speakerOn: user.speakerOn !== false,
+    isHost: !!user.isHost,
+    isAdmin: !!user.isAdmin
   };
 }
 
-
-/* ==================================================
-   USER DATA
-================================================== */
-
-function createUser(userId, name, dp = "") {
+function publicRoom(room) {
   return {
-    userId: userId,
-    name: name,
-    dp: dp,
-
-    socketId: null,
-
-    seat: null,
-
-    micOn: false,
-
-    speakerOn: true,
-
-    mutedByAdmin: false,
-
-    isHost: false,
-
-    isAdmin: false,
-
-    joinedAt: new Date().toISOString()
+    roomId: room.roomId,
+    roomName: room.roomName,
+    users: Array.from(room.users.values()).map(publicUser)
   };
 }
 
-
-/* ==================================================
-   BROADCAST ROOM
-================================================== */
-
-function broadcastRoom(roomId) {
-  const room = rooms[roomId];
-
-  if (!room) return;
-
-  io.to(roomId).emit("roomUpdated", getRoomData(room));
+function broadcastRoom(room) {
+  io.to(room.roomId).emit("roomUpdated", publicRoom(room));
 }
 
-
-/* ==================================================
-   FIND EMPTY SEAT
-================================================== */
-
-function findEmptySeat(room) {
-  return room.seats.findIndex((seat) => seat === null);
-}
-
-
-/* ==================================================
-   REMOVE USER
-================================================== */
-
-function removeUser(socket) {
-  const roomId = socket.data.roomId;
-  const userId = socket.data.userId;
-
-  if (!roomId || !userId) return;
-
-  const room = rooms[roomId];
-
-  if (!room) return;
-
-  const user = room.users[userId];
-
-  if (!user) return;
-
-  /* Remove seat */
-
-  if (
-    user.seat >= 1 &&
-    user.seat <= 9 &&
-    room.seats[user.seat - 1] === userId
-  ) {
-    room.seats[user.seat - 1] = null;
-  }
-
-  /* Remove admin */
-
-  delete room.admins[userId];
-
-  /* Remove user */
-
-  delete room.users[userId];
-
-  /* Tell room */
-
-  broadcastRoom(roomId);
-
-  /* Empty room */
-
-  if (Object.keys(room.users).length === 0) {
-    delete rooms[roomId];
-  }
-}
-
-
-/* ==================================================
-   SOCKET CONNECTION
-================================================== */
+app.get("/", (req, res) => {
+  res.send(`
+    <h2>PawanVoice Server</h2>
+    <p>Server is running.</p>
+    <p>Socket.IO + WebRTC signaling active.</p>
+  `);
+});
 
 io.on("connection", (socket) => {
 
-  console.log("User connected:", socket.id);
+  // -----------------------------
+  // CREATE ROOM
+  // -----------------------------
+  socket.on("createRoom", ({ roomId, roomName, user }) => {
+    if (!roomId || !user || !user.userId) return;
 
-
-  /* ==================================================
-     JOIN ROOM
-  ================================================== */
-
-  socket.on("joinRoom", (data = {}) => {
-
-    const roomId = String(data.roomId || "main").trim();
-
-    const userId = String(
-      data.userId || socket.id
-    ).trim();
-
-    const name = String(
-      data.name || "Guest"
-    ).trim();
-
-    const dp = String(
-      data.dp || ""
-    ).trim();
-
-    const roomName = String(
-      data.roomName || "PawanVoice Room"
-    ).trim();
-
-
-    /* Check banned */
-
-    if (
-      bannedUsers[roomId] &&
-      bannedUsers[roomId][userId]
-    ) {
-      socket.emit("roomError", {
-        message: "You are banned from this room."
-      });
-
-      return;
-    }
-
-
-    /* Create room */
-
-    const room = createRoom(roomId, roomName);
-
-
-    /* User already in room */
-
-    if (room.users[userId]) {
-
-      socket.emit("roomError", {
-        message: "User already joined this room."
-      });
-
-      return;
-    }
-
-
-    /* Find seat */
-
-    const seatIndex = findEmptySeat(room);
-
-
-    if (seatIndex === -1) {
-
-      socket.emit("roomError", {
-        message: "All 9 seats are full."
-      });
-
-      return;
-    }
-
-
-    /* Create user */
-
-    const user = createUser(
-      userId,
-      name,
-      dp
+    const room = createRoom(
+      roomId,
+      roomName || "PawanVoice Room"
     );
 
-
-    user.socketId = socket.id;
-
-    user.seat = seatIndex + 1;
-
-
-    /* First user = host */
-
-    if (
-      Object.keys(room.users).length === 0
-    ) {
-
-      user.isHost = true;
-
-      user.isAdmin = true;
-
-      room.admins[userId] = true;
+    if (room.users.size >= 9) {
+      socket.emit("roomError", "Room is full");
+      return;
     }
 
+    const newUser = {
+      userId: user.userId,
+      name: user.name || "User",
+      dp: user.dp || "",
+      seatNo: 1,
+      micOn: false,
+      speakerOn: true,
+      isHost: true,
+      isAdmin: true,
+      socketId: socket.id
+    };
 
-    /* Save user */
-
-    room.users[userId] = user;
-
-    room.seats[seatIndex] = userId;
-
-
-    /* Socket room */
+    room.users.set(user.userId, newUser);
+    room.admins.add(user.userId);
 
     socket.join(roomId);
 
     socket.data.roomId = roomId;
+    socket.data.userId = user.userId;
 
-    socket.data.userId = userId;
-
-
-    /* Welcome message */
-
-    room.messages.push({
-      id: Date.now(),
-      type: "system",
-      message: `${name} joined the room.`,
-      time: new Date().toISOString()
-    });
-
-
-    /* Send room */
-
-    broadcastRoom(roomId);
-
-
-    /* Send joined */
-
-    socket.emit("joinedRoom", {
-      room: getRoomData(room),
-      user: user
-    });
-
-
-    console.log(
-      `[JOIN] ${name} (${userId}) -> ${roomId}`
-    );
+    socket.emit("joinedRoom", publicRoom(room));
+    broadcastRoom(room);
   });
 
 
-  /* ==================================================
-     GET ROOM
-  ================================================== */
+  // -----------------------------
+  // JOIN ROOM
+  // -----------------------------
+  socket.on("joinRoom", ({ roomId, user }) => {
+    if (!roomId || !user || !user.userId) return;
 
-  socket.on("getRoom", (data = {}) => {
-
-    const roomId = String(
-      data.roomId || "main"
-    ).trim();
-
-    const room = rooms[roomId];
+    const room = rooms.get(roomId);
 
     if (!room) {
-
-      socket.emit("roomUpdated", {
-        id: roomId,
-        name: "PawanVoice Room",
-        maxSeats: 9,
-        seats: Array(9).fill(null),
-        users: [],
-        admins: [],
-        gifts: [],
-        messages: []
-      });
-
+      socket.emit("roomError", "Room not found");
       return;
     }
 
-    socket.emit(
-      "roomUpdated",
-      getRoomData(room)
-    );
+    if (room.bannedUsers.has(user.userId)) {
+      socket.emit("roomError", "You are banned from this room");
+      return;
+    }
+
+    if (room.users.size >= 9) {
+      socket.emit("roomError", "Room is full");
+      return;
+    }
+
+    if (room.users.has(user.userId)) {
+      const oldUser = room.users.get(user.userId);
+      oldUser.socketId = socket.id;
+
+      socket.join(roomId);
+
+      socket.data.roomId = roomId;
+      socket.data.userId = user.userId;
+
+      socket.emit("joinedRoom", publicRoom(room));
+      broadcastRoom(room);
+      return;
+    }
+
+    const isFirstUser = room.users.size === 0;
+
+    const newUser = {
+      userId: user.userId,
+      name: user.name || "User",
+      dp: user.dp || "",
+      seatNo: isFirstUser ? 1 : null,
+      micOn: false,
+      speakerOn: true,
+      isHost: isFirstUser,
+      isAdmin: isFirstUser,
+      socketId: socket.id
+    };
+
+    room.users.set(user.userId, newUser);
+
+    if (isFirstUser) {
+      room.admins.add(user.userId);
+    }
+
+    socket.join(roomId);
+
+    socket.data.roomId = roomId;
+    socket.data.userId = user.userId;
+
+    // Existing users need to know about new peer
+    socket.to(roomId).emit("webrtc-peer-joined", {
+      userId: user.userId
+    });
+
+    socket.emit("joinedRoom", publicRoom(room));
+
+    broadcastRoom(room);
   });
 
 
-  /* ==================================================
-     SELECT SEAT
-  ================================================== */
+  // -----------------------------
+  // GET ROOMS
+  // -----------------------------
+  socket.on("getRooms", () => {
+    const list = Array.from(rooms.values()).map((room) => ({
+      roomId: room.roomId,
+      roomName: room.roomName,
+      userCount: room.users.size,
+      host: Array.from(room.users.values()).find(u => u.isHost)?.name || "Host",
+      dp: Array.from(room.users.values()).find(u => u.isHost)?.dp || ""
+    }));
 
-  socket.on("selectSeat", (data = {}) => {
+    socket.emit("roomsList", list);
+  });
 
-    const roomId = socket.data.roomId;
+
+  // -----------------------------
+  // TAKE / LEAVE SEAT
+  // -----------------------------
+  socket.on("selectSeat", ({ seatNo }) => {
+    const room = rooms.get(socket.data.roomId);
     const userId = socket.data.userId;
-
-    if (!roomId || !userId) return;
-
-    const room = rooms[roomId];
 
     if (!room) return;
 
-    const user = room.users[userId];
+    const user = room.users.get(userId);
 
     if (!user) return;
 
+    if (seatNo < 1 || seatNo > 9) return;
 
-    const newSeat = Number(data.seat);
+    const occupied = Array.from(room.users.values())
+      .find(u => u.seatNo === seatNo);
 
-
-    if (
-      !Number.isInteger(newSeat) ||
-      newSeat < 1 ||
-      newSeat > 9
-    ) {
+    if (occupied && occupied.userId !== userId) {
+      socket.emit("roomError", "Seat already occupied");
       return;
     }
 
+    user.seatNo = seatNo;
 
-    const targetIndex = newSeat - 1;
-
-
-    /* Occupied */
-
-    if (
-      room.seats[targetIndex] !== null &&
-      room.seats[targetIndex] !== userId
-    ) {
-
-      socket.emit("roomError", {
-        message: "This seat is already occupied."
-      });
-
-      return;
-    }
-
-
-    /* Old seat */
-
-    if (user.seat) {
-      room.seats[user.seat - 1] = null;
-    }
-
-
-    /* New seat */
-
-    room.seats[targetIndex] = userId;
-
-    user.seat = newSeat;
-
-
-    broadcastRoom(roomId);
+    broadcastRoom(room);
   });
 
-
-  /* ==================================================
-     LEAVE SEAT
-  ================================================== */
 
   socket.on("leaveSeat", () => {
-
-    const roomId = socket.data.roomId;
-    const userId = socket.data.userId;
-
-    if (!roomId || !userId) return;
-
-    const room = rooms[roomId];
-
-    if (!room) return;
-
-    const user = room.users[userId];
+    const room = rooms.get(socket.data.roomId);
+    const user = room?.users.get(socket.data.userId);
 
     if (!user) return;
 
+    user.seatNo = null;
 
-    if (user.seat) {
-
-      room.seats[user.seat - 1] = null;
-
-      user.seat = null;
-    }
-
-
-    user.micOn = false;
-
-    broadcastRoom(roomId);
+    broadcastRoom(room);
   });
 
 
-  /* ==================================================
-     MIC ON / OFF
-  ================================================== */
-
-  socket.on("micToggle", (data = {}) => {
-
-    const roomId = socket.data.roomId;
-    const userId = socket.data.userId;
-
-    if (!roomId || !userId) return;
-
-    const room = rooms[roomId];
-
-    if (!room) return;
-
-    const user = room.users[userId];
+  // -----------------------------
+  // MIC
+  // -----------------------------
+  socket.on("micToggle", ({ micOn }) => {
+    const room = rooms.get(socket.data.roomId);
+    const user = room?.users.get(socket.data.userId);
 
     if (!user) return;
 
+    user.micOn = !!micOn;
 
-    /* Admin muted user */
-
-    if (
-      user.mutedByAdmin &&
-      data.on === true
-    ) {
-
-      socket.emit("roomError", {
-        message: "Your microphone is muted by admin."
-      });
-
-      return;
-    }
-
-
-    user.micOn = Boolean(data.on);
-
-
-    io.to(roomId).emit("userMicChanged", {
-      userId: userId,
-      micOn: user.micOn
-    });
-
-
-    broadcastRoom(roomId);
+    broadcastRoom(room);
   });
 
 
-  /* ==================================================
-     SPEAKER ON / OFF
-  ================================================== */
-
-  socket.on("speakerToggle", (data = {}) => {
-
-    const roomId = socket.data.roomId;
-    const userId = socket.data.userId;
-
-    if (!roomId || !userId) return;
-
-    const room = rooms[roomId];
-
-    if (!room) return;
-
-    const user = room.users[userId];
+  // -----------------------------
+  // SPEAKER
+  // -----------------------------
+  socket.on("speakerToggle", ({ speakerOn }) => {
+    const room = rooms.get(socket.data.roomId);
+    const user = room?.users.get(socket.data.userId);
 
     if (!user) return;
 
+    user.speakerOn = !!speakerOn;
 
-    user.speakerOn = Boolean(data.on);
-
-
-    socket.emit("speakerChanged", {
-      on: user.speakerOn
-    });
+    broadcastRoom(room);
   });
 
 
-  /* ==================================================
-     SEND CHAT MESSAGE
-  ================================================== */
+  // ==================================================
+  // WEBRTC SIGNALING
+  // ==================================================
 
-  socket.on("sendMessage", (data = {}) => {
-
-    const roomId = socket.data.roomId;
-    const userId = socket.data.userId;
-
-    if (!roomId || !userId) return;
-
-    const room = rooms[roomId];
-
+  socket.on("webrtc-offer", ({ targetUserId, offer }) => {
+    const room = rooms.get(socket.data.roomId);
     if (!room) return;
 
-    const user = room.users[userId];
-
-    if (!user) return;
-
-
-    const message = String(
-      data.message || ""
-    ).trim();
-
-
-    if (!message) return;
-
-    if (message.length > 500) return;
-
-
-    const chat = {
-      id: Date.now() + Math.random(),
-
-      type: "chat",
-
-      userId: user.userId,
-
-      name: user.name,
-
-      dp: user.dp,
-
-      message: message,
-
-      time: new Date().toISOString()
-    };
-
-
-    room.messages.push(chat);
-
-
-    if (room.messages.length > 200) {
-      room.messages.shift();
-    }
-
-
-    io.to(roomId).emit(
-      "messageReceived",
-      chat
-    );
-  });
-
-
-  /* ==================================================
-     SEND GIFT
-  ================================================== */
-
-  socket.on("sendGift", (data = {}) => {
-
-    const roomId = socket.data.roomId;
-    const userId = socket.data.userId;
-
-    if (!roomId || !userId) return;
-
-    const room = rooms[roomId];
-
-    if (!room) return;
-
-    const sender = room.users[userId];
-
-    if (!sender) return;
-
-
-    const gift = {
-
-      id: Date.now() + Math.random(),
-
-      senderId: sender.userId,
-
-      senderName: sender.name,
-
-      senderDp: sender.dp,
-
-      receiverId: String(
-        data.receiverId || ""
-      ),
-
-      giftId: String(
-        data.giftId || "rose"
-      ),
-
-      giftName: String(
-        data.giftName || "Rose"
-      ),
-
-      amount: Number(
-        data.amount || 1
-      ),
-
-      time: new Date().toISOString()
-    };
-
-
-    /* Check receiver */
-
-    if (
-      gift.receiverId &&
-      !room.users[gift.receiverId]
-    ) {
-
-      socket.emit("roomError", {
-        message: "Receiver is not in this room."
-      });
-
-      return;
-    }
-
-
-    room.gifts.push(gift);
-
-
-    if (room.gifts.length > 100) {
-      room.gifts.shift();
-    }
-
-
-    io.to(roomId).emit(
-      "giftReceived",
-      gift
-    );
-
-
-    console.log(
-      `[GIFT] ${sender.name} -> ${gift.giftName}`
-    );
-  });
-
-
-  /* ==================================================
-     MAKE ADMIN
-  ================================================== */
-
-  socket.on("makeAdmin", (data = {}) => {
-
-    const roomId = socket.data.roomId;
-    const userId = socket.data.userId;
-
-    if (!roomId || !userId) return;
-
-    const room = rooms[roomId];
-
-    if (!room) return;
-
-
-    const host = room.users[userId];
-
-    if (!host || !host.isHost) {
-
-      socket.emit("roomError", {
-        message: "Only host can make admin."
-      });
-
-      return;
-    }
-
-
-    const targetId = String(
-      data.userId || ""
-    );
-
-
-    const target = room.users[targetId];
-
+    const target = room.users.get(targetUserId);
     if (!target) return;
 
+    io.to(target.socketId).emit("webrtc-offer", {
+      fromUserId: socket.data.userId,
+      offer
+    });
+  });
+
+
+  socket.on("webrtc-answer", ({ targetUserId, answer }) => {
+    const room = rooms.get(socket.data.roomId);
+    if (!room) return;
+
+    const target = room.users.get(targetUserId);
+    if (!target) return;
+
+    io.to(target.socketId).emit("webrtc-answer", {
+      fromUserId: socket.data.userId,
+      answer
+    });
+  });
+
+
+  socket.on("webrtc-ice-candidate", ({ targetUserId, candidate }) => {
+    const room = rooms.get(socket.data.roomId);
+    if (!room) return;
+
+    const target = room.users.get(targetUserId);
+    if (!target) return;
+
+    io.to(target.socketId).emit("webrtc-ice-candidate", {
+      fromUserId: socket.data.userId,
+      candidate
+    });
+  });
+
+
+  // -----------------------------
+  // CHAT
+  // -----------------------------
+  socket.on("sendMessage", ({ message }) => {
+    const room = rooms.get(socket.data.roomId);
+    const user = room?.users.get(socket.data.userId);
+
+    if (!room || !user || !message) return;
+
+    io.to(room.roomId).emit("messageReceived", {
+      userId: user.userId,
+      name: user.name,
+      dp: user.dp,
+      message: String(message).slice(0, 500),
+      time: Date.now()
+    });
+  });
+
+
+  // -----------------------------
+  // ROOM NAME
+  // -----------------------------
+  socket.on("changeRoomName", ({ roomName }) => {
+    const room = rooms.get(socket.data.roomId);
+    const user = room?.users.get(socket.data.userId);
+
+    if (!room || !user) return;
+
+    if (!user.isHost && !user.isAdmin) return;
+
+    room.roomName = String(roomName || "PawanVoice Room")
+      .slice(0, 60);
+
+    broadcastRoom(room);
+  });
+
+
+  // -----------------------------
+  // MAKE ADMIN
+  // -----------------------------
+  socket.on("makeAdmin", ({ targetUserId }) => {
+    const room = rooms.get(socket.data.roomId);
+    const user = room?.users.get(socket.data.userId);
+
+    if (!room || !user || !user.isHost) return;
+
+    const target = room.users.get(targetUserId);
+
+    if (!target) return;
 
     target.isAdmin = true;
+    room.admins.add(targetUserId);
 
-    room.admins[targetId] = true;
-
-
-    broadcastRoom(roomId);
-
-
-    io.to(roomId).emit(
-      "adminChanged",
-      {
-        userId: targetId,
-        isAdmin: true
-      }
-    );
+    broadcastRoom(room);
   });
 
 
-  /* ==================================================
-     REMOVE ADMIN
-  ================================================== */
+  // -----------------------------
+  // REMOVE ADMIN
+  // -----------------------------
+  socket.on("removeAdmin", ({ targetUserId }) => {
+    const room = rooms.get(socket.data.roomId);
+    const user = room?.users.get(socket.data.userId);
 
-  socket.on("removeAdmin", (data = {}) => {
+    if (!room || !user || !user.isHost) return;
 
-    const roomId = socket.data.roomId;
-    const userId = socket.data.userId;
+    const target = room.users.get(targetUserId);
 
-    if (!roomId || !userId) return;
-
-    const room = rooms[roomId];
-
-    if (!room) return;
-
-
-    const host = room.users[userId];
-
-    if (!host || !host.isHost) return;
-
-
-    const targetId = String(
-      data.userId || ""
-    );
-
-
-    const target = room.users[targetId];
-
-    if (!target) return;
-
-    if (target.isHost) return;
-
+    if (!target || target.isHost) return;
 
     target.isAdmin = false;
+    room.admins.delete(targetUserId);
 
-    delete room.admins[targetId];
-
-
-    broadcastRoom(roomId);
+    broadcastRoom(room);
   });
 
 
-  /* ==================================================
-     MUTE USER
-  ================================================== */
+  // -----------------------------
+  // KICK
+  // -----------------------------
+  socket.on("kickUser", ({ targetUserId }) => {
+    const room = rooms.get(socket.data.roomId);
+    const user = room?.users.get(socket.data.userId);
 
-  socket.on("muteUser", (data = {}) => {
+    if (!room || !user || (!user.isHost && !user.isAdmin)) return;
 
-    const roomId = socket.data.roomId;
-    const userId = socket.data.userId;
+    const target = room.users.get(targetUserId);
 
-    if (!roomId || !userId) return;
+    if (!target || target.isHost) return;
 
-    const room = rooms[roomId];
+    io.to(target.socketId).emit("kicked");
 
-    if (!room) return;
+    room.users.delete(targetUserId);
 
-
-    const admin = room.users[userId];
-
-    if (
-      !admin ||
-      (!admin.isAdmin && !admin.isHost)
-    ) {
-
-      socket.emit("roomError", {
-        message: "Admin permission required."
-      });
-
-      return;
-    }
-
-
-    const targetId = String(
-      data.userId || ""
-    );
-
-
-    const target = room.users[targetId];
-
-    if (!target) return;
-
-    if (target.isHost) return;
-
-
-    target.mutedByAdmin = Boolean(
-      data.muted
-    );
-
-    target.micOn = false;
-
-
-    io.to(roomId).emit(
-      "userMuted",
-      {
-        userId: targetId,
-        muted: target.mutedByAdmin
-      }
-    );
-
-
-    broadcastRoom(roomId);
+    broadcastRoom(room);
   });
 
 
-  /* ==================================================
-     KICK USER
-  ================================================== */
+  // -----------------------------
+  // BAN
+  // -----------------------------
+  socket.on("banUser", ({ targetUserId }) => {
+    const room = rooms.get(socket.data.roomId);
+    const user = room?.users.get(socket.data.userId);
 
-  socket.on("kickUser", (data = {}) => {
+    if (!room || !user || !user.isHost) return;
 
-    const roomId = socket.data.roomId;
-    const userId = socket.data.userId;
+    const target = room.users.get(targetUserId);
 
-    if (!roomId || !userId) return;
+    if (!target || target.isHost) return;
 
-    const room = rooms[roomId];
+    room.bannedUsers.add(targetUserId);
 
-    if (!room) return;
+    io.to(target.socketId).emit("banned");
 
+    room.users.delete(targetUserId);
 
-    const admin = room.users[userId];
-
-    if (
-      !admin ||
-      (!admin.isAdmin && !admin.isHost)
-    ) {
-
-      socket.emit("roomError", {
-        message: "Admin permission required."
-      });
-
-      return;
-    }
-
-
-    const targetId = String(
-      data.userId || ""
-    );
-
-
-    if (targetId === userId) return;
-
-
-    const target = room.users[targetId];
-
-    if (!target) return;
-
-    if (target.isHost) return;
-
-
-    const targetSocketId =
-      target.socketId;
-
-
-    const targetSocket =
-      io.sockets.sockets.get(
-        targetSocketId
-      );
-
-
-    if (targetSocket) {
-
-      targetSocket.emit(
-        "kicked",
-        {
-          message: "You were removed from the room."
-        }
-      );
-
-      targetSocket.leave(roomId);
-
-      targetSocket.data.roomId = null;
-
-      targetSocket.data.userId = null;
-    }
-
-
-    /* Remove target */
-
-    if (
-      target.seat &&
-      room.seats[target.seat - 1] === targetId
-    ) {
-
-      room.seats[target.seat - 1] = null;
-    }
-
-
-    delete room.users[targetId];
-
-    delete room.admins[targetId];
-
-
-    room.messages.push({
-      id: Date.now(),
-      type: "system",
-      message: `${target.name} was removed from the room.`,
-      time: new Date().toISOString()
-    });
-
-
-    broadcastRoom(roomId);
+    broadcastRoom(room);
   });
 
 
-  /* ==================================================
-     BAN USER
-  ================================================== */
-
-  socket.on("banUser", (data = {}) => {
-
-    const roomId = socket.data.roomId;
-    const userId = socket.data.userId;
-
-    if (!roomId || !userId) return;
-
-    const room = rooms[roomId];
-
-    if (!room) return;
-
-
-    const admin = room.users[userId];
-
-    if (
-      !admin ||
-      (!admin.isAdmin && !admin.isHost)
-    ) {
-
-      socket.emit("roomError", {
-        message: "Admin permission required."
-      });
-
-      return;
-    }
-
-
-    const targetId = String(
-      data.userId || ""
-    );
-
-
-    if (targetId === userId) return;
-
-
-    const target = room.users[targetId];
-
-    if (!target) return;
-
-    if (target.isHost) return;
-
-
-    if (!bannedUsers[roomId]) {
-      bannedUsers[roomId] = {};
-    }
-
-
-    bannedUsers[roomId][targetId] = true;
-
-
-    const targetSocket =
-      io.sockets.sockets.get(
-        target.socketId
-      );
-
-
-    if (targetSocket) {
-
-      targetSocket.emit(
-        "banned",
-        {
-          message: "You are banned from this room."
-        }
-      );
-
-      targetSocket.leave(roomId);
-
-      targetSocket.data.roomId = null;
-
-      targetSocket.data.userId = null;
-    }
-
-
-    if (
-      target.seat &&
-      room.seats[target.seat - 1] === targetId
-    ) {
-
-      room.seats[target.seat - 1] = null;
-    }
-
-
-    delete room.users[targetId];
-
-    delete room.admins[targetId];
-
-
-    broadcastRoom(roomId);
-  });
-
-
-  /* ==================================================
-     CHANGE ROOM NAME
-  ================================================== */
-
-  socket.on("changeRoomName", (data = {}) => {
-
-    const roomId = socket.data.roomId;
-    const userId = socket.data.userId;
-
-    if (!roomId || !userId) return;
-
-    const room = rooms[roomId];
-
-    if (!room) return;
-
-
-    const user = room.users[userId];
-
-    if (
-      !user ||
-      !user.isHost
-    ) return;
-
-
-    const newName = String(
-      data.name || ""
-    ).trim();
-
-
-    if (!newName) return;
-
-    if (newName.length > 60) return;
-
-
-    room.name = newName;
-
-
-    broadcastRoom(roomId);
-  });
-
-
-  /* ==================================================
-     ROOM INVITE
-  ================================================== */
-
-  socket.on("getInvite", () => {
-
-    const roomId = socket.data.roomId;
-
-    if (!roomId) return;
-
-
-    const inviteUrl =
-      `/room.html?room=${encodeURIComponent(roomId)}`;
-
-
-    socket.emit(
-      "inviteCreated",
-      {
-        roomId: roomId,
-        url: inviteUrl
-      }
-    );
-  });
-
-
-  /* ==================================================
-     ROOM LIST
-  ================================================== */
-
-  socket.on("getRooms", () => {
-
-    const list = Object.values(rooms)
-      .map((room) => {
-
-        return {
-          id: room.id,
-          name: room.name,
-          users: Object.keys(room.users).length,
-          maxSeats: room.maxSeats,
-          host: Object.values(room.users)
-            .find((u) => u.isHost) || null
-        };
-
-      })
-      .filter((room) => room.users > 0);
-
-
-    socket.emit(
-      "roomsList",
-      list
-    );
-  });
-
-
-  /* ==================================================
-     DISCONNECT
-  ================================================== */
-
+  // -----------------------------
+  // DISCONNECT
+  // -----------------------------
   socket.on("disconnect", () => {
+    const roomId = socket.data.roomId;
+    const userId = socket.data.userId;
 
-    console.log(
-      "User disconnected:",
-      socket.id
-    );
+    if (!roomId || !userId) return;
 
-    removeUser(socket);
+    const room = rooms.get(roomId);
+
+    if (!room) return;
+
+    const user = room.users.get(userId);
+
+    if (user && user.socketId === socket.id) {
+      room.users.delete(userId);
+    }
+
+    if (room.users.size === 0) {
+      rooms.delete(roomId);
+    } else {
+      // Give host to another user if host left
+      const hasHost = Array.from(room.users.values())
+        .some(u => u.isHost);
+
+      if (!hasHost) {
+        const newHost = Array.from(room.users.values())[0];
+
+        if (newHost) {
+          newHost.isHost = true;
+          newHost.isAdmin = true;
+          room.admins.add(newHost.userId);
+        }
+      }
+
+      broadcastRoom(room);
+    }
   });
-
 });
-
-
-/* ==================================================
-   HEALTH CHECK
-================================================== */
-
-app.get("/", (req, res) => {
-
-  res.status(200).send(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>PawanVoice Server</title>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          background: #111;
-          color: white;
-          text-align: center;
-          padding: 50px;
-        }
-
-        h1 {
-          color: #ff4f91;
-        }
-      </style>
-    </head>
-
-    <body>
-
-      <h1>🎙️ PawanVoice Server</h1>
-
-      <p>Server is running successfully.</p>
-
-      <p>Socket.IO Room System: ACTIVE</p>
-
-      <p>9 Seat Voice Room System: ACTIVE</p>
-
-    </body>
-    </html>
-  `);
-
-});
-
-
-/* ==================================================
-   SERVER START
-================================================== */
 
 server.listen(PORT, () => {
-
-  console.log("");
-  console.log("================================");
-  console.log("       PAWANVOICE SERVER");
-  console.log("================================");
-  console.log("Server running on port:", PORT);
-  console.log("9 Seat Room System: ACTIVE");
-  console.log("Socket.IO: ACTIVE");
-  console.log("================================");
-  console.log("");
-
+  console.log(`PawanVoice server running on port ${PORT}`);
 });
