@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 
 <title>PawanVoice Room</title>
 
@@ -11,98 +12,224 @@
 <style>
 *{
   box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
   margin:0;
-  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#160b2b;
+  color:#fff;
 }
 
 body{
-  background:#171329;
-  color:white;
-  font-family:Arial,sans-serif;
-  min-height:100vh;
-  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 50% 12%,#5a287f 0,#321553 25%,#180a2d 58%,#0e061d 100%);
 }
+
+/* ---------------- MAIN ---------------- */
+
+.room{
+  position:relative;
+  width:100%;
+  height:100dvh;
+  min-height:560px;
+  overflow:hidden;
+}
+
+.room::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 20% 35%,rgba(177,84,255,.16),transparent 28%),
+    radial-gradient(circle at 80% 42%,rgba(255,91,180,.12),transparent 30%);
+}
+
+/* ---------------- HEADER ---------------- */
 
 .header{
-  height:70px;
+  position:relative;
+  z-index:10;
+  height:76px;
   padding:10px 12px;
-  background:#241b46;
   display:flex;
   align-items:center;
-  gap:10px;
+  justify-content:space-between;
 }
 
-.room-dp{
-  width:48px;
-  height:48px;
+.roomInfo{
+  display:flex;
+  align-items:center;
+  min-width:0;
+}
+
+.roomDp{
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  border:2px solid #f4c86b;
+  padding:2px;
+  background:linear-gradient(135deg,#ffd873,#ff7bd4);
+  flex:none;
+}
+
+.roomDp img{
+  width:100%;
+  height:100%;
   border-radius:50%;
   object-fit:cover;
-  background:#555;
+  background:#38204f;
 }
 
-.room-info{
-  flex:1;
+.roomTexts{
+  margin-left:9px;
+  min-width:0;
 }
 
-.room-name{
-  font-size:17px;
-  font-weight:bold;
+.roomTitle{
+  font-size:16px;
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:190px;
 }
 
-.room-id{
-  font-size:12px;
-  opacity:.7;
+.roomId{
   margin-top:4px;
+  font-size:11px;
+  color:#d9cbe7;
 }
 
-.room-count{
-  font-size:13px;
-  background:#3a2c64;
-  padding:8px 10px;
-  border-radius:15px;
+.hostText{
+  margin-top:2px;
+  font-size:10px;
+  color:#bca7cb;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:190px;
 }
 
-.icon-btn{
+.headerActions{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+.countBadge{
+  min-width:52px;
+  height:30px;
+  padding:0 9px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:16px;
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.14);
+  font-size:12px;
+}
+
+.hBtn{
+  width:35px;
+  height:35px;
   border:0;
-  color:white;
-  background:#3a2c64;
-  border-radius:18px;
-  padding:8px 10px;
+  border-radius:50%;
+  background:rgba(0,0,0,.3);
+  color:#fff;
+  font-size:16px;
 }
 
-.host-line{
-  text-align:center;
-  padding:8px;
-  background:#21183d;
-  font-size:13px;
+/* ---------------- ROOM BODY ---------------- */
+
+.roomBody{
+  position:relative;
+  z-index:2;
+  height:calc(100dvh - 76px - 76px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:2px 9px 12px;
 }
 
-.seats{
-  padding:15px 12px;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:18px 8px;
+.roomBody::-webkit-scrollbar{
+  width:0;
 }
 
-.seat{
-  min-height:95px;
-  text-align:center;
+/* ---------------- ANNOUNCEMENT ---------------- */
+
+.announcement{
+  height:32px;
+  margin:0 5px 5px;
+  border-radius:17px;
+  background:rgba(0,0,0,.23);
+  border:1px solid rgba(255,255,255,.09);
+  display:flex;
+  align-items:center;
+  padding:0 10px;
+  font-size:11px;
+  color:#e7d9ef;
 }
 
-.seat.host{
-  grid-column:1 / 5;
+.announcement span{
+  color:#ffd66d;
+  margin-right:5px;
 }
 
-.avatar-wrap{
-  width:58px;
-  height:58px;
-  margin:auto;
+/* ---------------- SEATS ---------------- */
+
+.seatArea{
+  position:relative;
+  width:100%;
+  max-width:500px;
+  margin:0 auto;
+}
+
+.hostSeat{
+  width:116px;
+  height:142px;
+  margin:2px auto 3px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
   position:relative;
 }
 
-.seat.host .avatar-wrap{
-  width:70px;
-  height:70px;
+.seatNumber{
+  position:absolute;
+  top:3px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:4;
+  font-size:10px;
+  color:#dbcde7;
+  background:rgba(0,0,0,.3);
+  padding:2px 8px;
+  border-radius:10px;
+}
+
+.avatarWrap{
+  position:relative;
+  margin-top:22px;
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  padding:3px;
+  background:linear-gradient(135deg,#ffd76a,#ff8bce,#9b63ff);
+  box-shadow:
+    0 0 0 2px rgba(255,215,106,.18),
+    0 5px 25px rgba(0,0,0,.45);
+}
+
+.hostSeat .avatarWrap{
+  width:86px;
+  height:86px;
+  margin-top:24px;
 }
 
 .avatar{
@@ -110,365 +237,1016 @@ body{
   height:100%;
   border-radius:50%;
   object-fit:cover;
-  background:#40395d;
-  border:2px solid #8f7bea;
+  background:#332041;
+  display:block;
 }
 
-.empty{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:27px;
-  color:#aaa;
-  border:2px dashed #60577b;
-}
-
-.mic-dot{
+.micDot{
   position:absolute;
   right:-2px;
-  bottom:-2px;
-  width:19px;
-  height:19px;
+  bottom:2px;
+  width:21px;
+  height:21px;
   border-radius:50%;
-  background:#ef4444;
-  border:2px solid #171329;
-  font-size:10px;
   display:flex;
   align-items:center;
   justify-content:center;
+  background:#2fbc68;
+  border:2px solid #26113d;
+  font-size:10px;
 }
 
-.mic-on{
-  background:#22c55e;
+.micOff{
+  background:#d84c61;
 }
 
-.user-name{
+.hostCrown{
+  position:absolute;
+  top:-9px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:5;
+  font-size:19px;
+}
+
+.name{
   margin-top:5px;
+  max-width:108px;
   font-size:12px;
+  font-weight:700;
+  text-align:center;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 
-.features{
+.hostSeat .name{
+  font-size:13px;
+}
+
+.levelTag{
+  margin-top:3px;
+  padding:2px 7px;
+  border-radius:8px;
+  background:rgba(255,193,75,.18);
+  border:1px solid rgba(255,193,75,.25);
+  color:#ffd477;
+  font-size:9px;
+}
+
+.emptyAvatar{
+  background:
+    radial-gradient(circle,#684b7d 0 25%,transparent 26%),
+    #28153b;
+}
+
+.seatGrid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px 3px;
+  width:100%;
+}
+
+.seat{
+  height:108px;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  position:relative;
+  cursor:pointer;
+}
+
+.seat .avatarWrap{
+  width:61px;
+  height:61px;
+  margin-top:15px;
+}
+
+.seat .name{
+  width:82px;
+}
+
+.emptyPlus{
+  position:absolute;
+  top:32px;
+  width:29px;
+  height:29px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.08);
+  border:1px dashed rgba(255,255,255,.3);
+  color:#d7c8df;
+  font-size:17px;
+}
+
+/* ---------------- FRAME EFFECTS ---------------- */
+
+.frameGold .avatarWrap{
+  background:linear-gradient(135deg,#fff2a4,#e8a83c,#fff0a1);
+}
+
+.framePink .avatarWrap{
+  background:linear-gradient(135deg,#ff7adf,#ff3e8d,#9e52ff);
+}
+
+.frameBlue .avatarWrap{
+  background:linear-gradient(135deg,#78efff,#4b8dff,#8d52ff);
+}
+
+.frameGreen .avatarWrap{
+  background:linear-gradient(135deg,#92ffb0,#22c98a,#55e6ff);
+}
+
+/* ---------------- ROOM FEATURES ---------------- */
+
+.featureRow{
+  margin:5px auto 7px;
+  max-width:500px;
   display:grid;
   grid-template-columns:repeat(5,1fr);
-  gap:7px;
-  padding:10px;
+  gap:4px;
 }
 
 .feature{
-  background:#292044;
-  border-radius:10px;
-  padding:10px 4px;
-  text-align:center;
-  font-size:11px;
-}
-
-.exp{
-  margin:10px;
-  background:#251b40;
-  border-radius:12px;
-  padding:12px;
-  text-align:center;
-}
-
-.exp-title{
-  font-weight:bold;
-  margin-bottom:10px;
-}
-
-.top3{
+  min-width:0;
+  height:53px;
+  border-radius:13px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.07);
   display:flex;
-  justify-content:space-around;
-  font-size:12px;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  font-size:9px;
+  color:#ddd0e8;
+  cursor:pointer;
 }
 
-.chat{
-  margin:10px;
+.featureIcon{
+  font-size:19px;
+  margin-bottom:3px;
+}
+
+.feature:active{
+  transform:scale(.96);
+}
+
+/* ---------------- EXP ---------------- */
+
+.expBox{
+  max-width:500px;
+  margin:0 auto 8px;
+  min-height:54px;
+  border-radius:14px;
+  padding:7px 9px;
+  background:linear-gradient(
+    90deg,
+    rgba(255,185,69,.12),
+    rgba(159,83,255,.13)
+  );
+  border:1px solid rgba(255,255,255,.07);
+}
+
+.expTop{
   display:flex;
-  gap:6px;
+  align-items:center;
+  justify-content:space-between;
+  font-size:10px;
+  color:#ddd0e7;
 }
 
-.chat input{
-  flex:1;
-  border:0;
-  outline:none;
-  border-radius:20px;
-  padding:11px 14px;
-  background:#2b2346;
-  color:white;
+.rocket{
+  font-size:20px;
 }
 
-.chat button{
-  width:42px;
-  border:0;
-  border-radius:50%;
-  background:#3a2c64;
-  color:white;
-  font-size:18px;
+.expLine{
+  height:6px;
+  margin-top:6px;
+  background:rgba(255,255,255,.1);
+  border-radius:5px;
+  overflow:hidden;
 }
 
-.controls{
-  position:sticky;
-  bottom:0;
-  background:#21183d;
-  padding:10px 7px;
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:7px;
+.expFill{
+  width:34%;
+  height:100%;
+  border-radius:5px;
+  background:linear-gradient(90deg,#ffcb54,#ff75bd,#985aff);
 }
 
-.control{
-  border:0;
-  background:#342957;
-  color:white;
-  padding:10px 4px;
-  border-radius:10px;
-  font-size:11px;
+.topUsers{
+  display:flex;
+  gap:8px;
+  margin-top:5px;
+  font-size:9px;
+  color:#cbbbd5;
 }
 
-.control.active{
-  background:#1f9d55;
+/* ---------------- CHAT ---------------- */
+
+.chatMessages{
+  max-width:500px;
+  margin:0 auto;
+  min-height:30px;
+  max-height:105px;
+  overflow-y:auto;
 }
 
-.control.off{
-  background:#b93838;
-}
-
-.messages{
-  padding:8px 12px;
-  max-height:130px;
-  overflow:auto;
+.chatMessages::-webkit-scrollbar{
+  width:0;
 }
 
 .msg{
-  background:#292044;
-  border-radius:10px;
-  padding:7px 10px;
-  margin-bottom:5px;
+  display:inline-block;
+  max-width:92%;
+  margin:2px 0;
+  padding:6px 9px;
+  border-radius:12px;
+  background:rgba(0,0,0,.25);
+  font-size:11px;
+  color:#eee5f4;
+}
+
+.msg b{
+  color:#ffd36b;
+}
+
+/* ---------------- BOTTOM ---------------- */
+
+.bottom{
+  position:absolute;
+  z-index:20;
+  left:0;
+  right:0;
+  bottom:0;
+  height:76px;
+  padding:7px 9px calc(7px + env(safe-area-inset-bottom));
+  background:linear-gradient(
+    to top,
+    rgba(12,5,24,.98),
+    rgba(21,9,37,.94)
+  );
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+.chatBar{
+  width:100%;
+  height:42px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.messageInput{
+  flex:1;
+  min-width:0;
+  height:38px;
+  border:1px solid rgba(255,255,255,.12);
+  outline:none;
+  border-radius:20px;
+  background:rgba(255,255,255,.07);
+  color:#fff;
+  padding:0 12px;
   font-size:12px;
 }
 
-.emoji-panel{
-  display:none;
+.messageInput::placeholder{
+  color:#a999b4;
+}
+
+.bottomBtn{
+  width:38px;
+  height:38px;
+  flex:none;
+  border:0;
+  border-radius:50%;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-size:17px;
+}
+
+.bottomBtn.active{
+  background:#a85cff;
+}
+
+.leaveBtn{
+  background:rgba(224,65,86,.18);
+}
+
+/* ---------------- EMOJI ---------------- */
+
+.emojiPanel{
+  position:absolute;
+  left:8px;
+  right:8px;
+  bottom:80px;
+  z-index:50;
   padding:10px;
-  background:#241b46;
+  border-radius:17px;
+  background:#241036;
+  border:1px solid rgba(255,255,255,.12);
+  display:none;
   grid-template-columns:repeat(8,1fr);
   gap:8px;
+  max-height:230px;
+  overflow-y:auto;
 }
 
-.emoji-panel button{
-  border:0;
-  background:none;
-  font-size:22px;
+.emojiPanel.show{
+  display:grid;
 }
 
-.modal-bg{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
+.emoji{
+  height:32px;
+  display:flex;
   align-items:center;
   justify-content:center;
+  font-size:21px;
+  cursor:pointer;
+}
+
+/* ---------------- MODAL ---------------- */
+
+.overlay{
+  position:fixed;
+  inset:0;
   z-index:100;
+  background:rgba(0,0,0,.65);
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+}
+
+.overlay.show{
+  display:flex;
 }
 
 .modal{
-  width:90%;
-  max-width:360px;
-  background:#281f49;
-  border-radius:15px;
+  width:100%;
+  max-width:520px;
+  max-height:78dvh;
+  overflow:auto;
+  border-radius:23px 23px 0 0;
   padding:18px;
+  background:#21102f;
+  border-top:1px solid rgba(255,255,255,.12);
 }
 
-.modal h3{
-  margin-bottom:14px;
+.modalTitle{
+  font-size:17px;
+  font-weight:800;
+  margin-bottom:15px;
 }
 
-.modal button{
-  width:100%;
+.modalUser{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px;
+  border-radius:14px;
+  background:rgba(255,255,255,.06);
+}
+
+.modalUser img{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.modalUserName{
+  font-weight:800;
+}
+
+.modalId{
+  margin-top:4px;
+  font-size:10px;
+  color:#b9a9c5;
+}
+
+.actionGrid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+  margin-top:12px;
+}
+
+.actionBtn{
+  height:42px;
   border:0;
-  padding:11px;
-  margin-top:8px;
-  border-radius:10px;
-  background:#45356f;
-  color:white;
+  border-radius:12px;
+  color:#fff;
+  background:rgba(255,255,255,.08);
+  font-weight:700;
 }
 
-.modal input{
+.actionBtn.red{
+  background:rgba(225,62,80,.2);
+}
+
+.closeBtn{
   width:100%;
-  padding:11px;
+  height:43px;
+  margin-top:10px;
   border:0;
-  border-radius:8px;
-  margin-bottom:8px;
+  border-radius:13px;
+  background:#9b58e8;
+  color:#fff;
+  font-weight:800;
 }
 
-.status{
-  text-align:center;
-  font-size:12px;
-  padding:6px;
-  color:#b9b0d7;
+/* ---------------- TOAST ---------------- */
+
+.toast{
+  position:fixed;
+  z-index:200;
+  left:50%;
+  bottom:92px;
+  transform:translateX(-50%) translateY(20px);
+  background:rgba(0,0,0,.8);
+  color:#fff;
+  padding:9px 14px;
+  border-radius:20px;
+  font-size:11px;
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
 }
 
-.hidden-audio{
-  display:none;
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+/* ---------------- MOBILE ---------------- */
+
+@media(max-width:360px){
+  .roomTitle{
+    max-width:140px;
+  }
+
+  .feature{
+    font-size:8px;
+  }
+
+  .featureIcon{
+    font-size:17px;
+  }
+
+  .seatGrid{
+    gap:4px 0;
+  }
+
+  .seat .avatarWrap{
+    width:55px;
+    height:55px;
+  }
+
+  .seat{
+    height:101px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
+<div class="room">
 
-  <img id="roomDp"
-       class="room-dp"
-       src="https://via.placeholder.com/100">
+  <!-- HEADER -->
+  <header class="header">
 
-  <div class="room-info">
-    <div id="roomName" class="room-name">
-      PawanVoice Room
+    <div class="roomInfo">
+
+      <div class="roomDp">
+        <img id="roomDp"
+             src="https://i.pravatar.cc/150?img=12"
+             alt="room">
+      </div>
+
+      <div class="roomTexts">
+        <div class="roomTitle" id="roomName">
+          PawanVoice Room
+        </div>
+
+        <div class="roomId">
+          ID: <span id="roomId">PV000000</span>
+        </div>
+
+        <div class="hostText">
+          Host: <span id="hostName">Loading...</span>
+        </div>
+      </div>
+
     </div>
 
-    <div id="roomId" class="room-id">
-      Room
+    <div class="headerActions">
+      <div class="countBadge">
+        👥 <span id="userCount">1</span>/9
+      </div>
+
+      <button class="hBtn" onclick="openSettings()">⚙️</button>
+
+      <button class="hBtn" onclick="inviteRoom()">↗</button>
     </div>
+
+  </header>
+
+  <!-- BODY -->
+  <main class="roomBody">
+
+    <div class="announcement">
+      <span>📢</span>
+      Welcome to PawanVoice Room
+    </div>
+
+    <!-- SEATS -->
+    <section class="seatArea">
+
+      <!-- HOST -->
+      <div class="hostSeat"
+           id="seat1"
+           onclick="seatClick(1)">
+
+        <div class="seatNumber">1</div>
+
+        <div class="hostCrown">👑</div>
+
+        <div class="avatarWrap frameGold">
+          <img id="avatar1"
+               class="avatar"
+               src="https://i.pravatar.cc/150?img=12">
+
+          <div id="mic1"
+               class="micDot">
+            🎙
+          </div>
+        </div>
+
+        <div class="name"
+             id="name1">
+          Empty
+        </div>
+
+        <div class="levelTag">
+          HOST
+        </div>
+
+      </div>
+
+
+      <!-- 2-5 -->
+      <div class="seatGrid">
+
+        <div class="seat"
+             id="seat2"
+             onclick="seatClick(2)">
+
+          <div class="seatNumber">2</div>
+
+          <div class="avatarWrap">
+            <img id="avatar2"
+                 class="avatar emptyAvatar">
+
+            <div id="mic2"
+                 class="micDot micOff">
+              🎙
+            </div>
+
+            <div id="plus2"
+                 class="emptyPlus">
+              +
+            </div>
+          </div>
+
+          <div id="name2"
+               class="name">
+            Empty
+          </div>
+
+        </div>
+
+
+        <div class="seat"
+             id="seat3"
+             onclick="seatClick(3)">
+
+          <div class="seatNumber">3</div>
+
+          <div class="avatarWrap">
+            <img id="avatar3"
+                 class="avatar emptyAvatar">
+
+            <div id="mic3"
+                 class="micDot micOff">
+              🎙
+            </div>
+
+            <div id="plus3"
+                 class="emptyPlus">
+              +
+            </div>
+          </div>
+
+          <div id="name3"
+               class="name">
+            Empty
+          </div>
+
+        </div>
+
+
+        <div class="seat"
+             id="seat4"
+             onclick="seatClick(4)">
+
+          <div class="seatNumber">4</div>
+
+          <div class="avatarWrap">
+            <img id="avatar4"
+                 class="avatar emptyAvatar">
+
+            <div id="mic4"
+                 class="micDot micOff">
+              🎙
+            </div>
+
+            <div id="plus4"
+                 class="emptyPlus">
+              +
+            </div>
+          </div>
+
+          <div id="name4"
+               class="name">
+            Empty
+          </div>
+
+        </div>
+
+
+        <div class="seat"
+             id="seat5"
+             onclick="seatClick(5)">
+
+          <div class="seatNumber">5</div>
+
+          <div class="avatarWrap">
+            <img id="avatar5"
+                 class="avatar emptyAvatar">
+
+            <div id="mic5"
+                 class="micDot micOff">
+              🎙
+            </div>
+
+            <div id="plus5"
+                 class="emptyPlus">
+              +
+            </div>
+          </div>
+
+          <div id="name5"
+               class="name">
+            Empty
+          </div>
+
+        </div>
+
+
+        <!-- 6-9 -->
+
+        <div class="seat"
+             id="seat6"
+             onclick="seatClick(6)">
+
+          <div class="seatNumber">6</div>
+
+          <div class="avatarWrap">
+            <img id="avatar6"
+                 class="avatar emptyAvatar">
+
+            <div id="mic6"
+                 class="micDot micOff">
+              🎙
+            </div>
+
+            <div id="plus6"
+                 class="emptyPlus">
+              +
+            </div>
+          </div>
+
+          <div id="name6"
+               class="name">
+            Empty
+          </div>
+
+        </div>
+
+
+        <div class="seat"
+             id="seat7"
+             onclick="seatClick(7)">
+
+          <div class="seatNumber">7</div>
+
+          <div class="avatarWrap">
+            <img id="avatar7"
+                 class="avatar emptyAvatar">
+
+            <div id="mic7"
+                 class="micDot micOff">
+              🎙
+            </div>
+
+            <div id="plus7"
+                 class="emptyPlus">
+              +
+            </div>
+          </div>
+
+          <div id="name7"
+               class="name">
+            Empty
+          </div>
+
+        </div>
+
+
+        <div class="seat"
+             id="seat8"
+             onclick="seatClick(8)">
+
+          <div class="seatNumber">8</div>
+
+          <div class="avatarWrap">
+            <img id="avatar8"
+                 class="avatar emptyAvatar">
+
+            <div id="mic8"
+                 class="micDot micOff">
+              🎙
+            </div>
+
+            <div id="plus8"
+                 class="emptyPlus">
+              +
+            </div>
+          </div>
+
+          <div id="name8"
+               class="name">
+            Empty
+          </div>
+
+        </div>
+
+
+        <div class="seat"
+             id="seat9"
+             onclick="seatClick(9)">
+
+          <div class="seatNumber">9</div>
+
+          <div class="avatarWrap">
+            <img id="avatar9"
+                 class="avatar emptyAvatar">
+
+            <div id="mic9"
+                 class="micDot micOff">
+              🎙
+            </div>
+
+            <div id="plus9"
+                 class="emptyPlus">
+              +
+            </div>
+          </div>
+
+          <div id="name9"
+               class="name">
+            Empty
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- FEATURES -->
+    <div class="featureRow">
+
+      <div class="feature"
+           onclick="featureMessage('Room Support')">
+        <div class="featureIcon">🛡️</div>
+        <div>Support</div>
+      </div>
+
+      <div class="feature"
+           onclick="featureMessage('Lucky Wheel')">
+        <div class="featureIcon">🎡</div>
+        <div>Lucky Wheel</div>
+      </div>
+
+      <div class="feature"
+           onclick="featureMessage('Bounty Hunter')">
+        <div class="featureIcon">🎯</div>
+        <div>Bounty</div>
+      </div>
+
+      <div class="feature"
+           onclick="featureMessage('Room Reward')">
+        <div class="featureIcon">🎁</div>
+        <div>Reward</div>
+      </div>
+
+      <div class="feature"
+           onclick="featureMessage('Exclusive Benefits')">
+        <div class="featureIcon">🚀</div>
+        <div>Benefits</div>
+      </div>
+
+    </div>
+
+
+    <!-- EXP -->
+    <div class="expBox">
+
+      <div class="expTop">
+
+        <div>
+          <span class="rocket">🚀</span>
+          Room EXP
+        </div>
+
+        <div>
+          Top 1 🥇 &nbsp;
+          Top 2 🥈 &nbsp;
+          Top 3 🥉
+        </div>
+
+      </div>
+
+      <div class="expLine">
+        <div class="expFill"></div>
+      </div>
+
+      <div class="topUsers">
+        <span>🥇 Pawan</span>
+        <span>🥈 Guest</span>
+        <span>🥉 User</span>
+      </div>
+
+    </div>
+
+
+    <!-- CHAT -->
+    <div id="chatMessages"
+         class="chatMessages">
+    </div>
+
+  </main>
+
+
+  <!-- EMOJI -->
+  <div id="emojiPanel"
+       class="emojiPanel">
+
+    <div class="emoji">😡</div>
+    <div class="emoji">😭</div>
+    <div class="emoji">😵</div>
+    <div class="emoji">🔨</div>
+    <div class="emoji">😀</div>
+    <div class="emoji">😘</div>
+    <div class="emoji">😂</div>
+    <div class="emoji">😴</div>
+
+    <div class="emoji">😧</div>
+    <div class="emoji">😁</div>
+    <div class="emoji">👻</div>
+    <div class="emoji">😎</div>
+    <div class="emoji">🥵</div>
+    <div class="emoji">🤗</div>
+    <div class="emoji">❤️</div>
+    <div class="emoji">💰</div>
+
+    <div class="emoji">🥳</div>
+    <div class="emoji">🥺</div>
+    <div class="emoji">😤</div>
+    <div class="emoji">❓</div>
+    <div class="emoji">🙄</div>
+    <div class="emoji">🤣</div>
+    <div class="emoji">🕶️</div>
+    <div class="emoji">🤔</div>
+
   </div>
 
-  <div id="roomCount" class="room-count">
-    0/9
-  </div>
 
-  <button class="icon-btn" onclick="openSettings()">⚙️</button>
-  <button class="icon-btn" onclick="inviteRoom()">↗</button>
+  <!-- BOTTOM -->
+  <footer class="bottom">
 
-</div>
+    <div class="chatBar">
 
-<div id="hostLine" class="host-line">
-  Host: —
-</div>
+      <input id="messageInput"
+             class="messageInput"
+             maxlength="300"
+             placeholder="Say something...">
 
-<div id="status" class="status">
-  Connecting...
-</div>
+      <button class="bottomBtn"
+              onclick="toggleEmoji()">
+        😊
+      </button>
 
-<div id="seats" class="seats"></div>
+      <button id="speakerBtn"
+              class="bottomBtn"
+              onclick="toggleSpeaker()">
+        🔊
+      </button>
 
-<div class="features">
-  <div class="feature">🛟<br>Room Support</div>
-  <div class="feature">🎡<br>Lucky Wheel</div>
-  <div class="feature">🚀<br>Bounty Hunter</div>
-  <div class="feature">🎁<br>Room Reward</div>
-  <div class="feature">✨<br>Exclusive</div>
-</div>
+      <button id="micBtn"
+              class="bottomBtn"
+              onclick="toggleMic()">
+        🎙
+      </button>
 
-<div class="exp">
-  <div class="exp-title">🚀 Room EXP</div>
+      <button class="bottomBtn"
+              onclick="openInbox()">
+        📥
+      </button>
 
-  <div class="top3">
-    <div>🥇 Top 1<br>EXP 0</div>
-    <div>🥈 Top 2<br>EXP 0</div>
-    <div>🥉 Top 3<br>EXP 0</div>
-  </div>
-</div>
+      <button class="bottomBtn"
+              onclick="openMore()">
+        ⋮
+      </button>
 
-<div id="messages" class="messages"></div>
+    </div>
 
-<div id="emojiPanel" class="emoji-panel">
-
-  <button onclick="addEmoji('😡')">😡</button>
-  <button onclick="addEmoji('😭')">😭</button>
-  <button onclick="addEmoji('😵')">😵</button>
-  <button onclick="addEmoji('🔨')">🔨</button>
-  <button onclick="addEmoji('😊')">😊</button>
-  <button onclick="addEmoji('😘')">😘</button>
-  <button onclick="addEmoji('😆')">😆</button>
-  <button onclick="addEmoji('😴')">😴</button>
-
-  <button onclick="addEmoji('😧')">😧</button>
-  <button onclick="addEmoji('😁')">😁</button>
-  <button onclick="addEmoji('👻')">👻</button>
-  <button onclick="addEmoji('😀')">😀</button>
-  <button onclick="addEmoji('🥵')">🥵</button>
-  <button onclick="addEmoji('🤗')">🤗</button>
-  <button onclick="addEmoji('❤️')">❤️</button>
-  <button onclick="addEmoji('💰')">💰</button>
-
-  <button onclick="addEmoji('🥳')">🥳</button>
-  <button onclick="addEmoji('🥺')">🥺</button>
-  <button onclick="addEmoji('😤')">😤</button>
-  <button onclick="addEmoji('❓')">❓</button>
-  <button onclick="addEmoji('🙄')">🙄</button>
-  <button onclick="addEmoji('🤣')">🤣</button>
-  <button onclick="addEmoji('😎')">😎</button>
-  <button onclick="addEmoji('🤔')">🤔</button>
+  </footer>
 
 </div>
 
-<div class="chat">
 
-  <input id="messageInput"
-         placeholder="Type a message..."
-         onkeydown="if(event.key==='Enter')sendMessage()">
+<!-- USER MODAL -->
 
-  <button onclick="toggleEmoji()">😊</button>
-
-  <button onclick="sendMessage()">➤</button>
-
-</div>
-
-<div class="controls">
-
-  <button id="voiceBtn"
-          class="control"
-          onclick="toggleMic()">
-    🎙️ Join Voice
-  </button>
-
-  <button id="speakerBtn"
-          class="control active"
-          onclick="toggleSpeaker()">
-    🔊 Speaker
-  </button>
-
-  <button class="control"
-          onclick="inviteRoom()">
-    ↗ Invite
-  </button>
-
-  <button class="control"
-          onclick="openBag()">
-    🎒 Bag
-  </button>
-
-  <button class="control off"
-          onclick="leaveRoom()">
-    🚪 Leave
-  </button>
-
-</div>
-
-<div id="userModalBg" class="modal-bg">
+<div id="userOverlay"
+     class="overlay">
 
   <div class="modal">
 
-    <h3 id="userModalTitle">
+    <div class="modalTitle">
       User
-    </h3>
+    </div>
 
-    <button onclick="makeSelectedAdmin()">
-      👑 Make Admin
-    </button>
+    <div class="modalUser">
 
-    <button onclick="muteSelected()">
-      🔇 Mute
-    </button>
+      <img id="modalAvatar"
+           src="https://i.pravatar.cc/150?img=12">
 
-    <button onclick="kickSelected()">
-      🚫 Kick
-    </button>
+      <div>
+        <div id="modalName"
+             class="modalUserName">
+          User
+        </div>
 
-    <button onclick="closeUserModal()">
+        <div id="modalId"
+             class="modalId">
+          ID: -
+        </div>
+      </div>
+
+    </div>
+
+    <div class="actionGrid">
+
+      <button class="actionBtn"
+              onclick="viewProfile()">
+        👤 Profile
+      </button>
+
+      <button class="actionBtn"
+              onclick="makeAdmin()">
+        👑 Make Admin
+      </button>
+
+      <button class="actionBtn"
+              onclick="muteSelected()">
+        🔇 Mute
+      </button>
+
+      <button class="actionBtn red"
+              onclick="kickSelected()">
+        🚫 Kick
+      </button>
+
+    </div>
+
+    <button class="closeBtn"
+            onclick="closeModal()">
       Close
     </button>
 
@@ -476,20 +1254,39 @@ body{
 
 </div>
 
-<div id="settingsBg" class="modal-bg">
+
+<!-- SETTINGS MODAL -->
+
+<div id="settingsOverlay"
+     class="overlay">
 
   <div class="modal">
 
-    <h3>Room Settings</h3>
+    <div class="modalTitle">
+      Room Settings
+    </div>
 
     <input id="newRoomName"
+           class="messageInput"
+           style="width:100%;"
            placeholder="Room name">
 
-    <button onclick="changeRoomName()">
-      Save Room Name
-    </button>
+    <div class="actionGrid">
 
-    <button onclick="closeSettings()">
+      <button class="actionBtn"
+              onclick="changeRoomName()">
+        ✏️ Change Name
+      </button>
+
+      <button class="actionBtn"
+              onclick="copyRoomLink()">
+        🔗 Copy Link
+      </button>
+
+    </div>
+
+    <button class="closeBtn"
+            onclick="closeSettings()">
       Close
     </button>
 
@@ -497,327 +1294,879 @@ body{
 
 </div>
 
-<div id="audioContainer"></div>
+
+<div id="toast"
+     class="toast">
+</div>
+
 
 <script>
 
+/* =========================================================
+   CONFIG
+========================================================= */
+
 const SERVER = "https://pawanvoice-1.onrender.com";
 
-const socket = io(SERVER, {
+const socket = io(SERVER,{
   transports:["websocket","polling"]
 });
 
 const params = new URLSearchParams(location.search);
 
-const roomId =
-  params.get("room") || "main";
+const ROOM_ID =
+  params.get("room") ||
+  "PV824991";
 
-let myUserId =
+
+/* =========================================================
+   LOCAL USER
+========================================================= */
+
+let USER_ID =
   localStorage.getItem("pawanvoice_user_id");
 
-if(!myUserId){
-  myUserId =
-    "u_" +
-    Math.random().toString(36).slice(2) +
-    Date.now();
+if(!USER_ID){
+  USER_ID =
+    "PVU" +
+    Math.random()
+      .toString(36)
+      .substring(2,9)
+      .toUpperCase();
 
   localStorage.setItem(
     "pawanvoice_user_id",
-    myUserId
+    USER_ID
   );
 }
 
-let myName =
+let USER_NAME =
   localStorage.getItem("pawanvoice_name") ||
   "Pawan";
 
-let myDp =
+let USER_DP =
   localStorage.getItem("pawanvoice_dp") ||
-  "https://via.placeholder.com/100";
+  "https://i.pravatar.cc/150?img=12";
 
-let currentRoom = null;
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let roomState = null;
+let selectedUser = null;
 
 let localStream = null;
 
 let micOn = false;
-
 let speakerOn = true;
 
-let selectedUserId = null;
+const peers = {};
 
-const peers = new Map();
-
-const remoteAudios = new Map();
-
-
-/* =====================================
-   SOCKET CONNECT
-===================================== */
-
-socket.on("connect", () => {
-
-  setStatus("Server connected");
-
-  socket.emit("joinRoom", {
-    roomId: roomId,
-
-    user:{
-      userId:myUserId,
-      name:myName,
-      dp:myDp
+const RTC_CONFIG = {
+  iceServers:[
+    {
+      urls:"stun:stun.l.google.com:19302"
+    },
+    {
+      urls:"stun:stun1.l.google.com:19302"
     }
+  ]
+};
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function $(id){
+  return document.getElementById(id);
+}
+
+function toast(message){
+
+  const t = $("toast");
+
+  t.textContent = message;
+
+  t.classList.add("show");
+
+  clearTimeout(window.toastTimer);
+
+  window.toastTimer =
+    setTimeout(()=>{
+      t.classList.remove("show");
+    },1800);
+}
+
+
+function escapeHtml(value){
+
+  return String(value || "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+
+/* =========================================================
+   JOIN ROOM
+========================================================= */
+
+socket.on("connect",()=>{
+
+  socket.emit("joinRoom",{
+    roomId:ROOM_ID,
+    userId:USER_ID,
+    nickname:USER_NAME,
+    dp:USER_DP
   });
 
 });
 
 
-socket.on("connect_error", () => {
+socket.on("roomState",(state)=>{
 
-  setStatus(
-    "Server connection failed"
-  );
-
-});
-
-
-/* =====================================
-   JOINED ROOM
-===================================== */
-
-socket.on("joinedRoom", room => {
-
-  currentRoom = room;
-
-  renderRoom();
-
-  setStatus(
-    "Room joined • Voice button dabao"
-  );
-
-});
-
-
-/* =====================================
-   ROOM UPDATE
-===================================== */
-
-socket.on("roomUpdated", room => {
-
-  currentRoom = room;
+  roomState = state;
 
   renderRoom();
 
 });
 
 
-socket.on("roomError", msg => {
+/* Some server versions may use these events */
 
-  setStatus("❌ " + msg);
+socket.on("room:state",(state)=>{
 
-  alert(msg);
+  roomState = state;
+
+  renderRoom();
 
 });
 
 
-/* =====================================
+socket.on("usersUpdated",(state)=>{
+
+  if(state){
+    roomState = state;
+    renderRoom();
+  }
+
+});
+
+
+/* =========================================================
    RENDER ROOM
-===================================== */
+========================================================= */
 
 function renderRoom(){
 
-  if(!currentRoom) return;
+  if(!roomState) return;
 
-  document.getElementById("roomName")
-    .textContent =
-    currentRoom.roomName;
 
-  document.getElementById("roomId")
-    .textContent =
-    "ID: " + currentRoom.roomId;
+  $("roomId").textContent =
+    roomState.roomId ||
+    ROOM_ID;
 
-  document.getElementById("roomCount")
-    .textContent =
-    currentRoom.users.length + "/9";
+
+  $("roomName").textContent =
+    roomState.roomName ||
+    "PawanVoice Room";
+
+
+  const users =
+    Array.isArray(roomState.users)
+      ? roomState.users
+      : Object.values(roomState.users || {});
+
+
+  $("userCount").textContent =
+    users.length;
+
 
   const host =
-    currentRoom.users.find(
-      u => u.isHost
+    users.find(u =>
+      u.isHost ||
+      u.userId === roomState.hostId
     );
 
-  document.getElementById("hostLine")
-    .textContent =
-    "Host: " +
-    (host ? host.name : "—");
 
-  if(host && host.dp){
+  $("hostName").textContent =
+    host
+      ? (host.nickname || host.name || "Host")
+      : USER_NAME;
 
-    document.getElementById("roomDp")
-      .src = host.dp;
+
+  if(roomState.roomDp){
+
+    $("roomDp").src =
+      roomState.roomDp;
 
   }
 
-  const seats =
-    document.getElementById("seats");
 
-  seats.innerHTML = "";
+  /* clear all seats */
 
-  for(let seatNo=1; seatNo<=9; seatNo++){
+  for(let i=1;i<=9;i++){
 
-    const user =
-      currentRoom.users.find(
-        u => u.seatNo === seatNo
+    setSeat(i,null);
+
+  }
+
+
+  /*
+    Server seat format:
+    user.seatNo
+    or
+    user.seat
+  */
+
+  users.forEach(user=>{
+
+    const seatNo =
+      Number(
+        user.seatNo ||
+        user.seat ||
+        0
       );
 
-    const seat =
-      document.createElement("div");
+    if(
+      seatNo >= 1 &&
+      seatNo <= 9
+    ){
 
-    seat.className =
-      "seat" +
-      (seatNo===1 ? " host" : "");
-
-    if(user){
-
-      const safeDp =
-        user.dp ||
-        "https://via.placeholder.com/100";
-
-      seat.innerHTML = `
-
-        <div class="avatar-wrap">
-
-          <img
-            class="avatar"
-            src="${safeDp}"
-            alt=""
-          >
-
-          <div class="mic-dot ${
-            user.micOn ? "mic-on" : ""
-          }">
-            ${user.micOn ? "🎙️" : "🔇"}
-          </div>
-
-        </div>
-
-        <div class="user-name">
-          ${escapeHtml(user.name)}
-        </div>
-
-      `;
-
-      seat.onclick = () =>
-        openUser(user);
-
-    }else{
-
-      seat.innerHTML = `
-
-        <div class="avatar-wrap">
-
-          <div class="avatar empty">
-            +
-          </div>
-
-        </div>
-
-        <div class="user-name">
-          Seat ${seatNo}
-        </div>
-
-      `;
-
-      seat.onclick = () =>
-        takeSeat(seatNo);
+      setSeat(seatNo,user);
 
     }
 
-    seats.appendChild(seat);
-  }
-
-  const me =
-    currentRoom.users.find(
-      u => u.userId === myUserId
-    );
-
-  if(me){
-
-    micOn = !!me.micOn;
-
-    updateVoiceButton();
-
-  }
-
-}
-
-
-/* =====================================
-   TAKE SEAT
-===================================== */
-
-function takeSeat(seatNo){
-
-  socket.emit("selectSeat", {
-    seatNo
   });
 
 }
 
 
-/* =====================================
-   REAL MICROPHONE
-===================================== */
+/* =========================================================
+   SET SEAT
+========================================================= */
 
-async function startVoice(){
+function setSeat(seatNo,user){
 
-  try{
+  const avatar =
+    $("avatar"+seatNo);
 
-    localStream =
-      await navigator.mediaDevices.getUserMedia({
-        audio:{
-          echoCancellation:true,
-          noiseSuppression:true,
-          autoGainControl:true
-        }
-      });
+  const name =
+    $("name"+seatNo);
 
-    micOn = true;
+  const mic =
+    $("mic"+seatNo);
 
-    socket.emit("micToggle", {
-      micOn:true
+  const plus =
+    $("plus"+seatNo);
+
+
+  if(!avatar || !name) return;
+
+
+  if(!user){
+
+    avatar.src =
+      "";
+
+    avatar.classList.add(
+      "emptyAvatar"
+    );
+
+    name.textContent =
+      "Empty";
+
+    if(mic){
+
+      mic.classList.add(
+        "micOff"
+      );
+
+    }
+
+    if(plus){
+
+      plus.style.display =
+        "flex";
+
+    }
+
+    return;
+  }
+
+
+  avatar.classList.remove(
+    "emptyAvatar"
+  );
+
+
+  avatar.src =
+    user.dp ||
+    user.avatar ||
+    "https://i.pravatar.cc/150?img=12";
+
+
+  name.textContent =
+    user.nickname ||
+    user.name ||
+    "User";
+
+
+  if(plus){
+
+    plus.style.display =
+      "none";
+
+  }
+
+
+  if(mic){
+
+    if(user.micOn){
+
+      mic.classList.remove(
+        "micOff"
+      );
+
+      mic.textContent =
+        "🎙";
+
+    }else{
+
+      mic.classList.add(
+        "micOff"
+      );
+
+      mic.textContent =
+        "🔇";
+
+    }
+
+  }
+
+
+  const wrap =
+    avatar.parentElement;
+
+
+  wrap.classList.remove(
+    "frameGold",
+    "framePink",
+    "frameBlue",
+    "frameGreen"
+  );
+
+
+  if(user.frame){
+
+    wrap.classList.add(
+      "frame"+user.frame
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   SEAT CLICK
+========================================================= */
+
+function seatClick(seatNo){
+
+  if(!roomState) return;
+
+
+  const users =
+    Array.isArray(roomState.users)
+      ? roomState.users
+      : Object.values(roomState.users || {});
+
+
+  const user =
+    users.find(u =>
+      Number(
+        u.seatNo ||
+        u.seat ||
+        0
+      ) === seatNo
+    );
+
+
+  if(!user){
+
+    /*
+      Empty seat:
+      take seat
+    */
+
+    socket.emit(
+      "selectSeat",
+      {
+        roomId:ROOM_ID,
+        userId:USER_ID,
+        seatNo:seatNo
+      }
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Occupied seat:
+    open user profile/admin
+  */
+
+  selectedUser =
+    user;
+
+  $("modalAvatar").src =
+    user.dp ||
+    user.avatar ||
+    "https://i.pravatar.cc/150?img=12";
+
+  $("modalName").textContent =
+    user.nickname ||
+    user.name ||
+    "User";
+
+  $("modalId").textContent =
+    "ID: " +
+    (
+      user.userId ||
+      "-"
+    );
+
+  $("userOverlay")
+    .classList.add("show");
+
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+function closeModal(){
+
+  $("userOverlay")
+    .classList.remove("show");
+
+  selectedUser =
+    null;
+
+}
+
+
+function viewProfile(){
+
+  if(!selectedUser) return;
+
+  const id =
+    selectedUser.userId ||
+    "";
+
+  location.href =
+    "index.html?profile=" +
+    encodeURIComponent(id);
+
+}
+
+
+function makeAdmin(){
+
+  if(!selectedUser) return;
+
+  socket.emit(
+    "makeAdmin",
+    {
+      roomId:ROOM_ID,
+      targetUserId:
+        selectedUser.userId,
+      userId:USER_ID
+    }
+  );
+
+  toast("Admin request sent");
+
+}
+
+
+function muteSelected(){
+
+  if(!selectedUser) return;
+
+  socket.emit(
+    "muteUser",
+    {
+      roomId:ROOM_ID,
+      targetUserId:
+        selectedUser.userId,
+      userId:USER_ID
+    }
+  );
+
+  toast("Mute request sent");
+
+}
+
+
+function kickSelected(){
+
+  if(!selectedUser) return;
+
+  socket.emit(
+    "kickUser",
+    {
+      roomId:ROOM_ID,
+      targetUserId:
+        selectedUser.userId,
+      userId:USER_ID
+    }
+  );
+
+  closeModal();
+
+}
+
+
+/* =========================================================
+   ROOM SETTINGS
+========================================================= */
+
+function openSettings(){
+
+  $("settingsOverlay")
+    .classList.add("show");
+
+  $("newRoomName").value =
+    roomState?.roomName ||
+    "";
+
+}
+
+
+function closeSettings(){
+
+  $("settingsOverlay")
+    .classList.remove("show");
+
+}
+
+
+function changeRoomName(){
+
+  const name =
+    $("newRoomName")
+      .value
+      .trim();
+
+  if(!name){
+
+    toast("Enter room name");
+
+    return;
+  }
+
+
+  socket.emit(
+    "changeRoomName",
+    {
+      roomId:ROOM_ID,
+      userId:USER_ID,
+      roomName:name
+    }
+  );
+
+
+  closeSettings();
+
+}
+
+
+function copyRoomLink(){
+
+  const link =
+    location.origin +
+    location.pathname +
+    "?room=" +
+    encodeURIComponent(ROOM_ID);
+
+  navigator.clipboard
+    .writeText(link)
+    .then(()=>{
+      toast("Room link copied");
+    })
+    .catch(()=>{
+      toast("Copy failed");
     });
 
-    updateVoiceButton();
+}
 
-    // Existing users
-    if(currentRoom){
 
-      for(const user of currentRoom.users){
+function inviteRoom(){
 
-        if(user.userId === myUserId)
-          continue;
+  copyRoomLink();
 
-        await createOfferForUser(
-          user.userId
-        );
+}
+
+
+/* =========================================================
+   EMOJI
+========================================================= */
+
+function toggleEmoji(){
+
+  $("emojiPanel")
+    .classList.toggle("show");
+
+}
+
+
+document
+  .querySelectorAll(".emoji")
+  .forEach(el=>{
+
+    el.addEventListener(
+      "click",
+      ()=>{
+
+        $("messageInput").value +=
+          el.textContent;
+
+        $("emojiPanel")
+          .classList.remove("show");
+
+        $("messageInput").focus();
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+$("messageInput")
+  .addEventListener(
+    "keydown",
+    e=>{
+
+      if(e.key === "Enter"){
+
+        sendMessage();
 
       }
 
     }
+  );
 
-    setStatus(
-      "🎙️ Microphone ON • Voice connected"
+
+function sendMessage(){
+
+  const input =
+    $("messageInput");
+
+  const text =
+    input.value.trim();
+
+  if(!text) return;
+
+
+  socket.emit(
+    "sendMessage",
+    {
+      roomId:ROOM_ID,
+      userId:USER_ID,
+      nickname:USER_NAME,
+      message:text
+    }
+  );
+
+
+  input.value =
+    "";
+
+}
+
+
+socket.on("message",(data)=>{
+
+  addMessage(data);
+
+});
+
+
+socket.on("chatMessage",(data)=>{
+
+  addMessage(data);
+
+});
+
+
+function addMessage(data){
+
+  const box =
+    $("chatMessages");
+
+
+  const div =
+    document.createElement("div");
+
+
+  div.className =
+    "msg";
+
+
+  div.innerHTML =
+    "<b>" +
+    escapeHtml(
+      data.nickname ||
+      data.name ||
+      "User"
+    ) +
+    ":</b> " +
+    escapeHtml(
+      data.message ||
+      ""
     );
+
+
+  box.appendChild(div);
+
+
+  box.scrollTop =
+    box.scrollHeight;
+
+}
+
+
+/* =========================================================
+   MICROPHONE
+========================================================= */
+
+async function toggleMic(){
+
+  try{
+
+    if(!localStream){
+
+      localStream =
+        await navigator.mediaDevices
+          .getUserMedia({
+            audio:true,
+            video:false
+          });
+
+    }
+
+
+    const tracks =
+      localStream.getAudioTracks();
+
+
+    if(!tracks.length){
+
+      toast("Microphone not found");
+
+      return;
+
+    }
+
+
+    micOn =
+      !micOn;
+
+
+    tracks.forEach(
+      track=>{
+        track.enabled =
+          micOn;
+      }
+    );
+
+
+    $("micBtn")
+      .classList.toggle(
+        "active",
+        micOn
+      );
+
+
+    $("micBtn").textContent =
+      micOn
+        ? "🎙️"
+        : "🔇";
+
+
+    socket.emit(
+      "micToggle",
+      {
+        roomId:ROOM_ID,
+        userId:USER_ID,
+        micOn:micOn
+      }
+    );
+
+
+    /*
+      Add local audio track
+      to current peers
+    */
+
+    Object.values(peers)
+      .forEach(peer=>{
+
+        const sender =
+          peer
+            .getSenders()
+            .find(s =>
+              s.track &&
+              s.track.kind === "audio"
+            );
+
+        if(sender){
+
+          sender.replaceTrack(
+            tracks[0]
+          );
+
+        }else if(micOn){
+
+          peer.addTrack(
+            tracks[0],
+            localStream
+          );
+
+        }
+
+      });
+
+
+    if(micOn){
+
+      toast("Microphone ON");
+
+    }else{
+
+      toast("Microphone OFF");
+
+    }
 
   }catch(error){
 
     console.error(error);
 
-    setStatus(
-      "Microphone permission nahi mili"
-    );
-
-    alert(
-      "Microphone permission Allow karo."
+    toast(
+      "Mic permission allow karo"
     );
 
   }
@@ -825,129 +2174,85 @@ async function startVoice(){
 }
 
 
-function stopVoice(){
+/* =========================================================
+   SPEAKER
+========================================================= */
 
-  micOn = false;
+function toggleSpeaker(){
 
-  if(localStream){
+  speakerOn =
+    !speakerOn;
 
-    localStream
-      .getTracks()
-      .forEach(track => {
-        track.stop();
-      });
 
-    localStream = null;
+  $("speakerBtn")
+    .classList.toggle(
+      "active",
+      speakerOn
+    );
 
-  }
 
-  for(const pc of peers.values()){
+  document
+    .querySelectorAll("audio")
+    .forEach(audio=>{
+      audio.muted =
+        !speakerOn;
+    });
 
-    pc.close();
 
-  }
+  socket.emit(
+    "speakerToggle",
+    {
+      roomId:ROOM_ID,
+      userId:USER_ID,
+      speakerOn:speakerOn
+    }
+  );
 
-  peers.clear();
 
-  for(const audio of remoteAudios.values()){
-
-    audio.remove();
-
-  }
-
-  remoteAudios.clear();
-
-  socket.emit("micToggle", {
-    micOn:false
-  });
-
-  updateVoiceButton();
-
-  setStatus(
-    "Microphone OFF"
+  toast(
+    speakerOn
+      ? "Speaker ON"
+      : "Speaker OFF"
   );
 
 }
 
 
-/* =====================================
-   MIC BUTTON
-===================================== */
-
-async function toggleMic(){
-
-  if(!micOn){
-
-    await startVoice();
-
-  }else{
-
-    stopVoice();
-
-  }
-
-}
-
-
-function updateVoiceButton(){
-
-  const btn =
-    document.getElementById("voiceBtn");
-
-  if(micOn){
-
-    btn.textContent =
-      "🎙️ Mic ON";
-
-    btn.classList.add("active");
-    btn.classList.remove("off");
-
-  }else{
-
-    btn.textContent =
-      "🔇 Join Voice";
-
-    btn.classList.remove("active");
-
-  }
-
-}
-
-
-/* =====================================
+/* =========================================================
    WEBRTC
-===================================== */
+========================================================= */
 
-function createPeer(userId){
+function createPeer(
+  remoteUserId,
+  initiator
+){
 
-  if(peers.has(userId)){
+  if(peers[remoteUserId]){
 
-    return peers.get(userId);
+    return peers[remoteUserId];
 
   }
+
 
   const pc =
-    new RTCPeerConnection({
+    new RTCPeerConnection(
+      RTC_CONFIG
+    );
 
-      iceServers:[
-        {
-          urls:
-          "stun:stun.l.google.com:19302"
-        },
-        {
-          urls:
-          "stun:stun1.l.google.com:19302"
-        }
-      ]
 
-    });
+  peers[remoteUserId] =
+    pc;
 
+
+  /*
+    Local audio
+  */
 
   if(localStream){
 
     localStream
       .getTracks()
-      .forEach(track => {
+      .forEach(track=>{
 
         pc.addTrack(
           track,
@@ -959,198 +2264,263 @@ function createPeer(userId){
   }
 
 
-  pc.onicecandidate = event => {
+  /*
+    Remote audio
+  */
 
-    if(event.candidate){
+  pc.ontrack =
+    event=>{
 
-      socket.emit(
-        "webrtc-ice-candidate",
-        {
-          targetUserId:userId,
-          candidate:event.candidate
-        }
-      );
-
-    }
-
-  };
+      let audio =
+        document.getElementById(
+          "audio-"+remoteUserId
+        );
 
 
-  pc.ontrack = event => {
+      if(!audio){
 
-    const stream =
-      event.streams[0];
+        audio =
+          document.createElement(
+            "audio"
+          );
 
-    playRemoteAudio(
-      userId,
-      stream
-    );
+        audio.id =
+          "audio-"+remoteUserId;
 
-  };
+        audio.autoplay =
+          true;
 
+        audio.playsInline =
+          true;
 
-  pc.onconnectionstatechange = () => {
+        document.body
+          .appendChild(audio);
 
-    if(
-      pc.connectionState === "failed" ||
-      pc.connectionState === "closed"
-    ){
-
-      peers.delete(userId);
-
-    }
-
-  };
+      }
 
 
-  peers.set(userId, pc);
+      audio.srcObject =
+        event.streams[0];
+
+      audio.muted =
+        !speakerOn;
+
+    };
+
+
+  /*
+    ICE
+  */
+
+  pc.onicecandidate =
+    event=>{
+
+      if(event.candidate){
+
+        socket.emit(
+          "webrtc-ice-candidate",
+          {
+            roomId:ROOM_ID,
+            fromUserId:USER_ID,
+            toUserId:remoteUserId,
+            candidate:event.candidate
+          }
+        );
+
+      }
+
+    };
+
+
+  /*
+    Create offer
+  */
+
+  if(initiator){
+
+    pc.createOffer()
+      .then(
+        offer =>
+          pc.setLocalDescription(
+            offer
+          )
+      )
+      .then(()=>{
+
+        socket.emit(
+          "webrtc-offer",
+          {
+            roomId:ROOM_ID,
+            fromUserId:USER_ID,
+            toUserId:remoteUserId,
+            offer:pc.localDescription
+          }
+        );
+
+      })
+      .catch(console.error);
+
+  }
+
 
   return pc;
 
 }
 
 
-async function createOfferForUser(userId){
-
-  if(!localStream)
-    return;
-
-  const pc =
-    createPeer(userId);
-
-  const offer =
-    await pc.createOffer();
-
-  await pc.setLocalDescription(
-    offer
-  );
-
-  socket.emit(
-    "webrtc-offer",
-    {
-      targetUserId:userId,
-      offer:pc.localDescription
-    }
-  );
-
-}
-
+/* =========================================================
+   WEBRTC PEER JOINED
+========================================================= */
 
 socket.on(
   "webrtc-peer-joined",
-  async data => {
+  async data=>{
 
-    if(!micOn)
+    if(!data) return;
+
+    const remoteUserId =
+      data.userId ||
+      data.remoteUserId;
+
+
+    if(!remoteUserId) return;
+
+    if(remoteUserId === USER_ID)
       return;
 
-    await createOfferForUser(
-      data.userId
+
+    createPeer(
+      remoteUserId,
+      true
     );
 
   }
 );
 
+
+/* =========================================================
+   OFFER
+========================================================= */
 
 socket.on(
   "webrtc-offer",
-  async data => {
+  async data=>{
 
-    if(!localStream){
+    try{
 
-      try{
+      const remoteUserId =
+        data.fromUserId;
 
-        localStream =
-          await navigator.mediaDevices
-            .getUserMedia({
-              audio:true
-            });
 
-        micOn = true;
+      if(!remoteUserId) return;
 
-        socket.emit(
-          "micToggle",
-          {micOn:true}
+
+      const pc =
+        createPeer(
+          remoteUserId,
+          false
         );
 
-        updateVoiceButton();
 
-      }catch(e){
+      await pc.setRemoteDescription(
+        new RTCSessionDescription(
+          data.offer
+        )
+      );
 
-        console.error(e);
-        return;
 
-      }
+      const answer =
+        await pc.createAnswer();
+
+
+      await pc.setLocalDescription(
+        answer
+      );
+
+
+      socket.emit(
+        "webrtc-answer",
+        {
+          roomId:ROOM_ID,
+          fromUserId:USER_ID,
+          toUserId:remoteUserId,
+          answer:pc.localDescription
+        }
+      );
+
+    }catch(error){
+
+      console.error(
+        "Offer error:",
+        error
+      );
 
     }
 
-    const pc =
-      createPeer(
-        data.fromUserId
-      );
-
-    await pc.setRemoteDescription(
-      new RTCSessionDescription(
-        data.offer
-      )
-    );
-
-    const answer =
-      await pc.createAnswer();
-
-    await pc.setLocalDescription(
-      answer
-    );
-
-    socket.emit(
-      "webrtc-answer",
-      {
-        targetUserId:
-          data.fromUserId,
-
-        answer:
-          pc.localDescription
-      }
-    );
-
   }
 );
 
+
+/* =========================================================
+   ANSWER
+========================================================= */
 
 socket.on(
   "webrtc-answer",
-  async data => {
+  async data=>{
 
-    const pc =
-      peers.get(
-        data.fromUserId
+    try{
+
+      const remoteUserId =
+        data.fromUserId;
+
+
+      const pc =
+        peers[remoteUserId];
+
+
+      if(!pc) return;
+
+
+      await pc.setRemoteDescription(
+        new RTCSessionDescription(
+          data.answer
+        )
       );
 
-    if(!pc)
-      return;
+    }catch(error){
 
-    await pc.setRemoteDescription(
-      new RTCSessionDescription(
-        data.answer
-      )
-    );
+      console.error(
+        "Answer error:",
+        error
+      );
+
+    }
 
   }
 );
 
 
+/* =========================================================
+   ICE CANDIDATE
+========================================================= */
+
 socket.on(
   "webrtc-ice-candidate",
-  async data => {
-
-    const pc =
-      peers.get(
-        data.fromUserId
-      );
-
-    if(!pc)
-      return;
+  async data=>{
 
     try{
+
+      const remoteUserId =
+        data.fromUserId;
+
+
+      const pc =
+        peers[remoteUserId];
+
+
+      if(!pc) return;
+
 
       await pc.addIceCandidate(
         new RTCIceCandidate(
@@ -1161,7 +2531,7 @@ socket.on(
     }catch(error){
 
       console.error(
-        "ICE error",
+        "ICE error:",
         error
       );
 
@@ -1171,367 +2541,96 @@ socket.on(
 );
 
 
-/* =====================================
-   REMOTE AUDIO
-===================================== */
-
-function playRemoteAudio(
-  userId,
-  stream
-){
-
-  let audio =
-    remoteAudios.get(userId);
-
-  if(!audio){
-
-    audio =
-      document.createElement("audio");
-
-    audio.autoplay = true;
-    audio.playsInline = true;
-    audio.className =
-      "hidden-audio";
-
-    document
-      .getElementById("audioContainer")
-      .appendChild(audio);
-
-    remoteAudios.set(
-      userId,
-      audio
-    );
-
-  }
-
-  audio.srcObject =
-    stream;
-
-  audio.muted =
-    !speakerOn;
-
-  audio.play().catch(
-    console.log
-  );
-
-}
-
-
-/* =====================================
-   SPEAKER
-===================================== */
-
-function toggleSpeaker(){
-
-  speakerOn =
-    !speakerOn;
-
-  for(
-    const audio of
-    remoteAudios.values()
-  ){
-
-    audio.muted =
-      !speakerOn;
-
-  }
-
-  socket.emit(
-    "speakerToggle",
-    {
-      speakerOn
-    }
-  );
-
-  const btn =
-    document.getElementById(
-      "speakerBtn"
-    );
-
-  btn.textContent =
-    speakerOn
-      ? "🔊 Speaker"
-      : "🔇 Speaker OFF";
-
-}
-
-
-/* =====================================
-   CHAT
-===================================== */
-
-function sendMessage(){
-
-  const input =
-    document.getElementById(
-      "messageInput"
-    );
-
-  const message =
-    input.value.trim();
-
-  if(!message)
-    return;
-
-  socket.emit(
-    "sendMessage",
-    {message}
-  );
-
-  input.value = "";
-
-}
-
+/* =========================================================
+   USER LEFT
+========================================================= */
 
 socket.on(
-  "messageReceived",
-  data => {
+  "userLeft",
+  data=>{
 
-    const box =
+    const userId =
+      data?.userId;
+
+    if(!userId) return;
+
+
+    if(peers[userId]){
+
+      peers[userId]
+        .close();
+
+      delete peers[userId];
+
+    }
+
+
+    const audio =
       document.getElementById(
-        "messages"
+        "audio-"+userId
       );
 
-    const div =
-      document.createElement("div");
+    if(audio){
 
-    div.className = "msg";
+      audio.remove();
 
-    div.innerHTML =
-      "<b>" +
-      escapeHtml(data.name) +
-      ":</b> " +
-      escapeHtml(data.message);
-
-    box.appendChild(div);
-
-    box.scrollTop =
-      box.scrollHeight;
+    }
 
   }
 );
 
 
-/* =====================================
-   EMOJI
-===================================== */
+/* =========================================================
+   FEATURES
+========================================================= */
 
-function toggleEmoji(){
+function featureMessage(name){
 
-  const panel =
-    document.getElementById(
-      "emojiPanel"
+  toast(
+    name +
+    " coming soon"
+  );
+
+}
+
+
+/* =========================================================
+   INBOX
+========================================================= */
+
+function openInbox(){
+
+  location.href =
+    "index.html#inbox";
+
+}
+
+
+/* =========================================================
+   MORE
+========================================================= */
+
+function openMore(){
+
+  const choice =
+    prompt(
+      "1 = Share Room\n2 = Bag\n3 = Gifts"
     );
 
-  panel.style.display =
-    panel.style.display === "grid"
-      ? "none"
-      : "grid";
 
-}
+  if(choice === "1"){
 
+    copyRoomLink();
 
-function addEmoji(emoji){
+  }else if(choice === "2"){
 
-  const input =
-    document.getElementById(
-      "messageInput"
-    );
+    location.href =
+      "index.html#bag";
 
-  input.value += emoji;
+  }else if(choice === "3"){
 
-  input.focus();
-
-}
-
-
-/* =====================================
-   USER MODAL
-===================================== */
-
-function openUser(user){
-
-  selectedUserId =
-    user.userId;
-
-  document.getElementById(
-    "userModalTitle"
-  ).textContent =
-    user.name +
-    "\nID: " +
-    user.userId;
-
-  document.getElementById(
-    "userModalBg"
-  ).style.display =
-    "flex";
-
-}
-
-
-function closeUserModal(){
-
-  document.getElementById(
-    "userModalBg"
-  ).style.display =
-    "none";
-
-}
-
-
-function myUser(){
-
-  return currentRoom?.users.find(
-    u => u.userId === myUserId
-  );
-
-}
-
-
-function makeSelectedAdmin(){
-
-  if(!selectedUserId)
-    return;
-
-  socket.emit(
-    "makeAdmin",
-    {
-      targetUserId:
-        selectedUserId
-    }
-  );
-
-  closeUserModal();
-
-}
-
-
-function muteSelected(){
-
-  if(!selectedUserId)
-    return;
-
-  // Current server doesn't force mute audio.
-  // This button is reserved for admin moderation.
-  alert(
-    "Mute moderation server side add ki ja sakti hai."
-  );
-
-}
-
-
-function kickSelected(){
-
-  if(!selectedUserId)
-    return;
-
-  socket.emit(
-    "kickUser",
-    {
-      targetUserId:
-        selectedUserId
-    }
-  );
-
-  closeUserModal();
-
-}
-
-
-/* =====================================
-   SETTINGS
-===================================== */
-
-function openSettings(){
-
-  const me = myUser();
-
-  if(!me)
-    return;
-
-  if(!me.isHost && !me.isAdmin){
-
-    alert(
-      "Only Host/Admin can change settings."
-    );
-
-    return;
-
-  }
-
-  document.getElementById(
-    "newRoomName"
-  ).value =
-    currentRoom.roomName;
-
-  document.getElementById(
-    "settingsBg"
-  ).style.display =
-    "flex";
-
-}
-
-
-function closeSettings(){
-
-  document.getElementById(
-    "settingsBg"
-  ).style.display =
-    "none";
-
-}
-
-
-function changeRoomName(){
-
-  const name =
-    document.getElementById(
-      "newRoomName"
-    ).value.trim();
-
-  if(!name)
-    return;
-
-  socket.emit(
-    "changeRoomName",
-    {
-      roomName:name
-    }
-  );
-
-  closeSettings();
-
-}
-
-
-/* =====================================
-   INVITE
-===================================== */
-
-function inviteRoom(){
-
-  const link =
-    location.origin +
-    location.pathname +
-    "?room=" +
-    encodeURIComponent(roomId);
-
-  if(navigator.share){
-
-    navigator.share({
-      title:"PawanVoice Room",
-      text:"Join my PawanVoice room",
-      url:link
-    }).catch(()=>{});
-
-  }else{
-
-    navigator.clipboard
-      ?.writeText(link);
-
-    alert(
-      "Room link copy ho gaya:\n\n" +
-      link
+    toast(
+      "Gift panel coming soon"
     );
 
   }
@@ -1539,109 +2638,141 @@ function inviteRoom(){
 }
 
 
-/* =====================================
-   BAG
-===================================== */
-
-function openBag(){
-
-  alert(
-    "🎒 Bag feature next step me connect karenge."
-  );
-
-}
-
-
-/* =====================================
-   LEAVE
-===================================== */
+/* =========================================================
+   LEAVE / BACK
+========================================================= */
 
 function leaveRoom(){
 
-  stopVoice();
+  socket.emit(
+    "leaveRoom",
+    {
+      roomId:ROOM_ID,
+      userId:USER_ID
+    }
+  );
+
+
+  Object.values(peers)
+    .forEach(
+      pc=>pc.close()
+    );
+
+
+  if(localStream){
+
+    localStream
+      .getTracks()
+      .forEach(
+        track=>track.stop()
+      );
+
+  }
+
 
   location.href =
-    "./index.html";
+    "index.html";
 
 }
 
 
-/* =====================================
-   HELPERS
-===================================== */
+/* =========================================================
+   BROWSER BACK
+========================================================= */
 
-function setStatus(text){
+history.pushState(
+  null,
+  "",
+  location.href
+);
 
-  document.getElementById(
-    "status"
-  ).textContent = text;
-
-}
-
-
-function escapeHtml(text){
-
-  return String(text || "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-
-}
-
-
-/* =====================================
-   KICK / BAN
-===================================== */
-
-socket.on(
-  "kicked",
-  () => {
-
-    alert(
-      "Aapko room se kick kar diya gaya."
-    );
-
-    location.href =
-      "./index.html";
-
+window.addEventListener(
+  "popstate",
+  ()=>{
+    leaveRoom();
   }
 );
 
 
-socket.on(
-  "banned",
-  () => {
-
-    alert(
-      "Aapko room se ban kar diya gaya."
-    );
-
-    location.href =
-      "./index.html";
-
-  }
-);
-
-
-/* =====================================
+/* =========================================================
    PAGE CLOSE
-===================================== */
+========================================================= */
 
 window.addEventListener(
   "beforeunload",
-  () => {
+  ()=>{
+    try{
 
-    if(localStream){
+      socket.emit(
+        "leaveRoom",
+        {
+          roomId:ROOM_ID,
+          userId:USER_ID
+        }
+      );
 
-      localStream
-        .getTracks()
-        .forEach(
-          track => track.stop()
-        );
+    }catch(e){}
+
+  }
+);
+
+
+/* =========================================================
+   INITIAL ROOM FALLBACK
+========================================================= */
+
+$("roomId").textContent =
+  ROOM_ID;
+
+$("hostName").textContent =
+  USER_NAME;
+
+$("roomName").textContent =
+  "PawanVoice Room";
+
+$("avatar1").src =
+  USER_DP;
+
+$("name1").textContent =
+  USER_NAME;
+
+
+/* =========================================================
+   RECEIVE NEW ROOM NAME
+========================================================= */
+
+socket.on(
+  "roomNameChanged",
+  data=>{
+
+    if(data?.roomName){
+
+      $("roomName")
+        .textContent =
+        data.roomName;
 
     }
+
+  }
+);
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+socket.on(
+  "connect_error",
+  error=>{
+
+    console.error(
+      "Socket error:",
+      error
+    );
+
+    toast(
+      "Room server connect nahi hua"
+    );
 
   }
 );
@@ -1649,4 +2780,4 @@ window.addEventListener(
 </script>
 
 </body>
-</html>
+  </html>
