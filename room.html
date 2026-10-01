@@ -1,65 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
+>
 
 <title>PawanVoice Room</title>
 
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
 <style>
+
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
 }
 
-html,body{
+html,
+body{
   margin:0;
   width:100%;
   height:100%;
   overflow:hidden;
   font-family:Arial,Helvetica,sans-serif;
-  background:#160b2b;
-  color:#fff;
+  background:#120720;
+  color:white;
 }
 
 body{
   background:
-    radial-gradient(circle at 50% 12%,#5a287f 0,#321553 25%,#180a2d 58%,#0e061d 100%);
+    radial-gradient(
+      circle at 50% 10%,
+      #5c2b7d 0,
+      #32144e 27%,
+      #180a29 62%,
+      #0d0517 100%
+    );
 }
 
-/* ---------------- MAIN ---------------- */
+button,
+input{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
 
 .room{
   position:relative;
   width:100%;
   height:100dvh;
-  min-height:560px;
   overflow:hidden;
 }
 
-.room::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:
-    radial-gradient(circle at 20% 35%,rgba(177,84,255,.16),transparent 28%),
-    radial-gradient(circle at 80% 42%,rgba(255,91,180,.12),transparent 30%);
-}
-
-/* ---------------- HEADER ---------------- */
+/* ========================= */
+/* HEADER                    */
+/* ========================= */
 
 .header{
+  height:76px;
+  padding:9px 10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
   position:relative;
   z-index:10;
-  height:76px;
-  padding:10px 12px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
 }
 
 .roomInfo{
@@ -71,11 +82,16 @@ body{
 .roomDp{
   width:54px;
   height:54px;
-  border-radius:50%;
-  border:2px solid #f4c86b;
   padding:2px;
-  background:linear-gradient(135deg,#ffd873,#ff7bd4);
   flex:none;
+  border-radius:50%;
+  background:
+    linear-gradient(
+      135deg,
+      #ffe17a,
+      #ff75c8,
+      #925cff
+    );
 }
 
 .roomDp img{
@@ -83,7 +99,7 @@ body{
   height:100%;
   border-radius:50%;
   object-fit:cover;
-  background:#38204f;
+  background:#2b163b;
 }
 
 .roomTexts{
@@ -91,145 +107,147 @@ body{
   min-width:0;
 }
 
-.roomTitle{
+.roomName{
+  max-width:190px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
   font-size:16px;
   font-weight:800;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:190px;
 }
 
 .roomId{
-  margin-top:4px;
-  font-size:11px;
-  color:#d9cbe7;
-}
-
-.hostText{
-  margin-top:2px;
+  margin-top:3px;
   font-size:10px;
-  color:#bca7cb;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  color:#d7c9e1;
+}
+
+.hostName{
+  margin-top:3px;
   max-width:190px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font-size:10px;
+  color:#bcaac9;
 }
 
-.headerActions{
+.headerRight{
   display:flex;
   align-items:center;
-  gap:7px;
+  gap:5px;
 }
 
-.countBadge{
-  min-width:52px;
-  height:30px;
+.count{
+  height:31px;
   padding:0 9px;
+  border-radius:17px;
   display:flex;
   align-items:center;
-  justify-content:center;
-  border-radius:16px;
-  background:rgba(0,0,0,.28);
-  border:1px solid rgba(255,255,255,.14);
-  font-size:12px;
+  background:rgba(0,0,0,.3);
+  border:1px solid rgba(255,255,255,.1);
+  font-size:11px;
 }
 
-.hBtn{
+.iconBtn{
   width:35px;
   height:35px;
+  padding:0;
   border:0;
   border-radius:50%;
-  background:rgba(0,0,0,.3);
   color:#fff;
-  font-size:16px;
+  background:rgba(0,0,0,.3);
 }
 
-/* ---------------- ROOM BODY ---------------- */
+/* ========================= */
+/* BODY                      */
+/* ========================= */
 
-.roomBody{
-  position:relative;
-  z-index:2;
-  height:calc(100dvh - 76px - 76px);
+.body{
+  height:calc(100dvh - 76px - 70px);
+  padding:0 8px 8px;
   overflow-y:auto;
-  overflow-x:hidden;
-  padding:2px 9px 12px;
 }
 
-.roomBody::-webkit-scrollbar{
-  width:0;
+.body::-webkit-scrollbar{
+  display:none;
 }
 
-/* ---------------- ANNOUNCEMENT ---------------- */
-
-.announcement{
-  height:32px;
-  margin:0 5px 5px;
-  border-radius:17px;
-  background:rgba(0,0,0,.23);
-  border:1px solid rgba(255,255,255,.09);
+.notice{
+  max-width:500px;
+  height:29px;
+  margin:0 auto 4px;
+  padding:0 10px;
   display:flex;
   align-items:center;
-  padding:0 10px;
-  font-size:11px;
-  color:#e7d9ef;
+  border-radius:15px;
+  background:rgba(0,0,0,.2);
+  color:#ddd0e7;
+  font-size:10px;
 }
 
-.announcement span{
-  color:#ffd66d;
+.notice b{
   margin-right:5px;
+  color:#ffd367;
 }
 
-/* ---------------- SEATS ---------------- */
+/* ========================= */
+/* SEATS                     */
+/* ========================= */
 
-.seatArea{
-  position:relative;
+.seats{
   width:100%;
   max-width:500px;
   margin:0 auto;
 }
 
 .hostSeat{
-  width:116px;
-  height:142px;
-  margin:2px auto 3px;
+  width:125px;
+  height:140px;
+  margin:0 auto;
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:flex-start;
   position:relative;
 }
 
-.seatNumber{
+.hostSeat .seatNo{
+  top:0;
+}
+
+.seatNo{
   position:absolute;
-  top:3px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:4;
-  font-size:10px;
-  color:#dbcde7;
+  top:1px;
+  z-index:5;
+  padding:2px 7px;
+  border-radius:9px;
   background:rgba(0,0,0,.3);
-  padding:2px 8px;
-  border-radius:10px;
+  color:#d8c9e3;
+  font-size:9px;
 }
 
-.avatarWrap{
+.avatarBox{
   position:relative;
-  margin-top:22px;
-  width:72px;
-  height:72px;
-  border-radius:50%;
+  width:67px;
+  height:67px;
+  margin-top:16px;
   padding:3px;
-  background:linear-gradient(135deg,#ffd76a,#ff8bce,#9b63ff);
+  border-radius:50%;
+  background:
+    linear-gradient(
+      135deg,
+      #ffd96b,
+      #ff78c7,
+      #8957ff
+    );
   box-shadow:
-    0 0 0 2px rgba(255,215,106,.18),
     0 5px 25px rgba(0,0,0,.45);
 }
 
-.hostSeat .avatarWrap{
+.hostSeat .avatarBox{
   width:86px;
   height:86px;
-  margin-top:24px;
+  margin-top:20px;
 }
 
 .avatar{
@@ -237,284 +255,253 @@ body{
   height:100%;
   border-radius:50%;
   object-fit:cover;
-  background:#332041;
-  display:block;
+  background:#2d183e;
 }
 
-.micDot{
+.crown{
+  position:absolute;
+  left:50%;
+  top:-13px;
+  transform:translateX(-50%);
+  font-size:20px;
+  z-index:5;
+}
+
+.mic{
   position:absolute;
   right:-2px;
-  bottom:2px;
-  width:21px;
-  height:21px;
-  border-radius:50%;
+  bottom:1px;
+  width:20px;
+  height:20px;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:#2fbc68;
-  border:2px solid #26113d;
-  font-size:10px;
+  border:2px solid #29143a;
+  border-radius:50%;
+  background:#20bb67;
+  font-size:9px;
 }
 
-.micOff{
-  background:#d84c61;
+.mic.off{
+  background:#d8475c;
 }
 
-.hostCrown{
-  position:absolute;
-  top:-9px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:5;
-  font-size:19px;
-}
-
-.name{
+.userName{
+  width:100px;
   margin-top:5px;
-  max-width:108px;
-  font-size:12px;
-  font-weight:700;
   text-align:center;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  font-size:11px;
+  font-weight:700;
 }
 
-.hostSeat .name{
+.hostSeat .userName{
   font-size:13px;
 }
 
-.levelTag{
+.hostTag{
   margin-top:3px;
   padding:2px 7px;
   border-radius:8px;
-  background:rgba(255,193,75,.18);
-  border:1px solid rgba(255,193,75,.25);
-  color:#ffd477;
-  font-size:9px;
+  color:#ffd66f;
+  background:rgba(255,202,81,.13);
+  font-size:8px;
 }
 
-.emptyAvatar{
-  background:
-    radial-gradient(circle,#684b7d 0 25%,transparent 26%),
-    #28153b;
-}
-
-.seatGrid{
+.grid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:8px 3px;
-  width:100%;
+  gap:1px 0;
 }
 
 .seat{
-  height:108px;
-  min-width:0;
+  height:106px;
+  position:relative;
   display:flex;
   flex-direction:column;
   align-items:center;
-  position:relative;
-  cursor:pointer;
 }
 
-.seat .avatarWrap{
-  width:61px;
-  height:61px;
-  margin-top:15px;
-}
-
-.seat .name{
-  width:82px;
+.empty{
+  background:#2b173b;
 }
 
 .emptyPlus{
   position:absolute;
+  left:50%;
   top:32px;
-  width:29px;
-  height:29px;
-  border-radius:50%;
+  transform:translateX(-50%);
+  width:28px;
+  height:28px;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:rgba(255,255,255,.08);
   border:1px dashed rgba(255,255,255,.3);
-  color:#d7c8df;
+  border-radius:50%;
+  color:#d5c8dd;
+  background:rgba(255,255,255,.05);
   font-size:17px;
 }
 
-/* ---------------- FRAME EFFECTS ---------------- */
+/* ========================= */
+/* FEATURES                  */
+/* ========================= */
 
-.frameGold .avatarWrap{
-  background:linear-gradient(135deg,#fff2a4,#e8a83c,#fff0a1);
-}
-
-.framePink .avatarWrap{
-  background:linear-gradient(135deg,#ff7adf,#ff3e8d,#9e52ff);
-}
-
-.frameBlue .avatarWrap{
-  background:linear-gradient(135deg,#78efff,#4b8dff,#8d52ff);
-}
-
-.frameGreen .avatarWrap{
-  background:linear-gradient(135deg,#92ffb0,#22c98a,#55e6ff);
-}
-
-/* ---------------- ROOM FEATURES ---------------- */
-
-.featureRow{
-  margin:5px auto 7px;
+.features{
   max-width:500px;
+  margin:2px auto 6px;
   display:grid;
   grid-template-columns:repeat(5,1fr);
   gap:4px;
 }
 
 .feature{
-  min-width:0;
-  height:53px;
-  border-radius:13px;
-  background:rgba(255,255,255,.055);
+  height:52px;
   border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;
+  background:rgba(255,255,255,.05);
+  color:#e2d7e9;
   display:flex;
   flex-direction:column;
-  justify-content:center;
   align-items:center;
-  font-size:9px;
-  color:#ddd0e8;
-  cursor:pointer;
+  justify-content:center;
+  font-size:8px;
 }
 
-.featureIcon{
-  font-size:19px;
+.feature span{
   margin-bottom:3px;
+  font-size:18px;
 }
 
-.feature:active{
-  transform:scale(.96);
-}
+/* ========================= */
+/* EXP                       */
+/* ========================= */
 
-/* ---------------- EXP ---------------- */
-
-.expBox{
+.exp{
   max-width:500px;
-  margin:0 auto 8px;
-  min-height:54px;
-  border-radius:14px;
+  min-height:55px;
+  margin:0 auto 6px;
   padding:7px 9px;
-  background:linear-gradient(
-    90deg,
-    rgba(255,185,69,.12),
-    rgba(159,83,255,.13)
-  );
+  border-radius:13px;
+  background:rgba(255,255,255,.05);
   border:1px solid rgba(255,255,255,.07);
 }
 
 .expTop{
   display:flex;
-  align-items:center;
   justify-content:space-between;
+  align-items:center;
   font-size:10px;
-  color:#ddd0e7;
 }
 
 .rocket{
-  font-size:20px;
+  font-size:18px;
 }
 
-.expLine{
+.progress{
   height:6px;
   margin-top:6px;
-  background:rgba(255,255,255,.1);
-  border-radius:5px;
   overflow:hidden;
+  border-radius:5px;
+  background:rgba(255,255,255,.1);
 }
 
-.expFill{
-  width:34%;
+.progressBar{
+  width:38%;
   height:100%;
   border-radius:5px;
-  background:linear-gradient(90deg,#ffcb54,#ff75bd,#985aff);
+  background:
+    linear-gradient(
+      90deg,
+      #ffd25a,
+      #ff70b9,
+      #8f59ff
+    );
 }
 
-.topUsers{
+.tops{
   display:flex;
-  gap:8px;
+  gap:12px;
   margin-top:5px;
-  font-size:9px;
-  color:#cbbbd5;
+  color:#c8b8d3;
+  font-size:8px;
 }
 
-/* ---------------- CHAT ---------------- */
+/* ========================= */
+/* CHAT                      */
+/* ========================= */
 
-.chatMessages{
+.chat{
   max-width:500px;
+  min-height:20px;
+  max-height:100px;
   margin:0 auto;
-  min-height:30px;
-  max-height:105px;
   overflow-y:auto;
 }
 
-.chatMessages::-webkit-scrollbar{
-  width:0;
+.chat::-webkit-scrollbar{
+  display:none;
 }
 
-.msg{
-  display:inline-block;
+.message{
+  width:max-content;
   max-width:92%;
   margin:2px 0;
-  padding:6px 9px;
-  border-radius:12px;
+  padding:5px 8px;
+  border-radius:10px;
   background:rgba(0,0,0,.25);
-  font-size:11px;
-  color:#eee5f4;
+  font-size:10px;
 }
 
-.msg b{
-  color:#ffd36b;
+.message b{
+  color:#ffd369;
 }
 
-/* ---------------- BOTTOM ---------------- */
+/* ========================= */
+/* BOTTOM                    */
+/* ========================= */
 
 .bottom{
   position:absolute;
-  z-index:20;
   left:0;
   right:0;
   bottom:0;
-  height:76px;
-  padding:7px 9px calc(7px + env(safe-area-inset-bottom));
-  background:linear-gradient(
-    to top,
-    rgba(12,5,24,.98),
-    rgba(21,9,37,.94)
-  );
+  height:70px;
+  z-index:20;
+  padding:7px 8px;
+  background:
+    linear-gradient(
+      to top,
+      rgba(11,4,20,.99),
+      rgba(20,8,34,.96)
+    );
   border-top:1px solid rgba(255,255,255,.08);
 }
 
-.chatBar{
-  width:100%;
-  height:42px;
+.bottomRow{
+  height:44px;
   display:flex;
   align-items:center;
   gap:5px;
 }
 
-.messageInput{
+.input{
   flex:1;
   min-width:0;
   height:38px;
-  border:1px solid rgba(255,255,255,.12);
-  outline:none;
-  border-radius:20px;
-  background:rgba(255,255,255,.07);
-  color:#fff;
   padding:0 12px;
-  font-size:12px;
+  outline:none;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;
+  color:#fff;
+  background:rgba(255,255,255,.07);
+  font-size:11px;
 }
 
-.messageInput::placeholder{
-  color:#a999b4;
+.input::placeholder{
+  color:#a99bb1;
 }
 
 .bottomBtn{
@@ -523,36 +510,33 @@ body{
   flex:none;
   border:0;
   border-radius:50%;
-  background:rgba(255,255,255,.08);
   color:#fff;
-  font-size:17px;
+  background:rgba(255,255,255,.08);
 }
 
 .bottomBtn.active{
-  background:#a85cff;
+  background:#9b57e7;
 }
 
-.leaveBtn{
-  background:rgba(224,65,86,.18);
-}
-
-/* ---------------- EMOJI ---------------- */
+/* ========================= */
+/* EMOJI                     */
+/* ========================= */
 
 .emojiPanel{
   position:absolute;
-  left:8px;
-  right:8px;
-  bottom:80px;
+  left:7px;
+  right:7px;
+  bottom:76px;
   z-index:50;
-  padding:10px;
-  border-radius:17px;
-  background:#241036;
-  border:1px solid rgba(255,255,255,.12);
   display:none;
   grid-template-columns:repeat(8,1fr);
-  gap:8px;
-  max-height:230px;
+  gap:6px;
+  padding:10px;
+  max-height:210px;
   overflow-y:auto;
+  border-radius:17px;
+  background:#241034;
+  border:1px solid rgba(255,255,255,.1);
 }
 
 .emojiPanel.show{
@@ -560,24 +544,24 @@ body{
 }
 
 .emoji{
-  height:32px;
+  height:30px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:21px;
-  cursor:pointer;
+  font-size:20px;
 }
 
-/* ---------------- MODAL ---------------- */
+/* ========================= */
+/* MODAL                     */
+/* ========================= */
 
 .overlay{
   position:fixed;
   inset:0;
   z-index:100;
-  background:rgba(0,0,0,.65);
   display:none;
   align-items:flex-end;
-  justify-content:center;
+  background:rgba(0,0,0,.65);
 }
 
 .overlay.show{
@@ -587,535 +571,778 @@ body{
 .modal{
   width:100%;
   max-width:520px;
-  max-height:78dvh;
+  max-height:80dvh;
   overflow:auto;
-  border-radius:23px 23px 0 0;
-  padding:18px;
+  padding:17px;
+  border-radius:22px 22px 0 0;
   background:#21102f;
-  border-top:1px solid rgba(255,255,255,.12);
 }
 
 .modalTitle{
+  margin-bottom:12px;
   font-size:17px;
   font-weight:800;
-  margin-bottom:15px;
 }
 
 .modalUser{
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:10px;
   padding:10px;
-  border-radius:14px;
+  border-radius:13px;
   background:rgba(255,255,255,.06);
 }
 
 .modalUser img{
-  width:58px;
-  height:58px;
+  width:55px;
+  height:55px;
   border-radius:50%;
   object-fit:cover;
 }
 
-.modalUserName{
+.modalName{
+  font-size:15px;
   font-weight:800;
 }
 
 .modalId{
   margin-top:4px;
-  font-size:10px;
-  color:#b9a9c5;
+  color:#bcaec5;
+  font-size:9px;
 }
 
-.actionGrid{
+.actions{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:8px;
-  margin-top:12px;
+  gap:7px;
+  margin-top:10px;
 }
 
-.actionBtn{
+.action{
   height:42px;
   border:0;
-  border-radius:12px;
+  border-radius:11px;
   color:#fff;
   background:rgba(255,255,255,.08);
+  font-size:11px;
   font-weight:700;
 }
 
-.actionBtn.red{
-  background:rgba(225,62,80,.2);
+.action.red{
+  background:rgba(215,60,82,.2);
 }
 
-.closeBtn{
+.close{
   width:100%;
-  height:43px;
-  margin-top:10px;
+  height:42px;
+  margin-top:9px;
   border:0;
-  border-radius:13px;
-  background:#9b58e8;
+  border-radius:11px;
   color:#fff;
+  background:#9654dd;
   font-weight:800;
 }
 
-/* ---------------- TOAST ---------------- */
+/* ========================= */
+/* TOAST                     */
+/* ========================= */
 
 .toast{
   position:fixed;
-  z-index:200;
   left:50%;
-  bottom:92px;
-  transform:translateX(-50%) translateY(20px);
-  background:rgba(0,0,0,.8);
-  color:#fff;
-  padding:9px 14px;
-  border-radius:20px;
-  font-size:11px;
+  bottom:83px;
+  z-index:200;
+  padding:8px 13px;
+  border-radius:18px;
+  transform:translate(-50%,20px);
   opacity:0;
   pointer-events:none;
-  transition:.25s;
+  background:rgba(0,0,0,.82);
+  font-size:10px;
+  transition:.2s;
 }
 
 .toast.show{
   opacity:1;
-  transform:translateX(-50%) translateY(0);
+  transform:translate(-50%,0);
 }
 
-/* ---------------- MOBILE ---------------- */
-
 @media(max-width:360px){
-  .roomTitle{
-    max-width:140px;
+
+  .roomName{
+    max-width:145px;
   }
 
-  .feature{
-    font-size:8px;
-  }
-
-  .featureIcon{
-    font-size:17px;
-  }
-
-  .seatGrid{
-    gap:4px 0;
-  }
-
-  .seat .avatarWrap{
-    width:55px;
-    height:55px;
+  .hostSeat{
+    height:132px;
   }
 
   .seat{
     height:101px;
   }
+
+  .seat .avatarBox{
+    width:56px;
+    height:56px;
+  }
+
+  .features{
+    gap:2px;
+  }
+
+  .feature{
+    font-size:7px;
+  }
+
 }
+
 </style>
+
 </head>
 
 <body>
 
 <div class="room">
 
-  <!-- HEADER -->
-  <header class="header">
+  <!-- ================= HEADER ================= -->
+
+  <div class="header">
 
     <div class="roomInfo">
 
       <div class="roomDp">
-        <img id="roomDp"
-             src="https://i.pravatar.cc/150?img=12"
-             alt="room">
+
+        <img
+          id="roomDp"
+          src="https://i.pravatar.cc/150?img=12"
+        >
+
       </div>
 
       <div class="roomTexts">
-        <div class="roomTitle" id="roomName">
+
+        <div
+          id="roomName"
+          class="roomName"
+        >
           PawanVoice Room
         </div>
 
         <div class="roomId">
-          ID: <span id="roomId">PV000000</span>
+          ID:
+          <span id="roomId">
+            PV000000
+          </span>
         </div>
 
-        <div class="hostText">
-          Host: <span id="hostName">Loading...</span>
+        <div class="hostName">
+          Host:
+          <span id="hostName">
+            Loading...
+          </span>
         </div>
+
       </div>
 
     </div>
 
-    <div class="headerActions">
-      <div class="countBadge">
-        👥 <span id="userCount">1</span>/9
+
+    <div class="headerRight">
+
+      <div class="count">
+        👥
+        <span id="count">
+          0
+        </span>
+        /9
       </div>
 
-      <button class="hBtn" onclick="openSettings()">⚙️</button>
+      <button
+        class="iconBtn"
+        onclick="openSettings()"
+      >
+        ⚙️
+      </button>
 
-      <button class="hBtn" onclick="inviteRoom()">↗</button>
+      <button
+        class="iconBtn"
+        onclick="inviteRoom()"
+      >
+        ↗
+      </button>
+
     </div>
 
-  </header>
+  </div>
 
-  <!-- BODY -->
-  <main class="roomBody">
 
-    <div class="announcement">
-      <span>📢</span>
-      Welcome to PawanVoice Room
+  <!-- ================= BODY ================= -->
+
+  <div class="body">
+
+    <div class="notice">
+      <b>📢</b>
+      Welcome to PawanVoice
     </div>
 
-    <!-- SEATS -->
-    <section class="seatArea">
+
+    <!-- ================= SEATS ================= -->
+
+    <div class="seats">
 
       <!-- HOST -->
-      <div class="hostSeat"
-           id="seat1"
-           onclick="seatClick(1)">
 
-        <div class="seatNumber">1</div>
+      <div
+        id="seat1"
+        class="hostSeat"
+        onclick="seatClick(1)"
+      >
 
-        <div class="hostCrown">👑</div>
-
-        <div class="avatarWrap frameGold">
-          <img id="avatar1"
-               class="avatar"
-               src="https://i.pravatar.cc/150?img=12">
-
-          <div id="mic1"
-               class="micDot">
-            🎙
-          </div>
+        <div class="seatNo">
+          1
         </div>
 
-        <div class="name"
-             id="name1">
+        <div class="crown">
+          👑
+        </div>
+
+        <div
+          id="box1"
+          class="avatarBox"
+        >
+
+          <img
+            id="avatar1"
+            class="avatar"
+            src="https://i.pravatar.cc/150?img=12"
+          >
+
+          <div
+            id="mic1"
+            class="mic off"
+          >
+            🔇
+          </div>
+
+        </div>
+
+        <div
+          id="name1"
+          class="userName"
+        >
           Empty
         </div>
 
-        <div class="levelTag">
+        <div class="hostTag">
           HOST
         </div>
 
       </div>
 
 
-      <!-- 2-5 -->
-      <div class="seatGrid">
+      <!-- 2 - 9 -->
 
-        <div class="seat"
-             id="seat2"
-             onclick="seatClick(2)">
+      <div class="grid">
 
-          <div class="seatNumber">2</div>
+        <!-- 2 -->
 
-          <div class="avatarWrap">
-            <img id="avatar2"
-                 class="avatar emptyAvatar">
+        <div
+          id="seat2"
+          class="seat"
+          onclick="seatClick(2)"
+        >
 
-            <div id="mic2"
-                 class="micDot micOff">
-              🎙
-            </div>
-
-            <div id="plus2"
-                 class="emptyPlus">
-              +
-            </div>
+          <div class="seatNo">
+            2
           </div>
 
-          <div id="name2"
-               class="name">
+          <div
+            id="box2"
+            class="avatarBox"
+          >
+
+            <img
+              id="avatar2"
+              class="avatar"
+            >
+
+            <div
+              id="mic2"
+              class="mic off"
+            >
+              🔇
+            </div>
+
+            <div
+              id="plus2"
+              class="emptyPlus"
+            >
+              +
+            </div>
+
+          </div>
+
+          <div
+            id="name2"
+            class="userName"
+          >
             Empty
           </div>
 
         </div>
 
 
-        <div class="seat"
-             id="seat3"
-             onclick="seatClick(3)">
+        <!-- 3 -->
 
-          <div class="seatNumber">3</div>
+        <div
+          id="seat3"
+          class="seat"
+          onclick="seatClick(3)"
+        >
 
-          <div class="avatarWrap">
-            <img id="avatar3"
-                 class="avatar emptyAvatar">
-
-            <div id="mic3"
-                 class="micDot micOff">
-              🎙
-            </div>
-
-            <div id="plus3"
-                 class="emptyPlus">
-              +
-            </div>
+          <div class="seatNo">
+            3
           </div>
 
-          <div id="name3"
-               class="name">
+          <div
+            id="box3"
+            class="avatarBox"
+          >
+
+            <img
+              id="avatar3"
+              class="avatar"
+            >
+
+            <div
+              id="mic3"
+              class="mic off"
+            >
+              🔇
+            </div>
+
+            <div
+              id="plus3"
+              class="emptyPlus"
+            >
+              +
+            </div>
+
+          </div>
+
+          <div
+            id="name3"
+            class="userName"
+          >
             Empty
           </div>
 
         </div>
 
 
-        <div class="seat"
-             id="seat4"
-             onclick="seatClick(4)">
+        <!-- 4 -->
 
-          <div class="seatNumber">4</div>
+        <div
+          id="seat4"
+          class="seat"
+          onclick="seatClick(4)"
+        >
 
-          <div class="avatarWrap">
-            <img id="avatar4"
-                 class="avatar emptyAvatar">
-
-            <div id="mic4"
-                 class="micDot micOff">
-              🎙
-            </div>
-
-            <div id="plus4"
-                 class="emptyPlus">
-              +
-            </div>
+          <div class="seatNo">
+            4
           </div>
 
-          <div id="name4"
-               class="name">
+          <div
+            id="box4"
+            class="avatarBox"
+          >
+
+            <img
+              id="avatar4"
+              class="avatar"
+            >
+
+            <div
+              id="mic4"
+              class="mic off"
+            >
+              🔇
+            </div>
+
+            <div
+              id="plus4"
+              class="emptyPlus"
+            >
+              +
+            </div>
+
+          </div>
+
+          <div
+            id="name4"
+            class="userName"
+          >
             Empty
           </div>
 
         </div>
 
 
-        <div class="seat"
-             id="seat5"
-             onclick="seatClick(5)">
+        <!-- 5 -->
 
-          <div class="seatNumber">5</div>
+        <div
+          id="seat5"
+          class="seat"
+          onclick="seatClick(5)"
+        >
 
-          <div class="avatarWrap">
-            <img id="avatar5"
-                 class="avatar emptyAvatar">
-
-            <div id="mic5"
-                 class="micDot micOff">
-              🎙
-            </div>
-
-            <div id="plus5"
-                 class="emptyPlus">
-              +
-            </div>
+          <div class="seatNo">
+            5
           </div>
 
-          <div id="name5"
-               class="name">
+          <div
+            id="box5"
+            class="avatarBox"
+          >
+
+            <img
+              id="avatar5"
+              class="avatar"
+            >
+
+            <div
+              id="mic5"
+              class="mic off"
+            >
+              🔇
+            </div>
+
+            <div
+              id="plus5"
+              class="emptyPlus"
+            >
+              +
+            </div>
+
+          </div>
+
+          <div
+            id="name5"
+            class="userName"
+          >
             Empty
           </div>
 
         </div>
 
 
-        <!-- 6-9 -->
+        <!-- 6 -->
 
-        <div class="seat"
-             id="seat6"
-             onclick="seatClick(6)">
+        <div
+          id="seat6"
+          class="seat"
+          onclick="seatClick(6)"
+        >
 
-          <div class="seatNumber">6</div>
-
-          <div class="avatarWrap">
-            <img id="avatar6"
-                 class="avatar emptyAvatar">
-
-            <div id="mic6"
-                 class="micDot micOff">
-              🎙
-            </div>
-
-            <div id="plus6"
-                 class="emptyPlus">
-              +
-            </div>
+          <div class="seatNo">
+            6
           </div>
 
-          <div id="name6"
-               class="name">
+          <div
+            id="box6"
+            class="avatarBox"
+          >
+
+            <img
+              id="avatar6"
+              class="avatar"
+            >
+
+            <div
+              id="mic6"
+              class="mic off"
+            >
+              🔇
+            </div>
+
+            <div
+              id="plus6"
+              class="emptyPlus"
+            >
+              +
+            </div>
+
+          </div>
+
+          <div
+            id="name6"
+            class="userName"
+          >
             Empty
           </div>
 
         </div>
 
 
-        <div class="seat"
-             id="seat7"
-             onclick="seatClick(7)">
+        <!-- 7 -->
 
-          <div class="seatNumber">7</div>
+        <div
+          id="seat7"
+          class="seat"
+          onclick="seatClick(7)"
+        >
 
-          <div class="avatarWrap">
-            <img id="avatar7"
-                 class="avatar emptyAvatar">
-
-            <div id="mic7"
-                 class="micDot micOff">
-              🎙
-            </div>
-
-            <div id="plus7"
-                 class="emptyPlus">
-              +
-            </div>
+          <div class="seatNo">
+            7
           </div>
 
-          <div id="name7"
-               class="name">
+          <div
+            id="box7"
+            class="avatarBox"
+          >
+
+            <img
+              id="avatar7"
+              class="avatar"
+            >
+
+            <div
+              id="mic7"
+              class="mic off"
+            >
+              🔇
+            </div>
+
+            <div
+              id="plus7"
+              class="emptyPlus"
+            >
+              +
+            </div>
+
+          </div>
+
+          <div
+            id="name7"
+            class="userName"
+          >
             Empty
           </div>
 
         </div>
 
 
-        <div class="seat"
-             id="seat8"
-             onclick="seatClick(8)">
+        <!-- 8 -->
 
-          <div class="seatNumber">8</div>
+        <div
+          id="seat8"
+          class="seat"
+          onclick="seatClick(8)"
+        >
 
-          <div class="avatarWrap">
-            <img id="avatar8"
-                 class="avatar emptyAvatar">
-
-            <div id="mic8"
-                 class="micDot micOff">
-              🎙
-            </div>
-
-            <div id="plus8"
-                 class="emptyPlus">
-              +
-            </div>
+          <div class="seatNo">
+            8
           </div>
 
-          <div id="name8"
-               class="name">
+          <div
+            id="box8"
+            class="avatarBox"
+          >
+
+            <img
+              id="avatar8"
+              class="avatar"
+            >
+
+            <div
+              id="mic8"
+              class="mic off"
+            >
+              🔇
+            </div>
+
+            <div
+              id="plus8"
+              class="emptyPlus"
+            >
+              +
+            </div>
+
+          </div>
+
+          <div
+            id="name8"
+            class="userName"
+          >
             Empty
           </div>
 
         </div>
 
 
-        <div class="seat"
-             id="seat9"
-             onclick="seatClick(9)">
+        <!-- 9 -->
 
-          <div class="seatNumber">9</div>
+        <div
+          id="seat9"
+          class="seat"
+          onclick="seatClick(9)"
+        >
 
-          <div class="avatarWrap">
-            <img id="avatar9"
-                 class="avatar emptyAvatar">
-
-            <div id="mic9"
-                 class="micDot micOff">
-              🎙
-            </div>
-
-            <div id="plus9"
-                 class="emptyPlus">
-              +
-            </div>
+          <div class="seatNo">
+            9
           </div>
 
-          <div id="name9"
-               class="name">
+          <div
+            id="box9"
+            class="avatarBox"
+          >
+
+            <img
+              id="avatar9"
+              class="avatar"
+            >
+
+            <div
+              id="mic9"
+              class="mic off"
+            >
+              🔇
+            </div>
+
+            <div
+              id="plus9"
+              class="emptyPlus"
+            >
+              +
+            </div>
+
+          </div>
+
+          <div
+            id="name9"
+            class="userName"
+          >
             Empty
           </div>
 
         </div>
 
-      </div>
-    </section>
-
-
-    <!-- FEATURES -->
-    <div class="featureRow">
-
-      <div class="feature"
-           onclick="featureMessage('Room Support')">
-        <div class="featureIcon">🛡️</div>
-        <div>Support</div>
-      </div>
-
-      <div class="feature"
-           onclick="featureMessage('Lucky Wheel')">
-        <div class="featureIcon">🎡</div>
-        <div>Lucky Wheel</div>
-      </div>
-
-      <div class="feature"
-           onclick="featureMessage('Bounty Hunter')">
-        <div class="featureIcon">🎯</div>
-        <div>Bounty</div>
-      </div>
-
-      <div class="feature"
-           onclick="featureMessage('Room Reward')">
-        <div class="featureIcon">🎁</div>
-        <div>Reward</div>
-      </div>
-
-      <div class="feature"
-           onclick="featureMessage('Exclusive Benefits')">
-        <div class="featureIcon">🚀</div>
-        <div>Benefits</div>
       </div>
 
     </div>
 
 
-    <!-- EXP -->
-    <div class="expBox">
+    <!-- ================= FEATURES ================= -->
+
+    <div class="features">
+
+      <button
+        class="feature"
+        onclick="feature('Room Support')"
+      >
+        <span>🛡️</span>
+        Support
+      </button>
+
+      <button
+        class="feature"
+        onclick="feature('Lucky Wheel')"
+      >
+        <span>🎡</span>
+        Wheel
+      </button>
+
+      <button
+        class="feature"
+        onclick="feature('Bounty Hunter')"
+      >
+        <span>🎯</span>
+        Bounty
+      </button>
+
+      <button
+        class="feature"
+        onclick="feature('Room Reward')"
+      >
+        <span>🎁</span>
+        Reward
+      </button>
+
+      <button
+        class="feature"
+        onclick="feature('Exclusive Benefits')"
+      >
+        <span>🚀</span>
+        Benefits
+      </button>
+
+    </div>
+
+
+    <!-- ================= EXP ================= -->
+
+    <div class="exp">
 
       <div class="expTop">
 
         <div>
-          <span class="rocket">🚀</span>
+          <span class="rocket">
+            🚀
+          </span>
           Room EXP
         </div>
 
         <div>
-          Top 1 🥇 &nbsp;
-          Top 2 🥈 &nbsp;
-          Top 3 🥉
+          🥇 1
+          &nbsp;
+          🥈 2
+          &nbsp;
+          🥉 3
         </div>
 
       </div>
 
-      <div class="expLine">
-        <div class="expFill"></div>
+      <div class="progress">
+
+        <div class="progressBar"></div>
+
       </div>
 
-      <div class="topUsers">
-        <span>🥇 Pawan</span>
-        <span>🥈 Guest</span>
-        <span>🥉 User</span>
+      <div class="tops">
+
+        <span>
+          🥇 Pawan
+        </span>
+
+        <span>
+          🥈 Guest
+        </span>
+
+        <span>
+          🥉 User
+        </span>
+
       </div>
 
     </div>
 
 
-    <!-- CHAT -->
-    <div id="chatMessages"
-         class="chatMessages">
-    </div>
+    <!-- ================= CHAT ================= -->
 
-  </main>
+    <div
+      id="chat"
+      class="chat"
+    ></div>
+
+  </div>
 
 
-  <!-- EMOJI -->
-  <div id="emojiPanel"
-       class="emojiPanel">
+  <!-- ================= EMOJI ================= -->
+
+  <div
+    id="emojiPanel"
+    class="emojiPanel"
+  >
 
     <div class="emoji">😡</div>
     <div class="emoji">😭</div>
@@ -1147,54 +1374,69 @@ body{
   </div>
 
 
-  <!-- BOTTOM -->
-  <footer class="bottom">
+  <!-- ================= BOTTOM ================= -->
 
-    <div class="chatBar">
+  <div class="bottom">
 
-      <input id="messageInput"
-             class="messageInput"
-             maxlength="300"
-             placeholder="Say something...">
+    <div class="bottomRow">
 
-      <button class="bottomBtn"
-              onclick="toggleEmoji()">
+      <input
+        id="message"
+        class="input"
+        maxlength="300"
+        placeholder="Say something..."
+      >
+
+      <button
+        class="bottomBtn"
+        onclick="toggleEmoji()"
+      >
         😊
       </button>
 
-      <button id="speakerBtn"
-              class="bottomBtn"
-              onclick="toggleSpeaker()">
+      <button
+        id="speakerBtn"
+        class="bottomBtn active"
+        onclick="toggleSpeaker()"
+      >
         🔊
       </button>
 
-      <button id="micBtn"
-              class="bottomBtn"
-              onclick="toggleMic()">
-        🎙
+      <button
+        id="micBtn"
+        class="bottomBtn"
+        onclick="toggleMic()"
+      >
+        🔇
       </button>
 
-      <button class="bottomBtn"
-              onclick="openInbox()">
+      <button
+        class="bottomBtn"
+        onclick="openInbox()"
+      >
         📥
       </button>
 
-      <button class="bottomBtn"
-              onclick="openMore()">
+      <button
+        class="bottomBtn"
+        onclick="openMore()"
+      >
         ⋮
       </button>
 
     </div>
 
-  </footer>
+  </div>
 
 </div>
 
 
-<!-- USER MODAL -->
+<!-- ================= USER MODAL ================= -->
 
-<div id="userOverlay"
-     class="overlay">
+<div
+  id="userOverlay"
+  class="overlay"
+>
 
   <div class="modal">
 
@@ -1204,49 +1446,69 @@ body{
 
     <div class="modalUser">
 
-      <img id="modalAvatar"
-           src="https://i.pravatar.cc/150?img=12">
+      <img
+        id="modalAvatar"
+        src="https://i.pravatar.cc/150?img=12"
+      >
 
       <div>
-        <div id="modalName"
-             class="modalUserName">
+
+        <div
+          id="modalName"
+          class="modalName"
+        >
           User
         </div>
 
-        <div id="modalId"
-             class="modalId">
+        <div
+          id="modalId"
+          class="modalId"
+        >
           ID: -
         </div>
+
       </div>
 
     </div>
 
-    <div class="actionGrid">
 
-      <button class="actionBtn"
-              onclick="viewProfile()">
+    <div class="actions">
+
+      <button
+        class="action"
+        onclick="viewProfile()"
+      >
         👤 Profile
       </button>
 
-      <button class="actionBtn"
-              onclick="makeAdmin()">
+      <button
+        class="action"
+        onclick="makeAdmin()"
+      >
         👑 Make Admin
       </button>
 
-      <button class="actionBtn"
-              onclick="muteSelected()">
+      <button
+        class="action"
+        onclick="muteUser()"
+      >
         🔇 Mute
       </button>
 
-      <button class="actionBtn red"
-              onclick="kickSelected()">
+      <button
+        class="action red"
+        onclick="kickUser()"
+      >
         🚫 Kick
       </button>
 
     </div>
 
-    <button class="closeBtn"
-            onclick="closeModal()">
+
+    <button
+      class="close"
+      onclick="closeUserModal()"
+    >
       Close
     </button>
 
@@ -1255,10 +1517,12 @@ body{
 </div>
 
 
-<!-- SETTINGS MODAL -->
+<!-- ================= SETTINGS ================= -->
 
-<div id="settingsOverlay"
-     class="overlay">
+<div
+  id="settingsOverlay"
+  class="overlay"
+>
 
   <div class="modal">
 
@@ -1266,27 +1530,42 @@ body{
       Room Settings
     </div>
 
-    <input id="newRoomName"
-           class="messageInput"
-           style="width:100%;"
-           placeholder="Room name">
+    <input
+      id="newRoomName"
+      class="input"
+      style="width:100%;"
+      placeholder="Room name"
+    >
 
-    <div class="actionGrid">
+    <div class="actions">
 
-      <button class="actionBtn"
-              onclick="changeRoomName()">
+      <button
+        class="action"
+        onclick="changeRoomName()"
+      >
         ✏️ Change Name
       </button>
 
-      <button class="actionBtn"
-              onclick="copyRoomLink()">
+      <button
+        class="action"
+        onclick="copyRoomLink()"
+      >
         🔗 Copy Link
+      </button>
+
+      <button
+        class="action"
+        onclick="leaveRoom()"
+      >
+        🚪 Leave Room
       </button>
 
     </div>
 
-    <button class="closeBtn"
-            onclick="closeSettings()">
+    <button
+      class="close"
+      onclick="closeSettings()"
+    >
       Close
     </button>
 
@@ -1295,262 +1574,410 @@ body{
 </div>
 
 
-<div id="toast"
-     class="toast">
-</div>
+<div
+  id="toast"
+  class="toast"
+></div>
 
 
 <script>
 
-/* =========================================================
-   CONFIG
-========================================================= */
+/* ================================================= */
+/* CONFIG                                            */
+/* ================================================= */
 
-const SERVER = "https://pawanvoice-1.onrender.com";
+const SERVER =
+  "https://pawanvoice-1.onrender.com";
 
-const socket = io(SERVER,{
-  transports:["websocket","polling"]
-});
+const socket =
+  io(
+    SERVER,
+    {
+      transports:[
+        "websocket",
+        "polling"
+      ]
+    }
+  );
 
-const params = new URLSearchParams(location.search);
+
+const params =
+  new URLSearchParams(
+    location.search
+  );
+
 
 const ROOM_ID =
   params.get("room") ||
   "PV824991";
 
 
-/* =========================================================
-   LOCAL USER
-========================================================= */
+/* ================================================= */
+/* USER                                               */
+/* ================================================= */
 
 let USER_ID =
-  localStorage.getItem("pawanvoice_user_id");
+  localStorage.getItem(
+    "pawanvoice_user_id"
+  );
+
 
 if(!USER_ID){
+
   USER_ID =
     "PVU" +
     Math.random()
       .toString(36)
-      .substring(2,9)
+      .substring(2,10)
       .toUpperCase();
 
   localStorage.setItem(
     "pawanvoice_user_id",
     USER_ID
   );
+
 }
 
+
 let USER_NAME =
-  localStorage.getItem("pawanvoice_name") ||
+  localStorage.getItem(
+    "pawanvoice_name"
+  ) ||
   "Pawan";
 
+
 let USER_DP =
-  localStorage.getItem("pawanvoice_dp") ||
+  localStorage.getItem(
+    "pawanvoice_dp"
+  ) ||
   "https://i.pravatar.cc/150?img=12";
 
 
-/* =========================================================
-   STATE
-========================================================= */
+/* ================================================= */
+/* STATE                                              */
+/* ================================================= */
 
 let roomState = null;
+
 let selectedUser = null;
 
 let localStream = null;
 
 let micOn = false;
+
 let speakerOn = true;
 
 const peers = {};
 
+
 const RTC_CONFIG = {
+
   iceServers:[
     {
-      urls:"stun:stun.l.google.com:19302"
+      urls:
+        "stun:stun.l.google.com:19302"
     },
+
     {
-      urls:"stun:stun1.l.google.com:19302"
+      urls:
+        "stun:stun1.l.google.com:19302"
     }
   ]
+
 };
 
 
-/* =========================================================
-   HELPERS
-========================================================= */
+/* ================================================= */
+/* HELPERS                                            */
+/* ================================================= */
 
 function $(id){
+
   return document.getElementById(id);
+
 }
+
 
 function toast(message){
 
-  const t = $("toast");
+  const el =
+    $("toast");
 
-  t.textContent = message;
+  el.textContent =
+    message;
 
-  t.classList.add("show");
+  el.classList.add(
+    "show"
+  );
 
-  clearTimeout(window.toastTimer);
+  clearTimeout(
+    window.toastTimer
+  );
 
   window.toastTimer =
-    setTimeout(()=>{
-      t.classList.remove("show");
-    },1800);
+    setTimeout(
+      ()=>{
+        el.classList.remove(
+          "show"
+        );
+      },
+      1800
+    );
+
 }
 
 
 function escapeHtml(value){
 
-  return String(value || "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+  return String(
+    value || ""
+  )
+  .replaceAll(
+    "&",
+    "&amp;"
+  )
+  .replaceAll(
+    "<",
+    "&lt;"
+  )
+  .replaceAll(
+    ">",
+    "&gt;"
+  )
+  .replaceAll(
+    '"',
+    "&quot;"
+  )
+  .replaceAll(
+    "'",
+    "&#039;"
+  );
+
 }
 
 
-/* =========================================================
-   JOIN ROOM
-========================================================= */
+/* ================================================= */
+/* CONNECT                                            */
+/* ================================================= */
 
-socket.on("connect",()=>{
+socket.on(
+  "connect",
+  ()=>{
 
-  socket.emit("joinRoom",{
-    roomId:ROOM_ID,
-    userId:USER_ID,
-    nickname:USER_NAME,
-    dp:USER_DP
-  });
+    socket.emit(
+      "joinRoom",
+      {
+        roomId:
+          ROOM_ID,
 
-});
+        userId:
+          USER_ID,
 
+        nickname:
+          USER_NAME,
 
-socket.on("roomState",(state)=>{
+        dp:
+          USER_DP
+      }
+    );
 
-  roomState = state;
-
-  renderRoom();
-
-});
-
-
-/* Some server versions may use these events */
-
-socket.on("room:state",(state)=>{
-
-  roomState = state;
-
-  renderRoom();
-
-});
-
-
-socket.on("usersUpdated",(state)=>{
-
-  if(state){
-    roomState = state;
-    renderRoom();
   }
+);
 
-});
+
+/* ================================================= */
+/* ROOM STATE                                         */
+/* ================================================= */
+
+socket.on(
+  "roomState",
+  state=>{
+
+    roomState =
+      state;
+
+    renderRoom();
+
+  }
+);
 
 
-/* =========================================================
-   RENDER ROOM
-========================================================= */
+/* ================================================= */
+/* ROOM ERROR                                         */
+/* ================================================= */
+
+socket.on(
+  "roomError",
+  data=>{
+
+    toast(
+      data?.message ||
+      "Room error"
+    );
+
+  }
+);
+
+
+/* ================================================= */
+/* KICKED                                             */
+/* ================================================= */
+
+socket.on(
+  "kicked",
+  data=>{
+
+    toast(
+      data?.message ||
+      "You were kicked"
+    );
+
+    setTimeout(
+      ()=>{
+        location.href =
+          "index.html";
+      },
+      700
+    );
+
+  }
+);
+
+
+/* ================================================= */
+/* BANNED                                             */
+/* ================================================= */
+
+socket.on(
+  "banned",
+  data=>{
+
+    alert(
+      data?.message ||
+      "You were banned"
+    );
+
+    location.href =
+      "index.html";
+
+  }
+);
+
+
+/* ================================================= */
+/* RENDER                                             */
+/* ================================================= */
 
 function renderRoom(){
 
-  if(!roomState) return;
+  if(!roomState)
+    return;
 
 
-  $("roomId").textContent =
-    roomState.roomId ||
-    ROOM_ID;
+  $("roomId")
+    .textContent =
+      roomState.roomId ||
+      ROOM_ID;
 
 
-  $("roomName").textContent =
-    roomState.roomName ||
-    "PawanVoice Room";
-
-
-  const users =
-    Array.isArray(roomState.users)
-      ? roomState.users
-      : Object.values(roomState.users || {});
-
-
-  $("userCount").textContent =
-    users.length;
-
-
-  const host =
-    users.find(u =>
-      u.isHost ||
-      u.userId === roomState.hostId
-    );
-
-
-  $("hostName").textContent =
-    host
-      ? (host.nickname || host.name || "Host")
-      : USER_NAME;
+  $("roomName")
+    .textContent =
+      roomState.roomName ||
+      "PawanVoice Room";
 
 
   if(roomState.roomDp){
 
-    $("roomDp").src =
-      roomState.roomDp;
+    $("roomDp")
+      .src =
+        roomState.roomDp;
 
   }
 
 
-  /* clear all seats */
+  const users =
+    Array.isArray(
+      roomState.users
+    )
+      ? roomState.users
+      : Object.values(
+          roomState.users || {}
+        );
 
-  for(let i=1;i<=9;i++){
 
-    setSeat(i,null);
+  $("count")
+    .textContent =
+      users.length;
+
+
+  const host =
+    users.find(
+      u =>
+        u.isHost ||
+        u.userId ===
+          roomState.hostId
+    );
+
+
+  $("hostName")
+    .textContent =
+      host
+        ? (
+            host.nickname ||
+            "Host"
+          )
+        : "Host";
+
+
+  for(
+    let i=1;
+    i<=9;
+    i++
+  ){
+
+    setSeat(
+      i,
+      null
+    );
 
   }
 
 
-  /*
-    Server seat format:
-    user.seatNo
-    or
-    user.seat
-  */
+  users.forEach(
+    user=>{
 
-  users.forEach(user=>{
+      const seatNo =
+        Number(
+          user.seatNo
+        );
 
-    const seatNo =
-      Number(
-        user.seatNo ||
-        user.seat ||
-        0
-      );
 
-    if(
-      seatNo >= 1 &&
-      seatNo <= 9
-    ){
+      if(
+        seatNo >= 1 &&
+        seatNo <= 9
+      ){
 
-      setSeat(seatNo,user);
+        setSeat(
+          seatNo,
+          user
+        );
+
+      }
 
     }
-
-  });
+  );
 
 }
 
 
-/* =========================================================
-   SET SEAT
-========================================================= */
+/* ================================================= */
+/* SEAT                                               */
+/* ================================================= */
 
-function setSeat(seatNo,user){
+function setSeat(
+  seatNo,
+  user
+){
 
   const avatar =
     $("avatar"+seatNo);
@@ -1565,28 +1992,32 @@ function setSeat(seatNo,user){
     $("plus"+seatNo);
 
 
-  if(!avatar || !name) return;
+  if(!avatar)
+    return;
 
 
   if(!user){
 
-    avatar.src =
-      "";
-
-    avatar.classList.add(
-      "emptyAvatar"
+    avatar.removeAttribute(
+      "src"
     );
+
 
     name.textContent =
       "Empty";
 
+
     if(mic){
 
       mic.classList.add(
-        "micOff"
+        "off"
       );
 
+      mic.textContent =
+        "🔇";
+
     }
+
 
     if(plus){
 
@@ -1595,24 +2026,19 @@ function setSeat(seatNo,user){
 
     }
 
+
     return;
+
   }
-
-
-  avatar.classList.remove(
-    "emptyAvatar"
-  );
 
 
   avatar.src =
     user.dp ||
-    user.avatar ||
     "https://i.pravatar.cc/150?img=12";
 
 
   name.textContent =
     user.nickname ||
-    user.name ||
     "User";
 
 
@@ -1629,7 +2055,7 @@ function setSeat(seatNo,user){
     if(user.micOn){
 
       mic.classList.remove(
-        "micOff"
+        "off"
       );
 
       mic.textContent =
@@ -1638,7 +2064,7 @@ function setSeat(seatNo,user){
     }else{
 
       mic.classList.add(
-        "micOff"
+        "off"
       );
 
       mic.textContent =
@@ -1648,68 +2074,53 @@ function setSeat(seatNo,user){
 
   }
 
-
-  const wrap =
-    avatar.parentElement;
-
-
-  wrap.classList.remove(
-    "frameGold",
-    "framePink",
-    "frameBlue",
-    "frameGreen"
-  );
-
-
-  if(user.frame){
-
-    wrap.classList.add(
-      "frame"+user.frame
-    );
-
-  }
-
 }
 
 
-/* =========================================================
-   SEAT CLICK
-========================================================= */
+/* ================================================= */
+/* SEAT CLICK                                         */
+/* ================================================= */
 
-function seatClick(seatNo){
+function seatClick(
+  seatNo
+){
 
-  if(!roomState) return;
+  if(!roomState)
+    return;
 
 
   const users =
-    Array.isArray(roomState.users)
+    Array.isArray(
+      roomState.users
+    )
       ? roomState.users
-      : Object.values(roomState.users || {});
+      : Object.values(
+          roomState.users || {}
+        );
 
 
   const user =
-    users.find(u =>
-      Number(
-        u.seatNo ||
-        u.seat ||
-        0
-      ) === seatNo
+    users.find(
+      u =>
+        Number(
+          u.seatNo
+        ) === seatNo
     );
 
 
   if(!user){
 
-    /*
-      Empty seat:
-      take seat
-    */
-
     socket.emit(
       "selectSeat",
       {
-        roomId:ROOM_ID,
-        userId:USER_ID,
-        seatNo:seatNo
+        roomId:
+          ROOM_ID,
+
+        userId:
+          USER_ID,
+
+        seatNo:
+          seatNo
       }
     );
 
@@ -1718,45 +2129,49 @@ function seatClick(seatNo){
   }
 
 
-  /*
-    Occupied seat:
-    open user profile/admin
-  */
-
   selectedUser =
     user;
 
-  $("modalAvatar").src =
-    user.dp ||
-    user.avatar ||
-    "https://i.pravatar.cc/150?img=12";
 
-  $("modalName").textContent =
-    user.nickname ||
-    user.name ||
-    "User";
+  $("modalAvatar")
+    .src =
+      user.dp ||
+      "https://i.pravatar.cc/150?img=12";
 
-  $("modalId").textContent =
-    "ID: " +
-    (
-      user.userId ||
-      "-"
-    );
+
+  $("modalName")
+    .textContent =
+      user.nickname ||
+      "User";
+
+
+  $("modalId")
+    .textContent =
+      "ID: " +
+      (
+        user.userId ||
+        "-"
+      );
+
 
   $("userOverlay")
-    .classList.add("show");
+    .classList.add(
+      "show"
+    );
 
 }
 
 
-/* =========================================================
-   MODAL
-========================================================= */
+/* ================================================= */
+/* USER MODAL                                         */
+/* ================================================= */
 
-function closeModal(){
+function closeUserModal(){
 
   $("userOverlay")
-    .classList.remove("show");
+    .classList.remove(
+      "show"
+    );
 
   selectedUser =
     null;
@@ -1766,88 +2181,116 @@ function closeModal(){
 
 function viewProfile(){
 
-  if(!selectedUser) return;
+  if(!selectedUser)
+    return;
 
-  const id =
-    selectedUser.userId ||
-    "";
 
   location.href =
     "index.html?profile=" +
-    encodeURIComponent(id);
+    encodeURIComponent(
+      selectedUser.userId
+    );
 
 }
 
 
 function makeAdmin(){
 
-  if(!selectedUser) return;
+  if(!selectedUser)
+    return;
+
 
   socket.emit(
     "makeAdmin",
     {
-      roomId:ROOM_ID,
+      roomId:
+        ROOM_ID,
+
+      userId:
+        USER_ID,
+
       targetUserId:
-        selectedUser.userId,
-      userId:USER_ID
+        selectedUser.userId
     }
   );
 
-  toast("Admin request sent");
+
+  toast(
+    "Admin request sent"
+  );
 
 }
 
 
-function muteSelected(){
+function muteUser(){
 
-  if(!selectedUser) return;
+  if(!selectedUser)
+    return;
+
 
   socket.emit(
     "muteUser",
     {
-      roomId:ROOM_ID,
+      roomId:
+        ROOM_ID,
+
+      userId:
+        USER_ID,
+
       targetUserId:
-        selectedUser.userId,
-      userId:USER_ID
+        selectedUser.userId
     }
   );
 
-  toast("Mute request sent");
+
+  toast(
+    "Mute request sent"
+  );
 
 }
 
 
-function kickSelected(){
+function kickUser(){
 
-  if(!selectedUser) return;
+  if(!selectedUser)
+    return;
+
 
   socket.emit(
     "kickUser",
     {
-      roomId:ROOM_ID,
+      roomId:
+        ROOM_ID,
+
+      userId:
+        USER_ID,
+
       targetUserId:
-        selectedUser.userId,
-      userId:USER_ID
+        selectedUser.userId
     }
   );
 
-  closeModal();
+
+  closeUserModal();
 
 }
 
 
-/* =========================================================
-   ROOM SETTINGS
-========================================================= */
+/* ================================================= */
+/* SETTINGS                                           */
+/* ================================================= */
 
 function openSettings(){
 
-  $("settingsOverlay")
-    .classList.add("show");
+  $("newRoomName")
+    .value =
+      roomState?.roomName ||
+      "";
 
-  $("newRoomName").value =
-    roomState?.roomName ||
-    "";
+  $("settingsOverlay")
+    .classList.add(
+      "show"
+    );
 
 }
 
@@ -1855,7 +2298,9 @@ function openSettings(){
 function closeSettings(){
 
   $("settingsOverlay")
-    .classList.remove("show");
+    .classList.remove(
+      "show"
+    );
 
 }
 
@@ -1867,25 +2312,45 @@ function changeRoomName(){
       .value
       .trim();
 
+
   if(!name){
 
-    toast("Enter room name");
+    toast(
+      "Room name enter karo"
+    );
 
     return;
+
   }
 
 
   socket.emit(
     "changeRoomName",
     {
-      roomId:ROOM_ID,
-      userId:USER_ID,
-      roomName:name
+      roomId:
+        ROOM_ID,
+
+      userId:
+        USER_ID,
+
+      roomName:
+        name
     }
   );
 
 
   closeSettings();
+
+}
+
+
+/* ================================================= */
+/* INVITE                                              */
+/* ================================================= */
+
+function inviteRoom(){
+
+  copyRoomLink();
 
 }
 
@@ -1896,71 +2361,103 @@ function copyRoomLink(){
     location.origin +
     location.pathname +
     "?room=" +
-    encodeURIComponent(ROOM_ID);
+    encodeURIComponent(
+      ROOM_ID
+    );
 
-  navigator.clipboard
-    .writeText(link)
-    .then(()=>{
-      toast("Room link copied");
-    })
-    .catch(()=>{
-      toast("Copy failed");
-    });
+
+  if(
+    navigator.clipboard
+  ){
+
+    navigator.clipboard
+      .writeText(
+        link
+      )
+      .then(
+        ()=>{
+          toast(
+            "Room link copied"
+          );
+        }
+      )
+      .catch(
+        ()=>{
+          toast(
+            "Copy failed"
+          );
+        }
+      );
+
+  }else{
+
+    prompt(
+      "Room link",
+      link
+    );
+
+  }
 
 }
 
 
-function inviteRoom(){
-
-  copyRoomLink();
-
-}
-
-
-/* =========================================================
-   EMOJI
-========================================================= */
+/* ================================================= */
+/* EMOJI                                              */
+/* ================================================= */
 
 function toggleEmoji(){
 
   $("emojiPanel")
-    .classList.toggle("show");
+    .classList.toggle(
+      "show"
+    );
 
 }
 
 
 document
-  .querySelectorAll(".emoji")
-  .forEach(el=>{
+  .querySelectorAll(
+    ".emoji"
+  )
+  .forEach(
+    emoji=>{
 
-    el.addEventListener(
-      "click",
-      ()=>{
+      emoji.addEventListener(
+        "click",
+        ()=>{
 
-        $("messageInput").value +=
-          el.textContent;
+          $("message")
+            .value +=
+              emoji.textContent;
 
-        $("emojiPanel")
-          .classList.remove("show");
+          $("emojiPanel")
+            .classList.remove(
+              "show"
+            );
 
-        $("messageInput").focus();
+          $("message")
+            .focus();
 
-      }
-    );
+        }
+      );
 
-  });
+    }
+  );
 
 
-/* =========================================================
-   CHAT
-========================================================= */
+/* ================================================= */
+/* CHAT                                               */
+/* ================================================= */
 
-$("messageInput")
+$("message")
   .addEventListener(
     "keydown",
-    e=>{
+    event=>{
 
-      if(e.key === "Enter"){
+      if(
+        event.key ===
+        "Enter"
+      ){
 
         sendMessage();
 
@@ -1973,21 +2470,30 @@ $("messageInput")
 function sendMessage(){
 
   const input =
-    $("messageInput");
+    $("message");
 
-  const text =
+
+  const message =
     input.value.trim();
 
-  if(!text) return;
+
+  if(!message)
+    return;
 
 
   socket.emit(
     "sendMessage",
     {
-      roomId:ROOM_ID,
-      userId:USER_ID,
-      nickname:USER_NAME,
-      message:text
+      roomId:
+        ROOM_ID,
+
+      userId:
+        USER_ID,
+
+      nickname:
+        USER_NAME,
+
+      message
     }
   );
 
@@ -1998,49 +2504,45 @@ function sendMessage(){
 }
 
 
-socket.on("message",(data)=>{
-
-  addMessage(data);
-
-});
-
-
-socket.on("chatMessage",(data)=>{
-
-  addMessage(data);
-
-});
+socket.on(
+  "chatMessage",
+  addMessage
+);
 
 
-function addMessage(data){
+function addMessage(
+  data
+){
 
   const box =
-    $("chatMessages");
+    $("chat");
 
 
   const div =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
 
   div.className =
-    "msg";
+    "message";
 
 
   div.innerHTML =
     "<b>" +
     escapeHtml(
       data.nickname ||
-      data.name ||
       "User"
     ) +
     ":</b> " +
     escapeHtml(
-      data.message ||
-      ""
+      data.message
     );
 
 
-  box.appendChild(div);
+  box.appendChild(
+    div
+  );
 
 
   box.scrollTop =
@@ -2049,9 +2551,9 @@ function addMessage(data){
 }
 
 
-/* =========================================================
-   MICROPHONE
-========================================================= */
+/* ================================================= */
+/* MIC                                                */
+/* ================================================= */
 
 async function toggleMic(){
 
@@ -2060,22 +2562,28 @@ async function toggleMic(){
     if(!localStream){
 
       localStream =
-        await navigator.mediaDevices
-          .getUserMedia({
-            audio:true,
-            video:false
-          });
+        await navigator
+          .mediaDevices
+          .getUserMedia(
+            {
+              audio:true,
+              video:false
+            }
+          );
 
     }
 
 
-    const tracks =
-      localStream.getAudioTracks();
+    const track =
+      localStream
+        .getAudioTracks()[0];
 
 
-    if(!tracks.length){
+    if(!track){
 
-      toast("Microphone not found");
+      toast(
+        "Microphone not found"
+      );
 
       return;
 
@@ -2086,12 +2594,15 @@ async function toggleMic(){
       !micOn;
 
 
-    tracks.forEach(
-      track=>{
-        track.enabled =
-          micOn;
-      }
-    );
+    track.enabled =
+      micOn;
+
+
+    $("micBtn")
+      .textContent =
+        micOn
+          ? "🎙"
+          : "🔇";
 
 
     $("micBtn")
@@ -2101,69 +2612,71 @@ async function toggleMic(){
       );
 
 
-    $("micBtn").textContent =
-      micOn
-        ? "🎙️"
-        : "🔇";
-
-
-    socket.emit(
-      "micToggle",
-      {
-        roomId:ROOM_ID,
-        userId:USER_ID,
-        micOn:micOn
-      }
-    );
-
-
     /*
-      Add local audio track
-      to current peers
+      Add/replace local
+      audio in peers.
     */
 
-    Object.values(peers)
-      .forEach(peer=>{
+    Object.values(
+      peers
+    ).forEach(
+      pc=>{
 
         const sender =
-          peer
+          pc
             .getSenders()
-            .find(s =>
-              s.track &&
-              s.track.kind === "audio"
+            .find(
+              s =>
+                s.track &&
+                s.track.kind ===
+                  "audio"
             );
+
 
         if(sender){
 
           sender.replaceTrack(
-            tracks[0]
+            track
           );
 
         }else if(micOn){
 
-          peer.addTrack(
-            tracks[0],
+          pc.addTrack(
+            track,
             localStream
           );
 
         }
 
-      });
+      }
+    );
 
 
-    if(micOn){
+    socket.emit(
+      "micToggle",
+      {
+        roomId:
+          ROOM_ID,
 
-      toast("Microphone ON");
+        userId:
+          USER_ID,
 
-    }else{
+        micOn
+      }
+    );
 
-      toast("Microphone OFF");
 
-    }
+    toast(
+      micOn
+        ? "Microphone ON"
+        : "Microphone OFF"
+    );
 
   }catch(error){
 
-    console.error(error);
+    console.error(
+      error
+    );
 
     toast(
       "Mic permission allow karo"
@@ -2174,9 +2687,9 @@ async function toggleMic(){
 }
 
 
-/* =========================================================
-   SPEAKER
-========================================================= */
+/* ================================================= */
+/* SPEAKER                                            */
+/* ================================================= */
 
 function toggleSpeaker(){
 
@@ -2192,19 +2705,27 @@ function toggleSpeaker(){
 
 
   document
-    .querySelectorAll("audio")
-    .forEach(audio=>{
-      audio.muted =
-        !speakerOn;
-    });
+    .querySelectorAll(
+      "audio"
+    )
+    .forEach(
+      audio=>{
+        audio.muted =
+          !speakerOn;
+      }
+    );
 
 
   socket.emit(
     "speakerToggle",
     {
-      roomId:ROOM_ID,
-      userId:USER_ID,
-      speakerOn:speakerOn
+      roomId:
+        ROOM_ID,
+
+      userId:
+        USER_ID,
+
+      speakerOn
     }
   );
 
@@ -2218,18 +2739,22 @@ function toggleSpeaker(){
 }
 
 
-/* =========================================================
-   WEBRTC
-========================================================= */
+/* ================================================= */
+/* WEBRTC                                             */
+/* ================================================= */
 
 function createPeer(
   remoteUserId,
   initiator
 ){
 
-  if(peers[remoteUserId]){
+  if(
+    peers[remoteUserId]
+  ){
 
-    return peers[remoteUserId];
+    return peers[
+      remoteUserId
+    ];
 
   }
 
@@ -2240,32 +2765,36 @@ function createPeer(
     );
 
 
-  peers[remoteUserId] =
+  peers[
+    remoteUserId
+  ] =
     pc;
 
 
   /*
-    Local audio
+    Add local track.
   */
 
   if(localStream){
 
     localStream
       .getTracks()
-      .forEach(track=>{
+      .forEach(
+        track=>{
 
-        pc.addTrack(
-          track,
-          localStream
-        );
+          pc.addTrack(
+            track,
+            localStream
+          );
 
-      });
+        }
+      );
 
   }
 
 
   /*
-    Remote audio
+    Remote audio.
   */
 
   pc.ontrack =
@@ -2273,7 +2802,8 @@ function createPeer(
 
       let audio =
         document.getElementById(
-          "audio-"+remoteUserId
+          "audio-" +
+          remoteUserId
         );
 
 
@@ -2285,7 +2815,8 @@ function createPeer(
           );
 
         audio.id =
-          "audio-"+remoteUserId;
+          "audio-" +
+          remoteUserId;
 
         audio.autoplay =
           true;
@@ -2294,13 +2825,16 @@ function createPeer(
           true;
 
         document.body
-          .appendChild(audio);
+          .appendChild(
+            audio
+          );
 
       }
 
 
       audio.srcObject =
         event.streams[0];
+
 
       audio.muted =
         !speakerOn;
@@ -2309,21 +2843,30 @@ function createPeer(
 
 
   /*
-    ICE
+    ICE candidate.
   */
 
   pc.onicecandidate =
     event=>{
 
-      if(event.candidate){
+      if(
+        event.candidate
+      ){
 
         socket.emit(
           "webrtc-ice-candidate",
           {
-            roomId:ROOM_ID,
-            fromUserId:USER_ID,
-            toUserId:remoteUserId,
-            candidate:event.candidate
+            roomId:
+              ROOM_ID,
+
+            fromUserId:
+              USER_ID,
+
+            toUserId:
+              remoteUserId,
+
+            candidate:
+              event.candidate
           }
         );
 
@@ -2333,7 +2876,7 @@ function createPeer(
 
 
   /*
-    Create offer
+    Offer.
   */
 
   if(initiator){
@@ -2345,20 +2888,29 @@ function createPeer(
             offer
           )
       )
-      .then(()=>{
+      .then(
+        ()=>{
+          socket.emit(
+            "webrtc-offer",
+            {
+              roomId:
+                ROOM_ID,
 
-        socket.emit(
-          "webrtc-offer",
-          {
-            roomId:ROOM_ID,
-            fromUserId:USER_ID,
-            toUserId:remoteUserId,
-            offer:pc.localDescription
-          }
-        );
+              fromUserId:
+                USER_ID,
 
-      })
-      .catch(console.error);
+              toUserId:
+                remoteUserId,
+
+              offer:
+                pc.localDescription
+            }
+          );
+        }
+      )
+      .catch(
+        console.error
+      );
 
   }
 
@@ -2368,25 +2920,26 @@ function createPeer(
 }
 
 
-/* =========================================================
-   WEBRTC PEER JOINED
-========================================================= */
+/* ================================================= */
+/* PEER JOINED                                        */
+/* ================================================= */
 
 socket.on(
   "webrtc-peer-joined",
-  async data=>{
-
-    if(!data) return;
+  data=>{
 
     const remoteUserId =
-      data.userId ||
-      data.remoteUserId;
+      data?.userId;
 
 
-    if(!remoteUserId) return;
+    if(
+      !remoteUserId ||
+      remoteUserId === USER_ID
+    ){
 
-    if(remoteUserId === USER_ID)
       return;
+
+    }
 
 
     createPeer(
@@ -2398,9 +2951,9 @@ socket.on(
 );
 
 
-/* =========================================================
-   OFFER
-========================================================= */
+/* ================================================= */
+/* OFFER                                              */
+/* ================================================= */
 
 socket.on(
   "webrtc-offer",
@@ -2412,7 +2965,8 @@ socket.on(
         data.fromUserId;
 
 
-      if(!remoteUserId) return;
+      if(!remoteUserId)
+        return;
 
 
       const pc =
@@ -2422,36 +2976,43 @@ socket.on(
         );
 
 
-      await pc.setRemoteDescription(
-        new RTCSessionDescription(
+      await pc
+        .setRemoteDescription(
           data.offer
-        )
-      );
+        );
 
 
       const answer =
         await pc.createAnswer();
 
 
-      await pc.setLocalDescription(
-        answer
-      );
+      await pc
+        .setLocalDescription(
+          answer
+        );
 
 
       socket.emit(
         "webrtc-answer",
         {
-          roomId:ROOM_ID,
-          fromUserId:USER_ID,
-          toUserId:remoteUserId,
-          answer:pc.localDescription
+          roomId:
+            ROOM_ID,
+
+          fromUserId:
+            USER_ID,
+
+          toUserId:
+            remoteUserId,
+
+          answer:
+            pc.localDescription
         }
       );
 
     }catch(error){
 
       console.error(
-        "Offer error:",
+        "offer",
         error
       );
 
@@ -2461,9 +3022,9 @@ socket.on(
 );
 
 
-/* =========================================================
-   ANSWER
-========================================================= */
+/* ================================================= */
+/* ANSWER                                             */
+/* ================================================= */
 
 socket.on(
   "webrtc-answer",
@@ -2476,22 +3037,24 @@ socket.on(
 
 
       const pc =
-        peers[remoteUserId];
+        peers[
+          remoteUserId
+        ];
 
 
-      if(!pc) return;
+      if(!pc)
+        return;
 
 
-      await pc.setRemoteDescription(
-        new RTCSessionDescription(
+      await pc
+        .setRemoteDescription(
           data.answer
-        )
-      );
+        );
 
     }catch(error){
 
       console.error(
-        "Answer error:",
+        "answer",
         error
       );
 
@@ -2501,9 +3064,9 @@ socket.on(
 );
 
 
-/* =========================================================
-   ICE CANDIDATE
-========================================================= */
+/* ================================================= */
+/* ICE                                                */
+/* ================================================= */
 
 socket.on(
   "webrtc-ice-candidate",
@@ -2516,22 +3079,23 @@ socket.on(
 
 
       const pc =
-        peers[remoteUserId];
+        peers[
+          remoteUserId
+        ];
 
 
-      if(!pc) return;
+      if(!pc)
+        return;
 
 
       await pc.addIceCandidate(
-        new RTCIceCandidate(
-          data.candidate
-        )
+        data.candidate
       );
 
     }catch(error){
 
       console.error(
-        "ICE error:",
+        "ice",
         error
       );
 
@@ -2541,9 +3105,9 @@ socket.on(
 );
 
 
-/* =========================================================
-   USER LEFT
-========================================================= */
+/* ================================================= */
+/* USER LEFT                                          */
+/* ================================================= */
 
 socket.on(
   "userLeft",
@@ -2552,10 +3116,14 @@ socket.on(
     const userId =
       data?.userId;
 
-    if(!userId) return;
+
+    if(!userId)
+      return;
 
 
-    if(peers[userId]){
+    if(
+      peers[userId]
+    ){
 
       peers[userId]
         .close();
@@ -2567,8 +3135,10 @@ socket.on(
 
     const audio =
       document.getElementById(
-        "audio-"+userId
+        "audio-" +
+        userId
       );
+
 
     if(audio){
 
@@ -2580,11 +3150,11 @@ socket.on(
 );
 
 
-/* =========================================================
-   FEATURES
-========================================================= */
+/* ================================================= */
+/* FEATURES                                           */
+/* ================================================= */
 
-function featureMessage(name){
+function feature(name){
 
   toast(
     name +
@@ -2594,9 +3164,9 @@ function featureMessage(name){
 }
 
 
-/* =========================================================
-   INBOX
-========================================================= */
+/* ================================================= */
+/* INBOX                                             */
+/* ================================================= */
 
 function openInbox(){
 
@@ -2606,28 +3176,37 @@ function openInbox(){
 }
 
 
-/* =========================================================
-   MORE
-========================================================= */
+/* ================================================= */
+/* MORE                                               */
+/* ================================================= */
 
 function openMore(){
 
-  const choice =
+  const option =
     prompt(
-      "1 = Share Room\n2 = Bag\n3 = Gifts"
+      "1 = Share Room\n" +
+      "2 = Bag\n" +
+      "3 = Gifts\n" +
+      "4 = Leave Room"
     );
 
 
-  if(choice === "1"){
+  if(option === "1"){
 
     copyRoomLink();
 
-  }else if(choice === "2"){
+  }
+
+
+  if(option === "2"){
 
     location.href =
       "index.html#bag";
 
-  }else if(choice === "3"){
+  }
+
+
+  if(option === "3"){
 
     toast(
       "Gift panel coming soon"
@@ -2635,28 +3214,33 @@ function openMore(){
 
   }
 
+
+  if(option === "4"){
+
+    leaveRoom();
+
+  }
+
 }
 
 
-/* =========================================================
-   LEAVE / BACK
-========================================================= */
+/* ================================================= */
+/* LEAVE ROOM                                        */
+/* ================================================= */
 
 function leaveRoom(){
 
   socket.emit(
-    "leaveRoom",
-    {
-      roomId:ROOM_ID,
-      userId:USER_ID
-    }
+    "leaveRoom"
   );
 
 
-  Object.values(peers)
-    .forEach(
-      pc=>pc.close()
-    );
+  Object.values(
+    peers
+  ).forEach(
+    pc =>
+      pc.close()
+  );
 
 
   if(localStream){
@@ -2664,7 +3248,8 @@ function leaveRoom(){
     localStream
       .getTracks()
       .forEach(
-        track=>track.stop()
+        track =>
+          track.stop()
       );
 
   }
@@ -2676,15 +3261,82 @@ function leaveRoom(){
 }
 
 
-/* =========================================================
-   BROWSER BACK
-========================================================= */
+/* ================================================= */
+/* INITIAL UI                                        */
+/* ================================================= */
+
+$("roomId")
+  .textContent =
+    ROOM_ID;
+
+
+$("hostName")
+  .textContent =
+    USER_NAME;
+
+
+$("avatar1")
+  .src =
+    USER_DP;
+
+
+$("name1")
+  .textContent =
+    USER_NAME;
+
+
+/* ================================================= */
+/* ROOM NAME CHANGED                                 */
+/* ================================================= */
+
+socket.on(
+  "roomNameChanged",
+  data=>{
+
+    if(
+      data?.roomName
+    ){
+
+      $("roomName")
+        .textContent =
+          data.roomName;
+
+    }
+
+  }
+);
+
+
+/* ================================================= */
+/* CONNECTION ERROR                                  */
+/* ================================================= */
+
+socket.on(
+  "connect_error",
+  error=>{
+
+    console.error(
+      error
+    );
+
+    toast(
+      "Server connect nahi hua"
+    );
+
+  }
+);
+
+
+/* ================================================= */
+/* BROWSER BACK                                      */
+/* ================================================= */
 
 history.pushState(
   null,
   "",
   location.href
 );
+
 
 window.addEventListener(
   "popstate",
@@ -2694,21 +3346,18 @@ window.addEventListener(
 );
 
 
-/* =========================================================
-   PAGE CLOSE
-========================================================= */
+/* ================================================= */
+/* CLOSE                                              */
+/* ================================================= */
 
 window.addEventListener(
   "beforeunload",
   ()=>{
+
     try{
 
       socket.emit(
-        "leaveRoom",
-        {
-          roomId:ROOM_ID,
-          userId:USER_ID
-        }
+        "leaveRoom"
       );
 
     }catch(e){}
@@ -2716,68 +3365,7 @@ window.addEventListener(
   }
 );
 
-
-/* =========================================================
-   INITIAL ROOM FALLBACK
-========================================================= */
-
-$("roomId").textContent =
-  ROOM_ID;
-
-$("hostName").textContent =
-  USER_NAME;
-
-$("roomName").textContent =
-  "PawanVoice Room";
-
-$("avatar1").src =
-  USER_DP;
-
-$("name1").textContent =
-  USER_NAME;
-
-
-/* =========================================================
-   RECEIVE NEW ROOM NAME
-========================================================= */
-
-socket.on(
-  "roomNameChanged",
-  data=>{
-
-    if(data?.roomName){
-
-      $("roomName")
-        .textContent =
-        data.roomName;
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   ERROR
-========================================================= */
-
-socket.on(
-  "connect_error",
-  error=>{
-
-    console.error(
-      "Socket error:",
-      error
-    );
-
-    toast(
-      "Room server connect nahi hua"
-    );
-
-  }
-);
-
 </script>
 
 </body>
-  </html>
+      </html>
