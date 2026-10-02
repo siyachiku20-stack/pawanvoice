@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width,initial-scale=1">
+
+<meta
+ name="viewport"
+ content="width=device-width,initial-scale=1.0"
+>
 
 <title>PawanVoice Room</title>
 
-<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+<script
+ src="https://cdn.socket.io/4.8.1/socket.io.min.js">
+</script>
 
 <style>
 
@@ -17,7 +24,7 @@ content="width=device-width,initial-scale=1">
 
 body{
  margin:0;
- background:#120b20;
+ background:#11091d;
  color:white;
  font-family:Arial,sans-serif;
 }
@@ -26,15 +33,14 @@ body{
  max-width:480px;
  min-height:100vh;
  margin:auto;
- position:relative;
- padding-bottom:75px;
+ padding-bottom:82px;
 
  background:
  radial-gradient(
-  circle at top,
-  #63379b,
-  #21132f 42%,
-  #100817
+   circle at top,
+   #67359a,
+   #271535 42%,
+   #0e0716
  );
 }
 
@@ -43,25 +49,29 @@ body{
  display:flex;
  align-items:center;
  gap:8px;
- padding:10px;
+ padding:9px;
  background:#0004;
 }
 
 .back{
- border:0;
- background:#ffffff18;
- color:white;
  width:38px;
  height:38px;
+ border:0;
  border-radius:50%;
- font-size:24px;
+ background:#ffffff18;
+ color:white;
+ font-size:25px;
 }
 
 .roomdp{
  width:45px;
  height:45px;
  border-radius:50%;
- background:linear-gradient(135deg,#ff4c9d,#7337ff);
+ background:linear-gradient(
+   135deg,
+   #ff4d9d,
+   #7136ff
+ );
  display:flex;
  align-items:center;
  justify-content:center;
@@ -75,40 +85,45 @@ body{
  object-fit:cover;
 }
 
-.roominfo{
+.roomInfo{
  flex:1;
+ min-width:0;
 }
 
-.roominfo b{
+.roomInfo b{
  display:block;
  font-size:15px;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis;
 }
 
-.roominfo small{
- color:#cfc4df;
+.roomInfo small{
+ color:#cfc3df;
 }
 
 .count{
  background:#0005;
+ border-radius:15px;
  padding:6px 9px;
- border-radius:14px;
  font-size:12px;
 }
 
-.headerBtn{
- border:0;
- background:#ffffff15;
- color:white;
+.headBtn{
  width:36px;
  height:36px;
+ border:0;
  border-radius:11px;
+ background:#ffffff15;
+ color:white;
+ font-size:17px;
 }
 
 .status{
  text-align:center;
  padding:5px;
+ color:#c7b7d9;
  font-size:11px;
- color:#bdb0d0;
 }
 
 .seats{
@@ -118,21 +133,19 @@ body{
 .host{
  display:flex;
  justify-content:center;
- margin-bottom:25px;
+ margin-bottom:27px;
 }
 
 .grid{
  display:grid;
- grid-template-columns:
- repeat(4,1fr);
-
+ grid-template-columns:repeat(4,1fr);
  gap:24px 7px;
 }
 
 .seat{
  text-align:center;
- min-width:0;
  cursor:pointer;
+ min-width:0;
 }
 
 .avatar{
@@ -142,9 +155,9 @@ body{
 
  border-radius:50%;
 
- border:2px solid #9868ff;
+ border:2px solid #9566ff;
 
- background:#302044;
+ background:#30203e;
 
  display:flex;
  align-items:center;
@@ -153,7 +166,6 @@ body{
  overflow:hidden;
 
  font-weight:bold;
- font-size:18px;
 }
 
 .avatar img{
@@ -163,22 +175,23 @@ body{
 }
 
 .empty{
- border:2px dashed #ffffff35;
+ border:2px dashed #ffffff38;
  color:#ffffff66;
 }
 
 .name{
  margin-top:5px;
  font-size:11px;
+
  white-space:nowrap;
  overflow:hidden;
  text-overflow:ellipsis;
 }
 
 .mic{
- font-size:10px;
- color:#7dffb2;
- margin-top:2px;
+ height:13px;
+ font-size:9px;
+ color:#70ffae;
 }
 
 .tools{
@@ -190,10 +203,10 @@ body{
 
 .tool{
  border:0;
- background:#ffffff10;
- color:white;
  border-radius:12px;
  padding:9px 3px;
+ background:#ffffff10;
+ color:white;
  font-size:10px;
 }
 
@@ -207,10 +220,11 @@ body{
  margin:8px 10px;
  padding:12px;
  border-radius:16px;
+
  background:linear-gradient(
-  90deg,
-  #522188,
-  #a13b70
+   90deg,
+   #522188,
+   #a03b70
  );
 }
 
@@ -226,9 +240,9 @@ body{
 }
 
 .messages{
- height:120px;
+ height:125px;
  overflow-y:auto;
- padding:8px 12px;
+ padding:7px 12px;
 }
 
 .msg{
@@ -249,9 +263,10 @@ body{
 
  width:min(480px,100%);
 
+ padding:8px;
+
  display:flex;
  gap:5px;
- padding:8px;
 
  background:#0b0714ee;
 }
@@ -283,22 +298,30 @@ body{
 }
 
 </style>
+
 </head>
 
 <body>
 
 <div class="room">
 
+<!-- HEADER -->
+
 <div class="header">
 
-<button class="back"
-onclick="leaveRoom()">‹</button>
+<button
+ class="back"
+ onclick="leaveRoom()">
+‹
+</button>
 
-<div class="roomdp" id="roomDp">
+<div
+ class="roomdp"
+ id="roomDp">
 PV
 </div>
 
-<div class="roominfo">
+<div class="roomInfo">
 
 <b id="roomName">
 PawanVoice Room
@@ -310,46 +333,61 @@ Room #10001
 
 </div>
 
-<div class="count"
-id="count">
+<div
+ class="count"
+ id="count">
 0/9
 </div>
 
-<button class="headerBtn"
-onclick="settings()">⚙️</button>
+<button
+ class="headBtn"
+ onclick="settings()">
+⚙️
+</button>
 
-<button class="headerBtn"
-onclick="invite()">↗️</button>
+<button
+ class="headBtn"
+ onclick="invite()">
+↗️
+</button>
 
 </div>
 
-<div class="status"
-id="status">
+
+<div
+ class="status"
+ id="status">
 Connecting...
 </div>
 
 
-<!-- HOST -->
+<!-- SEATS -->
 
 <div class="seats">
 
+<!-- HOST -->
+
 <div class="host">
 
-<div class="seat"
-onclick="takeSeat(1)">
+<div
+ class="seat"
+ onclick="takeSeat(1)">
 
-<div class="avatar empty"
-id="avatar1">
+<div
+ class="avatar empty"
+ id="avatar1">
 +
 </div>
 
-<div class="name"
-id="name1">
+<div
+ class="name"
+ id="name1">
 Seat 1
 </div>
 
-<div class="mic"
-id="mic1">
+<div
+ class="mic"
+ id="mic1">
 </div>
 
 </div>
@@ -357,59 +395,205 @@ id="mic1">
 </div>
 
 
-<!-- SEATS 2-9 -->
+<!-- 2-5 -->
 
 <div class="grid">
 
-<div class="seat" onclick="takeSeat(2)">
-<div class="avatar empty" id="avatar2">+</div>
-<div class="name" id="name2">Seat 2</div>
-<div class="mic" id="mic2"></div>
+<div
+ class="seat"
+ onclick="takeSeat(2)">
+
+<div
+ class="avatar empty"
+ id="avatar2">
++
 </div>
 
-<div class="seat" onclick="takeSeat(3)">
-<div class="avatar empty" id="avatar3">+</div>
-<div class="name" id="name3">Seat 3</div>
-<div class="mic" id="mic3"></div>
+<div
+ class="name"
+ id="name2">
+Seat 2
 </div>
 
-<div class="seat" onclick="takeSeat(4)">
-<div class="avatar empty" id="avatar4">+</div>
-<div class="name" id="name4">Seat 4</div>
-<div class="mic" id="mic4"></div>
-</div>
-
-<div class="seat" onclick="takeSeat(5)">
-<div class="avatar empty" id="avatar5">+</div>
-<div class="name" id="name5">Seat 5</div>
-<div class="mic" id="mic5"></div>
-</div>
-
-<div class="seat" onclick="takeSeat(6)">
-<div class="avatar empty" id="avatar6">+</div>
-<div class="name" id="name6">Seat 6</div>
-<div class="mic" id="mic6"></div>
-</div>
-
-<div class="seat" onclick="takeSeat(7)">
-<div class="avatar empty" id="avatar7">+</div>
-<div class="name" id="name7">Seat 7</div>
-<div class="mic" id="mic7"></div>
-</div>
-
-<div class="seat" onclick="takeSeat(8)">
-<div class="avatar empty" id="avatar8">+</div>
-<div class="name" id="name8">Seat 8</div>
-<div class="mic" id="mic8"></div>
-</div>
-
-<div class="seat" onclick="takeSeat(9)">
-<div class="avatar empty" id="avatar9">+</div>
-<div class="name" id="name9">Seat 9</div>
-<div class="mic" id="mic9"></div>
+<div
+ class="mic"
+ id="mic2">
 </div>
 
 </div>
+
+
+<div
+ class="seat"
+ onclick="takeSeat(3)">
+
+<div
+ class="avatar empty"
+ id="avatar3">
++
+</div>
+
+<div
+ class="name"
+ id="name3">
+Seat 3
+</div>
+
+<div
+ class="mic"
+ id="mic3">
+</div>
+
+</div>
+
+
+<div
+ class="seat"
+ onclick="takeSeat(4)">
+
+<div
+ class="avatar empty"
+ id="avatar4">
++
+</div>
+
+<div
+ class="name"
+ id="name4">
+Seat 4
+</div>
+
+<div
+ class="mic"
+ id="mic4">
+</div>
+
+</div>
+
+
+<div
+ class="seat"
+ onclick="takeSeat(5)">
+
+<div
+ class="avatar empty"
+ id="avatar5">
++
+</div>
+
+<div
+ class="name"
+ id="name5">
+Seat 5
+</div>
+
+<div
+ class="mic"
+ id="mic5">
+</div>
+
+</div>
+
+
+<!-- 6-9 -->
+
+<div
+ class="seat"
+ onclick="takeSeat(6)">
+
+<div
+ class="avatar empty"
+ id="avatar6">
++
+</div>
+
+<div
+ class="name"
+ id="name6">
+Seat 6
+</div>
+
+<div
+ class="mic"
+ id="mic6">
+</div>
+
+</div>
+
+
+<div
+ class="seat"
+ onclick="takeSeat(7)">
+
+<div
+ class="avatar empty"
+ id="avatar7">
++
+</div>
+
+<div
+ class="name"
+ id="name7">
+Seat 7
+</div>
+
+<div
+ class="mic"
+ id="mic7">
+</div>
+
+</div>
+
+
+<div
+ class="seat"
+ onclick="takeSeat(8)">
+
+<div
+ class="avatar empty"
+ id="avatar8">
++
+</div>
+
+<div
+ class="name"
+ id="name8">
+Seat 8
+</div>
+
+<div
+ class="mic"
+ id="mic8">
+</div>
+
+</div>
+
+
+<div
+ class="seat"
+ onclick="takeSeat(9)">
+
+<div
+ class="avatar empty"
+ id="avatar9">
++
+</div>
+
+<div
+ class="name"
+ id="name9">
+Seat 9
+</div>
+
+<div
+ class="mic"
+ id="mic9">
+</div>
+
+</div>
+
+</div>
+
 </div>
 
 
@@ -422,8 +606,9 @@ id="mic1">
 Support
 </button>
 
-<button class="tool"
-onclick="wheel()">
+<button
+ class="tool"
+ onclick="alert('Lucky Wheel')">
 <span>🎡</span>
 Wheel
 </button>
@@ -451,8 +636,15 @@ Benefits
 <div class="exp">
 
 <div class="expTop">
-<span>🚀 EXP</span>
-<span>TOP 1 • TOP 2 • TOP 3</span>
+
+<span>
+🚀 EXP
+</span>
+
+<span>
+TOP 1 • TOP 2 • TOP 3
+</span>
+
 </div>
 
 <div class="rocket">
@@ -464,35 +656,41 @@ Benefits
 
 <!-- CHAT -->
 
-<div class="messages"
-id="messages">
+<div
+ class="messages"
+ id="messages">
 </div>
 
+
+<!-- CHAT BAR -->
 
 <div class="chat">
 
 <input
-id="message"
-placeholder="Say something..."
-onkeydown="
-if(event.key==='Enter')sendMessage()
+ id="message"
+ placeholder="Say something..."
+ onkeydown="
+ if(event.key==='Enter')sendMessage()
 ">
 
-<button onclick="emoji()">
+<button
+ onclick="emoji()">
 😊
 </button>
 
 <button
-id="micBtn"
-onclick="toggleMic()">
-🔇
+ id="micBtn"
+ onclick="toggleMic()">
+🎙️
 </button>
 
-<button onclick="showInbox()">
+<button
+ onclick="showInbox()">
 💌
 </button>
 
-<button onclick="more()">
+<button
+ onclick="more()">
 •••
 </button>
 
@@ -503,270 +701,488 @@ onclick="toggleMic()">
 
 <script>
 
-const SERVER =
-"https://pawanvoice-1.onrender.com";
+/* =========================
+   SERVER
+========================= */
 
+const SERVER =
+ "https://pawanvoice-1.onrender.com";
+
+
+/* =========================
+   ROOM INFO
+========================= */
 
 const params =
-new URLSearchParams(
-location.search
-);
-
+ new URLSearchParams(
+   location.search
+ );
 
 const ROOM_ID =
-params.get("room") || "10001";
-
+ params.get("room") || "10001";
 
 const ROOM_NAME =
-params.get("name") ||
-"PawanVoice Room";
-
+ params.get("name") ||
+ "PawanVoice Room";
 
 const USER_NAME =
-localStorage.getItem(
-"pv_name"
-) || "Pawan";
-
+ localStorage.getItem(
+   "pv_name"
+ ) || "Pawan";
 
 const USER_DP =
-localStorage.getItem(
-"pv_dp"
-) || "";
+ localStorage.getItem(
+   "pv_dp"
+ ) || "";
 
 
-let socket;
+/* =========================
+   SOCKET
+========================= */
+
+let socket = null;
+
+
+/* =========================
+   MICROPHONE
+========================= */
+
+let localStream = null;
 
 let mic = false;
 
 
+/* =========================
+   WEBRTC
+========================= */
+
+const peers = new Map();
+
+const pendingIce = new Map();
+
+const rtcConfig = {
+
+ iceServers: [
+
+   {
+     urls:
+       "stun:stun.l.google.com:19302"
+   },
+
+   {
+     urls:
+       "stun:stun1.l.google.com:19302"
+   }
+
+ ]
+
+};
+
+
+/* =========================
+   UI
+========================= */
+
 document.getElementById(
-"roomName"
+ "roomName"
 ).textContent =
-ROOM_NAME;
-
+ ROOM_NAME;
 
 document.getElementById(
-"roomNumber"
+ "roomNumber"
 ).textContent =
-"Room #"+ROOM_ID;
+ "Room #"+ROOM_ID;
 
+
+/* =========================
+   CONNECT
+========================= */
 
 function connect(){
 
- socket = io(SERVER,{
-   transports:[
-     "websocket",
-     "polling"
-   ]
- });
+ socket = io(
+   SERVER,
+   {
+     transports:[
+       "websocket",
+       "polling"
+     ]
+   }
+ );
 
 
- socket.on("connect",()=>{
+ socket.on(
+   "connect",
+   async () => {
 
-   document.getElementById(
-     "status"
-   ).textContent =
-   "Connected";
+     setStatus(
+       "Connected"
+     );
 
-   socket.emit(
-     "joinRoom",
-     {
-       roomId:ROOM_ID,
-       name:USER_NAME,
-       dp:USER_DP
+     socket.emit(
+       "joinRoom",
+       {
+         roomId:ROOM_ID,
+         name:USER_NAME,
+         dp:USER_DP
+       }
+     );
+
+     /*
+      * Microphone is NOT opened
+      * automatically.
+      *
+      * User presses Mic button.
+      */
+   }
+ );
+
+
+ socket.on(
+   "connect_error",
+   () => {
+
+     setStatus(
+       "Server connection failed"
+     );
+
+   }
+ );
+
+
+ socket.on(
+   "joined",
+   data => {
+
+     renderRoom(
+       data.room
+     );
+
+   }
+ );
+
+
+ socket.on(
+   "roomState",
+   room => {
+
+     renderRoom(room);
+
+   }
+ );
+
+
+ /*
+  * Existing peer needs offer.
+  */
+
+ socket.on(
+   "existingPeer",
+   async data => {
+
+     await createOffer(
+       data.userId
+     );
+
+   }
+ );
+
+
+ /*
+  * Receive offer.
+  */
+
+ socket.on(
+   "webrtc-offer",
+   async data => {
+
+     await receiveOffer(
+       data.from,
+       data.offer
+     );
+
+   }
+ );
+
+
+ /*
+  * Receive answer.
+  */
+
+ socket.on(
+   "webrtc-answer",
+   async data => {
+
+     const pc =
+       peers.get(data.from);
+
+     if(!pc)return;
+
+     try{
+
+       await pc.setRemoteDescription(
+         new RTCSessionDescription(
+           data.answer
+         )
+       );
+
+       await flushIce(
+         data.from
+       );
+
+     }catch(e){
+
+       console.error(
+         "Answer error",
+         e
+       );
+
      }
-   );
 
- });
-
-
- socket.on("connect_error",()=>{
-
-   document.getElementById(
-     "status"
-   ).textContent =
-   "Connection failed";
-
- });
+   }
+ );
 
 
- socket.on("joined",data=>{
+ /*
+  * ICE candidate
+  */
 
-   renderRoom(
-     data.room
-   );
+ socket.on(
+   "webrtc-ice",
+   async data => {
 
- });
+     const pc =
+       peers.get(data.from);
+
+     if(
+       pc &&
+       pc.remoteDescription
+     ){
+
+       try{
+
+         await pc.addIceCandidate(
+           new RTCIceCandidate(
+             data.candidate
+           )
+         );
+
+       }catch(e){
+
+         console.error(
+           "ICE error",
+           e
+         );
+
+       }
+
+     }else{
+
+       if(
+         !pendingIce.has(
+           data.from
+         )
+       ){
+
+         pendingIce.set(
+           data.from,
+           []
+         );
+
+       }
+
+       pendingIce
+         .get(data.from)
+         .push(
+           data.candidate
+         );
+
+     }
+
+   }
+ );
 
 
- socket.on("roomState",room=>{
+ /*
+  * Peer left
+  */
 
-   renderRoom(room);
+ socket.on(
+   "peerLeft",
+   data => {
 
- });
+     closePeer(
+       data.userId
+     );
 
-
- socket.on("userJoined",user=>{
-
-   addMessage(
-     "🟢 "+
-     escapeHtml(user.name)+
-     " joined"
-   );
-
- });
+   }
+ );
 
 
- socket.on("userLeft",user=>{
+ socket.on(
+   "userJoined",
+   user => {
 
-   addMessage(
-     "🔴 "+
-     escapeHtml(user.name)+
-     " left"
-   );
+     addMessage(
+       "🟢 "+
+       escapeHtml(
+         user.name
+       )+
+       " joined the room"
+     );
 
- });
-
-
- socket.on("message",data=>{
-
-   addMessage(
-     "<b>"+
-     escapeHtml(data.name)+
-     ":</b> "+
-     escapeHtml(data.message)
-   );
-
- });
+   }
+ );
 
 
- socket.on("gift",data=>{
+ socket.on(
+   "userLeft",
+   user => {
 
-   addMessage(
-     "<span class='gift'>🎁 "+
-     escapeHtml(data.from)+
-     " sent "+
-     escapeHtml(data.giftName)+
-     " to "+
-     escapeHtml(data.to)+
-     " ("+
-     data.amount+
-     " coins)</span>"
-   );
+     addMessage(
+       "🔴 "+
+       escapeHtml(
+         user.name
+       )+
+       " left the room"
+     );
 
- });
+   }
+ );
+
+
+ socket.on(
+   "message",
+   data => {
+
+     addMessage(
+       "<b>"+
+       escapeHtml(
+         data.name
+       )+
+       ":</b> "+
+       escapeHtml(
+         data.message
+       )
+     );
+
+   }
+ );
 
 }
 
 
+/* =========================
+   ROOM UI
+========================= */
+
 function renderRoom(room){
-
- const users =
- room.users || [];
-
-
- document.getElementById(
-   "count"
- ).textContent =
- users.length+"/9";
-
-
- for(let i=1;i<=9;i++){
-
-   const avatar =
-   document.getElementById(
-     "avatar"+i
-   );
-
-   const name =
-   document.getElementById(
-     "name"+i
-   );
-
-   const mic =
-   document.getElementById(
-     "mic"+i
-   );
-
-   avatar.classList.add(
-     "empty"
-   );
-
-   avatar.innerHTML="+";
-
-   name.textContent=
-     "Seat "+i;
-
-   mic.textContent="";
- }
-
 
  const seats =
  room.seats || [];
 
+ let total = 0;
 
- seats.forEach(seat=>{
+ seats.forEach(
+   seat => {
 
-   const user =
-   seat.user;
+     const avatar =
+       document.getElementById(
+         "avatar"+
+         seat.seatNo
+       );
 
-   if(!user)return;
+     const name =
+       document.getElementById(
+         "name"+
+         seat.seatNo
+       );
 
+     const micEl =
+       document.getElementById(
+         "mic"+
+         seat.seatNo
+       );
 
-   const avatar =
-   document.getElementById(
-     "avatar"+
-     seat.seatNo
-   );
+     if(!avatar)return;
 
-   const name =
-   document.getElementById(
-     "name"+
-     seat.seatNo
-   );
+     if(!seat.user){
 
-   const mic =
-   document.getElementById(
-     "mic"+
-     seat.seatNo
-   );
+       avatar.classList.add(
+         "empty"
+       );
 
+       avatar.innerHTML="+";
 
-   avatar.classList.remove(
-     "empty"
-   );
+       name.textContent =
+         "Seat "+
+         seat.seatNo;
 
+       micEl.textContent="";
 
-   if(user.dp){
+       return;
+     }
 
-     avatar.innerHTML=
-       "<img src=\""+
-       escapeAttr(user.dp)+
-       "\">";
+     total++;
 
-   }else{
+     avatar.classList.remove(
+       "empty"
+     );
 
-     avatar.textContent=
-       user.nickname
-       .substring(0,2)
-       .toUpperCase();
+     const user =
+       seat.user;
+
+     if(user.dp){
+
+       avatar.innerHTML =
+         "<img src=\""+
+         escapeAttr(
+           user.dp
+         )+
+         "\">";
+
+     }else{
+
+       avatar.textContent =
+         String(
+           user.nickname
+         )
+         .substring(0,2)
+         .toUpperCase();
+
+     }
+
+     name.textContent =
+       user.nickname;
+
+     micEl.textContent =
+       user.mic
+       ? "🎙️ ON"
+       : "🔇 OFF";
 
    }
+ );
 
 
-   name.textContent =
-     user.nickname;
+ /*
+  * Count all room users,
+  * not only seated users.
+  */
 
+ const userCount =
+   (room.users || []).length;
 
-   mic.textContent =
-     user.mic
-     ? "🎙️ ON"
-     : "🔇 OFF";
-
- });
+ document.getElementById(
+   "count"
+ ).textContent =
+ userCount+"/9";
 
 }
 
+
+/* =========================
+   TAKE SEAT
+========================= */
 
 function takeSeat(seatNo){
 
@@ -782,40 +1198,568 @@ function takeSeat(seatNo){
 }
 
 
-function toggleMic(){
+/* =========================
+   MICROPHONE
+========================= */
 
- mic=!mic;
+async function toggleMic(){
 
- document.getElementById(
-   "micBtn"
- ).textContent =
- mic ? "🎙️" : "🔇";
+ try{
 
+   if(!mic){
+
+     await startMicrophone();
+
+   }else{
+
+     stopMicrophone();
+
+   }
+
+ }catch(e){
+
+   console.error(e);
+
+   alert(
+     "Microphone permission नहीं मिली। Browser में microphone permission Allow करें."
+   );
+
+ }
+
+}
+
+
+async function startMicrophone(){
+
+ if(!localStream){
+
+   localStream =
+     await navigator.mediaDevices
+       .getUserMedia({
+         audio:{
+           echoCancellation:true,
+           noiseSuppression:true,
+           autoGainControl:true
+         },
+         video:false
+       });
+
+ }
+
+ localStream
+   .getAudioTracks()
+   .forEach(
+     track => {
+       track.enabled = true;
+     }
+   );
+
+ mic = true;
+
+ updateMicButton();
 
  socket.emit(
    "micStatus",
    {
-     mic
+     mic:true
+   }
+ );
+
+
+ /*
+  * Add local audio track
+  * to every existing peer.
+  */
+
+ for(
+   const [peerId,pc]
+   of peers
+ ){
+
+   const senders =
+     pc.getSenders();
+
+   const already =
+     senders.some(
+       sender =>
+         sender.track &&
+         sender.track.kind === "audio"
+     );
+
+   if(!already){
+
+     localStream
+       .getAudioTracks()
+       .forEach(
+         track => {
+
+           pc.addTrack(
+             track,
+             localStream
+           );
+
+         }
+       );
+
+   }
+
+   try{
+
+     const offer =
+       await pc.createOffer();
+
+     await pc.setLocalDescription(
+       offer
+     );
+
+     socket.emit(
+       "webrtc-offer",
+       {
+         to:peerId,
+         offer:pc.localDescription
+       }
+     );
+
+   }catch(e){
+
+     console.error(e);
+
+   }
+
+ }
+
+}
+
+
+function stopMicrophone(){
+
+ if(!localStream)return;
+
+ localStream
+   .getAudioTracks()
+   .forEach(
+     track => {
+       track.enabled = false;
+     }
+   );
+
+ mic = false;
+
+ updateMicButton();
+
+ socket.emit(
+   "micStatus",
+   {
+     mic:false
    }
  );
 
 }
 
 
-function sendMessage(){
+function updateMicButton(){
 
- const input =
  document.getElementById(
-   "message"
+   "micBtn"
+ ).textContent =
+ mic
+ ? "🎙️"
+ : "🔇";
+
+}
+
+
+/* =========================
+   WEBRTC PEER
+========================= */
+
+function createPeer(peerId){
+
+ if(
+   !peerId ||
+   peerId === socket.id
+ ){
+   return null;
+ }
+
+ if(
+   peers.has(peerId)
+ ){
+   return peers.get(peerId);
+ }
+
+ const pc =
+   new RTCPeerConnection(
+     rtcConfig
+   );
+
+ peers.set(
+   peerId,
+   pc
  );
 
 
+ /*
+  * Add microphone track
+  * if mic is already ON.
+  */
+
+ if(
+   localStream &&
+   mic
+ ){
+
+   localStream
+     .getAudioTracks()
+     .forEach(
+       track => {
+
+         pc.addTrack(
+           track,
+           localStream
+         );
+
+       }
+     );
+
+ }
+
+
+ /*
+  * Receive remote audio.
+  */
+
+ pc.ontrack = event => {
+
+   if(
+     event.streams &&
+     event.streams[0]
+   ){
+
+     playRemoteAudio(
+       peerId,
+       event.streams[0]
+     );
+
+   }
+
+ };
+
+
+ /*
+  * ICE
+  */
+
+ pc.onicecandidate =
+   event => {
+
+     if(
+       event.candidate
+     ){
+
+       socket.emit(
+         "webrtc-ice",
+         {
+           to:peerId,
+           candidate:
+             event.candidate
+         }
+       );
+
+     }
+
+   };
+
+
+ pc.onconnectionstatechange =
+   () => {
+
+     const state =
+       pc.connectionState;
+
+     console.log(
+       "Peer",
+       peerId,
+       state
+     );
+
+     if(
+       state === "failed" ||
+       state === "closed" ||
+       state === "disconnected"
+     ){
+
+       closePeer(
+         peerId
+       );
+
+     }
+
+   };
+
+ return pc;
+}
+
+
+/* =========================
+   CREATE OFFER
+========================= */
+
+async function createOffer(
+ peerId
+){
+
+ const pc =
+   createPeer(
+     peerId
+   );
+
+ if(!pc)return;
+
+ try{
+
+   const offer =
+     await pc.createOffer();
+
+   await pc.setLocalDescription(
+     offer
+   );
+
+   socket.emit(
+     "webrtc-offer",
+     {
+       to:peerId,
+       offer:pc.localDescription
+     }
+   );
+
+ }catch(e){
+
+   console.error(
+     "Offer error",
+     e
+   );
+
+ }
+
+}
+
+
+/* =========================
+   RECEIVE OFFER
+========================= */
+
+async function receiveOffer(
+ peerId,
+ offer
+){
+
+ const pc =
+   createPeer(
+     peerId
+   );
+
+ if(!pc)return;
+
+ try{
+
+   await pc.setRemoteDescription(
+     new RTCSessionDescription(
+       offer
+     )
+   );
+
+   await flushIce(
+     peerId
+   );
+
+   const answer =
+     await pc.createAnswer();
+
+   await pc.setLocalDescription(
+     answer
+   );
+
+   socket.emit(
+     "webrtc-answer",
+     {
+       to:peerId,
+       answer:pc.localDescription
+     }
+   );
+
+ }catch(e){
+
+   console.error(
+     "Offer receive error",
+     e
+   );
+
+ }
+
+}
+
+
+/* =========================
+   ICE QUEUE
+========================= */
+
+async function flushIce(
+ peerId
+){
+
+ const pc =
+   peers.get(peerId);
+
+ if(!pc)return;
+
+ const list =
+   pendingIce.get(
+     peerId
+   ) || [];
+
+ for(
+   const candidate
+   of list
+ ){
+
+   try{
+
+     await pc.addIceCandidate(
+       new RTCIceCandidate(
+         candidate
+       )
+     );
+
+   }catch(e){
+
+     console.error(
+       e
+     );
+
+   }
+
+ }
+
+ pendingIce.delete(
+   peerId
+ );
+
+
+}
+
+
+/* =========================
+   REMOTE AUDIO
+========================= */
+
+function playRemoteAudio(
+ peerId,
+ stream
+){
+
+ let audio =
+   document.getElementById(
+     "audio-"+peerId
+   );
+
+ if(!audio){
+
+   audio =
+     document.createElement(
+       "audio"
+     );
+
+   audio.id =
+     "audio-"+peerId;
+
+   audio.autoplay =
+     true;
+
+   audio.playsInline =
+     true;
+
+   document.body.appendChild(
+     audio
+   );
+
+ }
+
+ audio.srcObject =
+   stream;
+
+ audio.play()
+   .catch(
+     () => {}
+   );
+
+}
+
+
+/* =========================
+   CLOSE PEER
+========================= */
+
+function closePeer(
+ peerId
+){
+
+ const pc =
+   peers.get(
+     peerId
+   );
+
+ if(pc){
+
+   pc.close();
+
+ }
+
+ peers.delete(
+   peerId
+ );
+
+ pendingIce.delete(
+   peerId
+ );
+
+ const audio =
+   document.getElementById(
+     "audio-"+peerId
+   );
+
+ if(audio){
+
+   audio.srcObject =
+     null;
+
+   audio.remove();
+
+ }
+
+}
+
+
+/* =========================
+   CHAT
+========================= */
+
+function sendMessage(){
+
+ const input =
+   document.getElementById(
+     "message"
+   );
+
  const message =
- input.value.trim();
+   input.value.trim();
 
-
- if(!message)return;
-
+ if(
+   !message ||
+   !socket
+ ){
+   return;
+ }
 
  socket.emit(
    "message",
@@ -824,70 +1768,86 @@ function sendMessage(){
    }
  );
 
-
  input.value="";
+
 }
 
 
 function addMessage(text){
 
  const box =
- document.getElementById(
-   "messages"
- );
-
+   document.getElementById(
+     "messages"
+   );
 
  const div =
- document.createElement(
-   "div"
+   document.createElement(
+     "div"
+   );
+
+ div.className =
+   "msg";
+
+ div.innerHTML =
+   text;
+
+ box.appendChild(
+   div
  );
 
-
- div.className="msg";
-
- div.innerHTML=text;
-
- box.appendChild(div);
-
  box.scrollTop =
- box.scrollHeight;
+   box.scrollHeight;
 
 }
 
 
+/* =========================
+   EMOJI
+========================= */
+
 function emoji(){
 
- const e =
- prompt(
- "Emoji 😀 😂 😍 😘 😭 😡 😴 👻 😎 🤔 🥳 🤑 ❤️"
- );
+ const emojis =
+ "😀 😂 😍 😘 😭 😡 😴 👻 😎 🤔 🥳 🤑 ❤️ 😆 🤗 😇 🙄 😳 😱";
 
+ const selected =
+   prompt(
+     "Emoji चुनें:\n\n"+
+     emojis
+   );
 
- if(e){
+ if(selected){
 
    document.getElementById(
      "message"
-   ).value += e;
+   ).value +=
+   selected;
 
  }
 
 }
 
 
+/* =========================
+   INVITE
+========================= */
+
 function invite(){
 
  const link =
- location.href;
+   location.href;
 
-
- if(navigator.clipboard){
+ if(
+   navigator.clipboard
+ ){
 
    navigator.clipboard
-   .writeText(link);
-
-   alert(
-     "Room link copied!"
-   );
+     .writeText(link)
+     .then(
+       () => alert(
+         "Room invite link copied!"
+       )
+     );
 
  }else{
 
@@ -898,7 +1858,19 @@ function invite(){
 }
 
 
+/* =========================
+   LEAVE
+========================= */
+
 function leaveRoom(){
+
+ stopMicrophone();
+
+ peers.forEach(
+   (_,peerId) => {
+     closePeer(peerId);
+   }
+ );
 
  if(socket){
 
@@ -910,84 +1882,101 @@ function leaveRoom(){
 
  }
 
- location.href=
- "index.html";
+ location.href =
+   "index.html";
 
 }
 
+
+/* =========================
+   OTHER BUTTONS
+========================= */
 
 function settings(){
 
  alert(
- "PawanVoice Room Settings\n\n"+
- "Host controls coming next."
+   "PawanVoice Room Settings"
  );
 
 }
-
-
-function wheel(){
-
- alert(
- "Lucky Wheel"
- );
-
-}
-
 
 function showInbox(){
 
  alert(
- "Inbox"
+   "Inbox"
  );
 
 }
-
 
 function more(){
 
  alert(
- "More\n\n"+
- "Share\n"+
- "Gift Bag\n"+
- "Report\n"+
- "Admin"
+   "More options"
  );
 
 }
 
 
-function escapeHtml(str){
+/* =========================
+   STATUS
+========================= */
+
+function setStatus(
+ text
+){
+
+ document.getElementById(
+   "status"
+ ).textContent =
+ text;
+
+}
+
+
+/* =========================
+   SAFE HTML
+========================= */
+
+function escapeHtml(
+ str
+){
 
  return String(str)
- .replace(
-   /[&<>"']/g,
-   m=>({
-     "&":"&amp;",
-     "<":"&lt;",
-     ">":"&gt;",
-     '"':"&quot;",
-     "'":"&#039;"
-   }[m])
- );
+   .replace(
+     /[&<>"']/g,
+     m => ({
+       "&":"&amp;",
+       "<":"&lt;",
+       ">":"&gt;",
+       '"':"&quot;",
+       "'":"&#039;"
+     }[m])
+   );
 
 }
 
 
-function escapeAttr(str){
+function escapeAttr(
+ str
+){
 
  return String(str)
- .replace(
-   /"/g,
-   "&quot;"
- );
+   .replace(
+     /"/g,
+     "&quot;"
+   );
 
 }
 
+
+/* =========================
+   START
+========================= */
 
 connect();
 
 </script>
 
 </body>
-</html>
+
+ </html>
