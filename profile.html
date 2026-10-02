@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
+<title>PawanVoice Profile</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#f5f3fb;
+  font-family:Arial,sans-serif;
+}
+
+.app{
+  max-width:480px;
+  margin:auto;
+  min-height:100vh;
+  background:white;
+}
+
+.header{
+  background:linear-gradient(135deg,#7254ff,#b044ff);
+  color:white;
+  padding:16px;
+}
+
+.back{
+  cursor:pointer;
+  font-size:20px;
+}
+
+.profile{
+  text-align:center;
+  padding:30px 20px;
+  background:linear-gradient(180deg,#7254ff,#fff);
+}
+
+.dp{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  margin:auto;
+  background:linear-gradient(135deg,#7a5cff,#ff5ca8);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:35px;
+  font-weight:bold;
+  overflow:hidden;
+  border:4px solid white;
+}
+
+.dp img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.name{
+  margin-top:12px;
+  font-size:22px;
+  font-weight:bold;
+}
+
+.id{
+  color:#777;
+  font-size:13px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  margin:20px 15px;
+  background:white;
+  border-radius:18px;
+  box-shadow:0 5px 20px #ddd;
+  padding:18px 5px;
+}
+
+.stat{
+  text-align:center;
+}
+
+.stat b{
+  display:block;
+  font-size:18px;
+}
+
+.stat span{
+  color:#888;
+  font-size:12px;
+}
+
+.menu{
+  padding:10px 15px;
+}
+
+.item{
+  padding:18px;
+  border-bottom:1px solid #eee;
+  display:flex;
+  justify-content:space-between;
+  cursor:pointer;
+}
+
+.edit{
+  margin:15px;
+  width:calc(100% - 30px);
+  padding:15px;
+  border:0;
+  border-radius:12px;
+  background:#7355ff;
+  color:white;
+  font-size:16px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header">
+
+    <span class="back"
+      onclick="history.back()">
+      ←
+    </span>
+
+    Profile
+
+  </div>
+
+
+  <div class="profile">
+
+    <div class="dp" id="dp">
+      PV
+    </div>
+
+    <div class="name" id="name">
+      Pawan
+    </div>
+
+    <div class="id" id="id">
+      ID: -
+    </div>
+
+  </div>
+
+
+  <div class="stats">
+
+    <div class="stat">
+      <b id="level">1</b>
+      <span>Level</span>
+    </div>
+
+    <div class="stat">
+      <b id="exp">0</b>
+      <span>EXP</span>
+    </div>
+
+    <div class="stat">
+      <b id="coins">0</b>
+      <span>Coins</span>
+    </div>
+
+  </div>
+
+
+  <button class="edit"
+    onclick="editName()">
+    Edit Name
+  </button>
+
+
+  <div class="menu">
+
+    <div class="item">
+      👗
+      <span>My Dress</span>
+      <span>›</span>
+    </div>
+
+    <div class="item">
+      🖼️
+      <span>Avatar Frame</span>
+      <span>›</span>
+    </div>
+
+    <div class="item">
+      🏅
+      <span>Medal</span>
+      <span>›</span>
+    </div>
+
+    <div class="item">
+      🎖️
+      <span>Personal Badge</span>
+      <span>›</span>
+    </div>
+
+    <div class="item">
+      👑
+      <span>VIP</span>
+      <span>›</span>
+    </div>
+
+    <div class="item">
+      ❤️
+      <span>CP</span>
+      <span>›</span>
+    </div>
+
+    <div class="item">
+      👨‍👩‍👧
+      <span>Family</span>
+      <span>›</span>
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const userId =
+  localStorage.getItem("pv_userId");
+
+let name =
+  localStorage.getItem("pv_name")
+  || "Pawan";
+
+let dp =
+  localStorage.getItem("pv_dp")
+  || "";
+
+
+document.getElementById("name")
+  .textContent = name;
+
+document.getElementById("id")
+  .textContent =
+  "ID: " + (userId || "-");
+
+
+if(dp){
+
+  document.getElementById("dp")
+    .innerHTML =
+    `<img src="${dp}">`;
+
+}else{
+
+  document.getElementById("dp")
+    .textContent =
+    name.charAt(0).toUpperCase();
+
+}
+
+
+function editName(){
+
+  const newName =
+    prompt(
+      "Enter new name:",
+      name
+    );
+
+  if(!newName){
+
+    return;
+
+  }
+
+  if(newName.trim().length < 2){
+
+    alert("Name is too short.");
+
+    return;
+
+  }
+
+  name =
+    newName.trim();
+
+  localStorage.setItem(
+    "pv_name",
+    name
+  );
+
+  document.getElementById("name")
+    .textContent = name;
+
+  alert("Name updated.");
+
+}
+
+</script>
+
+</body>
+</html>
