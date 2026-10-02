@@ -1,42 +1,35 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
 <title>PawanVoice Room</title>
+
+<script src="/socket.io/socket.io.js"></script>
 
 <style>
 *{
   box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
-html,body{
   margin:0;
   padding:0;
-  width:100%;
-  min-height:100%;
+}
+
+body{
+  background:#111;
+  color:white;
   font-family:Arial,sans-serif;
-  background:#151022;
-  color:#fff;
-}
-
-button,input{
-  font:inherit;
-}
-
-button{
-  border:0;
+  overflow:hidden;
 }
 
 .app{
   width:100%;
   max-width:480px;
-  min-height:100vh;
+  height:100vh;
   margin:auto;
   background:
-    radial-gradient(circle at 50% 20%,#3b235f 0,#1d1430 35%,#110c1d 75%);
+    radial-gradient(circle at top,#45206c 0,#171027 45%,#08080d 100%);
   position:relative;
   overflow:hidden;
 }
@@ -44,34 +37,33 @@ button{
 /* HEADER */
 
 .header{
-  height:72px;
-  padding:10px 12px;
+  height:65px;
   display:flex;
   align-items:center;
-  gap:10px;
-  background:rgba(15,9,27,.72);
-  border-bottom:1px solid rgba(255,255,255,.08);
+  gap:9px;
+  padding:8px 10px;
+  background:rgba(0,0,0,.28);
 }
 
 .back{
-  width:34px;
-  height:34px;
+  width:35px;
+  height:35px;
+  border:0;
   border-radius:50%;
-  background:rgba(255,255,255,.1);
-  color:white;
-  font-size:21px;
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  font-size:22px;
 }
 
 .roomDp{
-  width:46px;
-  height:46px;
-  flex:none;
-  border-radius:14px;
-  background:linear-gradient(135deg,#8b5cff,#f04e9b);
+  width:43px;
+  height:43px;
+  border-radius:50%;
+  background:#6c36a8;
   display:flex;
-  justify-content:center;
   align-items:center;
-  font-weight:bold;
+  justify-content:center;
+  font-size:22px;
   overflow:hidden;
 }
 
@@ -95,49 +87,70 @@ button{
 }
 
 .roomId{
-  margin-top:3px;
-  color:#bcb4c9;
   font-size:11px;
+  color:#bbb;
+  margin-top:4px;
 }
 
-.headerRight{
+.headerBtn{
+  width:35px;
+  height:35px;
+  border:0;
+  border-radius:50%;
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  font-size:18px;
+}
+
+/* ROOM INFO */
+
+.roomTop{
+  padding:7px 12px;
   display:flex;
+  justify-content:space-between;
   align-items:center;
-  gap:5px;
 }
 
 .online{
-  font-size:11px;
-  color:#dcd5e5;
-  margin-right:2px;
+  font-size:13px;
+  color:#ddd;
 }
 
-.headBtn{
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  background:rgba(255,255,255,.1);
+.roomButtons{
+  display:flex;
+  gap:7px;
+}
+
+.smallBtn{
+  border:0;
   color:#fff;
+  background:rgba(255,255,255,.12);
+  border-radius:15px;
+  padding:7px 10px;
+  font-size:11px;
 }
 
-/* ROOM BODY */
+/* SEATS */
 
-.roomBody{
-  padding:10px 10px 90px;
+.seats{
+  padding:15px 15px 5px;
 }
 
-/* HOST */
-
-.hostArea{
+.hostSeat{
   display:flex;
   justify-content:center;
-  padding:12px 0 15px;
+  margin-bottom:20px;
 }
 
-.seat{
-  width:70px;
+.rows{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px 8px;
+}
+
+.seatBox{
   text-align:center;
-  position:relative;
+  min-width:0;
 }
 
 .avatar{
@@ -145,15 +158,20 @@ button{
   height:58px;
   margin:auto;
   border-radius:50%;
-  background:linear-gradient(135deg,#694dff,#f14c9c);
-  border:2px solid rgba(255,255,255,.45);
+  border:2px solid rgba(255,255,255,.35);
+  background:linear-gradient(135deg,#482064,#9b4dd4);
   display:flex;
-  align-items:center;
   justify-content:center;
-  font-size:21px;
-  font-weight:bold;
-  overflow:hidden;
+  align-items:center;
+  font-size:25px;
   position:relative;
+  overflow:hidden;
+}
+
+.hostSeat .avatar{
+  width:70px;
+  height:70px;
+  border-color:#ffd34d;
 }
 
 .avatar img{
@@ -162,75 +180,44 @@ button{
   object-fit:cover;
 }
 
-.host .avatar{
-  width:68px;
-  height:68px;
-  border:3px solid #ffd45c;
-  box-shadow:0 0 22px rgba(255,190,50,.3);
-}
-
-.crown{
-  position:absolute;
-  top:-7px;
-  left:50%;
-  transform:translateX(-50%);
-  font-size:18px;
-  z-index:3;
-}
-
-.name{
-  margin-top:7px;
-  width:100%;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-  color:#fff;
-  font-size:11px;
-}
-
-.hostLabel{
-  color:#ffd45c;
-  font-size:9px;
-  margin-top:2px;
-}
-
-/* USER SEATS */
-
-.seats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:18px 4px;
-  padding:2px 4px 14px;
-}
-
-.userSeat{
-  min-width:0;
-}
-
-.empty .avatar{
-  background:rgba(255,255,255,.06);
-  border:1px dashed rgba(255,255,255,.25);
+.empty{
+  background:rgba(255,255,255,.08);
+  border:1px dashed rgba(255,255,255,.3);
   color:#aaa;
-  font-size:20px;
+  cursor:pointer;
 }
 
-.empty .name{
-  color:#8d8796;
-}
-
-.micIcon{
+.seatNumber{
   position:absolute;
-  right:-1px;
-  bottom:-1px;
-  width:19px;
-  height:19px;
+  bottom:0;
+  right:0;
+  background:#222;
+  font-size:9px;
+  padding:3px 5px;
+  border-radius:8px 0 0 0;
+}
+
+.micDot{
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:20px;
+  height:20px;
   border-radius:50%;
-  background:#30243d;
+  background:#2cbd62;
+  font-size:10px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:10px;
-  border:1px solid rgba(255,255,255,.2);
+}
+
+.name{
+  font-size:11px;
+  margin-top:6px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  color:#eee;
 }
 
 /* TOOLS */
@@ -238,360 +225,243 @@ button{
 .tools{
   display:grid;
   grid-template-columns:repeat(5,1fr);
-  gap:6px;
-  margin:4px 0 14px;
-  padding:10px 4px;
-  border-top:1px solid rgba(255,255,255,.07);
-  border-bottom:1px solid rgba(255,255,255,.07);
+  gap:5px;
+  padding:13px 8px;
+  border-top:1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid rgba(255,255,255,.08);
 }
 
 .tool{
-  text-align:center;
-  color:#e7e0ed;
-  font-size:9px;
+  border:0;
+  background:transparent;
+  color:#fff;
+  font-size:10px;
 }
 
 .toolIcon{
-  width:34px;
-  height:34px;
-  margin:0 auto 5px;
-  border-radius:11px;
+  width:36px;
+  height:36px;
+  margin:auto;
+  border-radius:50%;
+  background:rgba(255,255,255,.10);
   display:flex;
-  justify-content:center;
   align-items:center;
-  background:rgba(255,255,255,.08);
-  font-size:17px;
+  justify-content:center;
+  font-size:19px;
+  margin-bottom:4px;
 }
 
 /* EXP */
 
 .expBox{
-  background:linear-gradient(
-    135deg,
-    rgba(255,255,255,.09),
-    rgba(255,255,255,.035)
-  );
-  border-radius:16px;
-  padding:12px;
-  margin-bottom:12px;
-  border:1px solid rgba(255,255,255,.06);
+  padding:9px 12px;
 }
 
 .expTitle{
-  display:flex;
-  justify-content:space-between;
   font-size:12px;
-  margin-bottom:10px;
+  color:#ffd65a;
+  margin-bottom:7px;
 }
 
-.expTitle span:last-child{
-  color:#cfc4dc;
+.expUsers{
+  display:flex;
+  justify-content:space-around;
 }
 
-.expList{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:7px;
-}
-
-.topCard{
+.expUser{
   text-align:center;
-  padding:8px 4px;
-  border-radius:12px;
-  background:rgba(255,255,255,.055);
-}
-
-.topNumber{
-  font-size:18px;
-}
-
-.topName{
   font-size:10px;
-  margin-top:3px;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
 }
 
-.topExp{
-  color:#b9afc5;
-  font-size:9px;
-  margin-top:3px;
+.expAvatar{
+  width:35px;
+  height:35px;
+  border-radius:50%;
+  background:#63318b;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin:auto auto 4px;
 }
 
 /* CHAT */
 
-.chatBox{
-  height:190px;
+.chat{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:66px;
+  height:150px;
   overflow-y:auto;
-  padding:8px 4px;
-  margin-bottom:8px;
+  padding:8px 10px;
+  background:linear-gradient(transparent,rgba(0,0,0,.45));
 }
 
-.message{
-  display:flex;
-  align-items:flex-start;
-  gap:7px;
-  margin:7px 0;
-}
-
-.messageAvatar{
-  width:27px;
-  height:27px;
-  flex:none;
-  border-radius:50%;
-  background:linear-gradient(135deg,#7658ff,#f04e9b);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:10px;
-  font-weight:bold;
-  overflow:hidden;
-}
-
-.messageAvatar img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.messageText{
-  max-width:75%;
+.msg{
+  display:table;
+  max-width:90%;
+  margin:5px 0;
   padding:7px 10px;
   border-radius:12px;
-  background:rgba(255,255,255,.08);
-  font-size:11px;
-  line-height:1.35;
+  background:rgba(0,0,0,.42);
+  font-size:12px;
 }
 
-.messageUser{
-  color:#c6b5ff;
-  margin-right:4px;
+.msg b{
+  color:#ffd45b;
+}
+
+.system{
+  color:#aaa;
+  font-size:11px;
+  margin:5px 0;
 }
 
 /* BOTTOM */
 
 .bottom{
-  position:fixed;
-  left:50%;
+  position:absolute;
+  left:0;
+  right:0;
   bottom:0;
-  transform:translateX(-50%);
-  width:100%;
-  max-width:480px;
-  padding:8px 8px 10px;
-  background:rgba(13,8,23,.96);
-  backdrop-filter:blur(12px);
-  border-top:1px solid rgba(255,255,255,.09);
-  z-index:20;
-}
-
-.chatControls{
+  height:66px;
+  padding:7px;
   display:flex;
   align-items:center;
   gap:6px;
+  background:rgba(10,8,15,.96);
 }
 
-.inputWrap{
+.inputBox{
   flex:1;
-  height:40px;
+  height:42px;
   display:flex;
   align-items:center;
-  background:rgba(255,255,255,.09);
-  border-radius:20px;
-  padding:0 10px;
+  background:#25212b;
+  border-radius:22px;
+  padding-left:12px;
 }
 
-.inputWrap input{
-  width:100%;
+.inputBox input{
+  flex:1;
+  background:none;
   border:0;
-  outline:0;
-  background:transparent;
-  color:white;
-  font-size:12px;
+  outline:none;
+  color:#fff;
+  font-size:13px;
+  min-width:0;
 }
 
-.inputWrap input::placeholder{
-  color:#9991a3;
-}
-
-.circleBtn{
-  width:40px;
-  height:40px;
-  flex:none;
+.iconBtn{
+  width:39px;
+  height:39px;
+  border:0;
   border-radius:50%;
-  background:rgba(255,255,255,.09);
-  color:white;
-  font-size:17px;
-}
-
-.circleBtn.active{
-  background:#7657ff;
-}
-
-.sendBtn{
-  background:linear-gradient(135deg,#7959ff,#d747a0);
-}
-
-.bottomMenu{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  margin-top:7px;
-}
-
-.bottomItem{
-  text-align:center;
-  color:#d5cedd;
-  font-size:10px;
-}
-
-.bottomItem div{
+  background:#29242f;
+  color:#fff;
   font-size:18px;
-  margin-bottom:2px;
-}
-
-/* EMOJI PANEL */
-
-.emojiPanel{
-  display:none;
-  position:absolute;
-  bottom:100%;
-  left:0;
-  width:100%;
-  padding:12px;
-  background:#20172d;
-  border-top:1px solid rgba(255,255,255,.1);
-  grid-template-columns:repeat(8,1fr);
-  gap:9px;
-}
-
-.emojiPanel.show{
-  display:grid;
-}
-
-.emoji{
-  text-align:center;
-  font-size:23px;
-  cursor:pointer;
 }
 
 /* MODAL */
 
-.overlay{
-  display:none;
-  position:fixed;
+.modal{
+  position:absolute;
   inset:0;
-  z-index:50;
-  background:rgba(0,0,0,.68);
+  background:rgba(0,0,0,.65);
+  display:none;
   align-items:flex-end;
-  justify-content:center;
+  z-index:50;
 }
 
-.overlay.show{
+.modal.show{
   display:flex;
 }
 
 .sheet{
   width:100%;
-  max-width:480px;
-  max-height:80vh;
-  overflow-y:auto;
-  background:#21182e;
+  background:#201b29;
   border-radius:22px 22px 0 0;
   padding:18px;
+  max-height:80vh;
+  overflow-y:auto;
 }
 
-.sheetTitle{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+.sheet h3{
   margin-bottom:15px;
 }
 
-.sheetTitle b{
-  font-size:17px;
-}
-
 .close{
-  width:32px;
-  height:32px;
-  border-radius:50%;
-  background:rgba(255,255,255,.1);
+  float:right;
+  border:0;
+  background:none;
   color:#fff;
+  font-size:22px;
 }
 
 .option{
-  padding:15px 5px;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  display:flex;
-  justify-content:space-between;
-  font-size:14px;
+  width:100%;
+  border:0;
+  color:#fff;
+  text-align:left;
+  padding:13px;
+  margin:5px 0;
+  border-radius:10px;
+  background:#30293a;
 }
 
-.gifts{
+/* EMOJI */
+
+.emojiGrid{
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  gap:8px;
+}
+
+.emojiGrid button{
+  border:0;
+  background:#30293a;
+  border-radius:8px;
+  padding:8px 2px;
+  font-size:21px;
+}
+
+/* GIFT */
+
+.giftGrid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:10px;
 }
 
 .gift{
-  background:rgba(255,255,255,.06);
-  padding:12px 5px;
-  border-radius:13px;
-  text-align:center;
+  border:0;
+  background:#30293a;
+  color:#fff;
+  border-radius:12px;
+  padding:12px 4px;
+  font-size:11px;
 }
 
-.giftEmoji{
+.gift span{
+  display:block;
   font-size:28px;
-}
-
-.giftName{
-  margin-top:5px;
-  font-size:10px;
-}
-
-.giftPrice{
-  color:#ffd45c;
-  margin-top:3px;
-  font-size:9px;
+  margin-bottom:5px;
 }
 
 /* TOAST */
 
 .toast{
-  position:fixed;
+  position:absolute;
   left:50%;
-  bottom:95px;
+  bottom:90px;
   transform:translateX(-50%);
-  background:#fff;
-  color:#222;
+  background:#000;
   padding:9px 14px;
-  border-radius:18px;
+  border-radius:20px;
   font-size:12px;
-  opacity:0;
-  pointer-events:none;
-  transition:.25s;
+  display:none;
   z-index:100;
-}
-
-.toast.show{
-  opacity:1;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:350px){
-  .tools{
-    grid-template-columns:repeat(5,1fr);
-  }
-
-  .tool{
-    font-size:8px;
-  }
-
-  .avatar{
-    width:52px;
-    height:52px;
-  }
+  white-space:nowrap;
 }
 </style>
 </head>
@@ -601,11 +471,12 @@ button{
 <div class="app">
 
   <!-- HEADER -->
-  <header class="header">
+
+  <div class="header">
 
     <button class="back" onclick="leaveRoom()">‹</button>
 
-    <div class="roomDp" id="roomDp">PV</div>
+    <div class="roomDp" id="roomDp">🎤</div>
 
     <div class="roomInfo">
       <div class="roomName" id="roomName">
@@ -613,664 +484,1062 @@ button{
       </div>
 
       <div class="roomId">
-        Room ID: <span id="roomId">100001</span>
+        ID: <span id="roomIdText">10001</span>
       </div>
     </div>
 
-    <div class="headerRight">
+    <button class="headerBtn" onclick="openSettings()">⚙️</button>
 
-      <div class="online">
-        <span id="onlineCount">1</span>/9
-      </div>
+    <button class="headerBtn" onclick="shareRoom()">↗</button>
 
-      <button class="headBtn"
-        onclick="openSettings()">
-        ⚙
-      </button>
+  </div>
 
-      <button class="headBtn"
-        onclick="shareRoom()">
-        ⋮
-      </button>
+  <!-- ROOM TOP -->
 
+  <div class="roomTop">
+
+    <div class="online">
+      👥 <span id="onlineCount">0</span>/9
     </div>
 
-  </header>
+    <div class="roomButtons">
+      <button class="smallBtn" onclick="roomSupport()">
+        🛟 Support
+      </button>
 
+      <button class="smallBtn" onclick="inviteRoom()">
+        📩 Invite
+      </button>
+    </div>
 
-  <main class="roomBody">
+  </div>
+
+  <!-- SEATS -->
+
+  <div class="seats">
 
     <!-- HOST -->
-    <section class="hostArea">
 
-      <div class="seat host">
+    <div class="hostSeat">
 
-        <div class="avatar" id="hostAvatar">
-          P
+      <div class="seatBox">
+
+        <div
+          class="avatar empty"
+          id="seat1"
+          onclick="takeSeat(1)"
+        >
+          +
+          <span class="seatNumber">1</span>
         </div>
 
-        <div class="crown">👑</div>
-
-        <div class="name" id="hostName">
-          Pawan
-        </div>
-
-        <div class="hostLabel">
-          HOST
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- 8 USER SEATS -->
-    <section class="seats">
-
-      <div class="seat userSeat empty" data-seat="2">
-        <div class="avatar" onclick="takeSeat(2)">+</div>
-        <div class="name">Seat 2</div>
-      </div>
-
-      <div class="seat userSeat empty" data-seat="3">
-        <div class="avatar" onclick="takeSeat(3)">+</div>
-        <div class="name">Seat 3</div>
-      </div>
-
-      <div class="seat userSeat empty" data-seat="4">
-        <div class="avatar" onclick="takeSeat(4)">+</div>
-        <div class="name">Seat 4</div>
-      </div>
-
-      <div class="seat userSeat empty" data-seat="5">
-        <div class="avatar" onclick="takeSeat(5)">+</div>
-        <div class="name">Seat 5</div>
-      </div>
-
-      <div class="seat userSeat empty" data-seat="6">
-        <div class="avatar" onclick="takeSeat(6)">+</div>
-        <div class="name">Seat 6</div>
-      </div>
-
-      <div class="seat userSeat empty" data-seat="7">
-        <div class="avatar" onclick="takeSeat(7)">+</div>
-        <div class="name">Seat 7</div>
-      </div>
-
-      <div class="seat userSeat empty" data-seat="8">
-        <div class="avatar" onclick="takeSeat(8)">+</div>
-        <div class="name">Seat 8</div>
-      </div>
-
-      <div class="seat userSeat empty" data-seat="9">
-        <div class="avatar" onclick="takeSeat(9)">+</div>
-        <div class="name">Seat 9</div>
-      </div>
-
-    </section>
-
-
-    <!-- ROOM FEATURES -->
-    <section class="tools">
-
-      <div class="tool" onclick="showToast('Room Support')">
-        <div class="toolIcon">🎧</div>
-        Support
-      </div>
-
-      <div class="tool" onclick="showToast('Lucky Wheel')">
-        <div class="toolIcon">🎡</div>
-        Lucky Wheel
-      </div>
-
-      <div class="tool" onclick="showToast('Bounty Hunter')">
-        <div class="toolIcon">🎯</div>
-        Bounty
-      </div>
-
-      <div class="tool" onclick="openGift()">
-        <div class="toolIcon">🎁</div>
-        Reward
-      </div>
-
-      <div class="tool" onclick="showToast('New App Benefits')">
-        <div class="toolIcon">🚀</div>
-        Benefits
-      </div>
-
-    </section>
-
-
-    <!-- TOP EXP -->
-    <section class="expBox">
-
-      <div class="expTitle">
-        <span>🚀 Room EXP Ranking</span>
-        <span>Today</span>
-      </div>
-
-      <div class="expList">
-
-        <div class="topCard">
-          <div class="topNumber">🥇</div>
-          <div class="topName">No.1</div>
-          <div class="topExp">0 EXP</div>
-        </div>
-
-        <div class="topCard">
-          <div class="topNumber">🥈</div>
-          <div class="topName">No.2</div>
-          <div class="topExp">0 EXP</div>
-        </div>
-
-        <div class="topCard">
-          <div class="topNumber">🥉</div>
-          <div class="topName">No.3</div>
-          <div class="topExp">0 EXP</div>
+        <div class="name" id="name1">
+          Host Seat
         </div>
 
       </div>
-
-    </section>
-
-
-    <!-- CHAT -->
-    <section class="chatBox" id="chatBox">
-
-      <div class="message">
-
-        <div class="messageAvatar">
-          P
-        </div>
-
-        <div class="messageText">
-          <span class="messageUser">
-            PawanVoice
-          </span>
-          Welcome to the room 🎉
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- BOTTOM CONTROLS -->
-  <div class="bottom">
-
-    <!-- EMOJIS -->
-    <div class="emojiPanel" id="emojiPanel">
-
-      <div class="emoji" onclick="addEmoji('😡')">😡</div>
-      <div class="emoji" onclick="addEmoji('😭')">😭</div>
-      <div class="emoji" onclick="addEmoji('😵')">😵</div>
-      <div class="emoji" onclick="addEmoji('🔨')">🔨</div>
-      <div class="emoji" onclick="addEmoji('😊')">😊</div>
-      <div class="emoji" onclick="addEmoji('😘')">😘</div>
-      <div class="emoji" onclick="addEmoji('😂')">😂</div>
-      <div class="emoji" onclick="addEmoji('😴')">😴</div>
-
-      <div class="emoji" onclick="addEmoji('😧')">😧</div>
-      <div class="emoji" onclick="addEmoji('😁')">😁</div>
-      <div class="emoji" onclick="addEmoji('👻')">👻</div>
-      <div class="emoji" onclick="addEmoji('😀')">😀</div>
-      <div class="emoji" onclick="addEmoji('🥵')">🥵</div>
-      <div class="emoji" onclick="addEmoji('🫂')">🫂</div>
-      <div class="emoji" onclick="addEmoji('❤️')">❤️</div>
-      <div class="emoji" onclick="addEmoji('🤑')">🤑</div>
-
-      <div class="emoji" onclick="addEmoji('🥳')">🥳</div>
-      <div class="emoji" onclick="addEmoji('🥺')">🥺</div>
-      <div class="emoji" onclick="addEmoji('😤')">😤</div>
-      <div class="emoji" onclick="addEmoji('❓')">❓</div>
-      <div class="emoji" onclick="addEmoji('🙄')">🙄</div>
-      <div class="emoji" onclick="addEmoji('🤣')">🤣</div>
-      <div class="emoji" onclick="addEmoji('😎')">😎</div>
-      <div class="emoji" onclick="addEmoji('🤔')">🤔</div>
 
     </div>
 
+    <!-- 2-5 -->
 
-    <div class="chatControls">
+    <div class="rows">
 
-      <button class="circleBtn"
-        onclick="toggleEmoji()">
+      <div class="seatBox">
+        <div class="avatar empty" id="seat2"
+             onclick="takeSeat(2)">+
+          <span class="seatNumber">2</span>
+        </div>
+        <div class="name" id="name2">Seat 2</div>
+      </div>
+
+      <div class="seatBox">
+        <div class="avatar empty" id="seat3"
+             onclick="takeSeat(3)">+
+          <span class="seatNumber">3</span>
+        </div>
+        <div class="name" id="name3">Seat 3</div>
+      </div>
+
+      <div class="seatBox">
+        <div class="avatar empty" id="seat4"
+             onclick="takeSeat(4)">+
+          <span class="seatNumber">4</span>
+        </div>
+        <div class="name" id="name4">Seat 4</div>
+      </div>
+
+      <div class="seatBox">
+        <div class="avatar empty" id="seat5"
+             onclick="takeSeat(5)">+
+          <span class="seatNumber">5</span>
+        </div>
+        <div class="name" id="name5">Seat 5</div>
+      </div>
+
+      <!-- 6-9 -->
+
+      <div class="seatBox">
+        <div class="avatar empty" id="seat6"
+             onclick="takeSeat(6)">+
+          <span class="seatNumber">6</span>
+        </div>
+        <div class="name" id="name6">Seat 6</div>
+      </div>
+
+      <div class="seatBox">
+        <div class="avatar empty" id="seat7"
+             onclick="takeSeat(7)">+
+          <span class="seatNumber">7</span>
+        </div>
+        <div class="name" id="name7">Seat 7</div>
+      </div>
+
+      <div class="seatBox">
+        <div class="avatar empty" id="seat8"
+             onclick="takeSeat(8)">+
+          <span class="seatNumber">8</span>
+        </div>
+        <div class="name" id="name8">Seat 8</div>
+      </div>
+
+      <div class="seatBox">
+        <div class="avatar empty" id="seat9"
+             onclick="takeSeat(9)">+
+          <span class="seatNumber">9</span>
+        </div>
+        <div class="name" id="name9">Seat 9</div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ROOM TOOLS -->
+
+  <div class="tools">
+
+    <button class="tool" onclick="roomSupport()">
+      <div class="toolIcon">🛟</div>
+      Support
+    </button>
+
+    <button class="tool" onclick="luckyWheel()">
+      <div class="toolIcon">🎡</div>
+      Lucky
+    </button>
+
+    <button class="tool" onclick="bounty()">
+      <div class="toolIcon">🎯</div>
+      Bounty
+    </button>
+
+    <button class="tool" onclick="roomReward()">
+      <div class="toolIcon">🎁</div>
+      Reward
+    </button>
+
+    <button class="tool" onclick="exclusive()">
+      <div class="toolIcon">🚀</div>
+      Benefits
+    </button>
+
+  </div>
+
+  <!-- EXP -->
+
+  <div class="expBox">
+
+    <div class="expTitle">
+      🚀 Room EXP • Top 1 / 2 / 3
+    </div>
+
+    <div class="expUsers">
+
+      <div class="expUser">
+        <div class="expAvatar">🥇</div>
+        Top 1
+      </div>
+
+      <div class="expUser">
+        <div class="expAvatar">🥈</div>
+        Top 2
+      </div>
+
+      <div class="expUser">
+        <div class="expAvatar">🥉</div>
+        Top 3
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- CHAT -->
+
+  <div class="chat" id="chat">
+
+    <div class="system">
+      Welcome to PawanVoice Room
+    </div>
+
+  </div>
+
+  <!-- BOTTOM -->
+
+  <div class="bottom">
+
+    <div class="inputBox">
+
+      <input
+        id="messageInput"
+        placeholder="Say something..."
+        onkeydown="handleEnter(event)"
+      >
+
+      <button
+        class="iconBtn"
+        onclick="openEmoji()"
+      >
         😊
       </button>
 
-      <div class="inputWrap">
-
-        <input
-          id="messageInput"
-          type="text"
-          maxlength="200"
-          placeholder="Say something..."
-          onkeydown="if(event.key==='Enter')sendMessage()"
-        >
-
-      </div>
-
-      <button class="circleBtn sendBtn"
-        onclick="sendMessage()">
-        ➤
-      </button>
-
     </div>
 
+    <button
+      class="iconBtn"
+      id="speakerBtn"
+      onclick="toggleSpeaker()"
+    >
+      🔊
+    </button>
 
-    <div class="bottomMenu">
+    <button
+      class="iconBtn"
+      id="micBtn"
+      onclick="toggleMic()"
+    >
+      🎙️
+    </button>
 
-      <div class="bottomItem"
-        onclick="toggleSpeaker()">
-        <div id="speakerIcon">🔊</div>
-        Speaker
-      </div>
+    <button
+      class="iconBtn"
+      onclick="openGift()"
+    >
+      🎁
+    </button>
 
-      <div class="bottomItem"
-        onclick="toggleMic()">
-        <div id="micIcon">🎤</div>
-        Mic
-      </div>
-
-      <div class="bottomItem"
-        onclick="openGift()">
-        <div>🎁</div>
-        Gift
-      </div>
-
-      <div class="bottomItem"
-        onclick="openAdmin()">
-        <div>📥</div>
-        Admin
-      </div>
-
-      <div class="bottomItem"
-        onclick="openMore()">
-        <div>⋯</div>
-        More
-      </div>
-
-    </div>
+    <button
+      class="iconBtn"
+      onclick="openAdmin()"
+    >
+      👑
+    </button>
 
   </div>
 
-</div>
+  <!-- TOAST -->
 
+  <div class="toast" id="toast"></div>
 
-<!-- SETTINGS -->
-<div class="overlay" id="settingsModal">
+  <!-- EMOJI MODAL -->
 
-  <div class="sheet">
+  <div class="modal" id="emojiModal">
 
-    <div class="sheetTitle">
+    <div class="sheet">
 
-      <b>Room Settings</b>
-
-      <button class="close"
-        onclick="closeModal('settingsModal')">
+      <button class="close" onclick="closeModal('emojiModal')">
         ×
       </button>
 
-    </div>
+      <h3>Emoji</h3>
 
-    <div class="option">
-      <span>Room Name</span>
-      <span>›</span>
-    </div>
+      <div class="emojiGrid">
 
-    <div class="option">
-      <span>Room Announcement</span>
-      <span>›</span>
-    </div>
+        <button onclick="emoji('😡')">😡</button>
+        <button onclick="emoji('😭')">😭</button>
+        <button onclick="emoji('😵')">😵</button>
+        <button onclick="emoji('🔨')">🔨</button>
+        <button onclick="emoji('😀')">😀</button>
+        <button onclick="emoji('😘')">😘</button>
+        <button onclick="emoji('😂')">😂</button>
+        <button onclick="emoji('😴')">😴</button>
 
-    <div class="option">
-      <span>Lock Seats</span>
-      <span>›</span>
-    </div>
+        <button onclick="emoji('😧')">😧</button>
+        <button onclick="emoji('😁')">😁</button>
+        <button onclick="emoji('👻')">👻</button>
+        <button onclick="emoji('😎')">😎</button>
+        <button onclick="emoji('🥵')">🥵</button>
+        <button onclick="emoji('🤗')">🤗</button>
+        <button onclick="emoji('❤️')">❤️</button>
+        <button onclick="emoji('💰')">💰</button>
 
-    <div class="option">
-      <span>Room Password</span>
-      <span>›</span>
-    </div>
+        <button onclick="emoji('🥳')">🥳</button>
+        <button onclick="emoji('🥺')">🥺</button>
+        <button onclick="emoji('😤')">😤</button>
+        <button onclick="emoji('❓')">❓</button>
+        <button onclick="emoji('🙄')">🙄</button>
+        <button onclick="emoji('🤣')">🤣</button>
+        <button onclick="emoji('🤔')">🤔</button>
+        <button onclick="emoji('😍')">😍</button>
 
-    <div class="option">
-      <span>Room Permissions</span>
-      <span>›</span>
-    </div>
+      </div>
 
-    <div class="option"
-      onclick="leaveRoom()">
-      <span>Leave Room</span>
-      <span>›</span>
     </div>
 
   </div>
 
-</div>
+  <!-- GIFT MODAL -->
 
+  <div class="modal" id="giftModal">
 
-<!-- GIFT -->
-<div class="overlay" id="giftModal">
+    <div class="sheet">
 
-  <div class="sheet">
-
-    <div class="sheetTitle">
-
-      <b>Send Gift</b>
-
-      <button class="close"
-        onclick="closeModal('giftModal')">
+      <button class="close" onclick="closeModal('giftModal')">
         ×
+      </button>
+
+      <h3>Send Gift</h3>
+
+      <div class="giftGrid">
+
+        <button class="gift" onclick="sendGift('Rose','🌹')">
+          <span>🌹</span>
+          Rose
+        </button>
+
+        <button class="gift" onclick="sendGift('Heart','❤️')">
+          <span>❤️</span>
+          Heart
+        </button>
+
+        <button class="gift" onclick="sendGift('Cake','🎂')">
+          <span>🎂</span>
+          Cake
+        </button>
+
+        <button class="gift" onclick="sendGift('Love','💖')">
+          <span>💖</span>
+          Love
+        </button>
+
+        <button class="gift" onclick="sendGift('Diamond','💎')">
+          <span>💎</span>
+          Diamond
+        </button>
+
+        <button class="gift" onclick="sendGift('Crown','👑')">
+          <span>👑</span>
+          Crown
+        </button>
+
+        <button class="gift" onclick="sendGift('Rocket','🚀')">
+          <span>🚀</span>
+          Rocket
+        </button>
+
+        <button class="gift" onclick="sendGift('Party','🎉')">
+          <span>🎉</span>
+          Party
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SETTINGS -->
+
+  <div class="modal" id="settingsModal">
+
+    <div class="sheet">
+
+      <button class="close" onclick="closeModal('settingsModal')">
+        ×
+      </button>
+
+      <h3>Room Settings</h3>
+
+      <button class="option" onclick="showToast('Room name setting coming')">
+        ✏️ Room Name
+      </button>
+
+      <button class="option" onclick="showToast('Room ID: '+roomId)">
+        🔢 Room ID
+      </button>
+
+      <button class="option" onclick="showToast('9 seats available')">
+        🪑 Seat Settings
+      </button>
+
+      <button class="option" onclick="showToast('Host: '+myName)">
+        👑 Host
+      </button>
+
+      <button class="option" onclick="closeModal('settingsModal');leaveRoom()">
+        🚪 Leave Room
       </button>
 
     </div>
 
-    <div class="gifts">
-
-      <div class="gift" onclick="sendGift('🌹','Rose',10)">
-        <div class="giftEmoji">🌹</div>
-        <div class="giftName">Rose</div>
-        <div class="giftPrice">10</div>
-      </div>
-
-      <div class="gift" onclick="sendGift('❤️','Heart',50)">
-        <div class="giftEmoji">❤️</div>
-        <div class="giftName">Heart</div>
-        <div class="giftPrice">50</div>
-      </div>
-
-      <div class="gift" onclick="sendGift('💎','Diamond',100)">
-        <div class="giftEmoji">💎</div>
-        <div class="giftName">Diamond</div>
-        <div class="giftPrice">100</div>
-      </div>
-
-      <div class="gift" onclick="sendGift('👑','Crown',500)">
-        <div class="giftEmoji">👑</div>
-        <div class="giftName">Crown</div>
-        <div class="giftPrice">500</div>
-      </div>
-
-      <div class="gift" onclick="sendGift('🚗','Car',1000)">
-        <div class="giftEmoji">🚗</div>
-        <div class="giftName">Car</div>
-        <div class="giftPrice">1000</div>
-      </div>
-
-      <div class="gift" onclick="sendGift('💰','Money',2000)">
-        <div class="giftEmoji">💰</div>
-        <div class="giftName">Money</div>
-        <div class="giftPrice">2000</div>
-      </div>
-
-      <div class="gift" onclick="sendGift('🎂','Cake',300)">
-        <div class="giftEmoji">🎂</div>
-        <div class="giftName">Cake</div>
-        <div class="giftPrice">300</div>
-      </div>
-
-      <div class="gift" onclick="sendGift('🚀','Rocket',5000)">
-        <div class="giftEmoji">🚀</div>
-        <div class="giftName">Rocket</div>
-        <div class="giftPrice">5000</div>
-      </div>
-
-    </div>
-
   </div>
 
-</div>
+  <!-- ADMIN -->
 
+  <div class="modal" id="adminModal">
 
-<!-- ADMIN -->
-<div class="overlay" id="adminModal">
+    <div class="sheet">
 
-  <div class="sheet">
-
-    <div class="sheetTitle">
-
-      <b>Room Admin</b>
-
-      <button class="close"
-        onclick="closeModal('adminModal')">
+      <button class="close" onclick="closeModal('adminModal')">
         ×
       </button>
 
-    </div>
+      <h3>Room Admin</h3>
 
-    <div class="option">
-      <span>👑 Host: <b id="adminHost">Pawan</b></span>
-      <span>Host</span>
-    </div>
+      <div id="adminUsers"></div>
 
-    <div class="option"
-      onclick="showToast('User management will connect to server')">
-      <span>👥 Manage Users</span>
-      <span>›</span>
-    </div>
-
-    <div class="option"
-      onclick="showToast('Kick function will be connected to server')">
-      <span>🚫 Kick User</span>
-      <span>›</span>
-    </div>
-
-    <div class="option"
-      onclick="showToast('Mute function will be connected to server')">
-      <span>🔇 Mute User</span>
-      <span>›</span>
-    </div>
-
-    <div class="option"
-      onclick="showToast('Seat management will be connected to server')">
-      <span>💺 Seat Management</span>
-      <span>›</span>
     </div>
 
   </div>
 
 </div>
-
-
-<!-- MORE -->
-<div class="overlay" id="moreModal">
-
-  <div class="sheet">
-
-    <div class="sheetTitle">
-
-      <b>More</b>
-
-      <button class="close"
-        onclick="closeModal('moreModal')">
-        ×
-      </button>
-
-    </div>
-
-    <div class="option"
-      onclick="shareRoom()">
-      <span>🔗 Share Room</span>
-      <span>›</span>
-    </div>
-
-    <div class="option"
-      onclick="showToast('Room report')">
-      <span>⚠️ Report Room</span>
-      <span>›</span>
-    </div>
-
-    <div class="option"
-      onclick="showToast('Room is added to favorites')">
-      <span>⭐ Favorite</span>
-      <span>›</span>
-    </div>
-
-  </div>
-
-</div>
-
-
-<div class="toast" id="toast"></div>
-
 
 <script>
 
-/* -------------------------
-   USER / ROOM DATA
-------------------------- */
+/* ==========================================
+   USER DATA
+========================================== */
 
-const params =
-  new URLSearchParams(location.search);
+const params = new URLSearchParams(location.search);
 
 const roomId =
-  params.get("room")
-  || "100001";
+  params.get("room") ||
+  localStorage.getItem("pv_room") ||
+  "10001";
 
-const userId =
-  params.get("userid")
-  || localStorage.getItem("pv_userId")
-  || "guest";
+const myUserId =
+  params.get("userid") ||
+  localStorage.getItem("pv_userId") ||
+  ("guest_" + Math.random().toString(36).slice(2,8));
 
-const userName =
-  params.get("name")
-  || localStorage.getItem("pv_name")
-  || "Pawan";
+const myName =
+  params.get("name") ||
+  localStorage.getItem("pv_name") ||
+  "Guest";
 
-const userDp =
-  params.get("dp")
-  || localStorage.getItem("pv_dp")
-  || "";
+const myDp =
+  localStorage.getItem("pv_dp") || "";
 
-document.getElementById("roomId")
-  .textContent = roomId;
+document.getElementById("roomIdText").textContent = roomId;
 
-document.getElementById("hostName")
-  .textContent = userName;
+document.getElementById("roomName").textContent =
+  params.get("roomName") ||
+  "PawanVoice Room";
 
-document.getElementById("adminHost")
-  .textContent = userName;
+/* ==========================================
+   SOCKET
+========================================== */
 
+const socket = io({
+  transports: ["websocket", "polling"]
+});
 
-/* -------------------------
-   DP
-------------------------- */
+let roomUsers = [];
+let hostSocketId = null;
+let mySeat = null;
 
-function setAvatar(element, name, dp){
+let localStream = null;
+let micEnabled = false;
+let speakerEnabled = true;
 
-  if(dp){
+const peers = {};
+const remoteAudios = {};
 
-    element.innerHTML =
-      `<img src="${escapeHtml(dp)}">`;
+/* ==========================================
+   CONNECT
+========================================== */
 
-  }else{
+socket.on("connect", () => {
 
-    element.textContent =
-      (name || "P")
-      .charAt(0)
-      .toUpperCase();
+  addSystem("Connected to PawanVoice server");
+
+  socket.emit("join-room", {
+    roomId: roomId,
+    userId: myUserId,
+    name: myName,
+    dp: myDp
+  });
+
+});
+
+/* ==========================================
+   JOINED
+========================================== */
+
+socket.on("joined-room", (data) => {
+
+  hostSocketId = data.hostSocketId;
+
+  addSystem("Joined room " + roomId);
+
+});
+
+/* ==========================================
+   ROOM STATE
+========================================== */
+
+socket.on("room-state", (data) => {
+
+  roomUsers = data.users || [];
+
+  hostSocketId = data.hostSocketId;
+
+  document.getElementById("onlineCount").textContent =
+    data.count || 0;
+
+  renderSeats();
+
+  renderAdmin();
+
+});
+
+/* ==========================================
+   RENDER SEATS
+========================================== */
+
+function renderSeats(){
+
+  for(let i=1;i<=9;i++){
+
+    const avatar =
+      document.getElementById("seat"+i);
+
+    const name =
+      document.getElementById("name"+i);
+
+    if(!avatar || !name) continue;
+
+    const user =
+      roomUsers.find(u => Number(u.seat) === i);
+
+    if(user){
+
+      avatar.classList.remove("empty");
+
+      if(user.dp){
+
+        avatar.innerHTML =
+          '<img src="' +
+          escapeHtml(user.dp) +
+          '">' +
+          '<span class="seatNumber">'+i+'</span>' +
+          '<span class="micDot">' +
+          (user.mic ? "🎙️" : "🔇") +
+          '</span>';
+
+      }else{
+
+        avatar.innerHTML =
+          escapeHtml(
+            user.name
+              ? user.name.charAt(0).toUpperCase()
+              : "👤"
+          ) +
+          '<span class="seatNumber">'+i+'</span>' +
+          '<span class="micDot">' +
+          (user.mic ? "🎙️" : "🔇") +
+          '</span>';
+
+      }
+
+      name.textContent =
+        user.name +
+        (user.socketId === hostSocketId ? " 👑" : "");
+
+    }else{
+
+      avatar.classList.add("empty");
+
+      avatar.innerHTML =
+        '+' +
+        '<span class="seatNumber">'+i+'</span>';
+
+      name.textContent =
+        i === 1 ? "Host Seat" : "Seat " + i;
+    }
+  }
+
+  const me =
+    roomUsers.find(u => u.socketId === socket.id);
+
+  mySeat = me ? me.seat : null;
+
+}
+
+/* ==========================================
+   TAKE SEAT
+========================================== */
+
+function takeSeat(seat){
+
+  const occupied =
+    roomUsers.find(u => Number(u.seat) === Number(seat));
+
+  if(occupied){
+
+    if(occupied.socketId === socket.id){
+
+      socket.emit("leave-seat");
+
+      stopMicrophone();
+
+    }else{
+
+      showToast("Seat already occupied");
+
+    }
+
+    return;
+  }
+
+  socket.emit("take-seat", seat);
+
+}
+
+/* ==========================================
+   MIC
+========================================== */
+
+async function toggleMic(){
+
+  const me =
+    roomUsers.find(u => u.socketId === socket.id);
+
+  if(!me || !me.seat){
+
+    showToast("पहले seat लो");
+
+    return;
+  }
+
+  if(me.mutedByAdmin){
+
+    showToast("Admin ने mute किया है");
+
+    return;
+  }
+
+  if(!localStream){
+
+    try{
+
+      localStream =
+        await navigator.mediaDevices.getUserMedia({
+          audio:true,
+          video:false
+        });
+
+    }catch(error){
+
+      console.log(error);
+
+      showToast(
+        "Microphone permission Allow करें"
+      );
+
+      return;
+    }
+  }
+
+  micEnabled = !micEnabled;
+
+  localStream.getAudioTracks().forEach(track => {
+    track.enabled = micEnabled;
+  });
+
+  document.getElementById("micBtn").textContent =
+    micEnabled ? "🎙️" : "🔇";
+
+  socket.emit("mic-status", micEnabled);
+
+  /* Add stream to peers */
+
+  if(micEnabled){
+
+    for(const peerId in peers){
+
+      const pc = peers[peerId];
+
+      localStream.getTracks().forEach(track => {
+
+        const exists =
+          pc.getSenders().some(
+            sender => sender.track === track
+          );
+
+        if(!exists){
+          pc.addTrack(track, localStream);
+        }
+
+      });
+
+      try{
+
+        const offer =
+          await pc.createOffer();
+
+        await pc.setLocalDescription(offer);
+
+        socket.emit("webrtc-offer", {
+          target: peerId,
+          offer: pc.localDescription
+        });
+
+      }catch(e){
+        console.log(e);
+      }
+    }
 
   }
 
 }
 
-setAvatar(
-  document.getElementById("hostAvatar"),
-  userName,
-  userDp
-);
+/* ==========================================
+   STOP MIC
+========================================== */
 
+function stopMicrophone(){
 
-/* -------------------------
-   ESCAPE
-------------------------- */
+  micEnabled = false;
 
-function escapeHtml(value){
+  if(localStream){
 
-  return String(value)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+    localStream.getAudioTracks().forEach(
+      track => track.enabled = false
+    );
+
+  }
+
+  document.getElementById("micBtn").textContent =
+    "🔇";
+
+  socket.emit("mic-status", false);
 
 }
 
+/* ==========================================
+   SPEAKER
+========================================== */
 
-/* -------------------------
-   MODALS
-------------------------- */
+function toggleSpeaker(){
 
-function openModal(id){
+  speakerEnabled = !speakerEnabled;
 
   document
-    .getElementById(id)
-    .classList.add("show");
+    .querySelectorAll("audio")
+    .forEach(audio => {
+      audio.muted = !speakerEnabled;
+    });
+
+  document.getElementById("speakerBtn").textContent =
+    speakerEnabled ? "🔊" : "🔇";
+
+  showToast(
+    speakerEnabled
+      ? "Speaker ON"
+      : "Speaker OFF"
+  );
+}
+
+/* ==========================================
+   WEBRTC CONFIG
+========================================== */
+
+const rtcConfig = {
+
+  iceServers: [
+
+    {
+      urls:"stun:stun.l.google.com:19302"
+    },
+
+    {
+      urls:"stun:stun1.l.google.com:19302"
+    }
+
+  ]
+
+};
+
+/* ==========================================
+   PEER
+========================================== */
+
+function createPeer(peerId){
+
+  if(peers[peerId]){
+    return peers[peerId];
+  }
+
+  const pc =
+    new RTCPeerConnection(rtcConfig);
+
+  peers[peerId] = pc;
+
+  pc.onicecandidate = (event) => {
+
+    if(event.candidate){
+
+      socket.emit("webrtc-ice", {
+        target:peerId,
+        candidate:event.candidate
+      });
+
+    }
+
+  };
+
+  pc.ontrack = (event) => {
+
+    let audio =
+      remoteAudios[peerId];
+
+    if(!audio){
+
+      audio =
+        document.createElement("audio");
+
+      audio.autoplay = true;
+      audio.playsInline = true;
+
+      audio.muted = !speakerEnabled;
+
+      document.body.appendChild(audio);
+
+      remoteAudios[peerId] = audio;
+    }
+
+    if(audio.srcObject !== event.streams[0]){
+
+      audio.srcObject =
+        event.streams[0];
+
+    }
+
+  };
+
+  pc.onconnectionstatechange = () => {
+
+    if(
+      pc.connectionState === "failed" ||
+      pc.connectionState === "closed" ||
+      pc.connectionState === "disconnected"
+    ){
+
+      removePeer(peerId);
+
+    }
+
+  };
+
+  if(localStream && micEnabled){
+
+    localStream.getTracks().forEach(track => {
+
+      pc.addTrack(track, localStream);
+
+    });
+
+  }
+
+  return pc;
+}
+
+/* ==========================================
+   NEW PEER
+========================================== */
+
+socket.on("peer-joined", async (data) => {
+
+  const peerId = data.socketId;
+
+  /* Existing users create offer */
+
+  if(socket.id < peerId){
+
+    const pc =
+      createPeer(peerId);
+
+    try{
+
+      const offer =
+        await pc.createOffer();
+
+      await pc.setLocalDescription(offer);
+
+      socket.emit("webrtc-offer", {
+        target:peerId,
+        offer:pc.localDescription
+      });
+
+    }catch(e){
+
+      console.log(e);
+
+    }
+
+  }
+
+});
+
+/* ==========================================
+   OFFER
+========================================== */
+
+socket.on("webrtc-offer", async (data) => {
+
+  const pc =
+    createPeer(data.from);
+
+  try{
+
+    await pc.setRemoteDescription(
+      new RTCSessionDescription(data.offer)
+    );
+
+    if(localStream && micEnabled){
+
+      localStream.getTracks().forEach(track => {
+
+        const exists =
+          pc.getSenders().some(
+            sender => sender.track === track
+          );
+
+        if(!exists){
+          pc.addTrack(track,localStream);
+        }
+
+      });
+
+    }
+
+    const answer =
+      await pc.createAnswer();
+
+    await pc.setLocalDescription(answer);
+
+    socket.emit("webrtc-answer", {
+      target:data.from,
+      answer:pc.localDescription
+    });
+
+  }catch(e){
+
+    console.log("Offer error",e);
+
+  }
+
+});
+
+/* ==========================================
+   ANSWER
+========================================== */
+
+socket.on("webrtc-answer", async (data) => {
+
+  const pc =
+    peers[data.from];
+
+  if(!pc) return;
+
+  try{
+
+    await pc.setRemoteDescription(
+      new RTCSessionDescription(data.answer)
+    );
+
+  }catch(e){
+
+    console.log("Answer error",e);
+
+  }
+
+});
+
+/* ==========================================
+   ICE
+========================================== */
+
+socket.on("webrtc-ice", async (data) => {
+
+  const pc =
+    createPeer(data.from);
+
+  try{
+
+    await pc.addIceCandidate(
+      new RTCIceCandidate(data.candidate)
+    );
+
+  }catch(e){
+
+    console.log("ICE error",e);
+
+  }
+
+});
+
+/* ==========================================
+   PEER LEFT
+========================================== */
+
+socket.on("peer-left", (data) => {
+
+  removePeer(data.socketId);
+
+});
+
+/* ==========================================
+   REMOVE PEER
+========================================== */
+
+function removePeer(peerId){
+
+  if(peers[peerId]){
+
+    try{
+      peers[peerId].close();
+    }catch(e){}
+
+    delete peers[peerId];
+
+  }
+
+  if(remoteAudios[peerId]){
+
+    remoteAudios[peerId].remove();
+
+    delete remoteAudios[peerId];
+
+  }
 
 }
 
-function closeModal(id){
-
-  document
-    .getElementById(id)
-    .classList.remove("show");
-
-}
-
-function openSettings(){
-
-  openModal("settingsModal");
-
-}
-
-function openGift(){
-
-  openModal("giftModal");
-
-}
-
-function openAdmin(){
-
-  openModal("adminModal");
-
-}
-
-function openMore(){
-
-  openModal("moreModal");
-
-}
-
-
-/* -------------------------
-   EMOJI
-------------------------- */
-
-function toggleEmoji(){
-
-  document
-    .getElementById("emojiPanel")
-    .classList.toggle("show");
-
-}
-
-function addEmoji(emoji){
-
-  const input =
-    document.getElementById("messageInput");
-
-  input.value += emoji;
-
-  input.focus();
-
-}
-
-
-/* -------------------------
+/* ==========================================
    CHAT
-------------------------- */
+========================================== */
+
+function handleEnter(event){
+
+  if(event.key === "Enter"){
+
+    sendMessage();
+
+  }
+
+}
 
 function sendMessage(){
 
@@ -1280,230 +1549,301 @@ function sendMessage(){
   const message =
     input.value.trim();
 
-  if(!message){
+  if(!message) return;
 
-    return;
-
-  }
-
-  addMessage(
-    userName,
-    userDp,
+  socket.emit(
+    "chat-message",
     message
   );
 
   input.value = "";
 
-  document
-    .getElementById("emojiPanel")
-    .classList.remove("show");
-
 }
 
-function addMessage(name, dp, text){
+socket.on("chat-message", (data) => {
 
   const chat =
-    document.getElementById("chatBox");
+    document.getElementById("chat");
 
-  const row =
+  const div =
     document.createElement("div");
 
-  row.className = "message";
+  div.className = "msg";
 
-  const avatar =
-    document.createElement("div");
+  div.innerHTML =
+    "<b>" +
+    escapeHtml(data.name) +
+    ":</b> " +
+    escapeHtml(data.message);
 
-  avatar.className =
-    "messageAvatar";
-
-  setAvatar(
-    avatar,
-    name,
-    dp
-  );
-
-  const bubble =
-    document.createElement("div");
-
-  bubble.className =
-    "messageText";
-
-  bubble.innerHTML =
-    `<span class="messageUser">
-      ${escapeHtml(name)}
-    </span>
-    ${escapeHtml(text)}`;
-
-  row.appendChild(avatar);
-  row.appendChild(bubble);
-
-  chat.appendChild(row);
+  chat.appendChild(div);
 
   chat.scrollTop =
     chat.scrollHeight;
 
-}
+});
 
+/* ==========================================
+   EMOJI
+========================================== */
 
-/* -------------------------
-   MIC
-------------------------- */
+function openEmoji(){
 
-let micOn = false;
-
-function toggleMic(){
-
-  micOn = !micOn;
-
-  document.getElementById("micIcon")
-    .textContent =
-    micOn ? "🎙️" : "🎤";
-
-  showToast(
-    micOn
-      ? "Microphone ON"
-      : "Microphone OFF"
-  );
+  document
+    .getElementById("emojiModal")
+    .classList.add("show");
 
 }
 
+function emoji(value){
 
-/* -------------------------
-   SPEAKER
-------------------------- */
+  const input =
+    document.getElementById("messageInput");
 
-let speakerOn = true;
+  input.value += value;
 
-function toggleSpeaker(){
+  closeModal("emojiModal");
 
-  speakerOn = !speakerOn;
-
-  document.getElementById("speakerIcon")
-    .textContent =
-    speakerOn ? "🔊" : "🔇";
-
-  showToast(
-    speakerOn
-      ? "Speaker ON"
-      : "Speaker OFF"
-  );
+  input.focus();
 
 }
 
-
-/* -------------------------
-   SEATS
-------------------------- */
-
-function takeSeat(number){
-
-  const seat =
-    document.querySelector(
-      `[data-seat="${number}"]`
-    );
-
-  if(!seat){
-
-    return;
-
-  }
-
-  if(!seat.classList.contains("empty")){
-
-    showToast("Seat already occupied");
-
-    return;
-
-  }
-
-  seat.classList.remove("empty");
-
-  const avatar =
-    seat.querySelector(".avatar");
-
-  const name =
-    seat.querySelector(".name");
-
-  setAvatar(
-    avatar,
-    userName,
-    userDp
-  );
-
-  name.textContent =
-    userName;
-
-  const mic =
-    document.createElement("div");
-
-  mic.className =
-    "micIcon";
-
-  mic.textContent =
-    "🎤";
-
-  avatar.appendChild(mic);
-
-  updateOnline(1);
-
-  showToast(
-    "You took Seat " + number
-  );
-
-}
-
-function updateOnline(add){
-
-  const el =
-    document.getElementById(
-      "onlineCount"
-    );
-
-  const current =
-    parseInt(el.textContent || "1");
-
-  el.textContent =
-    Math.max(
-      1,
-      Math.min(9,current + add)
-    );
-
-}
-
-
-/* -------------------------
+/* ==========================================
    GIFTS
-------------------------- */
+========================================== */
 
-function sendGift(emoji,name,price){
+function openGift(){
+
+  document
+    .getElementById("giftModal")
+    .classList.add("show");
+
+}
+
+function sendGift(name,icon){
+
+  socket.emit("send-gift", {
+    name:name,
+    icon:icon
+  });
 
   closeModal("giftModal");
 
-  addMessage(
-    userName,
-    userDp,
-    "sent " + emoji + " " + name
+}
+
+socket.on("gift-event",(data)=>{
+
+  addSystem(
+    data.fromName +
+    " sent " +
+    data.giftIcon +
+    " " +
+    data.giftName
   );
 
-  showToast(
-    emoji + " " + name + " sent"
-  );
+});
+
+/* ==========================================
+   SETTINGS
+========================================== */
+
+function openSettings(){
+
+  document
+    .getElementById("settingsModal")
+    .classList.add("show");
 
 }
 
+/* ==========================================
+   ADMIN
+========================================== */
 
-/* -------------------------
+function openAdmin(){
+
+  document
+    .getElementById("adminModal")
+    .classList.add("show");
+
+  renderAdmin();
+
+}
+
+function renderAdmin(){
+
+  const box =
+    document.getElementById("adminUsers");
+
+  if(!box) return;
+
+  box.innerHTML = "";
+
+  const isHost =
+    hostSocketId === socket.id;
+
+  if(!isHost){
+
+    box.innerHTML =
+      '<div class="system">' +
+      'Only room host can use admin controls.' +
+      '</div>';
+
+    return;
+
+  }
+
+  roomUsers.forEach(user => {
+
+    if(user.socketId === socket.id) return;
+
+    const row =
+      document.createElement("div");
+
+    row.innerHTML =
+      '<button class="option" onclick="kickUser(\'' +
+      user.socketId +
+      '\')">👢 Kick ' +
+      escapeHtml(user.name) +
+      '</button>' +
+
+      '<button class="option" onclick="muteUser(\'' +
+      user.socketId +
+      '\')">🔇 Mute ' +
+      escapeHtml(user.name) +
+      '</button>';
+
+    box.appendChild(row);
+
+  });
+
+}
+
+function kickUser(socketId){
+
+  socket.emit(
+    "admin-kick",
+    socketId
+  );
+
+  closeModal("adminModal");
+
+}
+
+function muteUser(socketId){
+
+  socket.emit(
+    "admin-mute",
+    socketId
+  );
+
+  closeModal("adminModal");
+
+}
+
+socket.on("kicked-from-room",(data)=>{
+
+  alert(data.message);
+
+  location.href = "/";
+
+});
+
+socket.on("forced-mute",(data)=>{
+
+  micEnabled = false;
+
+  if(localStream){
+
+    localStream.getAudioTracks()
+      .forEach(track => {
+        track.enabled = false;
+      });
+
+  }
+
+  document.getElementById("micBtn")
+    .textContent = "🔇";
+
+  showToast(data.message);
+
+});
+
+/* ==========================================
+   SEAT ERROR
+========================================== */
+
+socket.on("seat-error",(data)=>{
+
+  showToast(data.message);
+
+});
+
+/* ==========================================
+   ROOM ERROR
+========================================== */
+
+socket.on("room-error",(data)=>{
+
+  showToast(data.message);
+
+});
+
+/* ==========================================
+   ROOM BUTTONS
+========================================== */
+
+function roomSupport(){
+
+  showToast("Room Support");
+
+}
+
+function luckyWheel(){
+
+  showToast("Lucky Wheel");
+
+}
+
+function bounty(){
+
+  showToast("Bounty Hunter");
+
+}
+
+function roomReward(){
+
+  showToast("Room Reward");
+
+}
+
+function exclusive(){
+
+  showToast("Exclusive Benefits");
+
+}
+
+function inviteRoom(){
+
+  shareRoom();
+
+}
+
+/* ==========================================
    SHARE
-------------------------- */
+========================================== */
 
 async function shareRoom(){
 
   const url =
-    location.href;
+    location.origin +
+    "/room.html?room=" +
+    encodeURIComponent(roomId) +
+    "&userid=" +
+    encodeURIComponent(myUserId) +
+    "&name=" +
+    encodeURIComponent(myName);
 
-  if(
-    navigator.share
-  ){
+  if(navigator.share){
 
     try{
 
@@ -1519,4 +1859,139 @@ async function shareRoom(){
 
     try{
 
-      await navigator.clipboard.writeText(url
+      await navigator.clipboard.writeText(url);
+
+      showToast("Room link copied");
+
+    }catch(e){
+
+      prompt("Copy room link:",url);
+
+    }
+
+  }
+
+}
+
+/* ==========================================
+   LEAVE
+========================================== */
+
+function leaveRoom(){
+
+  if(
+    localStream
+  ){
+
+    localStream.getTracks()
+      .forEach(track => track.stop());
+
+  }
+
+  Object.keys(peers).forEach(
+    removePeer
+  );
+
+  socket.disconnect();
+
+  location.href = "/";
+
+}
+
+/* ==========================================
+   MODAL
+========================================== */
+
+function closeModal(id){
+
+  document
+    .getElementById(id)
+    .classList.remove("show");
+
+}
+
+/* ==========================================
+   TOAST
+========================================== */
+
+let toastTimer;
+
+function showToast(message){
+
+  const toast =
+    document.getElementById("toast");
+
+  toast.textContent =
+    message;
+
+  toast.style.display =
+    "block";
+
+  clearTimeout(toastTimer);
+
+  toastTimer =
+    setTimeout(()=>{
+      toast.style.display = "none";
+    },2200);
+
+}
+
+/* ==========================================
+   SYSTEM MESSAGE
+========================================== */
+
+function addSystem(message){
+
+  const chat =
+    document.getElementById("chat");
+
+  const div =
+    document.createElement("div");
+
+  div.className =
+    "system";
+
+  div.textContent =
+    message;
+
+  chat.appendChild(div);
+
+  chat.scrollTop =
+    chat.scrollHeight;
+
+}
+
+/* ==========================================
+   SAFE HTML
+========================================== */
+
+function escapeHtml(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+/* ==========================================
+   PAGE EXIT
+========================================== */
+
+window.addEventListener(
+  "beforeunload",
+  () => {
+
+    try{
+      socket.disconnect();
+    }catch(e){}
+
+  }
+);
+
+</script>
+
+</body>
+  </html>
