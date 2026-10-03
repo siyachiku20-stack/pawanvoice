@@ -1,11 +1,17 @@
 const express = require("express");
-const cors = require("cors");
 const http = require("http");
-const path = require("path");
+const cors = require("cors");
 const { Server } = require("socket.io");
+const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
+
+const PORT = process.env.PORT || 3000;
+
+app.use(cors());
+app.use(express.json());
+app.use(express.static(__dirname));
 
 const io = new Server(server, {
   cors: {
@@ -14,1215 +20,691 @@ const io = new Server(server, {
   }
 });
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static(__dirname));
+/*
+  PawanVoice
+  Realtime Voice Room Server
+  9 seats
+*/
 
 const rooms = new Map();
 
-/*
-  TURN credentials are read from Render Environment Variables.
-
-  Optional variables:
-  TURN_URL
-  TURN_USERNAME
-  TURN_CREDENTIAL
-
-  Example:
-  TURN_URL = turn:your-turn-server:3478
-*/
-
-function getIceServers() {
-
-  const servers = [
-    {
-      urls: "stun:stun.l.google.com:19302"
-    },
-    {
-      urls: "stun:stun1.l.google.com:19302"
-    }
-  ];
-
-  const turnUrl = process.env.TURN_URL;
-  const turnUsername = process.env.TURN_USERNAME;
-  const turnCredential = process.env.TURN_CREDENTIAL;
-
-  if (
-    turnUrl &&
-    turnUsername &&
-    turnCredential
-  ) {
-
-    servers.push({
-      urls: turnUrl,
-      username: turnUsername,
-      credential: turnCredential
-    });
-
-  }
-
-  return servers;
+function clean(value, fallback = "") {
+  if (value === undefined || value === null) return fallback;
+  return String(value).trim().slice(0, 500);
 }
 
+function createRoom(roomId, options = {}) {
+  const id = clean(roomId, "main");
 
-/* ---------------------------
-   ROOM
---------------------------- */
+  const room = {
+    id,
+    roomName: clean(options.roomName, `PawanVoice Room ${id}`),
+    roomDp: clean(options.roomDp, ""),
+    category: clean(options.category, "General"),
 
-function getRoom(roomId) {
+    hostSocketId: null,
 
-  if (!rooms.has(roomId)) {
+    seats: Array.from({ length: 9 }, () => null),
 
-    rooms.set(roomId, {
-      id: roomId,
-      hostSocketId: null,
-      roomName: "PawanVoice Room",
-      roomDp: "",
-      category: "General",
-      createdAt: Date.now(),
-      users: new Map()
-    });
+    users: {},
 
-  }
+    gifts: [],
 
-  return rooms.get(roomId);
+    messages: [],
+
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  };
+
+  rooms.set(id, room);
+  return room;
 }
 
+function getRoom(roomId, options = {}) {
+  const id = clean(roomId, "main");
 
-/* ---------------------------
-   ROOM USERS
---------------------------- */
+  if (!rooms.has(id)) {
+    return createRoom(id, options);
+  }
 
-function getUsers(room) {
+  return rooms.get(id);
+}
 
-  return Array.from(
-    room.users.values()
-  ).map(user => ({
+function publicUser(user) {
+  if (!user) return null;
 
+  return {
     socketId: user.socketId,
     userId: user.userId,
     name: user.name,
-    dp: user.dp || "",
-
-    seat:
-      user.seat === null
-        ? null
-        : Number(user.seat),
-
-    mic: !!user.mic,
-    speaker: !!user.speaker,
-    mutedByAdmin:
-      !!user.mutedByAdmin
-
-  }));
-
+    dp: user.dp,
+    micOn: !!user.micOn,
+    speakerOn: user.speakerOn !== false,
+    seat: user.seat,
+    isHost: !!user.isHost,
+    joinedAt: user.joinedAt
+  };
 }
 
+function roomPayload(room) {
+  return {
+    id: room.id,
+    roomId: room.id,
+    roomName: room.roomName,
+    name: room.roomName,
+    roomDp: room.roomDp,
+    category: room.category,
 
-/* ---------------------------
-   ROOM STATE
---------------------------- */
+    hostSocketId: room.hostSocketId,
 
-function sendRoomState(roomId) {
+    seats: room.seats.map(seat => {
+      if (!seat) return null;
 
-  const room =
-    rooms.get(roomId);
+      const user = room.users[seat.socketId];
 
-  if (!room) return;
+      return user ? publicUser(user) : null;
+    }),
 
-  io.to(roomId).emit(
-    "room-state",
-    {
+    users: Object.values(room.users).map(publicUser),
 
-      room: {
-        id: room.id,
-        name: room.roomName,
-        dp: room.roomDp,
-        category: room.category,
-        hostSocketId:
-          room.hostSocketId
-      },
+    onlineCount: Object.keys(room.users).length,
 
-      users:
-        getUsers(room),
+    maxSeats: 9,
 
-      hostSocketId:
-        room.hostSocketId,
+    gifts: room.gifts.slice(-50),
 
-      count:
-        room.users.size
+    messages: room.messages.slice(-50),
 
+    updatedAt: room.updatedAt
+  };
+}
+
+function broadcastRoom(room) {
+  room.updatedAt = Date.now();
+
+  io.to(room.id).emit("room-state", roomPayload(room));
+}
+
+function removeUserFromSeat(room, socketId) {
+  for (let i = 0; i < room.seats.length; i++) {
+    if (room.seats[i] && room.seats[i].socketId === socketId) {
+      room.seats[i] = null;
     }
-  );
-
+  }
 }
 
+function assignHost(room) {
+  if (room.hostSocketId && room.users[room.hostSocketId]) {
+    return;
+  }
 
-/* ---------------------------
-   DELETE SOCKET USER
---------------------------- */
+  const users = Object.values(room.users);
 
-function removeUser(socket) {
+  if (!users.length) {
+    room.hostSocketId = null;
+    return;
+  }
 
-  const roomId =
-    socket.data.roomId;
+  const newHost = users.sort((a, b) => a.joinedAt - b.joinedAt)[0];
+
+  room.hostSocketId = newHost.socketId;
+  newHost.isHost = true;
+}
+
+function leaveRoom(socket) {
+  const roomId = socket.data.roomId;
 
   if (!roomId) return;
 
-  const room =
-    rooms.get(roomId);
+  const room = rooms.get(roomId);
 
-  if (!room) return;
-
-  room.users.delete(
-    socket.id
-  );
-
-  if (
-    room.hostSocketId ===
-    socket.id
-  ) {
-
-    const next =
-      room.users
-      .values()
-      .next()
-      .value;
-
-    room.hostSocketId =
-      next
-        ? next.socketId
-        : null;
-
+  if (!room) {
+    socket.data.roomId = null;
+    return;
   }
 
-  socket.to(roomId).emit(
-    "peer-left",
-    {
-      socketId:
-        socket.id
-    }
-  );
+  const user = room.users[socket.id];
 
-  sendRoomState(roomId);
+  if (user) {
+    removeUserFromSeat(room, socket.id);
 
-  io.to(roomId).emit(
-    "voice-topology-change"
-  );
+    delete room.users[socket.id];
+  }
 
-  if (
-    room.users.size === 0
-  ) {
+  if (room.hostSocketId === socket.id) {
+    room.hostSocketId = null;
 
+    Object.values(room.users).forEach(u => {
+      u.isHost = false;
+    });
+
+    assignHost(room);
+  }
+
+  socket.leave(roomId);
+  socket.data.roomId = null;
+
+  if (Object.keys(room.users).length === 0) {
     rooms.delete(roomId);
-
+    return;
   }
 
-  socket.data.roomId =
-    null;
-
+  broadcastRoom(room);
 }
 
-
-/* ---------------------------
-   HOME
---------------------------- */
-
 app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
 
-  res.sendFile(
-    path.join(
-      __dirname,
-      "index.html"
-    )
+app.get("/room.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "room.html"));
+});
+
+app.get("/health", (req, res) => {
+  res.json({
+    app: "PawanVoice",
+    status: "running",
+    socketIO: true,
+    webRTC: true,
+    seats: 9,
+    rooms: rooms.size,
+    time: Date.now()
+  });
+});
+
+app.get("/rtc-config", (req, res) => {
+  const iceServers = [
+    {
+      urls: [
+        "stun:stun.l.google.com:19302",
+        "stun:stun1.l.google.com:19302"
+      ]
+    }
+  ];
+
+  if (
+    process.env.TURN_URL &&
+    process.env.TURN_USERNAME &&
+    process.env.TURN_CREDENTIAL
+  ) {
+    iceServers.push({
+      urls: process.env.TURN_URL,
+      username: process.env.TURN_USERNAME,
+      credential: process.env.TURN_CREDENTIAL
+    });
+  }
+
+  res.json({
+    iceServers
+  });
+});
+
+io.on("connection", socket => {
+
+  console.log("Connected:", socket.id);
+
+  /*
+    JOIN ROOM
+  */
+
+  socket.on("join-room", data => {
+
+    data = data || {};
+
+    const roomId = clean(data.roomId || data.room, "main");
+
+    const room = getRoom(roomId, {
+      roomName: data.roomName || data.name,
+      roomDp: data.roomDp || data.dp,
+      category: data.category
+    });
+
+    // Leave previous room first
+    if (socket.data.roomId && socket.data.roomId !== roomId) {
+      leaveRoom(socket);
+    }
+
+    socket.join(roomId);
+
+    socket.data.roomId = roomId;
+
+    const userId = clean(
+      data.userId,
+      `user_${socket.id.slice(0, 6)}`
+    );
+
+    const name = clean(
+      data.name,
+      "Guest"
+    );
+
+    const dp = clean(
+      data.dp,
+      ""
+    );
+
+    const existing = room.users[socket.id];
+
+    room.users[socket.id] = {
+      socketId: socket.id,
+
+      userId,
+
+      name,
+
+      dp,
+
+      micOn: false,
+
+      speakerOn: true,
+
+      seat: existing ? existing.seat : null,
+
+      isHost: false,
+
+      joinedAt: existing
+        ? existing.joinedAt
+        : Date.now()
+    };
+
+    if (!room.hostSocketId) {
+      room.hostSocketId = socket.id;
+    }
+
+    Object.values(room.users).forEach(user => {
+      user.isHost = user.socketId === room.hostSocketId;
+    });
+
+    room.messages.push({
+      type: "system",
+      text: `${name} joined the room`,
+      time: Date.now()
+    });
+
+    room.messages = room.messages.slice(-50);
+
+    broadcastRoom(room);
+
+    socket.emit("joined-room", {
+      roomId,
+      socketId: socket.id,
+      host: room.hostSocketId === socket.id
+    });
+  });
+
+  /*
+    TAKE SEAT
+  */
+
+  socket.on("take-seat", data => {
+
+    data = data || {};
+
+    const room = rooms.get(socket.data.roomId);
+
+    if (!room) return;
+
+    const user = room.users[socket.id];
+
+    if (!user) return;
+
+    const seatIndex = Number(data.seat);
+
+    if (
+      !Number.isInteger(seatIndex) ||
+      seatIndex < 0 ||
+      seatIndex > 8
+    ) {
+      socket.emit("room-error", {
+        message: "Invalid seat"
+      });
+
+      return;
+    }
+
+    // If seat already occupied
+    if (
+      room.seats[seatIndex] &&
+      room.seats[seatIndex].socketId !== socket.id
+    ) {
+      socket.emit("room-error", {
+        message: "This seat is already occupied"
+      });
+
+      return;
+    }
+
+    // Remove user's previous seat
+    removeUserFromSeat(room, socket.id);
+
+    room.seats[seatIndex] = {
+      socketId: socket.id
+    };
+
+    user.seat = seatIndex;
+
+    broadcastRoom(room);
+  });
+
+  /*
+    LEAVE SEAT
+  */
+
+  socket.on("leave-seat", () => {
+
+    const room = rooms.get(socket.data.roomId);
+
+    if (!room) return;
+
+    const user = room.users[socket.id];
+
+    if (!user) return;
+
+    removeUserFromSeat(room, socket.id);
+
+    user.seat = null;
+    user.micOn = false;
+
+    broadcastRoom(room);
+  });
+
+  /*
+    MIC
+  */
+
+  socket.on("mic-status", data => {
+
+    const room = rooms.get(socket.data.roomId);
+
+    if (!room) return;
+
+    const user = room.users[socket.id];
+
+    if (!user) return;
+
+    if (user.seat === null || user.seat === undefined) {
+      socket.emit("room-error", {
+        message: "Seat par baithne ke baad mic use karein"
+      });
+
+      return;
+    }
+
+    user.micOn = !!data?.on;
+
+    broadcastRoom(room);
+
+    socket.to(room.id).emit("peer-mic-status", {
+      socketId: socket.id,
+      on: user.micOn
+    });
+  });
+
+  /*
+    SPEAKER
+  */
+
+  socket.on("speaker-status", data => {
+
+    const room = rooms.get(socket.data.roomId);
+
+    if (!room) return;
+
+    const user = room.users[socket.id];
+
+    if (!user) return;
+
+    user.speakerOn = !!data?.on;
+
+    broadcastRoom(room);
+  });
+
+  /*
+    CHAT
+  */
+
+  socket.on("chat-message", data => {
+
+    const room = rooms.get(socket.data.roomId);
+
+    if (!room) return;
+
+    const user = room.users[socket.id];
+
+    if (!user) return;
+
+    const text = clean(data?.text, "");
+
+    if (!text) return;
+
+    const message = {
+      id:
+        Date.now().toString(36) +
+        Math.random().toString(36).slice(2, 7),
+
+      type: "chat",
+
+      socketId: socket.id,
+
+      userId: user.userId,
+
+      name: user.name,
+
+      dp: user.dp,
+
+      text,
+
+      time: Date.now()
+    };
+
+    room.messages.push(message);
+
+    room.messages = room.messages.slice(-50);
+
+    io.to(room.id).emit("chat-message", message);
+  });
+
+  /*
+    GIFT
+  */
+
+  socket.on("send-gift", data => {
+
+    const room = rooms.get(socket.data.roomId);
+
+    if (!room) return;
+
+    const user = room.users[socket.id];
+
+    if (!user) return;
+
+    const gift = {
+      id:
+        Date.now().toString(36) +
+        Math.random().toString(36).slice(2, 7),
+
+      fromSocketId: socket.id,
+
+      fromUserId: user.userId,
+
+      fromName: user.name,
+
+      fromDp: user.dp,
+
+      giftId: clean(data?.giftId, "rose"),
+
+      giftName: clean(data?.giftName, "Rose"),
+
+      giftIcon: clean(data?.giftIcon, "🌹"),
+
+      targetSeat:
+        Number.isInteger(Number(data?.targetSeat))
+          ? Number(data.targetSeat)
+          : null,
+
+      time: Date.now()
+    };
+
+    room.gifts.push(gift);
+
+    room.gifts = room.gifts.slice(-50);
+
+    io.to(room.id).emit("gift-received", gift);
+  });
+
+  /*
+    ADMIN MUTE
+  */
+
+  socket.on("admin-mute", data => {
+
+    const room = rooms.get(socket.data.roomId);
+
+    if (!room) return;
+
+    const sender = room.users[socket.id];
+
+    if (!sender) return;
+
+    if (
+      !sender.isHost &&
+      sender.seat !== 0
+    ) {
+      socket.emit("room-error", {
+        message: "Only host can mute users"
+      });
+
+      return;
+    }
+
+    const targetSocketId = clean(data?.socketId);
+
+    const target = room.users[targetSocketId];
+
+    if (!target) return;
+
+    target.micOn = false;
+
+    io.to(targetSocketId).emit("force-mute");
+
+    broadcastRoom(room);
+  });
+
+  /*
+    ADMIN KICK
+  */
+
+  socket.on("admin-kick", data => {
+
+    const room = rooms.get(socket.data.roomId);
+
+    if (!room) return;
+
+    const sender = room.users[socket.id];
+
+    if (!sender) return;
+
+    if (
+      !sender.isHost &&
+      sender.seat !== 0
+    ) {
+      socket.emit("room-error", {
+        message: "Only host can kick users"
+      });
+
+      return;
+    }
+
+    const targetSocketId = clean(data?.socketId);
+
+    const targetSocket = io.sockets.sockets.get(targetSocketId);
+
+    const targetUser = room.users[targetSocketId];
+
+    if (!targetSocket || !targetUser) return;
+
+    targetSocket.emit("kicked");
+
+    targetSocket.disconnect(true);
+  });
+
+  /*
+    WEBRTC OFFER
+  */
+
+  socket.on("webrtc-offer", data => {
+
+    const target = clean(data?.target);
+
+    if (!target) return;
+
+    io.to(target).emit("webrtc-offer", {
+      from: socket.id,
+      offer: data.offer
+    });
+  });
+
+  /*
+    WEBRTC ANSWER
+  */
+
+  socket.on("webrtc-answer", data => {
+
+    const target = clean(data?.target);
+
+    if (!target) return;
+
+    io.to(target).emit("webrtc-answer", {
+      from: socket.id,
+      answer: data.answer
+    });
+  });
+
+  /*
+    WEBRTC ICE
+  */
+
+  socket.on("webrtc-ice", data => {
+
+    const target = clean(data?.target);
+
+    if (!target) return;
+
+    io.to(target).emit("webrtc-ice", {
+      from: socket.id,
+      candidate: data.candidate
+    });
+  });
+
+  /*
+    ROOM INFO
+  */
+
+  socket.on("get-room-state", () => {
+
+    const room = rooms.get(socket.data.roomId);
+
+    if (!room) return;
+
+    socket.emit("room-state", roomPayload(room));
+  });
+
+  /*
+    DISCONNECT
+  */
+
+  socket.on("disconnect", () => {
+
+    console.log("Disconnected:", socket.id);
+
+    leaveRoom(socket);
+  });
+});
+
+server.listen(PORT, () => {
+
+  console.log(
+    `PawanVoice server running on port ${PORT}`
   );
 
 });
-
-
-/* ---------------------------
-   ROOM
---------------------------- */
-
-app.get(
-  "/room.html",
-  (req, res) => {
-
-    res.sendFile(
-      path.join(
-        __dirname,
-        "room.html"
-      )
-    );
-
-  }
-);
-
-
-/* ---------------------------
-   HEALTH
---------------------------- */
-
-app.get(
-  "/health",
-  (req, res) => {
-
-    res.json({
-
-      app: "PawanVoice",
-
-      status: "running",
-
-      socketIO: true,
-
-      webRTC: true,
-
-      firebaseRooms:
-        true,
-
-      seats: 9,
-
-      rooms:
-        rooms.size,
-
-      turn:
-        !!(
-          process.env.TURN_URL &&
-          process.env.TURN_USERNAME &&
-          process.env.TURN_CREDENTIAL
-        )
-
-    });
-
-  }
-);
-
-
-/* ---------------------------
-   RTC CONFIG
---------------------------- */
-
-app.get(
-  "/rtc-config",
-  (req, res) => {
-
-    res.json({
-
-      iceServers:
-        getIceServers()
-
-    });
-
-  }
-);
-
-
-/* ---------------------------
-   SOCKET
---------------------------- */
-
-io.on(
-  "connection",
-  socket => {
-
-    console.log(
-      "CONNECTED:",
-      socket.id
-    );
-
-
-    /* -----------------------
-       JOIN ROOM
-    ----------------------- */
-
-    socket.on(
-      "join-room",
-      data => {
-
-        data =
-          data || {};
-
-        const roomId =
-          String(
-            data.roomId ||
-            "10001"
-          );
-
-        const userId =
-          String(
-            data.userId ||
-            ""
-          );
-
-        const name =
-          String(
-            data.name ||
-            "Guest"
-          );
-
-        const dp =
-          String(
-            data.dp ||
-            ""
-          );
-
-        const roomName =
-          String(
-            data.roomName ||
-            "PawanVoice Room"
-          );
-
-        const roomDp =
-          String(
-            data.roomDp ||
-            dp ||
-            ""
-          );
-
-        const category =
-          String(
-            data.category ||
-            "General"
-          );
-
-
-        if (!userId) {
-
-          socket.emit(
-            "room-error",
-            {
-              message:
-                "User ID missing"
-            }
-          );
-
-          return;
-
-        }
-
-
-        if (
-          socket.data.roomId
-        ) {
-
-          removeUser(
-            socket
-          );
-
-        }
-
-
-        const room =
-          getRoom(roomId);
-
-
-        room.roomName =
-          roomName;
-
-        room.roomDp =
-          roomDp;
-
-        room.category =
-          category;
-
-
-        socket.join(
-          roomId
-        );
-
-
-        socket.data.roomId =
-          roomId;
-
-        socket.data.userId =
-          userId;
-
-        socket.data.name =
-          name;
-
-
-        if (
-          !room.hostSocketId
-        ) {
-
-          room.hostSocketId =
-            socket.id;
-
-        }
-
-
-        room.users.set(
-          socket.id,
-          {
-
-            socketId:
-              socket.id,
-
-            userId:
-              userId,
-
-            name:
-              name,
-
-            dp:
-              dp,
-
-            seat:
-              null,
-
-            mic:
-              false,
-
-            speaker:
-              true,
-
-            mutedByAdmin:
-              false
-
-          }
-        );
-
-
-        socket.emit(
-          "joined-room",
-          {
-
-            roomId:
-              roomId,
-
-            hostSocketId:
-              room.hostSocketId,
-
-            iceServers:
-              getIceServers()
-
-          }
-        );
-
-
-        socket.to(
-          roomId
-        ).emit(
-          "peer-joined",
-          {
-
-            socketId:
-              socket.id,
-
-            userId:
-              userId,
-
-            name:
-              name
-
-          }
-        );
-
-
-        sendRoomState(
-          roomId
-        );
-
-      }
-    );
-
-
-    /* -----------------------
-       TAKE SEAT
-    ----------------------- */
-
-    socket.on(
-      "take-seat",
-      seat => {
-
-        const room =
-          rooms.get(
-            socket.data.roomId
-          );
-
-        if (!room) return;
-
-        const user =
-          room.users.get(
-            socket.id
-          );
-
-        if (!user) return;
-
-
-        seat =
-          Number(seat);
-
-
-        if (
-          seat < 1 ||
-          seat > 9
-        ) {
-
-          socket.emit(
-            "seat-error",
-            {
-              message:
-                "Invalid seat"
-            }
-          );
-
-          return;
-
-        }
-
-
-        const occupied =
-          Array.from(
-            room.users.values()
-          ).find(
-            u =>
-              Number(u.seat) ===
-              seat &&
-              u.socketId !==
-              socket.id
-          );
-
-
-        if (occupied) {
-
-          socket.emit(
-            "seat-error",
-            {
-              message:
-                "This seat is already occupied"
-            }
-          );
-
-          return;
-
-        }
-
-
-        user.seat =
-          seat;
-
-
-        sendRoomState(
-          room.id
-        );
-
-
-        io.to(room.id).emit(
-          "voice-topology-change"
-        );
-
-      }
-    );
-
-
-    /* -----------------------
-       LEAVE SEAT
-    ----------------------- */
-
-    socket.on(
-      "leave-seat",
-      () => {
-
-        const room =
-          rooms.get(
-            socket.data.roomId
-          );
-
-        if (!room) return;
-
-        const user =
-          room.users.get(
-            socket.id
-          );
-
-        if (!user) return;
-
-
-        user.seat =
-          null;
-
-        user.mic =
-          false;
-
-
-        sendRoomState(
-          room.id
-        );
-
-
-        io.to(room.id).emit(
-          "voice-topology-change"
-        );
-
-      }
-    );
-
-
-    /* -----------------------
-       MIC
-    ----------------------- */
-
-    socket.on(
-      "mic-status",
-      enabled => {
-
-        const room =
-          rooms.get(
-            socket.data.roomId
-          );
-
-        if (!room) return;
-
-        const user =
-          room.users.get(
-            socket.id
-          );
-
-        if (!user) return;
-
-
-        if (
-          enabled &&
-          !user.seat
-        ) {
-
-          socket.emit(
-            "room-error",
-            {
-              message:
-                "Take a seat first"
-            }
-          );
-
-          return;
-
-        }
-
-
-        if (
-          enabled &&
-          user.mutedByAdmin
-        ) {
-
-          socket.emit(
-            "room-error",
-            {
-              message:
-                "Admin has muted you"
-            }
-          );
-
-          return;
-
-        }
-
-
-        user.mic =
-          !!enabled;
-
-
-        io.to(room.id).emit(
-          "user-mic-status",
-          {
-
-            socketId:
-              socket.id,
-
-            enabled:
-              user.mic
-
-          }
-        );
-
-
-        sendRoomState(
-          room.id
-        );
-
-      }
-    );
-
-
-    /* -----------------------
-       SPEAKER
-    ----------------------- */
-
-    socket.on(
-      "speaker-status",
-      enabled => {
-
-        const room =
-          rooms.get(
-            socket.data.roomId
-          );
-
-        if (!room) return;
-
-        const user =
-          room.users.get(
-            socket.id
-          );
-
-        if (!user) return;
-
-
-        user.speaker =
-          !!enabled;
-
-
-        socket.emit(
-          "speaker-status-confirmed",
-          {
-            enabled:
-              user.speaker
-          }
-        );
-
-      }
-    );
-
-
-    /* -----------------------
-       CHAT
-    ----------------------- */
-
-    socket.on(
-      "chat-message",
-      message => {
-
-        const room =
-          rooms.get(
-            socket.data.roomId
-          );
-
-        if (!room) return;
-
-        const user =
-          room.users.get(
-            socket.id
-          );
-
-        if (!user) return;
-
-
-        const clean =
-          String(
-            message || ""
-          )
-          .trim()
-          .slice(0, 500);
-
-
-        if (!clean) return;
-
-
-        io.to(room.id).emit(
-          "chat-message",
-          {
-
-            socketId:
-              socket.id,
-
-            userId:
-              user.userId,
-
-            name:
-              user.name,
-
-            message:
-              clean,
-
-            time:
-              new Date()
-                .toLocaleTimeString(
-                  "en-IN",
-                  {
-                    hour:
-                      "2-digit",
-                    minute:
-                      "2-digit"
-                  }
-                )
-
-          }
-        );
-
-      }
-    );
-
-
-    /* -----------------------
-       GIFT
-    ----------------------- */
-
-    socket.on(
-      "send-gift",
-      gift => {
-
-        const room =
-          rooms.get(
-            socket.data.roomId
-          );
-
-        if (!room) return;
-
-        const user =
-          room.users.get(
-            socket.id
-          );
-
-        if (!user) return;
-
-
-        gift =
-          gift || {};
-
-
-        io.to(room.id).emit(
-          "gift-event",
-          {
-
-            fromSocketId:
-              socket.id,
-
-            fromName:
-              user.name,
-
-            giftName:
-              String(
-                gift.name ||
-                "Gift"
-              ),
-
-            giftIcon:
-              String(
-                gift.icon ||
-                "🎁"
-              )
-
-          }
-        );
-
-      }
-    );
-
-
-    /* -----------------------
-       KICK
-    ----------------------- */
-
-    socket.on(
-      "admin-kick",
-      targetSocketId => {
-
-        const room =
-          rooms.get(
-            socket.data.roomId
-          );
-
-        if (!room) return;
-
-
-        if (
-          room.hostSocketId !==
-          socket.id
-        ) {
-
-          socket.emit(
-            "room-error",
-            {
-              message:
-                "Only room host can kick users"
-            }
-          );
-
-          return;
-
-        }
-
-
-        if (
-          targetSocketId ===
-          socket.id
-        ) return;
-
-
-        const target =
-          room.users.get(
-            targetSocketId
-          );
-
-        if (!target) return;
-
-
-        const targetSocket =
-          io.sockets.sockets.get(
-            targetSocketId
-          );
-
-
-        if (targetSocket) {
-
-          targetSocket.emit(
-            "kicked-from-room",
-            {
-              message:
-                "You were removed by room host"
-            }
-          );
-
-          targetSocket.leave(
-            room.id
-          );
-
-          targetSocket.data.roomId =
-            null;
-
-        }
-
-
-        room.users.delete(
-          targetSocketId
-        );
-
-
-        sendRoomState(
-          room.id
-        );
-
-
-        io.to(room.id).emit(
-          "voice-topology-change"
-        );
-
-      }
-    );
-
-
-    /* -----------------------
-       MUTE
-    ----------------------- */
-
-    socket.on(
-      "admin-mute",
-      targetSocketId => {
-
-        const room =
-          rooms.get(
-            socket.data.roomId
-          );
-
-        if (!room) return;
-
-
-        if (
-          room.hostSocketId !==
-          socket.id
-        ) {
-
-          socket.emit(
-            "room-error",
-            {
-              message:
-                "Only room host can mute users"
-            }
-          );
-
-          return;
-
-        }
-
-
-        const target =
-          room.users.get(
-            targetSocketId
-          );
-
-        if (!target) return;
-
-
-        target.mutedByAdmin =
-          true;
-
-        target.mic =
-          false;
-
-
-        const targetSocket =
-          io.sockets.sockets.get(
-            targetSocketId
-          );
-
-
-        if (targetSocket) {
-
-          targetSocket.emit(
-            "forced-mute",
-            {
-              message:
-                "You were muted by room host"
-            }
-          );
-
-        }
-
-
-        sendRoomState(
-          room.id
-        );
-
-      }
-    );
-
-
-    /* -----------------------
-       WEBRTC OFFER
-    ----------------------- */
-
-    socket.on(
-      "webrtc-offer",
-      data => {
-
-        if (
-          !data ||
-          !data.target ||
-          !data.offer
-        ) return;
-
-
-        io.to(
-          data.target
-        ).emit(
-          "webrtc-offer",
-          {
-
-            from:
-              socket.id,
-
-            offer:
-              data.offer
-
-          }
-        );
-
-      }
-    );
-
-
-    /* -----------------------
-       WEBRTC ANSWER
-    ----------------------- */
-
-    socket.on(
-      "webrtc-answer",
-      data => {
-
-        if (
-          !data ||
-          !data.target ||
-          !data.answer
-        ) return;
-
-
-        io.to(
-          data.target
-        ).emit(
-          "webrtc-answer",
-          {
-
-            from:
-              socket.id,
-
-            answer:
-              data.answer
-
-          }
-        );
-
-      }
-    );
-
-
-    /* -----------------------
-       ICE
-    ----------------------- */
-
-    socket.on(
-      "webrtc-ice",
-      data => {
-
-        if (
-          !data ||
-          !data.target ||
-          !data.candidate
-        ) return;
-
-
-        io.to(
-          data.target
-        ).emit(
-          "webrtc-ice",
-          {
-
-            from:
-              socket.id,
-
-            candidate:
-              data.candidate
-
-          }
-        );
-
-      }
-    );
-
-
-    /* -----------------------
-       DISCONNECT
-    ----------------------- */
-
-    socket.on(
-      "disconnect",
-      () => {
-
-        console.log(
-          "DISCONNECTED:",
-          socket.id
-        );
-
-        removeUser(
-          socket
-        );
-
-      }
-    );
-
-  }
-);
-
-
-const PORT =
-  process.env.PORT || 3000;
-
-
-server.listen(
-  PORT,
-  () => {
-
-    console.log(
-      "PawanVoice running on port " +
-      PORT
-    );
-
-    console.log(
-      "TURN configured:",
-      !!(
-        process.env.TURN_URL &&
-        process.env.TURN_USERNAME &&
-        process.env.TURN_CREDENTIAL
-      )
-    );
-
-  }
-);
