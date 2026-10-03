@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PawanVoice Family</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#090b12;
+  color:#fff;
+}
+
+.app{
+  max-width:520px;
+  margin:auto;
+  min-height:100vh;
+  background:#10131d;
+}
+
+.header{
+  padding:16px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:#171a26;
+  position:sticky;
+  top:0;
+  z-index:5;
+}
+
+.back{
+  border:0;
+  background:#292e3d;
+  color:white;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  font-size:20px;
+}
+
+.title{
+  font-size:20px;
+  font-weight:bold;
+}
+
+.familyHero{
+  margin:14px;
+  padding:22px;
+  border-radius:20px;
+  text-align:center;
+  background:linear-gradient(135deg,#172a47,#35204c);
+}
+
+.familyIcon{
+  width:82px;
+  height:82px;
+  border-radius:20px;
+  background:#ffb52e;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:44px;
+  margin:auto;
+}
+
+.familyName{
+  font-size:22px;
+  font-weight:bold;
+  margin-top:12px;
+}
+
+.familyId{
+  color:#999;
+  font-size:12px;
+  margin-top:5px;
+}
+
+.card{
+  margin:12px 14px;
+  padding:15px;
+  border-radius:16px;
+  background:#191d29;
+}
+
+.title2{
+  font-size:16px;
+  font-weight:bold;
+  margin-bottom:12px;
+}
+
+.row{
+  display:flex;
+  gap:8px;
+}
+
+.stat{
+  flex:1;
+  text-align:center;
+  padding:12px 5px;
+  border-radius:12px;
+  background:#232837;
+}
+
+.stat b{
+  display:block;
+  font-size:20px;
+}
+
+.stat span{
+  color:#999;
+  font-size:11px;
+}
+
+input{
+  width:100%;
+  padding:13px;
+  border-radius:12px;
+  border:1px solid #363b4b;
+  background:#0d1018;
+  color:#fff;
+  margin-bottom:8px;
+  outline:none;
+}
+
+button{
+  border:0;
+  color:#fff;
+  border-radius:12px;
+  padding:11px 15px;
+  font-weight:bold;
+}
+
+.primary{
+  background:#8c55ff;
+}
+
+.secondary{
+  background:#292e3d;
+}
+
+.member{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border-radius:12px;
+  background:#222635;
+  margin-bottom:8px;
+}
+
+.member img{
+  width:48px;
+  height:48px;
+  object-fit:cover;
+  border-radius:50%;
+}
+
+.memberInfo{
+  flex:1;
+  min-width:0;
+}
+
+.memberName{
+  font-weight:bold;
+}
+
+.memberId{
+  color:#999;
+  font-size:11px;
+}
+
+.role{
+  color:#ffca54;
+  font-size:11px;
+}
+
+.empty{
+  color:#888;
+  text-align:center;
+  padding:20px;
+}
+
+.msg{
+  color:#aaa;
+  font-size:13px;
+  margin-top:8px;
+}
+
+.progress{
+  height:10px;
+  border-radius:10px;
+  background:#303544;
+  overflow:hidden;
+}
+
+.progress div{
+  height:100%;
+  width:0;
+  background:#8c55ff;
+}
+
+.bottom{
+  display:flex;
+  gap:8px;
+}
+
+.bottom button{
+  flex:1;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header">
+
+    <button
+      class="back"
+      onclick="history.back()"
+    >
+      ‹
+    </button>
+
+    <div class="title">
+      👑 Family
+    </div>
+
+  </div>
+
+  <div class="familyHero">
+
+    <div class="familyIcon">
+      👑
+    </div>
+
+    <div
+      class="familyName"
+      id="familyName"
+    >
+      No Family
+    </div>
+
+    <div
+      class="familyId"
+      id="familyId"
+    ></div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="title2">
+      Family Stats
+    </div>
+
+    <div class="row">
+
+      <div class="stat">
+        <b id="members">0</b>
+        <span>Members</span>
+      </div>
+
+      <div class="stat">
+        <b id="familyLevel">1</b>
+        <span>Level</span>
+      </div>
+
+      <div class="stat">
+        <b id="familyExp">0</b>
+        <span>EXP</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="title2">
+      Family EXP
+    </div>
+
+    <div class="progress">
+      <div id="familyProgress"></div>
+    </div>
+
+    <div
+      class="msg"
+      id="progressText"
+    >
+      0 / 100 EXP
+    </div>
+
+  </div>
+
+  <div
+    class="card"
+    id="createCard"
+  >
+
+    <div class="title2">
+      Create Family
+    </div>
+
+    <input
+      id="newFamilyName"
+      placeholder="Family name"
+      maxlength="30"
+    >
+
+    <button
+      class="primary"
+      style="width:100%"
+      onclick="createFamily()"
+    >
+      👑 Create Family
+    </button>
+
+    <div
+      class="msg"
+      id="createMsg"
+    ></div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="title2">
+      Join Family
+    </div>
+
+    <input
+      id="familyIdInput"
+      placeholder="Family ID"
+      autocomplete="off"
+    >
+
+    <button
+      class="primary"
+      style="width:100%"
+      onclick="joinFamily()"
+    >
+      Join Family
+    </button>
+
+    <div
+      class="msg"
+      id="joinMsg"
+    ></div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="title2">
+      Family Members
+    </div>
+
+    <div id="memberList">
+      Loading...
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="title2">
+      Family Invites
+    </div>
+
+    <div id="invites">
+      Loading...
+    </div>
+
+  </div>
+
+</div>
+
+<script src="user.js"></script>
+
+<script>
+
+const DB =
+  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
+
+let me = null;
+let family = null;
+
+async function getDB(path){
+
+  const r =
+    await fetch(
+      DB + path + ".json"
+    );
+
+  if(!r.ok){
+    throw new Error(
+      "Firebase " + r.status
+    );
+  }
+
+  return await r.json();
+}
+
+async function putDB(path,data){
+
+  const r =
+    await fetch(
+      DB + path + ".json",
+      {
+        method:"PUT",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(data)
+      }
+    );
+
+  if(!r.ok){
+    throw new Error(
+      "Firebase " + r.status
+    );
+  }
+
+  return await r.json();
+}
+
+async function patchDB(path,data){
+
+  const r =
+    await fetch(
+      DB + path + ".json",
+      {
+        method:"PATCH",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(data)
+      }
+    );
+
+  if(!r.ok){
+    throw new Error(
+      "Firebase " + r.status
+    );
+  }
+
+  return await r.json();
+}
+
+function esc(v){
+
+  return String(v ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+
+}
+
+function makeFamilyId(){
+
+  return "PVF" +
+    Math.floor(
+      100000 +
+      Math.random() * 900000
+    );
+
+}
+
+async function loadFamily(){
+
+  me = await pvLoadUser();
+
+  try{
+
+    family =
+      await getDB(
+        "/familyMembers/" +
+        encodeURIComponent(me.userId)
+      );
+
+    if(
+      family &&
+      family.familyId
+    ){
+
+      await showFamily(
+        family.familyId
+      );
+
+    }else{
+
+      showNoFamily();
+
+    }
+
+  }catch(e){
+
+    console.error(e);
+
+    showNoFamily();
+
+  }
+
+  await loadInvites();
+
+}
+
+function showNoFamily(){
+
+  document.getElementById(
+    "familyName"
+  ).textContent =
+    "No Family";
+
+  document.getElementById(
+    "familyId"
+  ).textContent = "";
+
+  document.getElementById(
+    "members"
+  ).textContent = "0";
+
+  document.getElementById(
+    "familyLevel"
+  ).textContent = "1";
+
+  document.getElementById(
+    "familyExp"
+  ).textContent = "0";
+
+  document.getElementById(
+    "memberList"
+  ).innerHTML =
+    '<div class="empty">You are not in a family.</div>';
+
+}
+
+async function showFamily(familyId){
+
+  const data =
+    await getDB(
+      "/families/" +
+      encodeURIComponent(familyId)
+    );
+
+  if(!data){
+
+    showNoFamily();
+
+    return;
+  }
+
+  family = data;
+
+  document.getElementById(
+    "familyName"
+  ).textContent =
+    data.name || "Family";
+
+  document.getElementById(
+    "familyId"
+  ).textContent =
+    "Family ID: " + familyId;
+
+  document.getElementById(
+    "familyLevel"
+  ).textContent =
+    Number(data.level || 1);
+
+  document.getElementById(
+    "familyExp"
+  ).textContent =
+    Number(data.exp || 0);
+
+  const memberIds =
+    data.members
+      ? Object.keys(data.members)
+      : [];
+
+  document.getElementById(
+    "members"
+  ).textContent =
+    memberIds.length;
+
+  const level =
+    Number(data.level || 1);
+
+  const exp =
+    Number(data.exp || 0);
+
+  const required =
+    Math.max(
+      100,
+      level * 100
+    );
+
+  const percent =
+    Math.min(
+      100,
+      Math.round(
+        exp / required * 100
+      )
+    );
+
+  document.getElementById(
+    "familyProgress"
+  ).style.width =
+    percent + "%";
+
+  document.getElementById(
+    "progressText"
+  ).textContent =
+    exp + " / " + required + " EXP";
+
+  document.getElementById(
+    "createCard"
+  ).style.display =
+    "none";
+
+  await loadMembers(
+    memberIds
+  );
+
+}
+
+async function loadMembers(ids){
+
+  const box =
+    document.getElementById(
+      "memberList"
+    );
+
+  if(!ids.length){
+
+    box.innerHTML =
+      '<div class="empty">No members</div>';
+
+    return;
+  }
+
+  let html = "";
+
+  for(const id of ids){
+
+    try{
+
+      const user =
+        await getDB(
+          "/users/" +
+          encodeURIComponent(id)
+        );
+
+      if(!user) continue;
+
+      const isOwner =
+        family.ownerId === id;
+
+      html += `
+
+        <div class="member">
+
+          <img
+            src="${esc(user.dp || PV_DEFAULT_DP)}"
+          >
+
+          <div class="memberInfo">
+
+            <div class="memberName">
+              ${esc(user.name || "User")}
+            </div>
+
+            <div class="memberId">
+              ID: ${esc(id)}
+            </div>
+
+            ${
+              isOwner
+              ? '<div class="role">👑 Family Owner</div>'
+              : '<div class="role">Member</div>'
+            }
+
+          </div>
+
+        </div>
+
+      `;
+
+    }catch(e){
+
+      console.error(e);
+
+    }
+
+  }
+
+  box.innerHTML =
+    html ||
+    '<div class="empty">Members load नहीं हुए.</div>';
+
+}
+
+async function createFamily(){
+
+  if(!me) return;
+
+  const name =
+    document.getElementById(
+      "newFamilyName"
+    ).value.trim();
+
+  if(!name){
+
+    alert("Family name डालें.");
+
+    return;
+  }
+
+  try{
+
+    const existing =
+      await getDB(
+        "/familyMembers/" +
+        encodeURIComponent(me.userId)
+      );
+
+    if(existing && existing.familyId){
+
+      alert("आप पहले से Family में हैं.");
+
+      return;
+    }
+
+    const familyId =
+      makeFamilyId();
+
+    const now =
+      Date.now();
+
+    const familyData = {
+
+      id: familyId,
+
+      name:name,
+
+      ownerId:me.userId,
+
+      ownerName:me.name,
+
+      ownerDp:me.dp,
+
+      level:1,
+
+      exp:0,
+
+      createdAt:now,
+
+      members:{
+
+        [me.userId]:{
+
+          role:"owner",
+
+          joinedAt:now
+
+        }
+
+      }
+
+    };
+
+    await putDB(
+      "/families/" +
+      encodeURIComponent(familyId),
+      familyData
+    );
+
+    await putDB(
+      "/familyMembers/" +
+      encodeURIComponent(me.userId),
+      {
+
+        familyId:familyId,
+
+        role:"owner",
+
+        joinedAt:now
+
+      }
+    );
+
+    alert(
+      "Family बन गई!\nFamily ID: " +
+      familyId
+    );
+
+    location.reload();
+
+  }catch(e){
+
+    console.error(e);
+
+    document.getElementById(
+      "createMsg"
+    ).textContent =
+      "Family create नहीं हुई.";
+
+  }
+
+}
+
+async function joinFamily(){
+
+  if(!me) return;
+
+  const familyId =
+    document.getElementById(
+      "familyIdInput"
+    ).value.trim();
+
+  if(!familyId){
+
+    alert("Family ID डालें.");
+
+    return;
+  }
+
+  try{
+
+    const existing =
+      await getDB(
+        "/familyMembers/" +
+        encodeURIComponent(me.userId)
+      );
+
+    if(existing && existing.familyId){
+
+      alert(
+        "आप पहले से Family में हैं."
+      );
+
+      return;
+    }
+
+    const data =
+      await getDB(
+        "/families/" +
+        encodeURIComponent(familyId)
+      );
+
+    if(!data){
+
+      alert("Family नहीं मिली.");
+
+      return;
+    }
+
+    const now =
+      Date.now();
+
+    await patchDB(
+      "/families/" +
+      encodeURIComponent(familyId) +
+      "/members/" +
+      encodeURIComponent(me.userId),
+      {
+
+        role:"member",
+
+        joinedAt:now
+
+      }
+    );
+
+    await putDB(
+      "/familyMembers/" +
+      encodeURIComponent(me.userId),
+      {
+
+        familyId:familyId,
+
+        role:"member",
+
+        joinedAt:now
+
+      }
+    );
+
+    alert(
+      "Family join हो गई!"
+    );
+
+    location.reload();
+
+  }catch(e){
+
+    console.error(e);
+
+    document.getElementById(
+      "joinMsg"
+    ).textContent =
+      "Family join नहीं हुई.";
+
+  }
+
+}
+
+async function loadInvites(){
+
+  const box =
+    document.getElementById(
+      "invites"
+    );
+
+  try{
+
+    const data =
+      await getDB(
+        "/familyInvites/" +
+        encodeURIComponent(me.userId)
+      );
+
+    if(!data){
+
+      box.innerHTML =
+        '<div class="empty">No family invites</div>';
+
+      return;
+    }
+
+    const list =
+      Object.entries(data)
+      .filter(
+        ([id,x]) =>
+          x && x.status === "pending"
+      );
+
+    if(!list.length){
+
+      box.innerHTML =
+        '<div class="empty">No family invites</div>';
+
+      return;
+    }
+
+    box.innerHTML =
+      list.map(
+        ([inviteId,x]) => `
+
+        <div class="member">
+
+          <div class="memberInfo">
+
+            <div class="memberName">
+              👑 ${esc(x.familyName || "Family")}
+            </div>
+
+            <div class="memberId">
+              Family ID: ${esc(x.familyId)}
+            </div>
+
+            <div class="memberId">
+              Invited by: ${esc(x.fromName || "User")}
+            </div>
+
+          </div>
+
+          <button
+            class="primary"
+            onclick="acceptInvite('${esc(inviteId)}','${esc(x.familyId)}')"
+          >
+            Join
+          </button>
+
+        </div>
+
+      `
+      ).join("");
+
+  }catch(e){
+
+    console.error(e);
+
+    box.innerHTML =
+      '<div class="empty">Invites load नहीं हुए.</div>';
+
+  }
+
+}
+
+async function acceptInvite(
+  inviteId,
+  familyId
+){
+
+  try{
+
+    const existing =
+      await getDB(
+        "/familyMembers/" +
+        encodeURIComponent(me.userId)
+      );
+
+    if(existing && existing.familyId){
+
+      alert(
+        "आप पहले से Family में हैं."
+      );
+
+      return;
+    }
+
+    const data =
+      await getDB(
+        "/families/" +
+        encodeURIComponent(familyId)
+      );
+
+    if(!data){
+
+      alert("Family नहीं मिली.");
+
+      return;
+    }
+
+    const now =
+      Date.now();
+
+    await patchDB(
+      "/families/" +
+      encodeURIComponent(familyId) +
+      "/members/" +
+      encodeURIComponent(me.userId),
+      {
+
+        role:"member",
+
+        joinedAt:now
+
+      }
+    );
+
+    await putDB(
+      "/familyMembers/" +
+      encodeURIComponent(me.userId),
+      {
+
+        familyId:familyId,
+
+        role:"member",
+
+        joinedAt:now
+
+      }
+    );
+
+    await putDB(
+      "/familyInvites/" +
+      encodeURIComponent(me.userId) +
+      "/" +
+      encodeURIComponent(inviteId),
+      null
+    );
+
+    alert(
+      "Family join हो गई!"
+    );
+
+    location.reload();
+
+  }catch(e){
+
+    console.error(e);
+
+    alert(
+      "Invite accept नहीं हुआ."
+    );
+
+  }
+
+}
+
+loadFamily();
+
+</script>
+
+</body>
+</html>
