@@ -2,452 +2,718 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>PawanVoice - Inbox</title>
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>PawanVoice</title>
 
 <style>
 *{
   box-sizing:border-box;
   margin:0;
   padding:0;
-  font-family:Arial,sans-serif;
 }
 
 body{
-  background:#080914;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#090b14;
   color:#fff;
   min-height:100vh;
 }
 
-.header{
-  height:62px;
-  display:flex;
-  align-items:center;
-  padding:0 16px;
-  background:#101223;
-  border-bottom:1px solid #292b42;
-  position:sticky;
-  top:0;
-  z-index:10;
+button,
+input{
+  font:inherit;
 }
 
-.back{
-  font-size:28px;
-  margin-right:15px;
+button{
+  border:0;
   cursor:pointer;
 }
 
-.title{
-  font-size:20px;
-  font-weight:bold;
+.app{
+  width:100%;
+  max-width:650px;
+  margin:auto;
+  min-height:100vh;
+  padding-bottom:78px;
 }
 
-.refresh{
-  margin-left:auto;
+/* HEADER */
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:#0d0f1a;
+  padding:14px 14px 10px;
+  border-bottom:1px solid #202333;
+}
+
+.header-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.brand{
+  font-size:22px;
+  font-weight:800;
+}
+
+.brand span{
+  color:#ff4f91;
+}
+
+.header-user{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+}
+
+.header-user img{
   width:38px;
   height:38px;
   border-radius:50%;
-  border:1px solid #343650;
-  background:#17182b;
-  color:#fff;
-  font-size:19px;
+  object-fit:cover;
+  border:2px solid #ff4f91;
 }
 
-.profile{
+.header-user-name{
+  max-width:100px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font-size:13px;
+}
+
+/* SEARCH */
+
+.search-box{
+  margin-top:12px;
   display:flex;
   align-items:center;
-  gap:12px;
-  margin:15px;
+  background:#171a28;
+  border:1px solid #282c3e;
+  border-radius:14px;
+  padding:0 13px;
+}
+
+.search-box span{
+  color:#858aa0;
+  font-size:18px;
+}
+
+.search-box input{
+  width:100%;
+  background:transparent;
+  border:0;
+  outline:0;
+  color:#fff;
+  padding:12px 10px;
+}
+
+.search-box input::placeholder{
+  color:#777c91;
+}
+
+/* BANNERS */
+
+.section-title{
+  font-size:17px;
+  font-weight:700;
+  margin:18px 14px 10px;
+}
+
+.banner-wrap{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding:0 14px;
+  scrollbar-width:none;
+}
+
+.banner-wrap::-webkit-scrollbar{
+  display:none;
+}
+
+.banner{
+  min-width:180px;
+  height:88px;
+  border-radius:16px;
   padding:13px;
-  border-radius:15px;
-  background:linear-gradient(135deg,#191a31,#121326);
-  border:1px solid #2d2f49;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  border:1px solid #30354b;
 }
 
-.profile img{
-  width:52px;
-  height:52px;
-  border-radius:50%;
-  object-fit:cover;
-  border:2px solid #7965ff;
+.banner.family{
+  background:linear-gradient(135deg,#44204b,#1d2444);
 }
 
-.profile-name{
-  font-size:16px;
-  font-weight:bold;
+.banner.cp{
+  background:linear-gradient(135deg,#273f5b,#222348);
 }
 
-.profile-id{
-  margin-top:4px;
-  color:#969ab2;
-  font-size:12px;
+.banner.rich{
+  background:linear-gradient(135deg,#553a18,#292017);
 }
+
+.banner-title{
+  font-size:15px;
+  font-weight:800;
+}
+
+.banner-sub{
+  color:#c7c9d5;
+  font-size:11px;
+}
+
+/* TABS */
 
 .tabs{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:8px;
-  padding:0 14px 12px;
+  display:flex;
+  margin:12px 14px 0;
+  background:#121522;
+  border-radius:12px;
+  padding:4px;
 }
 
 .tab{
-  border:1px solid #292b45;
-  background:#141528;
-  color:#9da1b8;
-  padding:11px 5px;
-  border-radius:10px;
-  font-size:12px;
-  cursor:pointer;
-  text-align:center;
+  flex:1;
+  padding:10px 8px;
+  background:transparent;
+  color:#969bad;
+  border-radius:9px;
+  font-weight:700;
 }
 
 .tab.active{
-  background:#755cff;
+  background:#ff4f91;
   color:#fff;
-  border-color:#755cff;
 }
 
-.section{
-  padding:0 14px 100px;
+/* ROOM LIST */
+
+.room-list{
+  padding:0 14px;
 }
 
-.section-title{
-  font-size:15px;
-  font-weight:bold;
-  margin:10px 2px;
-}
-
-.empty{
-  padding:45px 15px;
-  text-align:center;
-  color:#8589a2;
-  background:#111222;
-  border:1px solid #292b42;
-  border-radius:15px;
-}
-
-.empty-icon{
-  font-size:42px;
-  margin-bottom:10px;
-}
-
-.item{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:13px;
-  margin-bottom:9px;
-  border-radius:14px;
-  background:#141528;
-  border:1px solid #292b45;
-}
-
-.item-avatar{
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  object-fit:cover;
-  background:#272940;
-}
-
-.item-content{
-  flex:1;
-  min-width:0;
-}
-
-.item-name{
-  font-size:14px;
-  font-weight:bold;
-}
-
-.item-text{
-  margin-top:5px;
-  color:#969ab1;
-  font-size:12px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.item-time{
-  margin-top:4px;
-  color:#6f738c;
-  font-size:10px;
-}
-
-.actions{
-  display:flex;
-  gap:6px;
-}
-
-.btn{
-  border:0;
-  border-radius:9px;
-  padding:8px 10px;
-  color:#fff;
-  font-size:11px;
+.room-card{
+  background:#121522;
+  border:1px solid #252a3b;
+  border-radius:17px;
+  padding:12px;
+  margin-bottom:11px;
   cursor:pointer;
 }
 
-.accept{
-  background:#765cff;
+.room-top{
+  display:flex;
+  align-items:center;
+  gap:11px;
 }
 
-.reject{
-  background:#292b40;
+.room-dp{
+  width:58px;
+  height:58px;
+  border-radius:15px;
+  object-fit:cover;
+  border:1px solid #3b4056;
 }
 
-.chat-btn{
-  background:#765cff;
+.room-info{
+  min-width:0;
+  flex:1;
 }
 
-.bottom{
+.room-name{
+  font-size:16px;
+  font-weight:800;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.room-owner{
+  color:#9ca1b4;
+  font-size:12px;
+  margin-top:5px;
+}
+
+.room-count{
+  background:#222638;
+  color:#dfe1ea;
+  border-radius:20px;
+  padding:6px 9px;
+  font-size:11px;
+}
+
+.room-bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:10px;
+}
+
+.room-category{
+  color:#aeb2c3;
+  font-size:11px;
+}
+
+.join-btn{
+  background:#ff4f91;
+  color:#fff;
+  border-radius:9px;
+  padding:7px 13px;
+  font-size:12px;
+  font-weight:700;
+}
+
+/* EMPTY */
+
+.empty{
+  text-align:center;
+  padding:35px 20px;
+  color:#777c91;
+}
+
+.empty-icon{
+  font-size:38px;
+  margin-bottom:8px;
+}
+
+/* CREATE */
+
+.create-btn{
   position:fixed;
+  right:18px;
+  bottom:88px;
+  z-index:25;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:#ff4f91;
+  color:#fff;
+  font-size:28px;
+  box-shadow:0 8px 25px rgba(0,0,0,.4);
+}
+
+/* MODAL */
+
+.modal-bg{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:50;
+  background:rgba(0,0,0,.7);
+  align-items:flex-end;
+  justify-content:center;
+}
+
+.modal-bg.show{
+  display:flex;
+}
+
+.modal{
+  width:100%;
+  max-width:650px;
+  background:#121522;
+  border-radius:24px 24px 0 0;
+  padding:20px 16px 28px;
+  border-top:1px solid #30354b;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+}
+
+.modal-head h2{
+  font-size:19px;
+}
+
+.close-btn{
+  background:#252a3b;
+  color:#fff;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+}
+
+.field{
+  margin-bottom:13px;
+}
+
+.field label{
+  display:block;
+  color:#aeb2c3;
+  font-size:12px;
+  margin-bottom:6px;
+}
+
+.field input,
+.field select{
+  width:100%;
+  background:#1a1e2c;
+  border:1px solid #30354b;
+  color:#fff;
+  border-radius:12px;
+  padding:12px;
+  outline:0;
+}
+
+.create-submit{
+  width:100%;
+  padding:13px;
+  border-radius:12px;
+  background:#ff4f91;
+  color:#fff;
+  font-weight:800;
+  margin-top:5px;
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
   left:0;
   right:0;
-  bottom:0;
-  height:65px;
-  background:#111222;
-  border-top:1px solid #292b42;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  z-index:20;
+  z-index:30;
+  max-width:650px;
+  margin:auto;
+  height:68px;
+  background:#10121d;
+  border-top:1px solid #24283a;
+  display:flex;
 }
 
-.nav{
+.nav-btn{
+  flex:1;
+  background:transparent;
+  color:#777c91;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  color:#8f93ab;
+  gap:4px;
   font-size:11px;
-  cursor:pointer;
 }
 
-.nav span{
-  font-size:22px;
-  margin-bottom:3px;
+.nav-icon{
+  font-size:21px;
 }
 
-.nav.active{
-  color:#9b82ff;
+.nav-btn.active{
+  color:#ff4f91;
 }
+
+/* TOAST */
 
 .toast{
   position:fixed;
   left:50%;
-  bottom:82px;
+  bottom:85px;
   transform:translateX(-50%);
-  background:#25263a;
-  border:1px solid #444664;
-  padding:11px 18px;
-  border-radius:25px;
+  background:#262a3b;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:10px;
+  font-size:12px;
   display:none;
-  z-index:50;
-  font-size:13px;
-  white-space:nowrap;
+  z-index:100;
 }
 
-.loading{
-  text-align:center;
-  color:#8e92aa;
-  padding:30px;
+.toast.show{
+  display:block;
 }
 
-.dot{
-  width:7px;
-  height:7px;
-  background:#48df91;
-  display:inline-block;
-  border-radius:50%;
-  margin-right:5px;
+/* RESPONSIVE */
+
+@media(max-width:380px){
+  .brand{
+    font-size:19px;
+  }
+
+  .header-user-name{
+    display:none;
+  }
+
+  .banner{
+    min-width:165px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
+<div class="app">
 
-  <div class="back" onclick="goHome()">
-    ‹
-  </div>
+  <!-- HEADER -->
 
-  <div class="title">
-    Inbox
-  </div>
+  <header class="header">
 
-  <button
-    class="refresh"
-    onclick="loadInbox()"
-  >
-    ↻
-  </button>
+    <div class="header-row">
 
-</div>
+      <div class="brand">
+        Pawan<span>Voice</span>
+      </div>
 
+      <div class="header-user" id="headerUser">
 
-<div class="profile">
+        <img
+          id="headerDp"
+          src="https://i.pravatar.cc/200?img=12"
+          alt="Profile">
 
-  <img
-    id="myDP"
-    src="https://i.pravatar.cc/150?img=12"
-  >
+        <div
+          class="header-user-name"
+          id="headerName">
+          Pawan User
+        </div>
 
-  <div>
+      </div>
 
-    <div
-      id="myName"
-      class="profile-name"
-    >
-      Pawan User
     </div>
 
-    <div
-      id="myID"
-      class="profile-id"
-    >
-      ID: pawan
+    <div class="search-box">
+
+      <span>⌕</span>
+
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Search rooms or users">
+
+    </div>
+
+  </header>
+
+
+  <!-- BANNERS -->
+
+  <div class="section-title">
+    Rankings & Events
+  </div>
+
+  <div class="banner-wrap">
+
+    <div class="banner family">
+      <div class="banner-title">👨‍👩‍👧 Family</div>
+      <div class="banner-sub">
+        Family ranking & members
+      </div>
+    </div>
+
+    <div class="banner cp">
+      <div class="banner-title">💞 CP Ranking</div>
+      <div class="banner-sub">
+        Top CP couples
+      </div>
+    </div>
+
+    <div class="banner rich">
+      <div class="banner-title">👑 Rich King</div>
+      <div class="banner-sub">
+        Wealth ranking
+      </div>
     </div>
 
   </div>
 
-</div>
 
+  <!-- ROOMS -->
 
-<div class="tabs">
+  <div class="section-title">
+    Voice Rooms
+  </div>
 
-  <button
-    class="tab active"
-    id="tabMessages"
-    onclick="showTab('messages')"
-  >
-    💬 Messages
-  </button>
+  <div class="tabs">
 
-  <button
-    class="tab"
-    id="tabRequests"
-    onclick="showTab('requests')"
-  >
-    👥 Requests
-  </button>
+    <button
+      class="tab active"
+      id="popularTab">
+      Popular
+    </button>
 
-  <button
-    class="tab"
-    id="tabCP"
-    onclick="showTab('cp')"
-  >
-    💞 CP
-  </button>
+    <button
+      class="tab"
+      id="allTab">
+      All Rooms
+    </button>
 
-  <button
-    class="tab"
-    id="tabFamily"
-    onclick="showTab('family')"
-  >
-    👨‍👩‍👧 Family
-  </button>
-
-</div>
-
-
-<div class="section">
+  </div>
 
   <div
-    id="loading"
-    class="loading"
-  >
-    Loading Inbox...
-  </div>
+    class="room-list"
+    id="roomList">
 
-  <div
-    id="messagesSection"
-    style="display:none;"
-  >
+    <div class="empty">
 
-    <div class="section-title">
-      Messages
+      <div class="empty-icon">🎙️</div>
+
+      <div>
+        Loading rooms...
+      </div>
+
     </div>
-
-    <div id="messagesList"></div>
-
-  </div>
-
-
-  <div
-    id="requestsSection"
-    style="display:none;"
-  >
-
-    <div class="section-title">
-      Friend Requests
-    </div>
-
-    <div id="requestsList"></div>
-
-  </div>
-
-
-  <div
-    id="cpSection"
-    style="display:none;"
-  >
-
-    <div class="section-title">
-      CP Requests
-    </div>
-
-    <div id="cpList"></div>
-
-  </div>
-
-
-  <div
-    id="familySection"
-    style="display:none;"
-  >
-
-    <div class="section-title">
-      Family Invitations
-    </div>
-
-    <div id="familyList"></div>
 
   </div>
 
 </div>
 
 
-<div id="toast" class="toast"></div>
+<!-- CREATE ROOM BUTTON -->
+
+<button
+  class="create-btn"
+  id="createBtn"
+  type="button">
+  +
+</button>
 
 
-<div class="bottom">
+<!-- CREATE ROOM MODAL -->
 
-  <div
-    class="nav"
-    onclick="goHome()"
-  >
-    <span>🏠</span>
-    Home
-  </div>
+<div
+  class="modal-bg"
+  id="createModal">
 
-  <div
-    class="nav active"
-  >
-    <span>💬</span>
-    Inbox
-  </div>
+  <div class="modal">
 
-  <div
-    class="nav"
-    onclick="goProfile()"
-  >
-    <span>👤</span>
-    Profile
+    <div class="modal-head">
+
+      <h2>Create Voice Room</h2>
+
+      <button
+        class="close-btn"
+        id="closeModal"
+        type="button">
+        ×
+      </button>
+
+    </div>
+
+    <div class="field">
+
+      <label>Room Name</label>
+
+      <input
+        id="roomNameInput"
+        type="text"
+        maxlength="40"
+        placeholder="Enter room name">
+
+    </div>
+
+    <div class="field">
+
+      <label>Category</label>
+
+      <select id="roomCategory">
+
+        <option value="General">
+          General
+        </option>
+
+        <option value="Music">
+          Music
+        </option>
+
+        <option value="Friends">
+          Friends
+        </option>
+
+        <option value="Gaming">
+          Gaming
+        </option>
+
+        <option value="Chat">
+          Chat
+        </option>
+
+      </select>
+
+    </div>
+
+    <div class="field">
+
+      <label>Room DP URL</label>
+
+      <input
+        id="roomDpInput"
+        type="url"
+        placeholder="https://...">
+
+    </div>
+
+    <button
+      class="create-submit"
+      id="createRoomSubmit"
+      type="button">
+
+      Create Room
+
+    </button>
+
   </div>
 
 </div>
+
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+
+  <button
+    class="nav-btn active"
+    id="homeNav"
+    type="button">
+
+    <div class="nav-icon">⌂</div>
+    <div>Home</div>
+
+  </button>
+
+  <button
+    class="nav-btn"
+    id="inboxNav"
+    type="button">
+
+    <div class="nav-icon">💬</div>
+    <div>Inbox</div>
+
+  </button>
+
+  <button
+    class="nav-btn"
+    id="profileNav"
+    type="button">
+
+    <div class="nav-icon">👤</div>
+    <div>Profile</div>
+
+  </button>
+
+</nav>
+
+
+<div
+  class="toast"
+  id="toast">
+</div>
+
+
+<!-- IMPORTANT: shared user file -->
+
+<script src="user.js"></script>
 
 
 <script>
@@ -457,47 +723,492 @@ const FIREBASE_DB =
 
 
 let currentUser = null;
+let allRooms = [];
+let currentTab = "popular";
 
-let currentTab = "messages";
 
+/* ---------------- TOAST ---------------- */
 
-/* =========================================
-   LOCAL USER
-========================================= */
+function showToast(message){
 
-function getLocalUser(){
+  const toast =
+    document.getElementById("toast");
 
-  return {
+  toast.textContent = message;
 
-    userId:
-      localStorage.getItem("pv_userId") ||
-      "pawan",
+  toast.classList.add("show");
 
-    name:
-      localStorage.getItem("pv_name") ||
-      "Pawan User",
-
-    dp:
-      localStorage.getItem("pv_dp") ||
-      "https://i.pravatar.cc/150?img=12"
-
-  };
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2200);
 
 }
 
 
-/* =========================================
-   LOAD CURRENT USER
-========================================= */
+/* ---------------- USER ---------------- */
 
 async function loadCurrentUser(){
 
-  const local =
-    getLocalUser();
+  try{
 
-  currentUser = local;
+    if(typeof pvLoadUser === "function"){
 
-  renderUser(local);
+      currentUser =
+        await pvLoadUser();
+
+    }else{
+
+      currentUser = {
+        userId:
+          localStorage.getItem("pv_userId") ||
+          "pawan",
+
+        name:
+          localStorage.getItem("pv_name") ||
+          "Pawan User",
+
+        dp:
+          localStorage.getItem("pv_dp") ||
+          "https://i.pravatar.cc/200?img=12"
+      };
+
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+    currentUser = {
+      userId:
+        localStorage.getItem("pv_userId") ||
+        "pawan",
+
+      name:
+        localStorage.getItem("pv_name") ||
+        "Pawan User",
+
+      dp:
+        localStorage.getItem("pv_dp") ||
+        "https://i.pravatar.cc/200?img=12"
+    };
+
+  }
+
+
+  document.getElementById("headerName").textContent =
+    currentUser.name || "Pawan User";
+
+  document.getElementById("headerDp").src =
+    currentUser.dp ||
+    "https://i.pravatar.cc/200?img=12";
+
+}
+
+
+/* ---------------- LOAD ROOMS ---------------- */
+
+async function loadRooms(){
+
+  const roomList =
+    document.getElementById("roomList");
+
+  try{
+
+    const response =
+      await fetch(
+        FIREBASE_DB + "/rooms.json"
+      );
+
+    if(!response.ok){
+
+      throw new Error(
+        "Firebase HTTP " +
+        response.status
+      );
+
+    }
+
+    const data =
+      await response.json();
+
+    allRooms = [];
+
+    if(data){
+
+      Object.keys(data).forEach(id => {
+
+        const room =
+          data[id];
+
+        if(room){
+
+          allRooms.push({
+
+            roomId:
+              room.roomId || id,
+
+            name:
+              room.name ||
+              "PawanVoice Room",
+
+            ownerId:
+              room.ownerId ||
+              "",
+
+            ownerName:
+              room.ownerName ||
+              "Host",
+
+            dp:
+              room.dp ||
+              "https://i.pravatar.cc/200?img=12",
+
+            category:
+              room.category ||
+              "General",
+
+            online:
+              Number(
+                room.online ||
+                room.userCount ||
+                0
+              ),
+
+            maxSeats:
+              Number(
+                room.maxSeats ||
+                9
+              ),
+
+            createdAt:
+              Number(
+                room.createdAt ||
+                0
+              )
+
+          });
+
+        }
+
+      });
+
+    }
+
+    renderRooms();
+
+  }catch(error){
+
+    console.error(
+      "Room loading error:",
+      error
+    );
+
+    roomList.innerHTML = `
+
+      <div class="empty">
+
+        <div class="empty-icon">
+          ⚠️
+        </div>
+
+        <div>
+          Rooms load nahi ho rahe.
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/* ---------------- RENDER ROOMS ---------------- */
+
+function renderRooms(){
+
+  const roomList =
+    document.getElementById("roomList");
+
+  const search =
+    document.getElementById(
+      "searchInput"
+    ).value
+    .trim()
+    .toLowerCase();
+
+
+  let rooms =
+    [...allRooms];
+
+
+  /* SEARCH */
+
+  if(search){
+
+    rooms =
+      rooms.filter(room =>
+
+        String(room.name)
+          .toLowerCase()
+          .includes(search)
+
+        ||
+
+        String(room.ownerName)
+          .toLowerCase()
+          .includes(search)
+
+        ||
+
+        String(room.category)
+          .toLowerCase()
+          .includes(search)
+
+      );
+
+  }
+
+
+  /* POPULAR */
+
+  if(currentTab === "popular"){
+
+    rooms.sort(
+      (a,b) =>
+        Number(b.online || 0) -
+        Number(a.online || 0)
+    );
+
+  }else{
+
+    rooms.sort(
+      (a,b) =>
+        Number(b.createdAt || 0) -
+        Number(a.createdAt || 0)
+    );
+
+  }
+
+
+  if(!rooms.length){
+
+    roomList.innerHTML = `
+
+      <div class="empty">
+
+        <div class="empty-icon">
+          🎙️
+        </div>
+
+        <div>
+          Abhi koi room nahi mila.
+        </div>
+
+        <div style="margin-top:7px;font-size:11px;">
+          + button se apna room create karein.
+        </div>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  roomList.innerHTML = "";
+
+
+  rooms.forEach(room => {
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "room-card";
+
+
+    card.innerHTML = `
+
+      <div class="room-top">
+
+        <img
+          class="room-dp"
+          src="${escapeHtml(room.dp)}"
+          alt="Room">
+
+        <div class="room-info">
+
+          <div class="room-name">
+            ${escapeHtml(room.name)}
+          </div>
+
+          <div class="room-owner">
+            👤 ${escapeHtml(room.ownerName)}
+          </div>
+
+        </div>
+
+        <div class="room-count">
+          ${room.online}/${room.maxSeats}
+        </div>
+
+      </div>
+
+      <div class="room-bottom">
+
+        <div class="room-category">
+          🎙️ ${escapeHtml(room.category)}
+        </div>
+
+        <button
+          class="join-btn"
+          type="button">
+          Join
+        </button>
+
+      </div>
+
+    `;
+
+
+    card.addEventListener(
+      "click",
+      () => {
+
+        openRoom(
+          room.roomId
+        );
+
+      }
+    );
+
+
+    roomList.appendChild(card);
+
+  });
+
+}
+
+
+/* ---------------- ESCAPE HTML ---------------- */
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* ---------------- OPEN ROOM ---------------- */
+
+function openRoom(roomId){
+
+  if(!roomId){
+
+    showToast(
+      "Room ID nahi mila."
+    );
+
+    return;
+
+  }
+
+  window.location.href =
+    "room.html?room=" +
+    encodeURIComponent(roomId);
+
+}
+
+
+/* ---------------- CREATE ROOM ---------------- */
+
+async function createRoom(){
+
+  if(!currentUser){
+
+    await loadCurrentUser();
+
+  }
+
+
+  const name =
+    document.getElementById(
+      "roomNameInput"
+    ).value.trim();
+
+
+  const category =
+    document.getElementById(
+      "roomCategory"
+    ).value;
+
+
+  const dp =
+    document.getElementById(
+      "roomDpInput"
+    ).value.trim();
+
+
+  if(!name){
+
+    showToast(
+      "Room name likho."
+    );
+
+    return;
+
+  }
+
+
+  const roomId =
+    "PV" +
+    Math.floor(
+      100000 +
+      Math.random() * 900000
+    );
+
+
+  const roomData = {
+
+    roomId:
+      roomId,
+
+    name:
+      name,
+
+    ownerId:
+      currentUser.userId,
+
+    ownerName:
+      currentUser.name,
+
+    dp:
+      dp ||
+      currentUser.dp ||
+      "https://i.pravatar.cc/200?img=12",
+
+    category:
+      category,
+
+    online:
+      1,
+
+    maxSeats:
+      9,
+
+    createdAt:
+      Date.now()
+
+  };
 
 
   try{
@@ -505,68 +1216,76 @@ async function loadCurrentUser(){
     const response =
       await fetch(
         FIREBASE_DB +
-        "/users/" +
-        encodeURIComponent(
-          local.userId
-        ) +
-        ".json"
+        "/rooms/" +
+        encodeURIComponent(roomId) +
+        ".json",
+        {
+
+          method:"PUT",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(
+              roomData
+            )
+
+        }
       );
+
 
     if(!response.ok){
+
       throw new Error(
-        "HTTP " +
+        "Firebase save failed " +
         response.status
       );
-    }
-
-    const data =
-      await response.json();
-
-    if(data){
-
-      currentUser = {
-
-        userId:
-          data.userId ||
-          local.userId,
-
-        name:
-          data.name ||
-          local.name,
-
-        dp:
-          data.dp ||
-          local.dp
-
-      };
-
-      localStorage.setItem(
-        "pv_userId",
-        currentUser.userId
-      );
-
-      localStorage.setItem(
-        "pv_name",
-        currentUser.name
-      );
-
-      localStorage.setItem(
-        "pv_dp",
-        currentUser.dp
-      );
-
-      renderUser(
-        currentUser
-      );
 
     }
 
-  }
-  catch(error){
 
-    console.error(
-      "User load error:",
-      error
+    document
+      .getElementById(
+        "createModal"
+      )
+      .classList.remove(
+        "show"
+      );
+
+
+    document
+      .getElementById(
+        "roomNameInput"
+      ).value = "";
+
+
+    document
+      .getElementById(
+        "roomDpInput"
+      ).value = "";
+
+
+    showToast(
+      "Room create ho gaya!"
+    );
+
+
+    setTimeout(() => {
+
+      openRoom(roomId);
+
+    },700);
+
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Room create nahi hua."
     );
 
   }
@@ -574,1313 +1293,193 @@ async function loadCurrentUser(){
 }
 
 
-/* =========================================
-   RENDER USER
-========================================= */
+/* ---------------- EVENTS ---------------- */
 
-function renderUser(user){
+document
+  .getElementById("popularTab")
+  .addEventListener(
+    "click",
+    function(){
 
-  document.getElementById(
-    "myDP"
-  ).src =
-    user.dp;
+      currentTab =
+        "popular";
 
-  document.getElementById(
-    "myName"
-  ).textContent =
-    user.name;
+      this.classList.add(
+        "active"
+      );
 
-  document.getElementById(
-    "myID"
-  ).textContent =
-    "ID: " +
-    user.userId;
+      document
+        .getElementById(
+          "allTab"
+        )
+        .classList.remove(
+          "active"
+        );
 
-}
+      renderRooms();
 
-
-/* =========================================
-   FIREBASE GET
-========================================= */
-
-async function firebaseGet(path){
-
-  const response =
-    await fetch(
-      FIREBASE_DB +
-      path +
-      ".json"
-    );
-
-  if(!response.ok){
-
-    throw new Error(
-      "Firebase HTTP " +
-      response.status
-    );
-
-  }
-
-  return await response.json();
-
-}
+    }
+  );
 
 
-/* =========================================
-   LOAD INBOX
-========================================= */
+document
+  .getElementById("allTab")
+  .addEventListener(
+    "click",
+    function(){
 
-async function loadInbox(){
+      currentTab =
+        "all";
 
-  showLoading();
+      this.classList.add(
+        "active"
+      );
+
+      document
+        .getElementById(
+          "popularTab"
+        )
+        .classList.remove(
+          "active"
+        );
+
+      renderRooms();
+
+    }
+  );
+
+
+document
+  .getElementById("searchInput")
+  .addEventListener(
+    "input",
+    renderRooms
+  );
+
+
+document
+  .getElementById("createBtn")
+  .addEventListener(
+    "click",
+    function(){
+
+      document
+        .getElementById(
+          "createModal"
+        )
+        .classList.add(
+          "show"
+        );
+
+    }
+  );
+
+
+document
+  .getElementById("closeModal")
+  .addEventListener(
+    "click",
+    function(){
+
+      document
+        .getElementById(
+          "createModal"
+        )
+        .classList.remove(
+          "show"
+        );
+
+    }
+  );
+
+
+document
+  .getElementById("createRoomSubmit")
+  .addEventListener(
+    "click",
+    createRoom
+  );
+
+
+document
+  .getElementById("headerUser")
+  .addEventListener(
+    "click",
+    function(){
+
+      window.location.href =
+        "profile.html";
+
+    }
+  );
+
+
+document
+  .getElementById("profileNav")
+  .addEventListener(
+    "click",
+    function(){
+
+      window.location.href =
+        "profile.html";
+
+    }
+  );
+
+
+document
+  .getElementById("inboxNav")
+  .addEventListener(
+    "click",
+    function(){
+
+      window.location.href =
+        "inbox.html";
+
+    }
+  );
+
+
+document
+  .getElementById("homeNav")
+  .addEventListener(
+    "click",
+    function(){
+
+      window.scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
+
+    }
+  );
+
+
+/* ---------------- START ---------------- */
+
+async function startHome(){
 
   await loadCurrentUser();
 
-  try{
+  await loadRooms();
 
-    const uid =
-      encodeURIComponent(
-        currentUser.userId
-      );
+  /*
+    Firebase room list refresh.
+    Live room seat count will later be
+    synced from Socket.IO server.
+  */
 
-
-    /*
-      Firebase paths:
-
-      messages/<userId>
-      friendRequests/<userId>
-      cpRequests/<userId>
-      familyInvites/<userId>
-    */
-
-    const results =
-      await Promise.all([
-
-        firebaseGet(
-          "/messages/" + uid
-        ),
-
-        firebaseGet(
-          "/friendRequests/" + uid
-        ),
-
-        firebaseGet(
-          "/cpRequests/" + uid
-        ),
-
-        firebaseGet(
-          "/familyInvites/" + uid
-        )
-
-      ]);
-
-
-    renderMessages(
-      results[0]
-    );
-
-    renderRequests(
-      results[1]
-    );
-
-    renderCP(
-      results[2]
-    );
-
-    renderFamily(
-      results[3]
-    );
-
-
-    document.getElementById(
-      "loading"
-    ).style.display =
-      "none";
-
-
-    showTab(
-      currentTab
-    );
-
-  }
-  catch(error){
-
-    console.error(
-      "Inbox error:",
-      error
-    );
-
-    document.getElementById(
-      "loading"
-    ).innerHTML =
-      "Inbox load nahi hua.<br><br>" +
-      "Firebase Database Rules check karo.";
-
-  }
-
-}
-
-
-/* =========================================
-   MESSAGES
-========================================= */
-
-function renderMessages(data){
-
-  const list =
-    document.getElementById(
-      "messagesList"
-    );
-
-  list.innerHTML = "";
-
-
-  if(!data){
-
-    list.innerHTML =
-      emptyBox(
-        "💬",
-        "No messages yet"
-      );
-
-    return;
-
-  }
-
-
-  const items =
-    Object.entries(data);
-
-
-  if(items.length === 0){
-
-    list.innerHTML =
-      emptyBox(
-        "💬",
-        "No messages yet"
-      );
-
-    return;
-
-  }
-
-
-  items.reverse();
-
-
-  items.forEach(
-    ([id,message]) => {
-
-      const name =
-        escapeHTML(
-          message.name ||
-          "User"
-        );
-
-      const text =
-        escapeHTML(
-          message.text ||
-          "New message"
-        );
-
-      const dp =
-        message.dp ||
-        "https://i.pravatar.cc/100?img=12";
-
-      const time =
-        formatTime(
-          message.createdAt
-        );
-
-
-      list.innerHTML += `
-
-        <div class="item">
-
-          <img
-            class="item-avatar"
-            src="${escapeAttr(dp)}"
-          >
-
-          <div class="item-content">
-
-            <div class="item-name">
-              ${name}
-            </div>
-
-            <div class="item-text">
-              ${text}
-            </div>
-
-            <div class="item-time">
-              ${time}
-            </div>
-
-          </div>
-
-          <button
-            class="btn chat-btn"
-            onclick="openChat('${escapeAttr(message.userId || '')}')"
-          >
-            Chat
-          </button>
-
-        </div>
-
-      `;
-
-    }
+  setInterval(
+    loadRooms,
+    5000
   );
 
 }
 
 
-/* =========================================
-   FRIEND REQUESTS
-========================================= */
-
-function renderRequests(data){
-
-  const list =
-    document.getElementById(
-      "requestsList"
-    );
-
-  list.innerHTML = "";
-
-
-  if(!data){
-
-    list.innerHTML =
-      emptyBox(
-        "👥",
-        "No friend requests"
-      );
-
-    return;
-
-  }
-
-
-  const items =
-    Object.entries(data);
-
-
-  if(items.length === 0){
-
-    list.innerHTML =
-      emptyBox(
-        "👥",
-        "No friend requests"
-      );
-
-    return;
-
-  }
-
-
-  items.forEach(
-    ([id,request]) => {
-
-      const name =
-        escapeHTML(
-          request.name ||
-          "User"
-        );
-
-      const dp =
-        request.dp ||
-        "https://i.pravatar.cc/100?img=12";
-
-      const uid =
-        request.userId ||
-        id;
-
-
-      list.innerHTML += `
-
-        <div class="item">
-
-          <img
-            class="item-avatar"
-            src="${escapeAttr(dp)}"
-          >
-
-          <div class="item-content">
-
-            <div class="item-name">
-              ${name}
-            </div>
-
-            <div class="item-text">
-              ID: ${escapeHTML(uid)}
-            </div>
-
-          </div>
-
-          <div class="actions">
-
-            <button
-              class="btn accept"
-              onclick="acceptFriend('${escapeAttr(id)}')"
-            >
-              Accept
-            </button>
-
-            <button
-              class="btn reject"
-              onclick="rejectFriend('${escapeAttr(id)}')"
-            >
-              Reject
-            </button>
-
-          </div>
-
-        </div>
-
-      `;
-
-    }
-  );
-
-}
-
-
-/* =========================================
-   CP REQUESTS
-========================================= */
-
-function renderCP(data){
-
-  const list =
-    document.getElementById(
-      "cpList"
-    );
-
-  list.innerHTML = "";
-
-
-  if(!data){
-
-    list.innerHTML =
-      emptyBox(
-        "💞",
-        "No CP requests"
-      );
-
-    return;
-
-  }
-
-
-  const items =
-    Object.entries(data);
-
-
-  if(items.length === 0){
-
-    list.innerHTML =
-      emptyBox(
-        "💞",
-        "No CP requests"
-      );
-
-    return;
-
-  }
-
-
-  items.forEach(
-    ([id,request]) => {
-
-      const name =
-        escapeHTML(
-          request.name ||
-          "User"
-        );
-
-      const dp =
-        request.dp ||
-        "https://i.pravatar.cc/100?img=12";
-
-
-      list.innerHTML += `
-
-        <div class="item">
-
-          <img
-            class="item-avatar"
-            src="${escapeAttr(dp)}"
-          >
-
-          <div class="item-content">
-
-            <div class="item-name">
-              ${name}
-            </div>
-
-            <div class="item-text">
-              Wants to connect with you as CP
-            </div>
-
-          </div>
-
-          <div class="actions">
-
-            <button
-              class="btn accept"
-              onclick="acceptCP('${escapeAttr(id)}')"
-            >
-              Accept
-            </button>
-
-            <button
-              class="btn reject"
-              onclick="rejectCP('${escapeAttr(id)}')"
-            >
-              Reject
-            </button>
-
-          </div>
-
-        </div>
-
-      `;
-
-    }
-  );
-
-}
-
-
-/* =========================================
-   FAMILY
-========================================= */
-
-function renderFamily(data){
-
-  const list =
-    document.getElementById(
-      "familyList"
-    );
-
-  list.innerHTML = "";
-
-
-  if(!data){
-
-    list.innerHTML =
-      emptyBox(
-        "👨‍👩‍👧",
-        "No family invitations"
-      );
-
-    return;
-
-  }
-
-
-  const items =
-    Object.entries(data);
-
-
-  if(items.length === 0){
-
-    list.innerHTML =
-      emptyBox(
-        "👨‍👩‍👧",
-        "No family invitations"
-      );
-
-    return;
-
-  }
-
-
-  items.forEach(
-    ([id,invite]) => {
-
-      const familyName =
-        escapeHTML(
-          invite.familyName ||
-          "PawanVoice Family"
-        );
-
-      const dp =
-        invite.dp ||
-        "https://i.pravatar.cc/100?img=20";
-
-
-      list.innerHTML += `
-
-        <div class="item">
-
-          <img
-            class="item-avatar"
-            src="${escapeAttr(dp)}"
-          >
-
-          <div class="item-content">
-
-            <div class="item-name">
-              ${familyName}
-            </div>
-
-            <div class="item-text">
-              You have been invited to join this family
-            </div>
-
-          </div>
-
-          <div class="actions">
-
-            <button
-              class="btn accept"
-              onclick="acceptFamily('${escapeAttr(id)}')"
-            >
-              Join
-            </button>
-
-            <button
-              class="btn reject"
-              onclick="rejectFamily('${escapeAttr(id)}')"
-            >
-              Ignore
-            </button>
-
-          </div>
-
-        </div>
-
-      `;
-
-    }
-  );
-
-}
-
-
-/* =========================================
-   TAB
-========================================= */
-
-function showTab(tab){
-
-  currentTab =
-    tab;
-
-
-  const sections = {
-
-    messages:
-      document.getElementById(
-        "messagesSection"
-      ),
-
-    requests:
-      document.getElementById(
-        "requestsSection"
-      ),
-
-    cp:
-      document.getElementById(
-        "cpSection"
-      ),
-
-    family:
-      document.getElementById(
-        "familySection"
-      )
-
-  };
-
-
-  Object.values(
-    sections
-  ).forEach(
-    section => {
-      section.style.display =
-        "none";
-    }
-  );
-
-
-  sections[tab].style.display =
-    "block";
-
-
-  document.querySelectorAll(
-    ".tab"
-  ).forEach(
-    button => {
-      button.classList.remove(
-        "active"
-      );
-    }
-  );
-
-
-  if(tab === "messages"){
-
-    document.getElementById(
-      "tabMessages"
-    ).classList.add(
-      "active"
-    );
-
-  }
-
-  if(tab === "requests"){
-
-    document.getElementById(
-      "tabRequests"
-    ).classList.add(
-      "active"
-    );
-
-  }
-
-  if(tab === "cp"){
-
-    document.getElementById(
-      "tabCP"
-    ).classList.add(
-      "active"
-    );
-
-  }
-
-  if(tab === "family"){
-
-    document.getElementById(
-      "tabFamily"
-    ).classList.add(
-      "active"
-    );
-
-  }
-
-}
-
-
-/* =========================================
-   ACCEPT FRIEND
-========================================= */
-
-async function acceptFriend(id){
-
-  if(!currentUser) return;
-
-  try{
-
-    const request =
-      await firebaseGet(
-        "/friendRequests/" +
-        encodeURIComponent(
-          currentUser.userId
-        ) +
-        "/" +
-        encodeURIComponent(id)
-      );
-
-
-    if(!request){
-
-      showToast(
-        "Request nahi mili"
-      );
-
-      return;
-
-    }
-
-
-    const friendId =
-      request.userId ||
-      id;
-
-
-    await fetch(
-      FIREBASE_DB +
-      "/friends/" +
-      encodeURIComponent(
-        currentUser.userId
-      ) +
-      "/" +
-      encodeURIComponent(friendId) +
-      ".json",
-      {
-
-        method:"PUT",
-
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-
-        body:JSON.stringify({
-          userId:friendId,
-          name:request.name || "",
-          dp:request.dp || "",
-          createdAt:Date.now()
-        })
-
-      }
-    );
-
-
-    await deleteFirebase(
-      "/friendRequests/" +
-      encodeURIComponent(
-        currentUser.userId
-      ) +
-      "/" +
-      encodeURIComponent(id)
-    );
-
-
-    showToast(
-      "Friend request accepted ✅"
-    );
-
-    loadInbox();
-
-  }
-  catch(error){
-
-    console.error(error);
-
-    showToast(
-      "Request accept nahi hui"
-    );
-
-  }
-
-}
-
-
-/* =========================================
-   REJECT FRIEND
-========================================= */
-
-async function rejectFriend(id){
-
-  try{
-
-    await deleteFirebase(
-      "/friendRequests/" +
-      encodeURIComponent(
-        currentUser.userId
-      ) +
-      "/" +
-      encodeURIComponent(id)
-    );
-
-    showToast(
-      "Request rejected"
-    );
-
-    loadInbox();
-
-  }
-  catch(error){
-
-    showToast(
-      "Request remove nahi hui"
-    );
-
-  }
-
-}
-
-
-/* =========================================
-   CP ACCEPT
-========================================= */
-
-async function acceptCP(id){
-
-  try{
-
-    const request =
-      await firebaseGet(
-        "/cpRequests/" +
-        encodeURIComponent(
-          currentUser.userId
-        ) +
-        "/" +
-        encodeURIComponent(id)
-      );
-
-
-    if(!request){
-
-      showToast(
-        "CP request nahi mili"
-      );
-
-      return;
-
-    }
-
-
-    await fetch(
-      FIREBASE_DB +
-      "/cp/" +
-      encodeURIComponent(
-        currentUser.userId
-      ) +
-      ".json",
-      {
-
-        method:"PUT",
-
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-
-        body:JSON.stringify({
-
-          userId:
-            request.userId || id,
-
-          name:
-            request.name || "",
-
-          dp:
-            request.dp || "",
-
-          createdAt:
-            Date.now()
-
-        })
-
-      }
-    );
-
-
-    await deleteFirebase(
-      "/cpRequests/" +
-      encodeURIComponent(
-        currentUser.userId
-      ) +
-      "/" +
-      encodeURIComponent(id)
-    );
-
-
-    showToast(
-      "CP request accepted 💞"
-    );
-
-    loadInbox();
-
-  }
-  catch(error){
-
-    console.error(error);
-
-    showToast(
-      "CP request accept nahi hui"
-    );
-
-  }
-
-}
-
-
-/* =========================================
-   CP REJECT
-========================================= */
-
-async function rejectCP(id){
-
-  try{
-
-    await deleteFirebase(
-      "/cpRequests/" +
-      encodeURIComponent(
-        currentUser.userId
-      ) +
-      "/" +
-      encodeURIComponent(id)
-    );
-
-    showToast(
-      "CP request rejected"
-    );
-
-    loadInbox();
-
-  }
-  catch(error){
-
-    showToast(
-      "Request remove nahi hui"
-    );
-
-  }
-
-}
-
-
-/* =========================================
-   FAMILY ACCEPT
-========================================= */
-
-async function acceptFamily(id){
-
-  try{
-
-    const invite =
-      await firebaseGet(
-        "/familyInvites/" +
-        encodeURIComponent(
-          currentUser.userId
-        ) +
-        "/" +
-        encodeURIComponent(id)
-      );
-
-
-    if(!invite){
-
-      showToast(
-        "Family invitation nahi mili"
-      );
-
-      return;
-
-    }
-
-
-    await fetch(
-      FIREBASE_DB +
-      "/familyMembers/" +
-      encodeURIComponent(
-        invite.familyId || id
-      ) +
-      "/" +
-      encodeURIComponent(
-        currentUser.userId
-      ) +
-      ".json",
-      {
-
-        method:"PUT",
-
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-
-        body:JSON.stringify({
-
-          userId:
-            currentUser.userId,
-
-          name:
-            currentUser.name,
-
-          dp:
-            currentUser.dp,
-
-          joinedAt:
-            Date.now()
-
-        })
-
-      }
-    );
-
-
-    await deleteFirebase(
-      "/familyInvites/" +
-      encodeURIComponent(
-        currentUser.userId
-      ) +
-      "/" +
-      encodeURIComponent(id)
-    );
-
-
-    showToast(
-      "Family join ho gayi 👨‍👩‍👧"
-    );
-
-    loadInbox();
-
-  }
-  catch(error){
-
-    console.error(error);
-
-    showToast(
-      "Family join nahi hui"
-    );
-
-  }
-
-}
-
-
-/* =========================================
-   FAMILY REJECT
-========================================= */
-
-async function rejectFamily(id){
-
-  try{
-
-    await deleteFirebase(
-      "/familyInvites/" +
-      encodeURIComponent(
-        currentUser.userId
-      ) +
-      "/" +
-      encodeURIComponent(id)
-    );
-
-    showToast(
-      "Invitation ignored"
-    );
-
-    loadInbox();
-
-  }
-  catch(error){
-
-    showToast(
-      "Invitation remove nahi hui"
-    );
-
-  }
-
-}
-
-
-/* =========================================
-   DELETE
-========================================= */
-
-async function deleteFirebase(path){
-
-  const response =
-    await fetch(
-      FIREBASE_DB +
-      path +
-      ".json",
-      {
-        method:"DELETE"
-      }
-    );
-
-  if(!response.ok){
-
-    throw new Error(
-      "Delete failed"
-    );
-
-  }
-
-}
-
-
-/* =========================================
-   OPEN CHAT
-========================================= */
-
-function openChat(userId){
-
-  if(!userId){
-
-    showToast(
-      "User ID nahi mili"
-    );
-
-    return;
-
-  }
-
-  window.location.href =
-    "/chat.html?user=" +
-    encodeURIComponent(
-      userId
-    );
-
-}
-
-
-/* =========================================
-   EMPTY BOX
-========================================= */
-
-function emptyBox(
-  icon,
-  text
-){
-
-  return `
-
-    <div class="empty">
-
-      <div class="empty-icon">
-        ${icon}
-      </div>
-
-      <div>
-        ${text}
-      </div>
-
-    </div>
-
-  `;
-
-}
-
-
-/* =========================================
-   TIME
-========================================= */
-
-function formatTime(timestamp){
-
-  if(!timestamp){
-    return "";
-  }
-
-  const date =
-    new Date(
-      Number(timestamp)
-    );
-
-  if(
-    Number.isNaN(
-      date.getTime()
-    )
-  ){
-
-    return "";
-
-  }
-
-  return date.toLocaleString();
-
-}
-
-
-/* =========================================
-   HTML SAFETY
-========================================= */
-
-function escapeHTML(value){
-
-  return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-
-}
-
-
-function escapeAttr(value){
-
-  return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;");
-
-}
-
-
-/* =========================================
-   LOADING
-========================================= */
-
-function showLoading(){
-
-  document.getElementById(
-    "loading"
-  ).style.display =
-    "block";
-
-  document.getElementById(
-    "loading"
-  ).textContent =
-    "Loading Inbox...";
-
-}
-
-
-/* =========================================
-   NAVIGATION
-========================================= */
-
-function goHome(){
-
-  window.location.href =
-    "/index.html";
-
-}
-
-
-function goProfile(){
-
-  window.location.href =
-    "/profile.html";
-
-}
-
-
-/* =========================================
-   TOAST
-========================================= */
-
-function showToast(message){
-
-  const toast =
-    document.getElementById(
-      "toast"
-    );
-
-  toast.textContent =
-    message;
-
-  toast.style.display =
-    "block";
-
-  clearTimeout(
-    window.toastTimer
-  );
-
-  window.toastTimer =
-    setTimeout(
-      function(){
-
-        toast.style.display =
-          "none";
-
-      },
-      2500
-    );
-
-}
-
-
-/* =========================================
-   START
-========================================= */
-
-loadInbox();
+startHome();
 
 </script>
 
-<script src="user.js"></script>
-  
 </body>
-  </html>
+</html>
