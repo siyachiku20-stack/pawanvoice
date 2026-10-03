@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PawanVoice CP Space</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#090b12;
+  color:#fff;
+}
+.app{
+  max-width:520px;
+  margin:auto;
+  min-height:100vh;
+  background:#10131d;
+}
+.header{
+  padding:16px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:#171a26;
+  position:sticky;
+  top:0;
+  z-index:5;
+}
+.back{
+  border:0;
+  background:#252938;
+  color:#fff;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  font-size:20px;
+}
+.title{
+  font-size:20px;
+  font-weight:bold;
+}
+.hero{
+  margin:14px;
+  padding:20px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#241a40,#3a214d);
+  text-align:center;
+}
+.cp-avatars{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:18px;
+}
+.avatar{
+  width:82px;
+  height:82px;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid #ffcc55;
+}
+.heart{
+  font-size:32px;
+}
+.names{
+  margin-top:12px;
+  font-size:18px;
+  font-weight:bold;
+}
+.ids{
+  margin-top:5px;
+  color:#aaa;
+  font-size:12px;
+}
+.card{
+  margin:12px 14px;
+  padding:15px;
+  border-radius:16px;
+  background:#191d29;
+}
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.stat{
+  text-align:center;
+  flex:1;
+}
+.stat b{
+  display:block;
+  font-size:20px;
+}
+.stat span{
+  color:#999;
+  font-size:12px;
+}
+button.action{
+  border:0;
+  background:#ff4d86;
+  color:white;
+  padding:11px 16px;
+  border-radius:12px;
+  font-weight:bold;
+}
+button.secondary{
+  border:0;
+  background:#292e3d;
+  color:white;
+  padding:11px 16px;
+  border-radius:12px;
+}
+.section-title{
+  font-size:16px;
+  font-weight:bold;
+  margin-bottom:12px;
+}
+.progress{
+  height:10px;
+  background:#303443;
+  border-radius:10px;
+  overflow:hidden;
+}
+.progress div{
+  height:100%;
+  width:0%;
+  background:#ff4d86;
+}
+input{
+  width:100%;
+  padding:13px;
+  margin:7px 0;
+  border:1px solid #34394a;
+  border-radius:12px;
+  background:#0e1119;
+  color:#fff;
+  outline:none;
+}
+.msg{
+  color:#aaa;
+  font-size:13px;
+  margin-top:8px;
+}
+.bottom{
+  display:flex;
+  gap:8px;
+  padding:14px;
+}
+.bottom button{
+  flex:1;
+}
+.empty{
+  text-align:center;
+  color:#888;
+  padding:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header">
+    <button class="back" onclick="history.back()">‹</button>
+    <div class="title">❤️ CP Space</div>
+  </div>
+
+  <div class="hero">
+
+    <div class="cp-avatars">
+      <img id="myDp" class="avatar" src="">
+      <div class="heart">❤️</div>
+      <img id="cpDp" class="avatar" src="">
+    </div>
+
+    <div class="names">
+      <span id="myName">You</span>
+      ❤️
+      <span id="cpName">No CP</span>
+    </div>
+
+    <div class="ids">
+      <span id="myId"></span>
+      &nbsp; • &nbsp;
+      <span id="cpId"></span>
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="section-title">CP Status</div>
+
+    <div class="row">
+
+      <div class="stat">
+        <b id="cpDays">0</b>
+        <span>Days</span>
+      </div>
+
+      <div class="stat">
+        <b id="cpLevel">1</b>
+        <span>CP Level</span>
+      </div>
+
+      <div class="stat">
+        <b id="cpExp">0</b>
+        <span>EXP</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="section-title">CP EXP Progress</div>
+
+    <div class="progress">
+      <div id="cpProgress"></div>
+    </div>
+
+    <div class="msg" id="progressText">
+      0 / 100 EXP
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="section-title">CP Actions</div>
+
+    <div class="bottom">
+
+      <button class="action" onclick="sendCPRequest()">
+        💕 Send CP Request
+      </button>
+
+      <button class="secondary" onclick="removeCP()">
+        Remove CP
+      </button>
+
+    </div>
+
+    <div class="msg" id="actionMsg"></div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="section-title">Find a CP</div>
+
+    <input
+      id="cpUserId"
+      placeholder="Enter User ID"
+      autocomplete="off"
+    >
+
+    <button
+      class="action"
+      style="width:100%;margin-top:6px"
+      onclick="sendCPRequest()"
+    >
+      ❤️ Send Request
+    </button>
+
+  </div>
+
+  <div class="card">
+
+    <div class="section-title">CP Requests</div>
+
+    <div id="requests">
+      Loading...
+    </div>
+
+  </div>
+
+</div>
+
+<script src="user.js"></script>
+
+<script>
+
+const DB =
+  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
+
+let me = null;
+let cp = null;
+
+function esc(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+}
+
+async function dbGet(path){
+
+  const r = await fetch(
+    DB + path + ".json"
+  );
+
+  if(!r.ok){
+    throw new Error("Firebase " + r.status);
+  }
+
+  return await r.json();
+}
+
+async function dbPut(path,data){
+
+  const r = await fetch(
+    DB + path + ".json",
+    {
+      method:"PUT",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify(data)
+    }
+  );
+
+  if(!r.ok){
+    throw new Error("Firebase " + r.status);
+  }
+
+  return await r.json();
+}
+
+async function dbPatch(path,data){
+
+  const r = await fetch(
+    DB + path + ".json",
+    {
+      method:"PATCH",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify(data)
+    }
+  );
+
+  if(!r.ok){
+    throw new Error("Firebase " + r.status);
+  }
+
+  return await r.json();
+}
+
+async function loadCP(){
+
+  me = await pvLoadUser();
+
+  document.getElementById("myName").textContent =
+    me.name;
+
+  document.getElementById("myId").textContent =
+    "ID: " + me.userId;
+
+  document.getElementById("myDp").src =
+    me.dp || PV_DEFAULT_DP;
+
+  try{
+
+    const myCP =
+      await dbGet(
+        "/cp/" +
+        encodeURIComponent(me.userId)
+      );
+
+    if(myCP && myCP.cpId){
+
+      cp = await dbGet(
+        "/users/" +
+        encodeURIComponent(myCP.cpId)
+      );
+
+      if(cp){
+
+        document.getElementById("cpName")
+          .textContent = cp.name || "CP";
+
+        document.getElementById("cpId")
+          .textContent = "ID: " + cp.userId;
+
+        document.getElementById("cpDp")
+          .src = cp.dp || PV_DEFAULT_DP;
+
+        document.getElementById("cpDays")
+          .textContent = calculateDays(
+            myCP.startedAt
+          );
+
+        document.getElementById("cpLevel")
+          .textContent =
+          Number(myCP.level || 1);
+
+        document.getElementById("cpExp")
+          .textContent =
+          Number(myCP.exp || 0);
+
+        updateProgress(
+          Number(myCP.exp || 0),
+          Number(myCP.level || 1)
+        );
+
+      }
+
+    }else{
+
+      document.getElementById("cpName")
+        .textContent = "No CP";
+
+      document.getElementById("cpId")
+        .textContent = "";
+
+      document.getElementById("cpDp")
+        .src = PV_DEFAULT_DP;
+
+    }
+
+  }catch(e){
+
+    console.error(e);
+
+  }
+
+  await loadRequests();
+}
+
+function calculateDays(start){
+
+  if(!start) return 0;
+
+  const diff =
+    Date.now() - Number(start);
+
+  return Math.max(
+    0,
+    Math.floor(
+      diff / 86400000
+    )
+  );
+}
+
+function updateProgress(exp,level){
+
+  const need =
+    Math.max(100,level * 100);
+
+  const percent =
+    Math.min(
+      100,
+      Math.round(
+        (exp / need) * 100
+      )
+    );
+
+  document.getElementById(
+    "cpProgress"
+  ).style.width =
+    percent + "%";
+
+  document.getElementById(
+    "progressText"
+  ).textContent =
+    exp + " / " + need + " EXP";
+
+}
+
+async function sendCPRequest(){
+
+  if(!me){
+
+    alert("User load ho raha hai.");
+
+    return;
+  }
+
+  let targetId =
+    document.getElementById(
+      "cpUserId"
+    ).value.trim();
+
+  if(!targetId){
+
+    alert("User ID डालें.");
+
+    return;
+  }
+
+  if(targetId === me.userId){
+
+    alert("आप खुद को CP request नहीं भेज सकते.");
+
+    return;
+  }
+
+  try{
+
+    const target =
+      await dbGet(
+        "/users/" +
+        encodeURIComponent(targetId)
+      );
+
+    if(!target){
+
+      alert("User नहीं मिला.");
+
+      return;
+    }
+
+    const request = {
+
+      requestId:
+        Date.now() + "_" + me.userId,
+
+      fromId: me.userId,
+
+      fromName: me.name,
+
+      fromDp: me.dp,
+
+      toId: targetId,
+
+      createdAt: Date.now(),
+
+      status:"pending"
+
+    };
+
+    await dbPut(
+      "/cpRequests/" +
+      encodeURIComponent(targetId) +
+      "/" +
+      encodeURIComponent(request.requestId),
+      request
+    );
+
+    document.getElementById(
+      "actionMsg"
+    ).textContent =
+      "❤️ CP request भेज दी गई.";
+
+    document.getElementById(
+      "cpUserId"
+    ).value = "";
+
+  }catch(e){
+
+    console.error(e);
+
+    alert(
+      "Request भेजने में problem हुई."
+    );
+
+  }
+
+}
+
+async function loadRequests(){
+
+  const box =
+    document.getElementById(
+      "requests"
+    );
+
+  try{
+
+    const data =
+      await dbGet(
+        "/cpRequests/" +
+        encodeURIComponent(me.userId)
+      );
+
+    if(!data){
+
+      box.innerHTML =
+        '<div class="empty">No CP requests</div>';
+
+      return;
+    }
+
+    const list =
+      Object.entries(data)
+      .filter(
+        ([id,r]) =>
+          r && r.status === "pending"
+      );
+
+    if(!list.length){
+
+      box.innerHTML =
+        '<div class="empty">No CP requests</div>';
+
+      return;
+    }
+
+    box.innerHTML =
+      list.map(
+        ([requestId,r]) => `
+
+        <div
+          style="
+          padding:12px;
+          border-radius:14px;
+          background:#222635;
+          margin-bottom:10px;
+          "
+        >
+
+          <div
+            style="
+            display:flex;
+            align-items:center;
+            gap:10px;
+            "
+          >
+
+            <img
+              src="${esc(r.fromDp || PV_DEFAULT_DP)}"
+              style="
+              width:48px;
+              height:48px;
+              border-radius:50%;
+              object-fit:cover;
+              "
+            >
+
+            <div style="flex:1">
+
+              <b>${esc(r.fromName || "User")}</b>
+
+              <div
+                style="
+                color:#999;
+                font-size:12px;
+                "
+              >
+                ID: ${esc(r.fromId)}
+              </div>
+
+            </div>
+
+          </div>
+
+          <div
+            style="
+            display:flex;
+            gap:8px;
+            margin-top:10px;
+            "
+          >
+
+            <button
+              class="action"
+              onclick="acceptCP('${esc(requestId)}','${esc(r.fromId)}')"
+            >
+              Accept ❤️
+            </button>
+
+            <button
+              class="secondary"
+              onclick="rejectCP('${esc(requestId)}')"
+            >
+              Reject
+            </button>
+
+          </div>
+
+        </div>
+
+      `
+      ).join("");
+
+  }catch(e){
+
+    console.error(e);
+
+    box.innerHTML =
+      '<div class="empty">Requests load नहीं हुए.</div>';
+
+  }
+
+}
+
+async function acceptCP(requestId,otherId){
+
+  try{
+
+    const now = Date.now();
+
+    const myData = {
+
+      cpId: otherId,
+
+      startedAt: now,
+
+      level:1,
+
+      exp:0,
+
+      updatedAt:now
+
+    };
+
+    const otherData = {
+
+      cpId: me.userId,
+
+      startedAt: now,
+
+      level:1,
+
+      exp:0,
+
+      updatedAt:now
+
+    };
+
+    await dbPatch(
+      "/cp/" +
+      encodeURIComponent(me.userId),
+      myData
+    );
+
+    await dbPatch(
+      "/cp/" +
+      encodeURIComponent(otherId),
+      otherData
+    );
+
+    await dbPut(
+      "/cpRequests/" +
+      encodeURIComponent(me.userId) +
+      "/" +
+      encodeURIComponent(requestId),
+      null
+    );
+
+    alert("❤️ CP बन गया!");
+
+    location.reload();
+
+  }catch(e){
+
+    console.error(e);
+
+    alert(
+      "CP accept नहीं हुआ."
+    );
+
+  }
+
+}
+
+async function rejectCP(requestId){
+
+  try{
+
+    await dbPut(
+      "/cpRequests/" +
+      encodeURIComponent(me.userId) +
+      "/" +
+      encodeURIComponent(requestId),
+      null
+    );
+
+    await loadRequests();
+
+  }catch(e){
+
+    alert("Request हट नहीं पाई.");
+
+  }
+
+}
+
+async function removeCP(){
+
+  if(!me) return;
+
+  try{
+
+    const current =
+      await dbGet(
+        "/cp/" +
+        encodeURIComponent(me.userId)
+      );
+
+    if(!current || !current.cpId){
+
+      alert("अभी CP नहीं है.");
+
+      return;
+    }
+
+    const otherId =
+      current.cpId;
+
+    await dbPut(
+      "/cp/" +
+      encodeURIComponent(me.userId),
+      null
+    );
+
+    await dbPut(
+      "/cp/" +
+      encodeURIComponent(otherId),
+      null
+    );
+
+    alert("CP remove हो गया.");
+
+    location.reload();
+
+  }catch(e){
+
+    console.error(e);
+
+    alert("CP remove नहीं हुआ.");
+
+  }
+
+}
+
+loadCP();
+
+</script>
+
+</body>
+</html>
