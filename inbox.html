@@ -1,0 +1,2288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+<title>PawanVoice - Inbox</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  background:#080914;
+  color:#fff;
+  min-height:100vh;
+}
+
+button{
+  font:inherit;
+  cursor:pointer;
+}
+
+.app{
+  width:100%;
+  max-width:600px;
+  min-height:100vh;
+  margin:auto;
+  padding-bottom:82px;
+  background:
+    radial-gradient(circle at 50% 0%,#302652 0%,#111224 35%,#080914 75%);
+}
+
+/* HEADER */
+
+.header{
+  height:62px;
+  padding:8px 12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:rgba(8,9,20,.97);
+  border-bottom:1px solid #292b43;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+
+.back{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:1px solid #383a52;
+  background:#18192b;
+  color:#fff;
+  font-size:27px;
+}
+
+.title{
+  font-size:17px;
+  font-weight:bold;
+  flex:1;
+}
+
+.refresh{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:1px solid #383a52;
+  background:#18192b;
+  color:#fff;
+}
+
+/* TABS */
+
+.tabs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:5px;
+  padding:10px 10px 6px;
+  background:#0b0c19;
+}
+
+.tab{
+  min-height:43px;
+  border:1px solid #303249;
+  border-radius:11px;
+  background:#151628;
+  color:#777b92;
+  font-size:9px;
+  position:relative;
+}
+
+.tab.active{
+  background:#27203f;
+  border-color:#6754a7;
+  color:#c1b3ff;
+}
+
+.badge{
+  position:absolute;
+  top:-5px;
+  right:-3px;
+  min-width:17px;
+  height:17px;
+  padding:0 4px;
+  border-radius:20px;
+  background:#ff4f70;
+  color:#fff;
+  font-size:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* CONTENT */
+
+.content{
+  padding:8px 12px;
+}
+
+.section{
+  display:none;
+}
+
+.section.active{
+  display:block;
+}
+
+/* CARD */
+
+.card{
+  margin-bottom:10px;
+  padding:13px;
+  border-radius:16px;
+  background:#151628;
+  border:1px solid #303249;
+}
+
+.row{
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+
+.avatar{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#24263b;
+  border:2px solid #484b67;
+  flex-shrink:0;
+}
+
+.info{
+  flex:1;
+  min-width:0;
+}
+
+.name{
+  font-size:13px;
+  font-weight:bold;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.sub{
+  margin-top:4px;
+  color:#777b92;
+  font-size:9px;
+  line-height:1.4;
+}
+
+.time{
+  color:#64687e;
+  font-size:8px;
+}
+
+.message-preview{
+  margin-top:11px;
+  padding:10px;
+  border-radius:10px;
+  background:#0f1020;
+  color:#b8bbca;
+  font-size:10px;
+  line-height:1.5;
+}
+
+.actions{
+  display:flex;
+  gap:7px;
+  margin-top:11px;
+}
+
+.action{
+  flex:1;
+  height:35px;
+  border-radius:9px;
+  border:1px solid #393b53;
+  background:#202137;
+  color:#fff;
+  font-size:10px;
+}
+
+.action.accept{
+  background:#604fd0;
+  border-color:#806cff;
+}
+
+.action.reject{
+  background:#191a2b;
+  color:#a4a7b8;
+}
+
+/* MESSAGE */
+
+.chat-btn{
+  margin-top:10px;
+  width:100%;
+  height:36px;
+  border:1px solid #6251a4;
+  border-radius:9px;
+  background:#27203f;
+  color:#c5b8ff;
+  font-size:10px;
+}
+
+/* EMPTY */
+
+.empty{
+  margin-top:30px;
+  padding:30px 15px;
+  text-align:center;
+  color:#70748a;
+  font-size:11px;
+}
+
+.empty-icon{
+  font-size:35px;
+  margin-bottom:9px;
+}
+
+/* LOADING */
+
+.loading{
+  padding:30px;
+  text-align:center;
+  color:#777b92;
+  font-size:11px;
+}
+
+/* BOTTOM NAV */
+
+.bottom{
+  position:fixed;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:600px;
+  height:68px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  background:rgba(9,10,21,.98);
+  border-top:1px solid #292b43;
+  z-index:50;
+}
+
+.nav{
+  border:0;
+  background:transparent;
+  color:#777b91;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+}
+
+.nav.active{
+  color:#a993ff;
+}
+
+.nav-icon{
+  font-size:20px;
+}
+
+.nav-text{
+  font-size:9px;
+}
+
+/* TOAST */
+
+.toast{
+  display:none;
+  position:fixed;
+  left:50%;
+  bottom:82px;
+  transform:translateX(-50%);
+  z-index:100;
+  padding:10px 16px;
+  border-radius:20px;
+  background:#27283d;
+  border:1px solid #484a64;
+  color:#fff;
+  font-size:10px;
+  white-space:nowrap;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+
+  <header class="header">
+
+    <button
+      class="back"
+      onclick="goHome()">
+      ‹
+    </button>
+
+    <div class="title">
+      Inbox
+    </div>
+
+    <button
+      class="refresh"
+      onclick="loadAll()">
+      ↻
+    </button>
+
+  </header>
+
+
+  <!-- TABS -->
+
+  <div class="tabs">
+
+    <button
+      id="tabMessages"
+      class="tab active"
+      onclick="showTab('messages')">
+
+      💌
+      <br>
+      Messages
+
+      <span
+        id="messageBadge"
+        class="badge"
+        style="display:none">
+        0
+      </span>
+
+    </button>
+
+
+    <button
+      id="tabFriends"
+      class="tab"
+      onclick="showTab('friends')">
+
+      👥
+      <br>
+      Friends
+
+      <span
+        id="friendBadge"
+        class="badge"
+        style="display:none">
+        0
+      </span>
+
+    </button>
+
+
+    <button
+      id="tabCP"
+      class="tab"
+      onclick="showTab('cp')">
+
+      💕
+      <br>
+      CP
+
+      <span
+        id="cpBadge"
+        class="badge"
+        style="display:none">
+        0
+      </span>
+
+    </button>
+
+
+    <button
+      id="tabFamily"
+      class="tab"
+      onclick="showTab('family')">
+
+      👨‍👩‍👧
+      <br>
+      Family
+
+      <span
+        id="familyBadge"
+        class="badge"
+        style="display:none">
+        0
+      </span>
+
+    </button>
+
+  </div>
+
+
+  <main class="content">
+
+    <!-- MESSAGES -->
+
+    <section
+      id="messagesSection"
+      class="section active">
+
+      <div id="messagesList">
+        <div class="loading">
+          Loading messages...
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- FRIEND REQUESTS -->
+
+    <section
+      id="friendsSection"
+      class="section">
+
+      <div id="friendsList">
+        <div class="loading">
+          Loading friend requests...
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- CP -->
+
+    <section
+      id="cpSection"
+      class="section">
+
+      <div id="cpList">
+        <div class="loading">
+          Loading CP requests...
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- FAMILY -->
+
+    <section
+      id="familySection"
+      class="section">
+
+      <div id="familyList">
+        <div class="loading">
+          Loading family invites...
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<!-- BOTTOM -->
+
+<nav class="bottom">
+
+  <button
+    class="nav"
+    onclick="goHome()">
+
+    <span class="nav-icon">
+      🏠
+    </span>
+
+    <span class="nav-text">
+      Home
+    </span>
+
+  </button>
+
+
+  <button
+    class="nav active">
+
+    <span class="nav-icon">
+      💌
+    </span>
+
+    <span class="nav-text">
+      Inbox
+    </span>
+
+  </button>
+
+
+  <button
+    class="nav"
+    onclick="goProfile()">
+
+    <span class="nav-icon">
+      👤
+    </span>
+
+    <span class="nav-text">
+      Profile
+    </span>
+
+  </button>
+
+</nav>
+
+
+<div
+  id="toast"
+  class="toast">
+</div>
+
+
+<script src="user.js"></script>
+
+<script>
+
+/* =====================================
+   PAWANVOICE INBOX
+===================================== */
+
+const DB =
+  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
+
+
+const DEFAULT_DP =
+  "https://i.pravatar.cc/200?img=12";
+
+
+let currentUser = {
+
+  userId:"pawan",
+
+  name:"Pawan User",
+
+  dp:DEFAULT_DP
+
+};
+
+
+let data = {
+
+  messages:[],
+
+  friends:[],
+
+  cp:[],
+
+  family:[]
+
+};
+
+
+/* =====================================
+   LOAD USER
+===================================== */
+
+async function loadUser(){
+
+  try{
+
+    if(
+      typeof pvLoadUser ===
+      "function"
+    ){
+
+      const user =
+        await pvLoadUser();
+
+      if(user){
+        currentUser = user;
+      }
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "User load:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =====================================
+   FIREBASE GET
+===================================== */
+
+async function firebaseGet(
+  path
+){
+
+  const response =
+    await fetch(
+      DB +
+      path +
+      ".json"
+    );
+
+
+  if(!response.ok){
+
+    throw new Error(
+      "Firebase HTTP " +
+      response.status
+    );
+
+  }
+
+
+  return await response.json();
+
+}
+
+
+/* =====================================
+   FIREBASE PATCH
+===================================== */
+
+async function firebasePatch(
+  path,
+  value
+){
+
+  const response =
+    await fetch(
+      DB +
+      path +
+      ".json",
+      {
+        method:"PATCH",
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+        body:
+          JSON.stringify(value)
+      }
+    );
+
+
+  if(!response.ok){
+
+    throw new Error(
+      "Firebase PATCH failed"
+    );
+
+  }
+
+
+  return await response.json();
+
+}
+
+
+/* =====================================
+   FIREBASE DELETE
+===================================== */
+
+async function firebaseDelete(
+  path
+){
+
+  const response =
+    await fetch(
+      DB +
+      path +
+      ".json",
+      {
+        method:"DELETE"
+      }
+    );
+
+
+  if(!response.ok){
+
+    throw new Error(
+      "Firebase DELETE failed"
+    );
+
+  }
+
+}
+
+
+/* =====================================
+   NORMALIZE DATA
+===================================== */
+
+function normalizeList(
+  value
+){
+
+  if(!value){
+
+    return [];
+
+  }
+
+
+  if(Array.isArray(value)){
+
+    return value.map(
+      function(item,index){
+
+        return {
+          ...(item || {}),
+          _key:String(index)
+        };
+
+      }
+    );
+
+  }
+
+
+  if(typeof value === "object"){
+
+    return Object.keys(value)
+      .map(
+        function(key){
+
+          return {
+            ...(value[key] || {}),
+            _key:key
+          };
+
+        }
+      );
+
+  }
+
+
+  return [];
+
+}
+
+
+/* =====================================
+   LOAD ALL
+===================================== */
+
+async function loadAll(){
+
+  showLoading();
+
+
+  await loadUser();
+
+
+  const id =
+    encodeURIComponent(
+      currentUser.userId ||
+      "pawan"
+    );
+
+
+  try{
+
+    const results =
+      await Promise.all([
+
+        firebaseGet(
+          "/messages/" + id
+        ),
+
+        firebaseGet(
+          "/friendRequests/" + id
+        ),
+
+        firebaseGet(
+          "/cpRequests/" + id
+        ),
+
+        firebaseGet(
+          "/familyInvites/" + id
+        )
+
+      ]);
+
+
+    data.messages =
+      normalizeList(
+        results[0]
+      );
+
+
+    data.friends =
+      normalizeList(
+        results[1]
+      );
+
+
+    data.cp =
+      normalizeList(
+        results[2]
+      );
+
+
+    data.family =
+      normalizeList(
+        results[3]
+      );
+
+
+  }catch(error){
+
+    console.error(
+      "Inbox Firebase:",
+      error
+    );
+
+
+    /*
+      अगर Firebase में
+      कोई data नहीं है तो
+      empty state दिखाएँ.
+    */
+
+    data.messages = [];
+    data.friends = [];
+    data.cp = [];
+    data.family = [];
+
+  }
+
+
+  renderAll();
+
+}
+
+
+/* =====================================
+   LOADING
+===================================== */
+
+function showLoading(){
+
+  document.getElementById(
+    "messagesList"
+  ).innerHTML =
+    '<div class="loading">Loading messages...</div>';
+
+
+  document.getElementById(
+    "friendsList"
+  ).innerHTML =
+    '<div class="loading">Loading friend requests...</div>';
+
+
+  document.getElementById(
+    "cpList"
+  ).innerHTML =
+    '<div class="loading">Loading CP requests...</div>';
+
+
+  document.getElementById(
+    "familyList"
+  ).innerHTML =
+    '<div class="loading">Loading family invites...</div>';
+
+}
+
+
+/* =====================================
+   RENDER ALL
+===================================== */
+
+function renderAll(){
+
+  renderMessages();
+
+  renderFriends();
+
+  renderCP();
+
+  renderFamily();
+
+  updateBadges();
+
+}
+
+
+/* =====================================
+   MESSAGES
+===================================== */
+
+function renderMessages(){
+
+  const box =
+    document.getElementById(
+      "messagesList"
+    );
+
+
+  box.innerHTML = "";
+
+
+  if(
+    data.messages.length === 0
+  ){
+
+    box.innerHTML =
+      emptyHTML(
+        "💌",
+        "No messages",
+        "Your private messages will appear here."
+      );
+
+    return;
+
+  }
+
+
+  data.messages
+    .sort(
+      function(a,b){
+
+        return (
+          Number(b.time || b.createdAt || 0) -
+          Number(a.time || a.createdAt || 0)
+        );
+
+      }
+    )
+    .forEach(
+      function(item){
+
+        const card =
+          document.createElement(
+            "div"
+          );
+
+
+        card.className =
+          "card";
+
+
+        const sender =
+          item.sender ||
+          item.from ||
+          item.name ||
+          "Pawan User";
+
+
+        const senderId =
+          item.senderId ||
+          item.fromId ||
+          item.userId ||
+          "";
+
+
+        const dp =
+          item.dp ||
+          item.senderDp ||
+          DEFAULT_DP;
+
+
+        const text =
+          item.text ||
+          item.message ||
+          "New message";
+
+
+        card.innerHTML =
+
+          '<div class="row">' +
+
+            '<img class="avatar" src="' +
+            safeURL(dp) +
+            '" alt="">' +
+
+            '<div class="info">' +
+
+              '<div class="name">' +
+              escapeHTML(sender) +
+              '</div>' +
+
+              '<div class="sub">' +
+              (
+                senderId
+                ? "ID: " +
+                  escapeHTML(senderId)
+                : "Private message"
+              ) +
+              '</div>' +
+
+            '</div>' +
+
+            '<div class="time">' +
+            formatTime(
+              item.time ||
+              item.createdAt
+            ) +
+            '</div>' +
+
+          '</div>' +
+
+          '<div class="message-preview">' +
+          escapeHTML(text) +
+          '</div>' +
+
+          (
+            senderId
+            ?
+            '<button class="chat-btn" onclick="openChat(\'' +
+            escapeJS(senderId) +
+            '\')">' +
+            '💬 Open Chat' +
+            '</button>'
+            :
+            ''
+          );
+
+
+        box.appendChild(
+          card
+        );
+
+      }
+    );
+
+}
+
+
+/* =====================================
+   FRIEND REQUESTS
+===================================== */
+
+function renderFriends(){
+
+  const box =
+    document.getElementById(
+      "friendsList"
+    );
+
+
+  box.innerHTML = "";
+
+
+  if(
+    data.friends.length === 0
+  ){
+
+    box.innerHTML =
+      emptyHTML(
+        "👥",
+        "No friend requests",
+        "New friend requests will appear here."
+      );
+
+    return;
+
+  }
+
+
+  data.friends.forEach(
+    function(item){
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        "card";
+
+
+      const name =
+        item.name ||
+        item.senderName ||
+        item.fromName ||
+        "Pawan User";
+
+
+      const id =
+        item.userId ||
+        item.senderId ||
+        item.fromId ||
+        "";
+
+
+      const dp =
+        item.dp ||
+        item.senderDp ||
+        DEFAULT_DP;
+
+
+      card.innerHTML =
+
+        '<div class="row">' +
+
+          '<img class="avatar" src="' +
+          safeURL(dp) +
+          '" alt="">' +
+
+          '<div class="info">' +
+
+            '<div class="name">' +
+            escapeHTML(name) +
+            '</div>' +
+
+            '<div class="sub">' +
+
+            (
+              id
+              ? "ID: " +
+                escapeHTML(id)
+              : "Wants to be your friend"
+            ) +
+
+            '</div>' +
+
+          '</div>' +
+
+        '</div>' +
+
+        '<div class="actions">' +
+
+          '<button class="action accept" ' +
+          'onclick="acceptFriend(\'' +
+          escapeJS(item._key) +
+          '\')">' +
+
+          '✓ Accept' +
+
+          '</button>' +
+
+          '<button class="action reject" ' +
+          'onclick="rejectFriend(\'' +
+          escapeJS(item._key) +
+          '\')">' +
+
+          '✕ Reject' +
+
+          '</button>' +
+
+        '</div>';
+
+
+      box.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================
+   CP REQUESTS
+===================================== */
+
+function renderCP(){
+
+  const box =
+    document.getElementById(
+      "cpList"
+    );
+
+
+  box.innerHTML = "";
+
+
+  if(
+    data.cp.length === 0
+  ){
+
+    box.innerHTML =
+      emptyHTML(
+        "💕",
+        "No CP requests",
+        "Your CP requests will appear here."
+      );
+
+    return;
+
+  }
+
+
+  data.cp.forEach(
+    function(item){
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        "card";
+
+
+      const name =
+        item.name ||
+        item.senderName ||
+        item.fromName ||
+        "Pawan User";
+
+
+      const id =
+        item.userId ||
+        item.senderId ||
+        item.fromId ||
+        "";
+
+
+      const dp =
+        item.dp ||
+        item.senderDp ||
+        DEFAULT_DP;
+
+
+      card.innerHTML =
+
+        '<div class="row">' +
+
+          '<img class="avatar" src="' +
+          safeURL(dp) +
+          '" alt="">' +
+
+          '<div class="info">' +
+
+            '<div class="name">' +
+            escapeHTML(name) +
+            '</div>' +
+
+            '<div class="sub">' +
+
+            (
+              id
+              ? "ID: " +
+                escapeHTML(id)
+              : "CP request"
+            ) +
+
+            '</div>' +
+
+          '</div>' +
+
+        '</div>' +
+
+        '<div class="actions">' +
+
+          '<button class="action accept" ' +
+          'onclick="acceptCP(\'' +
+          escapeJS(item._key) +
+          '\')">' +
+
+          '💕 Accept CP' +
+
+          '</button>' +
+
+          '<button class="action reject" ' +
+          'onclick="rejectCP(\'' +
+          escapeJS(item._key) +
+          '\')">' +
+
+          '✕ Reject' +
+
+          '</button>' +
+
+        '</div>';
+
+
+      box.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================
+   FAMILY
+===================================== */
+
+function renderFamily(){
+
+  const box =
+    document.getElementById(
+      "familyList"
+    );
+
+
+  box.innerHTML = "";
+
+
+  if(
+    data.family.length === 0
+  ){
+
+    box.innerHTML =
+      emptyHTML(
+        "👨‍👩‍👧",
+        "No family invites",
+        "Family invitations will appear here."
+      );
+
+    return;
+
+  }
+
+
+  data.family.forEach(
+    function(item){
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        "card";
+
+
+      const familyName =
+        item.familyName ||
+        item.name ||
+        "PawanVoice Family";
+
+
+      const familyId =
+        item.familyId ||
+        item.id ||
+        "";
+
+
+      const owner =
+        item.ownerName ||
+        item.senderName ||
+        "";
+
+
+      card.innerHTML =
+
+        '<div class="row">' +
+
+          '<div class="avatar" ' +
+          'style="display:flex;align-items:center;' +
+          'justify-content:center;font-size:22px;">' +
+
+          '👨‍👩‍👧' +
+
+          '</div>' +
+
+          '<div class="info">' +
+
+            '<div class="name">' +
+            escapeHTML(familyName) +
+            '</div>' +
+
+            '<div class="sub">' +
+
+            (
+              familyId
+              ? "Family ID: " +
+                escapeHTML(familyId)
+              : "Family invitation"
+            ) +
+
+            (
+              owner
+              ? "<br>Owner: " +
+                escapeHTML(owner)
+              : ""
+            ) +
+
+            '</div>' +
+
+          '</div>' +
+
+        '</div>' +
+
+        '<div class="actions">' +
+
+          '<button class="action accept" ' +
+          'onclick="acceptFamily(\'' +
+          escapeJS(item._key) +
+          '\')">' +
+
+          '✓ Join' +
+
+          '</button>' +
+
+          '<button class="action reject" ' +
+          'onclick="rejectFamily(\'' +
+          escapeJS(item._key) +
+          '\')">' +
+
+          '✕ Reject' +
+
+          '</button>' +
+
+        '</div>';
+
+
+      box.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================
+   EMPTY
+===================================== */
+
+function emptyHTML(
+  icon,
+  title,
+  text
+){
+
+  return (
+
+    '<div class="empty">' +
+
+      '<div class="empty-icon">' +
+      icon +
+      '</div>' +
+
+      '<div>' +
+      escapeHTML(title) +
+      '</div>' +
+
+      '<div style="margin-top:5px;font-size:9px;">' +
+      escapeHTML(text) +
+      '</div>' +
+
+    '</div>'
+
+  );
+
+}
+
+
+/* =====================================
+   ACCEPT FRIEND
+===================================== */
+
+async function acceptFriend(
+  key
+){
+
+  try{
+
+    const item =
+      data.friends.find(
+        function(x){
+          return x._key === key;
+        }
+      );
+
+
+    if(!item){
+
+      return;
+
+    }
+
+
+    const otherId =
+      item.userId ||
+      item.senderId ||
+      item.fromId;
+
+
+    if(otherId){
+
+      const myId =
+        currentUser.userId ||
+        "pawan";
+
+
+      /*
+        Create friendship records.
+      */
+
+      await firebasePatch(
+        "/friends/" +
+        encodeURIComponent(myId) +
+        "/" +
+        encodeURIComponent(otherId),
+        {
+          userId:otherId,
+          name:
+            item.name ||
+            item.senderName ||
+            "Pawan User",
+          dp:
+            item.dp ||
+            item.senderDp ||
+            DEFAULT_DP,
+          since:Date.now()
+        }
+      );
+
+
+      await firebasePatch(
+        "/friends/" +
+        encodeURIComponent(otherId) +
+        "/" +
+        encodeURIComponent(myId),
+        {
+          userId:myId,
+          name:
+            currentUser.name ||
+            "Pawan User",
+          dp:
+            currentUser.dp ||
+            DEFAULT_DP,
+          since:Date.now()
+        }
+      );
+
+    }
+
+
+    await firebaseDelete(
+      "/friendRequests/" +
+      encodeURIComponent(
+        currentUser.userId ||
+        "pawan"
+      ) +
+      "/" +
+      encodeURIComponent(key)
+    );
+
+
+    showToast(
+      "Friend request accepted ✅"
+    );
+
+
+    loadAll();
+
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Could not accept request"
+    );
+
+  }
+
+}
+
+
+/* =====================================
+   REJECT FRIEND
+===================================== */
+
+async function rejectFriend(
+  key
+){
+
+  try{
+
+    await firebaseDelete(
+      "/friendRequests/" +
+      encodeURIComponent(
+        currentUser.userId ||
+        "pawan"
+      ) +
+      "/" +
+      encodeURIComponent(key)
+    );
+
+
+    showToast(
+      "Request rejected"
+    );
+
+
+    loadAll();
+
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Could not reject request"
+    );
+
+  }
+
+}
+
+
+/* =====================================
+   ACCEPT CP
+===================================== */
+
+async function acceptCP(
+  key
+){
+
+  try{
+
+    const item =
+      data.cp.find(
+        function(x){
+          return x._key === key;
+        }
+      );
+
+
+    if(!item){
+
+      return;
+
+    }
+
+
+    const otherId =
+      item.userId ||
+      item.senderId ||
+      item.fromId;
+
+
+    const myId =
+      currentUser.userId ||
+      "pawan";
+
+
+    if(otherId){
+
+      await firebasePatch(
+        "/cp/" +
+        encodeURIComponent(myId),
+        {
+          partnerId:otherId,
+          partnerName:
+            item.name ||
+            item.senderName ||
+            "Pawan User",
+          partnerDp:
+            item.dp ||
+            item.senderDp ||
+            DEFAULT_DP,
+          status:"active",
+          startedAt:Date.now()
+        }
+      );
+
+
+      await firebasePatch(
+        "/cp/" +
+        encodeURIComponent(otherId),
+        {
+          partnerId:myId,
+          partnerName:
+            currentUser.name ||
+            "Pawan User",
+          partnerDp:
+            currentUser.dp ||
+            DEFAULT_DP,
+          status:"active",
+          startedAt:Date.now()
+        }
+      );
+
+    }
+
+
+    await firebaseDelete(
+      "/cpRequests/" +
+      encodeURIComponent(myId) +
+      "/" +
+      encodeURIComponent(key)
+    );
+
+
+    showToast(
+      "CP request accepted 💕"
+    );
+
+
+    loadAll();
+
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Could not accept CP request"
+    );
+
+  }
+
+}
+
+
+/* =====================================
+   REJECT CP
+===================================== */
+
+async function rejectCP(
+  key
+){
+
+  try{
+
+    await firebaseDelete(
+      "/cpRequests/" +
+      encodeURIComponent(
+        currentUser.userId ||
+        "pawan"
+      ) +
+      "/" +
+      encodeURIComponent(key)
+    );
+
+
+    showToast(
+      "CP request rejected"
+    );
+
+
+    loadAll();
+
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Could not reject CP request"
+    );
+
+  }
+
+}
+
+
+/* =====================================
+   ACCEPT FAMILY
+===================================== */
+
+async function acceptFamily(
+  key
+){
+
+  try{
+
+    const item =
+      data.family.find(
+        function(x){
+          return x._key === key;
+        }
+      );
+
+
+    if(!item){
+
+      return;
+
+    }
+
+
+    const familyId =
+      item.familyId ||
+      item.id ||
+      "family";
+
+
+    const myId =
+      currentUser.userId ||
+      "pawan";
+
+
+    await firebasePatch(
+      "/familyMembers/" +
+      encodeURIComponent(familyId) +
+      "/" +
+      encodeURIComponent(myId),
+      {
+        userId:myId,
+        name:
+          currentUser.name ||
+          "Pawan User",
+        dp:
+          currentUser.dp ||
+          DEFAULT_DP,
+        role:"member",
+        joinedAt:Date.now()
+      }
+    );
+
+
+    await firebaseDelete(
+      "/familyInvites/" +
+      encodeURIComponent(myId) +
+      "/" +
+      encodeURIComponent(key)
+    );
+
+
+    showToast(
+      "Joined family ✅"
+    );
+
+
+    loadAll();
+
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Could not join family"
+    );
+
+  }
+
+}
+
+
+/* =====================================
+   REJECT FAMILY
+===================================== */
+
+async function rejectFamily(
+  key
+){
+
+  try{
+
+    await firebaseDelete(
+      "/familyInvites/" +
+      encodeURIComponent(
+        currentUser.userId ||
+        "pawan"
+      ) +
+      "/" +
+      encodeURIComponent(key)
+    );
+
+
+    showToast(
+      "Family invitation rejected"
+    );
+
+
+    loadAll();
+
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Could not reject invitation"
+    );
+
+  }
+
+}
+
+
+/* =====================================
+   CHAT
+===================================== */
+
+function openChat(
+  userId
+){
+
+  if(!userId){
+
+    showToast(
+      "User ID missing"
+    );
+
+    return;
+
+  }
+
+
+  location.href =
+    "chat.html?user=" +
+    encodeURIComponent(
+      userId
+    );
+
+}
+
+
+/* =====================================
+   TABS
+===================================== */
+
+function showTab(
+  tab
+){
+
+  const sections = {
+
+    messages:
+      "messagesSection",
+
+    friends:
+      "friendsSection",
+
+    cp:
+      "cpSection",
+
+    family:
+      "familySection"
+
+  };
+
+
+  const tabs = {
+
+    messages:
+      "tabMessages",
+
+    friends:
+      "tabFriends",
+
+    cp:
+      "tabCP",
+
+    family:
+      "tabFamily"
+
+  };
+
+
+  Object.keys(
+    sections
+  ).forEach(
+    function(key){
+
+      document.getElementById(
+        sections[key]
+      ).classList.toggle(
+        "active",
+        key === tab
+      );
+
+
+      document.getElementById(
+        tabs[key]
+      ).classList.toggle(
+        "active",
+        key === tab
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================
+   BADGES
+===================================== */
+
+function updateBadges(){
+
+  setBadge(
+    "messageBadge",
+    data.messages.length
+  );
+
+
+  setBadge(
+    "friendBadge",
+    data.friends.length
+  );
+
+
+  setBadge(
+    "cpBadge",
+    data.cp.length
+  );
+
+
+  setBadge(
+    "familyBadge",
+    data.family.length
+  );
+
+}
+
+
+function setBadge(
+  id,
+  count
+){
+
+  const badge =
+    document.getElementById(
+      id
+    );
+
+
+  if(
+    count > 0
+  ){
+
+    badge.style.display =
+      "flex";
+
+    badge.textContent =
+      count > 99
+      ? "99+"
+      : count;
+
+  }else{
+
+    badge.style.display =
+      "none";
+
+  }
+
+}
+
+
+/* =====================================
+   SAFE HTML
+===================================== */
+
+function escapeHTML(
+  value
+){
+
+  return String(
+    value ?? ""
+  )
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
+}
+
+
+function escapeJS(
+  value
+){
+
+  return String(
+    value ?? ""
+  )
+  .replace(
+    /\\/g,
+    "\\\\"
+  )
+  .replace(
+    /'/g,
+    "\\'"
+  )
+  .replace(
+    /"/g,
+    '\\"'
+  );
+
+}
+
+
+function safeURL(
+  value
+){
+
+  const url =
+    String(
+      value ||
+      DEFAULT_DP
+    );
+
+
+  /*
+    Only allow normal http/https
+    image URLs.
+  */
+
+  if(
+    /^https?:\/\//i.test(url)
+  ){
+
+    return escapeHTML(url);
+
+  }
+
+
+  return escapeHTML(
+    DEFAULT_DP
+  );
+
+}
+
+
+/* =====================================
+   TIME
+===================================== */
+
+function formatTime(
+  value
+){
+
+  if(!value){
+
+    return "";
+
+  }
+
+
+  const date =
+    new Date(
+      Number(value)
+    );
+
+
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+
+    return "";
+
+  }
+
+
+  return date.toLocaleDateString(
+    "en-IN",
+    {
+      day:"2-digit",
+      month:"short"
+    }
+  );
+
+}
+
+
+/* =====================================
+   NAV
+===================================== */
+
+function goHome(){
+
+  location.href =
+    "index.html";
+
+}
+
+
+function goProfile(){
+
+  location.href =
+    "profile.html";
+
+}
+
+
+/* =====================================
+   TOAST
+===================================== */
+
+function showToast(
+  text
+){
+
+  const toast =
+    document.getElementById(
+      "toast"
+    );
+
+
+  toast.textContent =
+    text;
+
+
+  toast.style.display =
+    "block";
+
+
+  clearTimeout(
+    window.pvToastTimer
+  );
+
+
+  window.pvToastTimer =
+    setTimeout(
+      function(){
+
+        toast.style.display =
+          "none";
+
+      },
+      2200
+    );
+
+}
+
+
+/* =====================================
+   START
+===================================== */
+
+loadAll();
+
+
+/*
+  Automatically refresh inbox
+  every 10 seconds.
+*/
+
+setInterval(
+  loadAll,
+  10000
+);
+
+</script>
+
+</body>
+  </html>
