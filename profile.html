@@ -29,9 +29,9 @@ body{
 }
 
 .back{
-  font-size:27px;
-  cursor:pointer;
+  font-size:28px;
   margin-right:15px;
+  cursor:pointer;
 }
 
 .header-title{
@@ -150,48 +150,6 @@ body{
   font-size:12px;
 }
 
-.section{
-  padding:0 14px;
-}
-
-.section-title{
-  font-size:16px;
-  font-weight:bold;
-  margin:20px 3px 12px;
-}
-
-.menu{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-}
-
-.item{
-  min-height:85px;
-  border-radius:14px;
-  background:#151629;
-  border:1px solid #292b45;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-}
-
-.item:active{
-  transform:scale(.97);
-}
-
-.icon{
-  font-size:27px;
-  margin-bottom:7px;
-}
-
-.item-name{
-  font-size:12px;
-  color:#d8d9e7;
-}
-
 .edit-card{
   margin:18px 14px;
   background:#17182b;
@@ -231,6 +189,48 @@ body{
   font-size:15px;
   font-weight:bold;
   cursor:pointer;
+}
+
+.save-btn:disabled{
+  opacity:.6;
+}
+
+.section{
+  padding:0 14px;
+}
+
+.section-title{
+  font-size:16px;
+  font-weight:bold;
+  margin:20px 3px 12px;
+}
+
+.menu{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.item{
+  min-height:85px;
+  border-radius:14px;
+  background:#151629;
+  border:1px solid #292b45;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+.icon{
+  font-size:27px;
+  margin-bottom:7px;
+}
+
+.item-name{
+  font-size:12px;
+  color:#d8d9e7;
 }
 
 .logout{
@@ -309,23 +309,38 @@ body{
 <div class="profile-top">
 
   <div class="dp-wrap">
-    <img id="profileDP"
-         class="dp"
-         src="https://i.pravatar.cc/200?img=12"
-         alt="DP">
+
+    <img
+      id="profileDP"
+      class="dp"
+      src="https://i.pravatar.cc/200?img=12"
+      alt="DP"
+    >
 
     <div class="camera" onclick="chooseDP()">📷</div>
+
   </div>
 
-  <div id="profileName" class="name">Pawan User</div>
+  <div id="profileName" class="name">
+    Pawan User
+  </div>
 
-  <div id="profileUID" class="uid">ID: pawan</div>
+  <div id="profileUID" class="uid">
+    ID: pawan
+  </div>
 
   <div class="level-box">
 
     <div class="level-line">
-      <span>⭐ Level <b id="levelText">1</b></span>
-      <span id="expText">0 / 100 EXP</span>
+
+      <span>
+        ⭐ Level <b id="levelText">1</b>
+      </span>
+
+      <span id="expText">
+        0 / 100 EXP
+      </span>
+
     </div>
 
     <div class="exp-bar">
@@ -335,6 +350,7 @@ body{
   </div>
 
 </div>
+
 
 <div class="stats">
 
@@ -355,9 +371,12 @@ body{
 
 </div>
 
+
 <div class="edit-card">
 
-  <div class="input-title">Change Name</div>
+  <div class="input-title">
+    Change Name
+  </div>
 
   <input
     id="nameInput"
@@ -367,7 +386,9 @@ body{
     placeholder="Enter your name"
   >
 
-  <div class="input-title">Change DP</div>
+  <div class="input-title">
+    Change DP
+  </div>
 
   <input
     id="dpInput"
@@ -376,15 +397,22 @@ body{
     placeholder="Paste image URL"
   >
 
-  <button class="save-btn" onclick="saveProfile()">
+  <button
+    id="saveButton"
+    class="save-btn"
+    onclick="saveProfile()"
+  >
     Save Profile
   </button>
 
 </div>
 
+
 <div class="section">
 
-  <div class="section-title">My Account</div>
+  <div class="section-title">
+    My Account
+  </div>
 
   <div class="menu">
 
@@ -452,11 +480,14 @@ body{
 
 </div>
 
+
 <button class="logout" onclick="logout()">
   Logout
 </button>
 
+
 <div id="toast" class="toast"></div>
+
 
 <div class="bottom">
 
@@ -477,220 +508,632 @@ body{
 
 </div>
 
+
 <script>
 
-/* =========================
-   LOAD USER
-========================= */
+/* =========================================
+   PAWANVOICE FIREBASE DATABASE
+========================================= */
 
-function getUser(){
+const FIREBASE_DB =
+  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
 
-  let user = {
-    userId: localStorage.getItem("pv_userId") || "pawan",
-    name: localStorage.getItem("pv_name") || "Pawan User",
-    dp: localStorage.getItem("pv_dp") || "https://i.pravatar.cc/200?img=12",
-    level: Number(localStorage.getItem("pv_level") || 1),
-    exp: Number(localStorage.getItem("pv_exp") || 0),
-    coins: Number(localStorage.getItem("pv_coins") || 0),
-    following: Number(localStorage.getItem("pv_following") || 0),
-    followers: Number(localStorage.getItem("pv_followers") || 0)
+
+/* =========================================
+   DEFAULT USER
+========================================= */
+
+function getLocalUser(){
+
+  return {
+
+    userId:
+      localStorage.getItem("pv_userId") || "pawan",
+
+    name:
+      localStorage.getItem("pv_name") || "Pawan User",
+
+    dp:
+      localStorage.getItem("pv_dp") ||
+      "https://i.pravatar.cc/200?img=12",
+
+    level:
+      Number(localStorage.getItem("pv_level") || 1),
+
+    exp:
+      Number(localStorage.getItem("pv_exp") || 0),
+
+    coins:
+      Number(localStorage.getItem("pv_coins") || 0),
+
+    following:
+      Number(localStorage.getItem("pv_following") || 0),
+
+    followers:
+      Number(localStorage.getItem("pv_followers") || 0)
+
   };
 
-  return user;
 }
 
 
-/* =========================
-   SHOW PROFILE
-========================= */
+/* =========================================
+   SAVE LOCAL COPY
+========================================= */
 
-function loadProfile(){
+function saveLocalUser(user){
 
-  const user = getUser();
+  localStorage.setItem(
+    "pv_userId",
+    user.userId
+  );
 
-  document.getElementById("profileDP").src = user.dp;
+  localStorage.setItem(
+    "pv_name",
+    user.name
+  );
 
-  document.getElementById("profileName").textContent = user.name;
+  localStorage.setItem(
+    "pv_dp",
+    user.dp
+  );
 
-  document.getElementById("profileUID").textContent =
-    "ID: " + user.userId;
+  localStorage.setItem(
+    "pv_level",
+    user.level
+  );
 
-  document.getElementById("nameInput").value =
-    user.name;
+  localStorage.setItem(
+    "pv_exp",
+    user.exp
+  );
 
-  document.getElementById("dpInput").value =
-    user.dp;
+  localStorage.setItem(
+    "pv_coins",
+    user.coins
+  );
 
-  document.getElementById("levelText").textContent =
-    user.level;
+  localStorage.setItem(
+    "pv_following",
+    user.following
+  );
 
-  document.getElementById("coins").textContent =
-    user.coins;
+  localStorage.setItem(
+    "pv_followers",
+    user.followers
+  );
 
-  document.getElementById("following").textContent =
-    user.following;
+}
 
-  document.getElementById("followers").textContent =
-    user.followers;
+
+/* =========================================
+   LOAD FROM FIREBASE
+========================================= */
+
+async function loadFromFirebase(){
+
+  const localUser =
+    getLocalUser();
+
+  const userId =
+    encodeURIComponent(localUser.userId);
+
+  try{
+
+    const response =
+      await fetch(
+        FIREBASE_DB +
+        "/users/" +
+        userId +
+        ".json"
+      );
+
+    if(!response.ok){
+
+      throw new Error(
+        "Firebase HTTP " +
+        response.status
+      );
+
+    }
+
+    const firebaseUser =
+      await response.json();
+
+    /*
+      User does not exist yet.
+      Keep local data.
+    */
+
+    if(!firebaseUser){
+
+      saveLocalUser(localUser);
+
+      renderProfile(localUser);
+
+      return;
+    }
+
+
+    /*
+      Firebase data becomes the
+      main permanent data.
+    */
+
+    const user = {
+
+      userId:
+        firebaseUser.userId ||
+        localUser.userId,
+
+      name:
+        firebaseUser.name ||
+        localUser.name,
+
+      dp:
+        firebaseUser.dp ||
+        localUser.dp,
+
+      level:
+        Number(
+          firebaseUser.level ??
+          localUser.level
+        ),
+
+      exp:
+        Number(
+          firebaseUser.exp ??
+          localUser.exp
+        ),
+
+      coins:
+        Number(
+          firebaseUser.coins ??
+          localUser.coins
+        ),
+
+      following:
+        Number(
+          firebaseUser.following ??
+          localUser.following
+        ),
+
+      followers:
+        Number(
+          firebaseUser.followers ??
+          localUser.followers
+        )
+
+    };
+
+
+    saveLocalUser(user);
+
+    renderProfile(user);
+
+  }
+  catch(error){
+
+    console.error(
+      "Firebase load error:",
+      error
+    );
+
+    renderProfile(localUser);
+
+    showToast(
+      "Firebase load nahi hua"
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   SAVE PROFILE TO FIREBASE
+========================================= */
+
+async function saveProfile(){
+
+  const localUser =
+    getLocalUser();
+
+  const name =
+    document
+      .getElementById("nameInput")
+      .value
+      .trim();
+
+  const dp =
+    document
+      .getElementById("dpInput")
+      .value
+      .trim();
+
+
+  if(!name){
+
+    showToast(
+      "Name enter karo"
+    );
+
+    return;
+  }
+
+
+  if(!dp){
+
+    showToast(
+      "DP URL enter karo"
+    );
+
+    return;
+  }
+
+
+  const user = {
+
+    userId:
+      localUser.userId,
+
+    name:
+      name,
+
+    dp:
+      dp,
+
+    level:
+      localUser.level,
+
+    exp:
+      localUser.exp,
+
+    coins:
+      localUser.coins,
+
+    following:
+      localUser.following,
+
+    followers:
+      localUser.followers,
+
+    updatedAt:
+      Date.now()
+
+  };
+
+
+  const button =
+    document.getElementById(
+      "saveButton"
+    );
+
+  button.disabled = true;
+
+  button.textContent =
+    "Saving...";
+
+
+  try{
+
+    const response =
+      await fetch(
+        FIREBASE_DB +
+        "/users/" +
+        encodeURIComponent(
+          user.userId
+        ) +
+        ".json",
+        {
+
+          method:"PUT",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(user)
+
+        }
+      );
+
+
+    if(!response.ok){
+
+      throw new Error(
+        "Firebase HTTP " +
+        response.status
+      );
+
+    }
+
+
+    const savedData =
+      await response.json();
+
+
+    /*
+      Firebase save successful.
+      Now update local cache.
+    */
+
+    saveLocalUser(
+      savedData || user
+    );
+
+    renderProfile(
+      savedData || user
+    );
+
+
+    showToast(
+      "Profile Firebase me permanently save ho gaya ✅"
+    );
+
+  }
+  catch(error){
+
+    console.error(
+      "Firebase save error:",
+      error
+    );
+
+    showToast(
+      "Save failed. Firebase Database Rules check karo."
+    );
+
+  }
+  finally{
+
+    button.disabled = false;
+
+    button.textContent =
+      "Save Profile";
+
+  }
+
+}
+
+
+/* =========================================
+   RENDER PROFILE
+========================================= */
+
+function renderProfile(user){
+
+  document
+    .getElementById("profileDP")
+    .src =
+      user.dp;
+
+  document
+    .getElementById("profileName")
+    .textContent =
+      user.name;
+
+  document
+    .getElementById("profileUID")
+    .textContent =
+      "ID: " +
+      user.userId;
+
+  document
+    .getElementById("nameInput")
+    .value =
+      user.name;
+
+  document
+    .getElementById("dpInput")
+    .value =
+      user.dp;
+
+  document
+    .getElementById("levelText")
+    .textContent =
+      user.level;
+
+  document
+    .getElementById("coins")
+    .textContent =
+      user.coins;
+
+  document
+    .getElementById("following")
+    .textContent =
+      user.following;
+
+  document
+    .getElementById("followers")
+    .textContent =
+      user.followers;
 
   updateEXP(user);
 
 }
 
 
-/* =========================
-   LEVEL / EXP
-========================= */
+/* =========================================
+   EXP
+========================================= */
 
 function updateEXP(user){
 
-  let level = user.level;
+  const required =
+    Math.max(
+      100,
+      Number(user.level) * 100
+    );
 
-  let required = level * 100;
+  const exp =
+    Number(user.exp) || 0;
 
-  let exp = user.exp;
+  const percent =
+    Math.min(
+      100,
+      Math.round(
+        (exp / required) * 100
+      )
+    );
 
-  let percent = Math.min(
-    100,
-    Math.round((exp / required) * 100)
+  document
+    .getElementById("expText")
+    .textContent =
+      exp +
+      " / " +
+      required +
+      " EXP";
+
+  document
+    .getElementById("expFill")
+    .style.width =
+      percent + "%";
+
+}
+
+
+/* =========================================
+   DP PREVIEW
+========================================= */
+
+document
+  .getElementById("dpInput")
+  .addEventListener(
+    "input",
+    function(){
+
+      const url =
+        this.value.trim();
+
+      if(url){
+
+        document
+          .getElementById("profileDP")
+          .src =
+            url;
+
+      }
+
+    }
   );
 
-  document.getElementById("expText").textContent =
-    exp + " / " + required + " EXP";
 
-  document.getElementById("expFill").style.width =
-    percent + "%";
-}
-
-
-/* =========================
-   SAVE PROFILE
-========================= */
-
-function saveProfile(){
-
-  const name =
-    document.getElementById("nameInput").value.trim();
-
-  const dp =
-    document.getElementById("dpInput").value.trim();
-
-  if(!name){
-
-    showToast("Name enter karo");
-
-    return;
-  }
-
-  if(!dp){
-
-    showToast("DP URL enter karo");
-
-    return;
-  }
-
-  localStorage.setItem("pv_name", name);
-
-  localStorage.setItem("pv_dp", dp);
-
-  document.getElementById("profileName").textContent =
-    name;
-
-  document.getElementById("profileDP").src =
-    dp;
-
-  showToast("Profile saved successfully ✅");
-}
-
-
-/* =========================
-   CHANGE DP
-========================= */
+/* =========================================
+   CHOOSE DP
+========================================= */
 
 function chooseDP(){
 
-  document.getElementById("dpInput").focus();
+  document
+    .getElementById("dpInput")
+    .focus();
 
-  document.getElementById("dpInput").scrollIntoView({
-    behavior:"smooth",
-    block:"center"
-  });
+  document
+    .getElementById("dpInput")
+    .scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
 
-  showToast("DP image URL yahan paste karo");
 }
 
 
-/* =========================
+/* =========================================
    HOME
-========================= */
+========================================= */
 
 function goHome(){
 
   window.location.href =
     "/index.html";
+
 }
 
 
-/* =========================
+/* =========================================
    INBOX
-========================= */
+========================================= */
 
 function openInbox(){
 
   window.location.href =
     "/inbox.html";
+
 }
 
 
-/* =========================
+/* =========================================
    LEVEL
-========================= */
+========================================= */
 
 function openLevel(){
 
   window.location.href =
     "/level.html";
+
 }
 
 
-/* =========================
+/* =========================================
    COMING SOON
-========================= */
+========================================= */
 
 function comingSoon(name){
 
-  showToast(name + " next phase me add hoga");
+  showToast(
+    name +
+    " next phase me add hoga"
+  );
+
 }
 
 
-/* =========================
+/* =========================================
    LOGOUT
-========================= */
+========================================= */
 
 function logout(){
 
-  const ok =
-    confirm("Logout karna hai?");
+  if(
+    !confirm(
+      "Logout karna hai?"
+    )
+  ){
 
-  if(!ok) return;
+    return;
 
-  localStorage.removeItem("pv_userId");
-  localStorage.removeItem("pv_name");
-  localStorage.removeItem("pv_dp");
+  }
+
+  localStorage.removeItem(
+    "pv_userId"
+  );
+
+  localStorage.removeItem(
+    "pv_name"
+  );
+
+  localStorage.removeItem(
+    "pv_dp"
+  );
 
   window.location.href =
     "/login.html";
+
 }
 
 
-/* =========================
+/* =========================================
    TOAST
-========================= */
+========================================= */
 
 function showToast(message){
 
   const toast =
-    document.getElementById("toast");
+    document.getElementById(
+      "toast"
+    );
 
   toast.textContent =
     message;
@@ -698,43 +1141,33 @@ function showToast(message){
   toast.style.display =
     "block";
 
-  clearTimeout(window.toastTimer);
+  clearTimeout(
+    window.toastTimer
+  );
 
   window.toastTimer =
-    setTimeout(function(){
+    setTimeout(
+      function(){
 
-      toast.style.display =
-        "none";
+        toast.style.display =
+          "none";
 
-    },2500);
+      },
+      3000
+    );
+
 }
 
 
-/* =========================
-   DP PREVIEW
-========================= */
-
-document
-.getElementById("dpInput")
-.addEventListener("input",function(){
-
-  const url =
-    this.value.trim();
-
-  if(url){
-
-    document.getElementById("profileDP").src =
-      url;
-  }
-
-});
-
-
-/* =========================
+/* =========================================
    START
-========================= */
+========================================= */
 
-loadProfile();
+renderProfile(
+  getLocalUser()
+);
+
+loadFromFirebase();
 
 </script>
 
