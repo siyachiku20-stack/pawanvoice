@@ -1,620 +1,1754 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport"
-content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
 <title>PawanVoice</title>
 
 <style>
-
 *{
- box-sizing:border-box;
- margin:0;
- padding:0;
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
 }
 
 body{
- background:#080711;
- color:#fff;
- font-family:Arial,sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#090b13;
+  color:#fff;
+  min-height:100vh;
+}
+
+button,input,select{
+  font:inherit;
+}
+
+button{
+  border:0;
+  cursor:pointer;
 }
 
 .app{
- width:100%;
- max-width:430px;
- min-height:100vh;
- margin:auto;
- padding-bottom:80px;
- background:
- radial-gradient(circle at top,#28154e,#0b0913 42%);
+  max-width:520px;
+  margin:auto;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 50% -10%,#34205e 0,#12152a 30%,#090b13 65%);
+  padding-bottom:82px;
 }
 
-.top{
- padding:18px 16px 10px;
- display:flex;
- align-items:center;
- justify-content:space-between;
+/* TOP */
+
+.topbar{
+  padding:16px 15px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
 }
 
-.user{
- display:flex;
- align-items:center;
- gap:11px;
+.profile-mini{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
 }
 
-.user img{
- width:48px;
- height:48px;
- border-radius:50%;
- object-fit:cover;
- border:2px solid #9b5cff;
+.profile-mini img{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #8b5cf6;
+  background:#222;
 }
 
-.userName{
- font-weight:bold;
- font-size:16px;
+.profile-info{
+  min-width:0;
 }
 
-.userId{
- color:#888;
- font-size:12px;
- margin-top:3px;
+.profile-name{
+  font-size:16px;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:170px;
 }
 
-.topBtns{
- display:flex;
- gap:8px;
+.profile-id{
+  font-size:11px;
+  color:#9ca3af;
+  margin-top:3px;
 }
 
-.icon{
- width:40px;
- height:40px;
- border-radius:13px;
- background:#1b1729;
- display:flex;
- align-items:center;
- justify-content:center;
- font-size:19px;
+.top-actions{
+  display:flex;
+  gap:8px;
 }
 
-.search{
- margin:8px 16px 15px;
- height:45px;
- background:#171522;
- border:1px solid #28243a;
- border-radius:15px;
- display:flex;
- align-items:center;
- padding:0 15px;
- color:#777;
+.icon-btn{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#191c2c;
+  color:#fff;
+  font-size:19px;
 }
+
+/* SEARCH */
+
+.search-box{
+  margin:8px 15px 14px;
+  background:#171a29;
+  border:1px solid #292d43;
+  border-radius:14px;
+  height:46px;
+  display:flex;
+  align-items:center;
+  padding:0 13px;
+  gap:9px;
+}
+
+.search-box span{
+  color:#8d93a7;
+  font-size:18px;
+}
+
+.search-box input{
+  width:100%;
+  background:none;
+  border:0;
+  outline:0;
+  color:white;
+  font-size:14px;
+}
+
+/* BANNER */
 
 .banner{
- margin:0 16px;
- min-height:150px;
- border-radius:22px;
- padding:20px;
- background:
- linear-gradient(135deg,#6334c9,#d9368a);
- position:relative;
- overflow:hidden;
+  margin:0 15px 16px;
+  min-height:118px;
+  border-radius:20px;
+  padding:18px;
+  background:
+    linear-gradient(135deg,#6d35d8,#bd3b91 55%,#ff7b4d);
+  position:relative;
+  overflow:hidden;
+}
+
+.banner:after{
+  content:"";
+  position:absolute;
+  width:170px;
+  height:170px;
+  right:-70px;
+  top:-50px;
+  border-radius:50%;
+  background:rgba(255,255,255,.12);
 }
 
 .banner h2{
- font-size:24px;
- margin-bottom:8px;
+  font-size:21px;
+  position:relative;
+  z-index:2;
 }
 
 .banner p{
- color:#eee;
- font-size:13px;
- max-width:230px;
- line-height:1.5;
+  margin-top:8px;
+  font-size:12px;
+  color:#f6eaff;
+  position:relative;
+  z-index:2;
 }
 
-.banner button{
- margin-top:15px;
- padding:10px 18px;
- border:0;
- border-radius:20px;
- background:#fff;
- color:#5721a6;
- font-weight:bold;
+.banner-buttons{
+  display:flex;
+  gap:7px;
+  margin-top:14px;
+  position:relative;
+  z-index:2;
 }
+
+.banner-buttons button{
+  padding:7px 11px;
+  border-radius:20px;
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  font-size:11px;
+}
+
+/* SECTION */
 
 .section{
- padding:22px 16px 5px;
+  margin:0 15px 19px;
 }
 
-.sectionHead{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin-bottom:13px;
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:11px;
 }
 
-.sectionHead h2{
- font-size:18px;
+.section-head h3{
+  font-size:17px;
 }
 
-.sectionHead span{
- color:#9d70ff;
- font-size:12px;
+.section-head button{
+  background:none;
+  color:#9b7cff;
+  font-size:12px;
 }
+
+/* TABS */
+
+.tabs{
+  display:flex;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.tab{
+  padding:8px 15px;
+  border-radius:20px;
+  background:#171a29;
+  color:#999fb4;
+  font-size:12px;
+}
+
+.tab.active{
+  background:#7547e8;
+  color:#fff;
+}
+
+/* ROOM GRID */
 
 .rooms{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:12px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:11px;
 }
 
-.room{
- background:#151321;
- border:1px solid #252137;
- border-radius:18px;
- padding:13px;
+.room-card{
+  background:linear-gradient(145deg,#181b2b,#10121d);
+  border:1px solid #272b40;
+  border-radius:16px;
+  padding:10px;
+  position:relative;
+  overflow:hidden;
+  cursor:pointer;
 }
 
-.roomTop{
- display:flex;
- align-items:center;
- gap:10px;
+.room-card:active{
+  transform:scale(.98);
 }
 
-.roomDp{
- width:48px;
- height:48px;
- border-radius:15px;
- object-fit:cover;
+.room-cover{
+  width:100%;
+  aspect-ratio:1.35;
+  border-radius:12px;
+  object-fit:cover;
+  background:#25283a;
+  display:block;
 }
 
-.roomName{
- font-weight:bold;
- font-size:14px;
+.room-info{
+  padding-top:9px;
 }
 
-.roomId{
- color:#777;
- font-size:11px;
- margin-top:3px;
+.room-name{
+  font-size:14px;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-.roomBottom{
- margin-top:14px;
- display:flex;
- justify-content:space-between;
- align-items:center;
- color:#999;
- font-size:11px;
+.room-id{
+  color:#858ba0;
+  font-size:10px;
+  margin-top:4px;
 }
 
-.join{
- border:0;
- padding:6px 10px;
- border-radius:10px;
- background:#7743ed;
- color:#fff;
- font-size:11px;
+.room-bottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:7px;
 }
 
-.online{
- display:flex;
- gap:10px;
- overflow:auto;
+.host-info{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  min-width:0;
 }
 
-.person{
- min-width:75px;
- text-align:center;
+.host-dp{
+  width:21px;
+  height:21px;
+  border-radius:50%;
+  object-fit:cover;
 }
 
-.person img{
- width:55px;
- height:55px;
- border-radius:50%;
- object-fit:cover;
- border:2px solid #352b53;
+.host-name{
+  font-size:10px;
+  color:#b6bbca;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:80px;
 }
 
-.person div{
- margin-top:5px;
- font-size:11px;
- color:#aaa;
- white-space:nowrap;
- overflow:hidden;
- text-overflow:ellipsis;
+.online-count{
+  font-size:10px;
+  color:#69e6a6;
+  white-space:nowrap;
 }
 
-.nav{
- position:fixed;
- bottom:0;
- left:50%;
- transform:translateX(-50%);
- width:100%;
- max-width:430px;
- height:70px;
- background:rgba(17,15,27,.96);
- border-top:1px solid #272337;
- display:grid;
- grid-template-columns:repeat(4,1fr);
- z-index:50;
+.live-dot{
+  display:inline-block;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#39e58b;
+  margin-right:3px;
 }
 
-.nav button{
- border:0;
- background:none;
- color:#777;
- font-size:11px;
+/* EMPTY */
+
+.empty{
+  grid-column:1/-1;
+  text-align:center;
+  padding:35px 15px;
+  border:1px dashed #30354b;
+  border-radius:16px;
+  color:#858ba0;
 }
 
-.nav button.active{
- color:#a36aff;
+.empty-icon{
+  font-size:35px;
+  margin-bottom:9px;
 }
 
-.navIcon{
- display:block;
- font-size:21px;
- margin-bottom:4px;
+.empty p{
+  font-size:13px;
 }
+
+/* ONLINE USERS */
+
+.users-row{
+  display:flex;
+  gap:13px;
+  overflow-x:auto;
+  padding-bottom:4px;
+}
+
+.users-row::-webkit-scrollbar{
+  display:none;
+}
+
+.online-user{
+  min-width:62px;
+  text-align:center;
+}
+
+.online-user img{
+  width:51px;
+  height:51px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #55d998;
+}
+
+.online-user div{
+  margin-top:5px;
+  font-size:10px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* RANKINGS */
+
+.rank-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:9px;
+}
+
+.rank-card{
+  background:#171a29;
+  border:1px solid #282d42;
+  border-radius:14px;
+  padding:14px 8px;
+  text-align:center;
+}
+
+.rank-icon{
+  font-size:25px;
+}
+
+.rank-card h4{
+  font-size:11px;
+  margin-top:7px;
+}
+
+.rank-card p{
+  color:#858ba0;
+  font-size:9px;
+  margin-top:4px;
+}
+
+/* CREATE BUTTON */
+
+.create-room{
+  position:fixed;
+  bottom:73px;
+  left:50%;
+  transform:translateX(-50%);
+  width:145px;
+  height:43px;
+  border-radius:24px;
+  background:linear-gradient(135deg,#7547e8,#b63eac);
+  color:white;
+  font-weight:700;
+  box-shadow:0 7px 25px rgba(116,71,232,.35);
+  z-index:20;
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:520px;
+  height:66px;
+  background:rgba(14,16,27,.97);
+  border-top:1px solid #25293b;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  z-index:19;
+}
+
+.nav-item{
+  background:none;
+  color:#777e94;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  font-size:10px;
+}
+
+.nav-item span:first-child{
+  font-size:20px;
+}
+
+.nav-item.active{
+  color:#a77cff;
+}
+
+/* MODAL */
+
+.modal-bg{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.72);
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  z-index:100;
+}
+
+.modal-bg.show{
+  display:flex;
+}
+
+.modal{
+  width:100%;
+  max-width:520px;
+  background:#151827;
+  border-radius:25px 25px 0 0;
+  padding:20px;
+  border-top:1px solid #343951;
+  animation:up .22s ease;
+}
+
+@keyframes up{
+  from{transform:translateY(100%);}
+  to{transform:translateY(0);}
+}
+
+.modal-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.modal-title h3{
+  font-size:18px;
+}
+
+.close{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:#25293a;
+  color:#fff;
+}
+
+.form-label{
+  font-size:11px;
+  color:#9298aa;
+  margin:12px 0 6px;
+}
+
+.form-input,
+.form-select{
+  width:100%;
+  height:45px;
+  border-radius:12px;
+  border:1px solid #30354b;
+  background:#0f1220;
+  color:#fff;
+  outline:none;
+  padding:0 12px;
+}
+
+.form-input:focus,
+.form-select:focus{
+  border-color:#7950eb;
+}
+
+.create-submit{
+  width:100%;
+  height:47px;
+  border-radius:13px;
+  margin-top:18px;
+  background:linear-gradient(135deg,#7547e8,#b63eac);
+  color:#fff;
+  font-weight:700;
+}
+
+.hint{
+  color:#72798e;
+  font-size:10px;
+  line-height:1.5;
+  margin-top:8px;
+}
+
+/* TOAST */
 
 .toast{
- position:fixed;
- left:50%;
- bottom:90px;
- transform:translateX(-50%);
- background:#29233b;
- padding:11px 17px;
- border-radius:13px;
- display:none;
- z-index:100;
- font-size:13px;
+  position:fixed;
+  left:50%;
+  bottom:90px;
+  transform:translateX(-50%) translateY(20px);
+  background:#272b3b;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:22px;
+  font-size:12px;
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+  z-index:200;
+  white-space:nowrap;
 }
 
-</style>
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
 
+/* LOADING */
+
+.loading{
+  grid-column:1/-1;
+  text-align:center;
+  padding:30px;
+  color:#858ba0;
+  font-size:12px;
+}
+
+@media(max-width:360px){
+  .rooms{
+    gap:8px;
+  }
+
+  .room-card{
+    padding:8px;
+  }
+}
+</style>
 </head>
 
 <body>
 
 <div class="app">
 
-<header class="top">
+  <!-- TOP -->
+  <div class="topbar">
 
- <div class="user" onclick="openProfile()">
+    <div class="profile-mini" onclick="openProfile()">
 
-   <img id="myDp">
+      <img id="topDp"
+           src="https://i.pravatar.cc/150?img=12"
+           alt="DP">
 
-   <div>
-     <div id="myName" class="userName">Guest</div>
-     <div id="myId" class="userId">ID: --</div>
-   </div>
+      <div class="profile-info">
+        <div class="profile-name" id="topName">
+          Guest
+        </div>
 
- </div>
+        <div class="profile-id" id="topId">
+          ID: ----
+        </div>
+      </div>
 
- <div class="topBtns">
+    </div>
 
-   <div class="icon" onclick="showToast('Inbox')">💌</div>
+    <div class="top-actions">
 
-   <div class="icon" onclick="showToast('Notifications')">🔔</div>
+      <button class="icon-btn"
+              onclick="openInbox()">
+        💌
+      </button>
 
- </div>
+      <button class="icon-btn"
+              onclick="showToast('Notifications coming soon')">
+        🔔
+      </button>
 
-</header>
+    </div>
+
+  </div>
 
 
-<div class="search" onclick="showToast('Search coming next')">
+  <!-- SEARCH -->
 
- 🔍 &nbsp; Search rooms or users
+  <div class="search-box">
+
+    <span>🔍</span>
+
+    <input id="searchInput"
+           type="text"
+           placeholder="Search room name or room ID..."
+           autocomplete="off">
+
+  </div>
+
+
+  <!-- BANNER -->
+
+  <div class="banner">
+
+    <h2>Welcome to PawanVoice 🎙️</h2>
+
+    <p>
+      Talk • Meet • Make Friends • Enjoy Voice Rooms
+    </p>
+
+    <div class="banner-buttons">
+
+      <button onclick="showToast('Family feature coming next')">
+        👨‍👩‍👧 Family
+      </button>
+
+      <button onclick="showToast('CP Ranking coming next')">
+        💕 CP Ranking
+      </button>
+
+      <button onclick="showToast('Rich King coming next')">
+        👑 Rich King
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ROOMS -->
+
+  <div class="section">
+
+    <div class="section-head">
+
+      <h3>🎙️ Voice Rooms</h3>
+
+      <button onclick="loadRooms()">
+        Refresh
+      </button>
+
+    </div>
+
+    <div class="tabs">
+
+      <button class="tab active"
+              id="popularTab"
+              onclick="setTab('popular')">
+        Popular
+      </button>
+
+      <button class="tab"
+              id="allTab"
+              onclick="setTab('all')">
+        All Rooms
+      </button>
+
+    </div>
+
+    <div class="rooms" id="roomsContainer">
+
+      <div class="loading">
+        Loading live rooms...
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ONLINE USERS -->
+
+  <div class="section">
+
+    <div class="section-head">
+
+      <h3>🟢 Online Users</h3>
+
+      <button onclick="showToast('Online users are coming from live rooms')">
+        View All
+      </button>
+
+    </div>
+
+    <div class="users-row"
+         id="onlineUsers">
+
+      <div class="online-user">
+
+        <img id="myOnlineDp"
+             src="https://i.pravatar.cc/150?img=12">
+
+        <div id="myOnlineName">
+          You
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- RANKINGS -->
+
+  <div class="section">
+
+    <div class="section-head">
+
+      <h3>🏆 Rankings</h3>
+
+      <button onclick="showToast('Full rankings coming next')">
+        More
+      </button>
+
+    </div>
+
+    <div class="rank-grid">
+
+      <div class="rank-card"
+           onclick="showToast('Rich King Ranking coming next')">
+
+        <div class="rank-icon">👑</div>
+        <h4>Rich King</h4>
+        <p>Top Wealth</p>
+
+      </div>
+
+      <div class="rank-card"
+           onclick="showToast('Family Ranking coming next')">
+
+        <div class="rank-icon">👨‍👩‍👧</div>
+        <h4>Family</h4>
+        <p>Top Family</p>
+
+      </div>
+
+      <div class="rank-card"
+           onclick="showToast('CP Ranking coming next')">
+
+        <div class="rank-icon">💕</div>
+        <h4>CP Ranking</h4>
+        <p>Top Couples</p>
+
+      </div>
+
+    </div>
+
+  </div>
 
 </div>
 
 
-<section class="banner">
+<!-- CREATE ROOM BUTTON -->
 
- <h2>Welcome to PawanVoice</h2>
+<button class="create-room"
+        onclick="openCreateRoom()">
+  ＋ Create Room
+</button>
 
- <p>
-   Talk with friends, join voice rooms
-   and make new connections.
- </p>
 
- <button onclick="openRoom('10001')">
-   Explore Rooms
- </button>
+<!-- BOTTOM NAV -->
 
-</section>
+<div class="bottom-nav">
 
+  <button class="nav-item active"
+          onclick="goHome()">
 
-<section class="section">
+    <span>🏠</span>
+    <span>Home</span>
 
- <div class="sectionHead">
+  </button>
 
-   <h2>🔥 Popular Rooms</h2>
+  <button class="nav-item"
+          onclick="showToast('Rooms page is Home')">
 
-   <span>View All</span>
+    <span>🎙️</span>
+    <span>Rooms</span>
 
- </div>
+  </button>
 
- <div class="rooms">
+  <button class="nav-item"
+          onclick="openInbox()">
 
-   <div class="room">
+    <span>💌</span>
+    <span>Inbox</span>
 
-     <div class="roomTop">
+  </button>
 
-       <img
-       class="roomDp"
-       src="https://i.pravatar.cc/150?img=12">
+  <button class="nav-item"
+          onclick="openProfile()">
 
-       <div>
+    <span>👤</span>
+    <span>Profile</span>
 
-         <div class="roomName">
-           Pawan Voice
-         </div>
-
-         <div class="roomId">
-           Room #10001
-         </div>
-
-       </div>
-
-     </div>
-
-     <div class="roomBottom">
-
-       <span>🎙️ 1/9</span>
-
-       <button
-       class="join"
-       onclick="openRoom('10001')">
-       Join
-       </button>
-
-     </div>
-
-   </div>
-
-
-   <div class="room">
-
-     <div class="roomTop">
-
-       <img
-       class="roomDp"
-       src="https://i.pravatar.cc/150?img=32">
-
-       <div>
-
-         <div class="roomName">
-           Friends Room
-         </div>
-
-         <div class="roomId">
-           Room #10002
-         </div>
-
-       </div>
-
-     </div>
-
-     <div class="roomBottom">
-
-       <span>🎙️ 3/9</span>
-
-       <button
-       class="join"
-       onclick="openRoom('10002')">
-       Join
-       </button>
-
-     </div>
-
-   </div>
-
- </div>
-
-</section>
-
-
-<section class="section">
-
- <div class="sectionHead">
-
-   <h2>🟢 Online Users</h2>
-
-   <span>More</span>
-
- </div>
-
- <div class="online">
-
-   <div class="person">
-
-     <img src="https://i.pravatar.cc/150?img=12">
-
-     <div>Pawan</div>
-
-   </div>
-
-   <div class="person">
-
-     <img src="https://i.pravatar.cc/150?img=32">
-
-     <div>Raj</div>
-
-   </div>
-
-   <div class="person">
-
-     <img src="https://i.pravatar.cc/150?img=44">
-
-     <div>Suriya</div>
-
-   </div>
-
-   <div class="person">
-
-     <img src="https://i.pravatar.cc/150?img=47">
-
-     <div>Friend</div>
-
-   </div>
-
- </div>
-
-</section>
-
-
-<section class="section">
-
- <div class="sectionHead">
-
-   <h2>🏆 Rankings</h2>
-
-   <span onclick="showToast('Ranking')">
-     View All
-   </span>
-
- </div>
-
- <div class="rooms">
-
-   <div class="room" onclick="showToast('Rich King Ranking')">
-
-     👑 Rich King
-
-     <div class="roomBottom">
-       Top Users
-     </div>
-
-   </div>
-
-   <div class="room" onclick="showToast('Family Ranking')">
-
-     👨‍👩‍👧 Family
-
-     <div class="roomBottom">
-       Top Families
-     </div>
-
-   </div>
-
- </div>
-
-</section>
-
-
-<nav class="nav">
-
- <button class="active">
-
-   <span class="navIcon">🏠</span>
-   Home
-
- </button>
-
- <button onclick="openRoom('10001')">
-
-   <span class="navIcon">🎙️</span>
-   Rooms
-
- </button>
-
- <button onclick="showToast('Inbox coming next')">
-
-   <span class="navIcon">💌</span>
-   Inbox
-
- </button>
-
- <button onclick="openProfile()">
-
-   <span class="navIcon">👤</span>
-   Profile
-
- </button>
-
-</nav>
+  </button>
 
 </div>
 
 
-<div id="toast" class="toast"></div>
+<!-- CREATE ROOM MODAL -->
+
+<div class="modal-bg"
+     id="createModal"
+     onclick="closeModalOutside(event)">
+
+  <div class="modal">
+
+    <div class="modal-title">
+
+      <h3>🎙️ Create Voice Room</h3>
+
+      <button class="close"
+              onclick="closeCreateRoom()">
+        ✕
+      </button>
+
+    </div>
+
+
+    <div class="form-label">
+      Room Name
+    </div>
+
+    <input id="roomNameInput"
+           class="form-input"
+           type="text"
+           maxlength="40"
+           placeholder="Example: Pawan Friends Room">
+
+
+    <div class="form-label">
+      Room DP URL
+    </div>
+
+    <input id="roomDpInput"
+           class="form-input"
+           type="url"
+           placeholder="Optional image URL">
+
+
+    <div class="form-label">
+      Category
+    </div>
+
+    <select id="roomCategory"
+            class="form-select">
+
+      <option value="General">
+        General
+      </option>
+
+      <option value="Music">
+        🎵 Music
+      </option>
+
+      <option value="Friends">
+        👥 Friends
+      </option>
+
+      <option value="Gaming">
+        🎮 Gaming
+      </option>
+
+      <option value="Chat">
+        💬 Chat
+      </option>
+
+    </select>
+
+
+    <div class="hint">
+      आपका Profile Name और DP automatically इस room के Host के रूप में save होंगे।
+    </div>
+
+
+    <button class="create-submit"
+            id="createSubmit"
+            onclick="createRoom()">
+
+      Create Room
+
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div class="toast"
+     id="toast">
+</div>
+
+
+<!-- FIREBASE -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 
 <script>
 
-const userId =
- localStorage.getItem("pv_userId");
+/* =========================================================
+   FIREBASE CONFIG
+========================================================= */
 
-const userName =
- localStorage.getItem("pv_name");
+const firebaseConfig = {
 
-const userDp =
- localStorage.getItem("pv_dp");
+  apiKey: "YOUR_FIREBASE_API_KEY",
+
+  authDomain:
+    "pawanvoice-68c5e.firebaseapp.com",
+
+  databaseURL:
+    "https://pawanvoice-68c5e-default-rtdb.firebaseio.com",
+
+  projectId:
+    "pawanvoice-68c5e",
+
+  storageBucket:
+    "pawanvoice-68c5e.firebasestorage.app",
+
+  messagingSenderId:
+    "148446327241",
+
+  appId:
+    "1:148446327241:web:6bac9cb9ad0fb530cbb818",
+
+  measurementId:
+    "G-S98P3GBNCK"
+
+};
 
 
-if(!userId){
+if(!firebase.apps.length){
+  firebase.initializeApp(firebaseConfig);
+}
 
- window.location.href="/login.html";
+const db = firebase.database();
 
-}else{
 
- document.getElementById("myName").innerText =
-   userName || "Guest";
+/* =========================================================
+   USER DATA
+========================================================= */
 
- document.getElementById("myId").innerText =
-   "ID: " + userId;
+let currentUser = {
 
- document.getElementById("myDp").src =
-   userDp || "https://i.pravatar.cc/150?img=12";
+  userId:
+    localStorage.getItem("pv_userId") || "",
 
+  name:
+    localStorage.getItem("pv_name") || "Guest",
+
+  dp:
+    localStorage.getItem("pv_dp") ||
+    "https://i.pravatar.cc/150?img=12"
+
+};
+
+
+/* =========================================================
+   ROOMS
+========================================================= */
+
+let allRooms = [];
+
+let currentTab = "popular";
+
+
+/* =========================================================
+   INITIALIZE USER
+========================================================= */
+
+function setupUser(){
+
+  document.getElementById("topName").textContent =
+    currentUser.name;
+
+  document.getElementById("topId").textContent =
+    "ID: " + (currentUser.userId || "----");
+
+  document.getElementById("topDp").src =
+    currentUser.dp;
+
+  document.getElementById("myOnlineDp").src =
+    currentUser.dp;
+
+  document.getElementById("myOnlineName").textContent =
+    currentUser.name;
+
+}
+
+
+/* =========================================================
+   LOAD REAL-TIME ROOMS
+========================================================= */
+
+function loadRooms(){
+
+  const container =
+    document.getElementById("roomsContainer");
+
+  container.innerHTML =
+    '<div class="loading">Loading live rooms...</div>';
+
+  db.ref("rooms").off();
+
+  db.ref("rooms").on(
+    "value",
+
+    snapshot => {
+
+      allRooms = [];
+
+      snapshot.forEach(child => {
+
+        const room = child.val();
+
+        if(!room){
+          return;
+        }
+
+        room.roomId =
+          room.roomId || child.key;
+
+        allRooms.push(room);
+
+      });
+
+      /*
+        Newest rooms first.
+      */
+
+      allRooms.sort(
+        (a,b) =>
+          (b.updatedAt || b.createdAt || 0) -
+          (a.updatedAt || a.createdAt || 0)
+      );
+
+      renderRooms();
+
+      loadOnlineUsers();
+
+    },
+
+    error => {
+
+      console.error(error);
+
+      container.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">⚠️</div>
+          <p>Firebase rooms load नहीं हो पाए।</p>
+        </div>
+      `;
+
+    }
+
+  );
+
+}
+
+
+/* =========================================================
+   RENDER ROOMS
+========================================================= */
+
+function renderRooms(){
+
+  const container =
+    document.getElementById("roomsContainer");
+
+  const search =
+    document.getElementById("searchInput")
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  let rooms = [...allRooms];
+
+
+  /* SEARCH */
+
+  if(search){
+
+    rooms = rooms.filter(room => {
+
+      const name =
+        String(room.name || "")
+          .toLowerCase();
+
+      const id =
+        String(room.roomId || "")
+          .toLowerCase();
+
+      return (
+        name.includes(search) ||
+        id.includes(search)
+      );
+
+    });
+
+  }
+
+
+  /* POPULAR */
+
+  if(currentTab === "popular"){
+
+    rooms.sort(
+      (a,b) =>
+        Number(b.onlineCount || 0) -
+        Number(a.onlineCount || 0)
+    );
+
+  }
+
+
+  if(!rooms.length){
+
+    container.innerHTML = `
+
+      <div class="empty">
+
+        <div class="empty-icon">
+          🎙️
+        </div>
+
+        <p>
+          अभी कोई live room नहीं है।
+        </p>
+
+        <p style="margin-top:5px;">
+          Create Room दबाकर पहला room बनाइए।
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML = rooms
+    .map(roomCard)
+    .join("");
+
+}
+
+
+/* =========================================================
+   ROOM CARD
+========================================================= */
+
+function roomCard(room){
+
+  const roomId =
+    escapeHtml(room.roomId || "");
+
+  const roomName =
+    escapeHtml(
+      room.name ||
+      room.roomName ||
+      "PawanVoice Room"
+    );
+
+  const roomDp =
+    escapeAttr(
+      room.roomDp ||
+      room.dp ||
+      "https://i.pravatar.cc/300?img=15"
+    );
+
+  const hostName =
+    escapeHtml(
+      room.hostName ||
+      "Host"
+    );
+
+  const hostDp =
+    escapeAttr(
+      room.hostDp ||
+      roomDp
+    );
+
+  const online =
+    Number(room.onlineCount || 0);
+
+  const category =
+    escapeHtml(
+      room.category ||
+      "General"
+    );
+
+
+  return `
+
+    <div class="room-card"
+         onclick="openRoom('${roomId}')">
+
+      <img class="room-cover"
+           src="${roomDp}"
+           alt="Room"
+           onerror="this.src='https://i.pravatar.cc/300?img=15'">
+
+      <div class="room-info">
+
+        <div class="room-name">
+          ${roomName}
+        </div>
+
+        <div class="room-id">
+          ID: ${roomId} · ${category}
+        </div>
+
+        <div class="room-bottom">
+
+          <div class="host-info">
+
+            <img class="host-dp"
+                 src="${hostDp}"
+                 onerror="this.src='https://i.pravatar.cc/100?img=12'">
+
+            <span class="host-name">
+              ${hostName}
+            </span>
+
+          </div>
+
+          <div class="online-count">
+
+            <span class="live-dot"></span>
+            ${online}/9
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   OPEN ROOM
+========================================================= */
+
+function openRoom(roomId){
+
+  if(!roomId){
+    showToast("Room ID नहीं मिला");
+    return;
+  }
+
+  const url =
+    "/room.html" +
+    "?room=" +
+    encodeURIComponent(roomId) +
+    "&userid=" +
+    encodeURIComponent(currentUser.userId) +
+    "&name=" +
+    encodeURIComponent(currentUser.name) +
+    "&dp=" +
+    encodeURIComponent(currentUser.dp);
+
+  window.location.href = url;
+
+}
+
+
+/* =========================================================
+   CREATE ROOM
+========================================================= */
+
+function openCreateRoom(){
+
+  document.getElementById("roomNameInput").value =
+    currentUser.name + "'s Room";
+
+  document.getElementById("roomDpInput").value =
+    currentUser.dp;
+
+  document.getElementById("createModal")
+    .classList.add("show");
+
+}
+
+
+function closeCreateRoom(){
+
+  document.getElementById("createModal")
+    .classList.remove("show");
+
+}
+
+
+function closeModalOutside(event){
+
+  if(event.target.id === "createModal"){
+    closeCreateRoom();
+  }
+
+}
+
+
+/* =========================================================
+   UNIQUE ROOM ID
+========================================================= */
+
+async function generateRoomId(){
+
+  for(let i=0;i<20;i++){
+
+    const id =
+      String(
+        Math.floor(
+          100000 +
+          Math.random() * 900000
+        )
+      );
+
+    const snapshot =
+      await db.ref("rooms/" + id)
+        .once("value");
+
+    if(!snapshot.exists()){
+      return id;
+    }
+
+  }
+
+  throw new Error(
+    "Room ID generate नहीं हो पाया"
+  );
+
+}
+
+
+/* =========================================================
+   CREATE ROOM IN FIREBASE
+========================================================= */
+
+async function createRoom(){
+
+  const submit =
+    document.getElementById("createSubmit");
+
+  const name =
+    document.getElementById("roomNameInput")
+      .value
+      .trim();
+
+  const dp =
+    document.getElementById("roomDpInput")
+      .value
+      .trim();
+
+  const category =
+    document.getElementById("roomCategory")
+      .value;
+
+
+  if(!currentUser.userId){
+
+    showToast(
+      "पहले Login/Profile बनाइए"
+    );
+
+    return;
+
+  }
+
+
+  if(!name){
+
+    showToast(
+      "Room Name डालिए"
+    );
+
+    return;
+
+  }
+
+
+  submit.disabled = true;
+  submit.textContent = "Creating...";
+
+
+  try{
+
+    const roomId =
+      await generateRoomId();
+
+    const now =
+      firebase.database.ServerValue.TIMESTAMP;
+
+
+    const roomData = {
+
+      roomId: roomId,
+
+      name: name,
+
+      roomName: name,
+
+      roomDp:
+        dp ||
+        currentUser.dp,
+
+      category: category,
+
+      hostUserId:
+        currentUser.userId,
+
+      hostName:
+        currentUser.name,
+
+      hostDp:
+        currentUser.dp,
+
+      online: true,
+
+      onlineCount: 1,
+
+      maxSeats: 9,
+
+      createdAt: now,
+
+      updatedAt: now
+
+    };
+
+
+    await db.ref(
+      "rooms/" + roomId
+    ).set(roomData);
+
+
+    closeCreateRoom();
+
+    showToast(
+      "Room created: " + roomId
+    );
+
+
+    /*
+      सीधे नए room में जाएँ
+    */
+
+    setTimeout(() => {
+
+      openRoom(roomId);
+
+    },500);
+
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Room create नहीं हुआ: " +
+      error.message
+    );
+
+  }finally{
+
+    submit.disabled = false;
+    submit.textContent = "Create Room";
+
+  }
+
+}
+
+
+/* =========================================================
+   TAB
+========================================================= */
+
+function setTab(tab){
+
+  currentTab = tab;
+
+  document
+    .getElementById("popularTab")
+    .classList.toggle(
+      "active",
+      tab === "popular"
+    );
+
+  document
+    .getElementById("allTab")
+    .classList.toggle(
+      "active",
+      tab === "all"
+    );
+
+  renderRooms();
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+document
+  .getElementById("searchInput")
+  .addEventListener(
+    "input",
+    renderRooms
+  );
+
+
+/* =========================================================
+   ONLINE USERS
+========================================================= */
+
+function loadOnlineUsers(){
+
+  const box =
+    document.getElementById("onlineUsers");
+
+  const users = {};
+
+  allRooms.forEach(room => {
+
+    if(room.hostUserId){
+
+      users[room.hostUserId] = {
+
+        userId:
+          room.hostUserId,
+
+        name:
+          room.hostName ||
+          "User",
+
+        dp:
+          room.hostDp ||
+          room.roomDp ||
+          currentUser.dp
+
+      };
+
+    }
+
+  });
+
+
+  /*
+    अपनी profile हमेशा पहले
+  */
+
+  users[currentUser.userId || "me"] = {
+
+    userId:
+      currentUser.userId,
+
+    name:
+      currentUser.name,
+
+    dp:
+      currentUser.dp
+
+  };
+
+
+  const list =
+    Object.values(users)
+      .slice(0,12);
+
+
+  box.innerHTML =
+    list.map(user => `
+
+      <div class="online-user">
+
+        <img
+          src="${escapeAttr(user.dp)}"
+          onerror="this.src='https://i.pravatar.cc/100?img=12'"
+        >
+
+        <div>
+          ${escapeHtml(user.name)}
+        </div>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function goHome(){
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
 }
 
 
 function openProfile(){
 
- window.location.href="/profile.html";
+  window.location.href =
+    "/profile.html";
 
 }
 
 
-function openRoom(room){
+function openInbox(){
 
- window.location.href =
- "/room.html?room=" +
- encodeURIComponent(room) +
- "&userid=" +
- encodeURIComponent(userId) +
- "&name=" +
- encodeURIComponent(userName || "Guest") +
- "&dp=" +
- encodeURIComponent(userDp || "");
+  /*
+    अगर inbox.html अभी नहीं है तो
+    temporary message.
+  */
+
+  if(
+    location.hostname &&
+    true
+  ){
+
+    window.location.href =
+      "/inbox.html";
+
+  }
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer;
+
+function showToast(message){
+
+  const toast =
+    document.getElementById("toast");
+
+  toast.textContent =
+    message;
+
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer =
+    setTimeout(() => {
+
+      toast.classList.remove("show");
+
+    },2200);
 
 }
 
 
-function showToast(text){
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
 
- const t=document.getElementById("toast");
+function escapeHtml(value){
 
- t.innerText=text;
-
- t.style.display="block";
-
- clearTimeout(window.toastTimer);
-
- window.toastTimer=setTimeout(()=>{
-
-   t.style.display="none";
-
- },1800);
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 
 }
+
+
+function escapeAttr(value){
+
+  return escapeHtml(value);
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+setupUser();
+
+loadRooms();
 
 </script>
 
