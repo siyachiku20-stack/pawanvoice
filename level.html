@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+<title>PawanVoice - Level & EXP</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  background:#080914;
+  color:#fff;
+  min-height:100vh;
+}
+
+button{
+  font:inherit;
+  cursor:pointer;
+}
+
+.app{
+  width:100%;
+  max-width:600px;
+  min-height:100vh;
+  margin:auto;
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      #302652 0%,
+      #111224 35%,
+      #080914 75%
+    );
+  padding-bottom:25px;
+}
+
+
+/* HEADER */
+
+.header{
+  height:62px;
+  padding:8px 12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:rgba(8,9,20,.96);
+  border-bottom:1px solid #292b43;
+  position:sticky;
+  top:0;
+  z-index:30;
+}
+
+.back{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:1px solid #383a52;
+  background:#18192b;
+  color:#fff;
+  font-size:27px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.header-title{
+  font-size:17px;
+  font-weight:bold;
+}
+
+
+/* USER SUMMARY */
+
+.user-card{
+  margin:14px 12px;
+  padding:17px;
+  border-radius:19px;
+  background:#151628;
+  border:1px solid #303249;
+}
+
+.user-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.user-dp{
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #8069ff;
+}
+
+.user-info{
+  flex:1;
+  min-width:0;
+}
+
+.user-name{
+  font-size:16px;
+  font-weight:bold;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.user-id{
+  margin-top:4px;
+  color:#777b92;
+  font-size:10px;
+}
+
+.level-badge{
+  display:inline-flex;
+  margin-top:7px;
+  padding:5px 9px;
+  border-radius:12px;
+  background:#282040;
+  color:#c0b1ff;
+  font-size:10px;
+}
+
+
+/* CURRENT LEVEL */
+
+.current-level{
+  margin-top:17px;
+  text-align:center;
+}
+
+.level-circle{
+  width:92px;
+  height:92px;
+  margin:auto;
+  border-radius:50%;
+  border:4px solid #8069ff;
+  background:#211b39;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+.level-small{
+  color:#969ab0;
+  font-size:9px;
+}
+
+.level-number{
+  font-size:31px;
+  font-weight:bold;
+  color:#c6baff;
+}
+
+.current-title{
+  margin-top:8px;
+  font-size:13px;
+  font-weight:bold;
+}
+
+
+/* EXP */
+
+.exp-box{
+  margin-top:17px;
+  padding:14px;
+  border-radius:14px;
+  background:#0f1020;
+  border:1px solid #2e3047;
+}
+
+.exp-header{
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+}
+
+.exp-header span:last-child{
+  color:#b6a5ff;
+}
+
+.exp-track{
+  height:11px;
+  margin-top:9px;
+  border-radius:10px;
+  overflow:hidden;
+  background:#292b42;
+}
+
+.exp-bar{
+  width:0%;
+  height:100%;
+  border-radius:10px;
+  background:#765cff;
+  transition:width .4s ease;
+}
+
+.exp-bottom{
+  margin-top:7px;
+  display:flex;
+  justify-content:space-between;
+  color:#777b92;
+  font-size:9px;
+}
+
+
+/* NEXT LEVEL */
+
+.next-card{
+  margin:0 12px 12px;
+  padding:15px;
+  border-radius:17px;
+  background:#151628;
+  border:1px solid #303249;
+}
+
+.section-title{
+  font-size:15px;
+  font-weight:bold;
+  margin-bottom:12px;
+}
+
+.next-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.next-icon{
+  width:48px;
+  height:48px;
+  border-radius:13px;
+  background:#24203b;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+}
+
+.next-info{
+  flex:1;
+}
+
+.next-name{
+  font-size:12px;
+  font-weight:bold;
+}
+
+.next-desc{
+  margin-top:4px;
+  color:#777b92;
+  font-size:9px;
+  line-height:1.5;
+}
+
+.next-exp{
+  text-align:right;
+  color:#b8a9ff;
+  font-size:10px;
+}
+
+
+/* LEVEL LIST */
+
+.list-card{
+  margin:0 12px;
+  border-radius:17px;
+  overflow:hidden;
+  background:#151628;
+  border:1px solid #303249;
+}
+
+.list-header{
+  padding:15px;
+  border-bottom:1px solid #292b43;
+}
+
+.list-title{
+  font-size:15px;
+  font-weight:bold;
+}
+
+.list-subtitle{
+  margin-top:4px;
+  color:#777b92;
+  font-size:9px;
+}
+
+.level-item{
+  padding:12px;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  border-bottom:1px solid #292b43;
+}
+
+.level-item:last-child{
+  border-bottom:0;
+}
+
+.level-item.active{
+  background:#201b35;
+}
+
+.medal{
+  width:43px;
+  height:43px;
+  border-radius:12px;
+  background:#24263b;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:19px;
+  flex-shrink:0;
+}
+
+.level-details{
+  flex:1;
+  min-width:0;
+}
+
+.level-name{
+  font-size:12px;
+  font-weight:bold;
+}
+
+.level-reward{
+  margin-top:4px;
+  color:#777b92;
+  font-size:9px;
+}
+
+.level-exp{
+  text-align:right;
+  color:#aaa0c8;
+  font-size:9px;
+  white-space:nowrap;
+}
+
+.active-mark{
+  color:#a993ff;
+  font-size:9px;
+  margin-top:3px;
+}
+
+
+/* LOAD */
+
+.loading{
+  padding:25px;
+  text-align:center;
+  color:#777b92;
+  font-size:11px;
+}
+
+
+/* TOAST */
+
+.toast{
+  display:none;
+  position:fixed;
+  left:50%;
+  bottom:25px;
+  transform:translateX(-50%);
+  z-index:100;
+  padding:10px 16px;
+  border-radius:20px;
+  background:#27283d;
+  border:1px solid #484a64;
+  font-size:11px;
+  white-space:nowrap;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+
+  <header class="header">
+
+    <button
+      class="back"
+      onclick="goProfile()">
+      ‹
+    </button>
+
+    <div class="header-title">
+      Level & EXP
+    </div>
+
+  </header>
+
+
+  <!-- USER -->
+
+  <section class="user-card">
+
+    <div class="user-row">
+
+      <img
+        id="userDP"
+        class="user-dp"
+        src="https://i.pravatar.cc/200?img=12"
+        alt="User">
+
+      <div class="user-info">
+
+        <div
+          id="userName"
+          class="user-name">
+          Pawan User
+        </div>
+
+        <div
+          id="userId"
+          class="user-id">
+          ID: pawan
+        </div>
+
+        <div class="level-badge">
+
+          ⭐ Level
+          <span id="topLevel">
+            1
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- CURRENT LEVEL -->
+
+    <div class="current-level">
+
+      <div class="level-circle">
+
+        <div class="level-small">
+          LEVEL
+        </div>
+
+        <div
+          id="levelNumber"
+          class="level-number">
+          1
+        </div>
+
+      </div>
+
+      <div class="current-title">
+        Current Level
+      </div>
+
+
+      <!-- EXP -->
+
+      <div class="exp-box">
+
+        <div class="exp-header">
+
+          <span>
+            EXP Progress
+          </span>
+
+          <span id="expText">
+            0 / 100
+          </span>
+
+        </div>
+
+        <div class="exp-track">
+
+          <div
+            id="expBar"
+            class="exp-bar">
+          </div>
+
+        </div>
+
+        <div class="exp-bottom">
+
+          <span>
+            Current EXP
+          </span>
+
+          <span id="currentExp">
+            0
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- NEXT LEVEL -->
+
+  <section class="next-card">
+
+    <div class="section-title">
+      🎁 Next Level Reward
+    </div>
+
+    <div class="next-row">
+
+      <div class="next-icon">
+        🎁
+      </div>
+
+      <div class="next-info">
+
+        <div
+          id="nextLevelName"
+          class="next-name">
+          Level 2 Reward
+        </div>
+
+        <div
+          id="nextReward"
+          class="next-desc">
+          Reach the next level to unlock your reward.
+        </div>
+
+      </div>
+
+      <div
+        id="nextExp"
+        class="next-exp">
+        100 EXP
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- LEVEL LIST -->
+
+  <section class="list-card">
+
+    <div class="list-header">
+
+      <div class="list-title">
+        🏆 Level Rewards
+      </div>
+
+      <div class="list-subtitle">
+        Level 1 से Level 100+ तक
+      </div>
+
+    </div>
+
+    <div id="levelList">
+
+      <div class="loading">
+        Loading levels...
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<div
+  id="toast"
+  class="toast">
+</div>
+
+
+<script src="user.js"></script>
+
+<script>
+
+/* =====================================
+   PAWANVOICE LEVEL SYSTEM
+===================================== */
+
+
+/*
+  यह EXP table अभी simple रखा गया है:
+
+  Level 1 -> 0 EXP
+  Level 2 -> 100 EXP
+  Level 3 -> 250 EXP
+  Level 4 -> 450 EXP
+  Level 5 -> 700 EXP
+
+  इसके बाद हर level का required
+  EXP धीरे-धीरे बढ़ता है.
+
+  बाद में इसी table को exact
+  PawanVoice economy के हिसाब से
+  बदला जा सकता है.
+*/
+
+
+function requiredEXP(level){
+
+  level =
+    Number(level) || 1;
+
+
+  if(level <= 1){
+
+    return 0;
+
+  }
+
+
+  /*
+    Level requirement formula
+  */
+
+  return Math.round(
+    100 *
+    (level - 1) *
+    (level - 1.0 * 0.35)
+  );
+
+}
+
+
+/*
+  अगले level तक required EXP
+*/
+
+function expForNextLevel(level){
+
+  level =
+    Number(level) || 1;
+
+
+  return Math.round(
+    100 +
+    ((level - 1) * 25)
+  );
+
+}
+
+
+/*
+  Reward names
+*/
+
+function getReward(level){
+
+  if(level === 1){
+    return "Welcome to PawanVoice";
+  }
+
+  if(level === 5){
+    return "Level 5 Medal";
+  }
+
+  if(level === 10){
+    return "Special Level Badge";
+  }
+
+  if(level === 20){
+    return "Room Entry Effect";
+  }
+
+  if(level === 30){
+    return "Exclusive Avatar Frame";
+  }
+
+  if(level === 40){
+    return "Special Chat Badge";
+  }
+
+  if(level === 50){
+    return "VIP-style Level Reward";
+  }
+
+  if(level === 60){
+    return "Exclusive Profile Medal";
+  }
+
+  if(level === 70){
+    return "Special Room Effect";
+  }
+
+  if(level === 80){
+    return "Exclusive Avatar Frame";
+  }
+
+  if(level === 90){
+    return "Premium Level Badge";
+  }
+
+  if(level === 100){
+    return "Level 100 Grand Reward";
+  }
+
+  if(level > 100){
+    return "Elite Level Reward";
+  }
+
+  return "Level milestone reward";
+
+}
+
+
+/*
+  Medal
+*/
+
+function getMedal(level){
+
+  if(level >= 100){
+    return "👑";
+  }
+
+  if(level >= 90){
+    return "💎";
+  }
+
+  if(level >= 80){
+    return "🏆";
+  }
+
+  if(level >= 70){
+    return "🥇";
+  }
+
+  if(level >= 60){
+    return "🥈";
+  }
+
+  if(level >= 50){
+    return "🥉";
+  }
+
+  if(level >= 40){
+    return "🎖️";
+  }
+
+  if(level >= 30){
+    return "🏅";
+  }
+
+  if(level >= 20){
+    return "⭐";
+  }
+
+  if(level >= 10){
+    return "🌟";
+  }
+
+  return "✨";
+
+}
+
+
+/*
+  Current level progress
+*/
+
+function calculateProgress(
+  level,
+  totalExp
+){
+
+  level =
+    Math.max(
+      1,
+      Number(level) || 1
+    );
+
+
+  totalExp =
+    Math.max(
+      0,
+      Number(totalExp) || 0
+    );
+
+
+  if(level >= 100){
+
+    const currentBase =
+      requiredEXP(100);
+
+    const nextNeed =
+      1000;
+
+    const current =
+      Math.max(
+        0,
+        totalExp - currentBase
+      );
+
+    const percent =
+      Math.min(
+        100,
+        (current / nextNeed) * 100
+      );
+
+    return {
+      current,
+      needed:nextNeed,
+      percent
+    };
+
+  }
+
+
+  const currentBase =
+    requiredEXP(level);
+
+  const nextBase =
+    requiredEXP(level + 1);
+
+
+  const needed =
+    Math.max(
+      1,
+      nextBase - currentBase
+    );
+
+
+  const current =
+    Math.max(
+      0,
+      totalExp - currentBase
+    );
+
+
+  const percent =
+    Math.min(
+      100,
+      (current / needed) * 100
+    );
+
+
+  return {
+    current,
+    needed,
+    percent
+  };
+
+}
+
+
+/* =====================================
+   USER
+===================================== */
+
+let currentUser = {
+
+  userId:"pawan",
+
+  name:"Pawan User",
+
+  dp:
+    "https://i.pravatar.cc/200?img=12",
+
+  level:1,
+
+  exp:0
+
+};
+
+
+/* =====================================
+   LOAD USER
+===================================== */
+
+async function loadUser(){
+
+  try{
+
+    if(
+      typeof pvLoadUser ===
+      "function"
+    ){
+
+      const user =
+        await pvLoadUser();
+
+      if(user){
+
+        currentUser =
+          user;
+
+      }
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "Level user load:",
+      error
+    );
+
+  }
+
+
+  renderLevel();
+
+}
+
+
+/* =====================================
+   RENDER
+===================================== */
+
+function renderLevel(){
+
+  let level =
+    Number(
+      currentUser.level || 1
+    );
+
+
+  let exp =
+    Number(
+      currentUser.exp || 0
+    );
+
+
+  /*
+    Safety
+  */
+
+  if(level < 1){
+    level = 1;
+  }
+
+
+  if(exp < 0){
+    exp = 0;
+  }
+
+
+  if(level > 100){
+    level = 100;
+  }
+
+
+  document.getElementById(
+    "userDP"
+  ).src =
+    currentUser.dp ||
+    "https://i.pravatar.cc/200?img=12";
+
+
+  document.getElementById(
+    "userName"
+  ).textContent =
+    currentUser.name ||
+    "Pawan User";
+
+
+  document.getElementById(
+    "userId"
+  ).textContent =
+    "ID: " +
+    (
+      currentUser.userId ||
+      "pawan"
+    );
+
+
+  document.getElementById(
+    "topLevel"
+  ).textContent =
+    level;
+
+
+  document.getElementById(
+    "levelNumber"
+  ).textContent =
+    level;
+
+
+  /*
+    EXP
+  */
+
+  const progress =
+    calculateProgress(
+      level,
+      exp
+    );
+
+
+  document.getElementById(
+    "expText"
+  ).textContent =
+    progress.current +
+    " / " +
+    progress.needed;
+
+
+  document.getElementById(
+    "currentExp"
+  ).textContent =
+    exp;
+
+
+  document.getElementById(
+    "expBar"
+  ).style.width =
+    progress.percent +
+    "%";
+
+
+  /*
+    Next level
+  */
+
+  const nextLevel =
+    level + 1;
+
+
+  if(level >= 100){
+
+    document.getElementById(
+      "nextLevelName"
+    ).textContent =
+      "Elite Level";
+
+
+    document.getElementById(
+      "nextReward"
+    ).textContent =
+      "You reached Level 100+. More elite rewards can be added here.";
+
+
+    document.getElementById(
+      "nextExp"
+    ).textContent =
+      "100+";
+
+
+  }else{
+
+    document.getElementById(
+      "nextLevelName"
+    ).textContent =
+      "Level " +
+      nextLevel +
+      " Reward";
+
+
+    document.getElementById(
+      "nextReward"
+    ).textContent =
+      getReward(nextLevel);
+
+
+    const nextEXP =
+      requiredEXP(nextLevel);
+
+
+    const remaining =
+      Math.max(
+        0,
+        nextEXP - exp
+      );
+
+
+    document.getElementById(
+      "nextExp"
+    ).textContent =
+      remaining +
+      " EXP";
+
+  }
+
+
+  renderLevelList(
+    level,
+    exp
+  );
+
+}
+
+
+/* =====================================
+   LEVEL LIST
+===================================== */
+
+function renderLevelList(
+  currentLevel,
+  totalExp
+){
+
+  const box =
+    document.getElementById(
+      "levelList"
+    );
+
+
+  box.innerHTML = "";
+
+
+  /*
+    Show 1-100.
+  */
+
+  for(
+    let level = 1;
+    level <= 100;
+    level++
+  ){
+
+    const item =
+      document.createElement(
+        "div"
+      );
+
+
+    item.className =
+      "level-item";
+
+
+    if(
+      level ===
+      currentLevel
+    ){
+
+      item.classList.add(
+        "active"
+      );
+
+    }
+
+
+    const medal =
+      document.createElement(
+        "div"
+      );
+
+
+    medal.className =
+      "medal";
+
+
+    medal.textContent =
+      getMedal(level);
+
+
+    const details =
+      document.createElement(
+        "div"
+      );
+
+
+    details.className =
+      "level-details";
+
+
+    const name =
+      document.createElement(
+        "div"
+      );
+
+
+    name.className =
+      "level-name";
+
+
+    name.textContent =
+      "Level " +
+      level;
+
+
+    const reward =
+      document.createElement(
+        "div"
+      );
+
+
+    reward.className =
+      "level-reward";
+
+
+    reward.textContent =
+      getReward(level);
+
+
+    details.appendChild(
+      name
+    );
+
+
+    details.appendChild(
+      reward
+    );
+
+
+    if(
+      level ===
+      currentLevel
+    ){
+
+      const mark =
+        document.createElement(
+          "div"
+        );
+
+
+      mark.className =
+        "active-mark";
+
+
+      mark.textContent =
+        "● Current Level";
+
+
+      details.appendChild(
+        mark
+      );
+
+    }
+
+
+    const exp =
+      document.createElement(
+        "div"
+      );
+
+
+    exp.className =
+      "level-exp";
+
+
+    exp.textContent =
+      formatNumber(
+        requiredEXP(level)
+      ) +
+      " EXP";
+
+
+    item.appendChild(
+      medal
+    );
+
+
+    item.appendChild(
+      details
+    );
+
+
+    item.appendChild(
+      exp
+    );
+
+
+    box.appendChild(
+      item
+    );
+
+  }
+
+
+  /*
+    Level 100+
+  */
+
+  const elite =
+    document.createElement(
+      "div"
+    );
+
+
+  elite.className =
+    "level-item";
+
+
+  elite.innerHTML =
+
+    '<div class="medal">👑</div>' +
+
+    '<div class="level-details">' +
+
+      '<div class="level-name">Level 100+</div>' +
+
+      '<div class="level-reward">' +
+
+        'Elite Level Rewards' +
+
+      '</div>' +
+
+    '</div>' +
+
+    '<div class="level-exp">100+</div>';
+
+
+  box.appendChild(
+    elite
+  );
+
+}
+
+
+/* =====================================
+   NUMBER FORMAT
+===================================== */
+
+function formatNumber(number){
+
+  number =
+    Number(number) || 0;
+
+
+  return number.toLocaleString(
+    "en-IN"
+  );
+
+}
+
+
+/* =====================================
+   PROFILE
+===================================== */
+
+function goProfile(){
+
+  location.href =
+    "profile.html";
+
+}
+
+
+/* =====================================
+   START
+===================================== */
+
+loadUser();
+
+</script>
+
+</body>
+  </html>
