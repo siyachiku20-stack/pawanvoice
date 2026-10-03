@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
+<title>PawanVoice VIP</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#080a11;
+  color:#fff;
+}
+
+.app{
+  max-width:520px;
+  margin:auto;
+  min-height:100vh;
+  background:#10131d;
+}
+
+.header{
+  padding:15px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:#171a26;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.back{
+  width:40px;
+  height:40px;
+  border:0;
+  border-radius:50%;
+  background:#292e3d;
+  color:white;
+  font-size:22px;
+}
+
+.title{
+  font-size:20px;
+  font-weight:bold;
+}
+
+.vipHero{
+  margin:14px;
+  padding:24px 16px;
+  border-radius:20px;
+  text-align:center;
+  background:
+    linear-gradient(
+      135deg,
+      #21182f,
+      #4a2739
+    );
+}
+
+.avatarBox{
+  width:105px;
+  height:105px;
+  margin:auto;
+  position:relative;
+}
+
+.avatar{
+  width:92px;
+  height:92px;
+  border-radius:50%;
+  object-fit:cover;
+  position:absolute;
+  left:6px;
+  top:6px;
+  z-index:2;
+}
+
+.frame{
+  position:absolute;
+  inset:0;
+  border:5px solid #ffd15c;
+  border-radius:50%;
+  z-index:3;
+  pointer-events:none;
+}
+
+.vipName{
+  margin-top:10px;
+  font-size:22px;
+  font-weight:bold;
+}
+
+.vipBadge{
+  display:inline-block;
+  margin-top:8px;
+  padding:7px 14px;
+  border-radius:20px;
+  background:#e3a82f;
+  color:#211600;
+  font-weight:bold;
+  font-size:13px;
+}
+
+.card{
+  margin:12px 14px;
+  padding:16px;
+  border-radius:17px;
+  background:#191d29;
+}
+
+.sectionTitle{
+  font-size:16px;
+  font-weight:bold;
+  margin-bottom:12px;
+}
+
+.stats{
+  display:flex;
+  gap:8px;
+}
+
+.stat{
+  flex:1;
+  text-align:center;
+  background:#242938;
+  padding:12px 4px;
+  border-radius:13px;
+}
+
+.stat b{
+  display:block;
+  font-size:20px;
+}
+
+.stat span{
+  color:#999;
+  font-size:11px;
+}
+
+.progress{
+  height:11px;
+  background:#303545;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.progressBar{
+  width:0;
+  height:100%;
+  background:#e5aa35;
+}
+
+.progressText{
+  margin-top:8px;
+  color:#aaa;
+  font-size:12px;
+}
+
+.levelGrid{
+  display:grid;
+  grid-template-columns:
+    repeat(3,1fr);
+  gap:8px;
+}
+
+.level{
+  padding:13px 5px;
+  text-align:center;
+  border-radius:13px;
+  background:#242938;
+  border:1px solid transparent;
+}
+
+.level.active{
+  border-color:#e5aa35;
+  background:#342a1b;
+}
+
+.level.locked{
+  opacity:.55;
+}
+
+.levelNumber{
+  font-size:21px;
+  font-weight:bold;
+}
+
+.levelName{
+  font-size:11px;
+  color:#aaa;
+  margin-top:4px;
+}
+
+.itemGrid{
+  display:grid;
+  grid-template-columns:
+    repeat(3,1fr);
+  gap:9px;
+}
+
+.item{
+  background:#242938;
+  border-radius:14px;
+  padding:13px 6px;
+  text-align:center;
+  cursor:pointer;
+  border:1px solid transparent;
+}
+
+.item.active{
+  border-color:#e5aa35;
+}
+
+.itemIcon{
+  font-size:30px;
+}
+
+.itemName{
+  font-size:12px;
+  margin-top:6px;
+}
+
+.itemStatus{
+  margin-top:6px;
+  color:#aaa;
+  font-size:10px;
+}
+
+.action{
+  width:100%;
+  border:0;
+  border-radius:13px;
+  padding:13px;
+  color:#fff;
+  background:#e3a52e;
+  font-weight:bold;
+}
+
+.secondary{
+  width:100%;
+  border:0;
+  border-radius:13px;
+  padding:13px;
+  color:#fff;
+  background:#2b3040;
+  font-weight:bold;
+}
+
+.msg{
+  color:#aaa;
+  font-size:12px;
+  margin-top:8px;
+  line-height:1.5;
+}
+
+@media(max-width:360px){
+
+  .levelGrid,
+  .itemGrid{
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header">
+
+    <button
+      class="back"
+      onclick="history.back()"
+    >
+      ‹
+    </button>
+
+    <div class="title">
+      👑 PawanVoice VIP
+    </div>
+
+  </div>
+
+
+  <div class="vipHero">
+
+    <div class="avatarBox">
+
+      <img
+        id="userDp"
+        class="avatar"
+        src=""
+      >
+
+      <div
+        id="avatarFrame"
+        class="frame"
+      ></div>
+
+    </div>
+
+    <div
+      id="userName"
+      class="vipName"
+    >
+      Pawan User
+    </div>
+
+    <div
+      id="vipBadge"
+      class="vipBadge"
+    >
+      VIP 0
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="sectionTitle">
+      VIP Status
+    </div>
+
+    <div class="stats">
+
+      <div class="stat">
+
+        <b id="vipLevel">
+          0
+        </b>
+
+        <span>
+          VIP Level
+        </span>
+
+      </div>
+
+      <div class="stat">
+
+        <b id="vipExp">
+          0
+        </b>
+
+        <span>
+          VIP EXP
+        </span>
+
+      </div>
+
+      <div class="stat">
+
+        <b id="coins">
+          0
+        </b>
+
+        <span>
+          Coins
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="sectionTitle">
+      VIP EXP
+    </div>
+
+    <div class="progress">
+
+      <div
+        id="progressBar"
+        class="progressBar"
+      ></div>
+
+    </div>
+
+    <div
+      id="progressText"
+      class="progressText"
+    >
+      0 / 1000 EXP
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="sectionTitle">
+      VIP Levels
+    </div>
+
+    <div
+      id="levels"
+      class="levelGrid"
+    ></div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="sectionTitle">
+      Avatar Frame
+    </div>
+
+    <div
+      id="frames"
+      class="itemGrid"
+    ></div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="sectionTitle">
+      Personal Badge
+    </div>
+
+    <div
+      id="badges"
+      class="itemGrid"
+    ></div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="sectionTitle">
+      Entry Effect
+    </div>
+
+    <div
+      id="entries"
+      class="itemGrid"
+    ></div>
+
+  </div>
+
+
+  <div class="card">
+
+    <button
+      class="action"
+      onclick="saveVIP()"
+    >
+      ✓ Save & Apply
+    </button>
+
+    <div
+      id="message"
+      class="msg"
+    ></div>
+
+  </div>
+
+</div>
+
+
+<script src="user.js"></script>
+
+<script>
+
+let me = null;
+
+const DB =
+  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
+
+
+const VIP_LEVELS = [
+
+  {
+    level:1,
+    name:"VIP 1",
+    exp:0,
+    icon:"🥉"
+  },
+
+  {
+    level:2,
+    name:"VIP 2",
+    exp:1000,
+    icon:"🥈"
+  },
+
+  {
+    level:3,
+    name:"VIP 3",
+    exp:5000,
+    icon:"🥇"
+  },
+
+  {
+    level:4,
+    name:"VIP 4",
+    exp:10000,
+    icon:"💎"
+  },
+
+  {
+    level:5,
+    name:"VIP 5",
+    exp:20000,
+    icon:"💠"
+  },
+
+  {
+    level:6,
+    name:"VIP 6",
+    exp:35000,
+    icon:"👑"
+  },
+
+  {
+    level:7,
+    name:"VIP 7",
+    exp:50000,
+    icon:"🌟"
+  },
+
+  {
+    level:8,
+    name:"VIP 8",
+    exp:70000,
+    icon:"🔥"
+  },
+
+  {
+    level:9,
+    name:"VIP 9",
+    exp:90000,
+    icon:"🏆"
+  }
+
+];
+
+
+const FRAMES = [
+
+  {
+    id:"default",
+    name:"Default",
+    icon:"⭕",
+    level:0
+  },
+
+  {
+    id:"vip1",
+    name:"VIP 1 Frame",
+    icon:"🥉",
+    level:1
+  },
+
+  {
+    id:"vip2",
+    name:"VIP 2 Frame",
+    icon:"🥈",
+    level:2
+  },
+
+  {
+    id:"vip3",
+    name:"VIP 3 Frame",
+    icon:"🥇",
+    level:3
+  },
+
+  {
+    id:"vip4",
+    name:"VIP 4 Frame",
+    icon:"💎",
+    level:4
+  },
+
+  {
+    id:"vip5",
+    name:"VIP 5 Frame",
+    icon:"💠",
+    level:5
+  },
+
+  {
+    id:"vip6",
+    name:"VIP 6 Frame",
+    icon:"👑",
+    level:6
+  },
+
+  {
+    id:"vip7",
+    name:"VIP 7 Frame",
+    icon:"🌟",
+    level:7
+  },
+
+  {
+    id:"vip8",
+    name:"VIP 8 Frame",
+    icon:"🔥",
+    level:8
+  },
+
+  {
+    id:"vip9",
+    name:"VIP 9 Frame",
+    icon:"🏆",
+    level:9
+  }
+
+];
+
+
+const BADGES = [
+
+  {
+    id:"default",
+    name:"New User",
+    icon:"🙂",
+    level:0
+  },
+
+  {
+    id:"vip1",
+    name:"VIP 1",
+    icon:"🥉",
+    level:1
+  },
+
+  {
+    id:"vip2",
+    name:"VIP 2",
+    icon:"🥈",
+    level:2
+  },
+
+  {
+    id:"vip3",
+    name:"VIP 3",
+    icon:"🥇",
+    level:3
+  },
+
+  {
+    id:"vip4",
+    name:"VIP 4",
+    icon:"💎",
+    level:4
+  },
+
+  {
+    id:"vip5",
+    name:"VIP 5",
+    icon:"💠",
+    level:5
+  },
+
+  {
+    id:"vip6",
+    name:"VIP 6",
+    icon:"👑",
+    level:6
+  },
+
+  {
+    id:"vip7",
+    name:"VIP 7",
+    icon:"🌟",
+    level:7
+  },
+
+  {
+    id:"vip8",
+    name:"VIP 8",
+    icon:"🔥",
+    level:8
+  },
+
+  {
+    id:"vip9",
+    name:"VIP 9",
+    icon:"🏆",
+    level:9
+  }
+
+];
+
+
+const ENTRY_EFFECTS = [
+
+  {
+    id:"default",
+    name:"Default",
+    icon:"🚶",
+    level:0
+  },
+
+  {
+    id:"vip1",
+    name:"VIP 1 Entry",
+    icon:"✨",
+    level:1
+  },
+
+  {
+    id:"vip2",
+    name:"VIP 2 Entry",
+    icon:"💫",
+    level:2
+  },
+
+  {
+    id:"vip3",
+    name:"VIP 3 Entry",
+    icon:"🌟",
+    level:3
+  },
+
+  {
+    id:"vip4",
+    name:"VIP 4 Entry",
+    icon:"💎",
+    level:4
+  },
+
+  {
+    id:"vip5",
+    name:"VIP 5 Entry",
+    icon:"💠",
+    level:5
+  },
+
+  {
+    id:"vip6",
+    name:"VIP 6 Entry",
+    icon:"👑",
+    level:6
+  },
+
+  {
+    id:"vip7",
+    name:"VIP 7 Entry",
+    icon:"🔥",
+    level:7
+  },
+
+  {
+    id:"vip8",
+    name:"VIP 8 Entry",
+    icon:"⚡",
+    level:8
+  },
+
+  {
+    id:"vip9",
+    name:"VIP 9 Entry",
+    icon:"🏆",
+    level:9
+  }
+
+];
+
+
+let selectedFrame = "default";
+let selectedBadge = "default";
+let selectedEntry = "default";
+
+
+function requiredForNext(level){
+
+  if(level >= 9){
+
+    return 90000;
+
+  }
+
+  return VIP_LEVELS[
+    level
+  ].exp;
+
+}
+
+
+function getVIPLevel(exp){
+
+  let current = 0;
+
+  for(
+    const item of VIP_LEVELS
+  ){
+
+    if(exp >= item.exp){
+
+      current =
+        item.level;
+
+    }
+
+  }
+
+  return current;
+
+}
+
+
+function renderLevels(){
+
+  const box =
+    document.getElementById(
+      "levels"
+    );
+
+  box.innerHTML =
+    VIP_LEVELS.map(
+      item => {
+
+        const active =
+          item.level ===
+          Number(me.vipLevel);
+
+        const unlocked =
+          Number(me.vipLevel) >=
+          item.level;
+
+        return `
+
+          <div
+            class="level
+              ${active ? "active":""}
+              ${unlocked ? "":"locked"}"
+          >
+
+            <div class="levelNumber">
+              ${item.icon}
+              ${item.level}
+            </div>
+
+            <div class="levelName">
+              ${item.name}
+            </div>
+
+            <div class="levelName">
+              ${item.exp} EXP
+            </div>
+
+          </div>
+
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+function renderItems(){
+
+  renderItemGroup(
+    "frames",
+    FRAMES,
+    "frame"
+  );
+
+  renderItemGroup(
+    "badges",
+    BADGES,
+    "badge"
+  );
+
+  renderItemGroup(
+    "entries",
+    ENTRY_EFFECTS,
+    "entry"
+  );
+
+}
+
+
+function renderItemGroup(
+  elementId,
+  items,
+  type
+){
+
+  const box =
+    document.getElementById(
+      elementId
+    );
+
+  box.innerHTML =
+    items.map(
+      item => {
+
+        const unlocked =
+          Number(me.vipLevel) >=
+          item.level;
+
+        let selected = false;
+
+        if(type === "frame"){
+          selected =
+            selectedFrame === item.id;
+        }
+
+        if(type === "badge"){
+          selected =
+            selectedBadge === item.id;
+        }
+
+        if(type === "entry"){
+          selected =
+            selectedEntry === item.id;
+        }
+
+        return `
+
+          <div
+            class="item
+              ${selected ? "active":""}
+              ${unlocked ? "":"locked"}"
+            data-type="${type}"
+            data-id="${item.id}"
+            data-unlocked="${unlocked}"
+          >
+
+            <div class="itemIcon">
+              ${item.icon}
+            </div>
+
+            <div class="itemName">
+              ${item.name}
+            </div>
+
+            <div class="itemStatus">
+
+              ${
+                unlocked
+                ? (
+                  selected
+                  ? "✓ Selected"
+                  : "Tap to select"
+                )
+                : "🔒 VIP " + item.level
+              }
+
+            </div>
+
+          </div>
+
+        `;
+
+      }
+    ).join("");
+
+
+  box
+    .querySelectorAll(".item")
+    .forEach(
+      el => {
+
+        el.addEventListener(
+          "click",
+          () => {
+
+            if(
+              el.dataset.unlocked !==
+              "true"
+            ){
+
+              return;
+            }
+
+            const id =
+              el.dataset.id;
+
+            if(type === "frame"){
+
+              selectedFrame = id;
+
+            }
+
+            if(type === "badge"){
+
+              selectedBadge = id;
+
+            }
+
+            if(type === "entry"){
+
+              selectedEntry = id;
+
+            }
+
+            renderItems();
+
+            updatePreview();
+
+          }
+        );
+
+      }
+    );
+
+}
+
+
+function updatePreview(){
+
+  const frame =
+    FRAMES.find(
+      x => x.id === selectedFrame
+    );
+
+  const badge =
+    BADGES.find(
+      x => x.id === selectedBadge
+    );
+
+  document.getElementById(
+    "avatarFrame"
+  ).textContent =
+    frame ? frame.icon : "";
+
+  document.getElementById(
+    "vipBadge"
+  ).textContent =
+    badge
+    ? badge.icon + " " + badge.name
+    : "VIP 0";
+
+}
+
+
+function updateVIPUI(){
+
+  const exp =
+    Number(me.vipExp || 0);
+
+  const level =
+    getVIPLevel(exp);
+
+  me.vipLevel =
+    Math.max(
+      Number(me.vipLevel || 0),
+      level
+    );
+
+  document.getElementById(
+    "vipLevel"
+  ).textContent =
+    me.vipLevel;
+
+  document.getElementById(
+    "vipExp"
+  ).textContent =
+    exp;
+
+  document.getElementById(
+    "coins"
+  ).textContent =
+    Number(me.coins || 0);
+
+  const next =
+    me.vipLevel >= 9
+    ? 90000
+    : VIP_LEVELS[
+        me.vipLevel
+      ].exp;
+
+  const previous =
+    me.vipLevel <= 1
+    ? 0
+    : VIP_LEVELS[
+        me.vipLevel - 1
+      ].exp;
+
+  const range =
+    Math.max(
+      1,
+      next - previous
+    );
+
+  const current =
+    Math.max(
+      0,
+      exp - previous
+    );
+
+  const percent =
+    me.vipLevel >= 9
+    ? 100
+    : Math.min(
+        100,
+        Math.round(
+          current /
+          range *
+          100
+        )
+      );
+
+  document.getElementById(
+    "progressBar"
+  ).style.width =
+    percent + "%";
+
+  document.getElementById(
+    "progressText"
+  ).textContent =
+    me.vipLevel >= 9
+    ? "VIP 9 Max Level"
+    : exp +
+      " / " +
+      next +
+      " VIP EXP";
+
+}
+
+
+async function saveVIP(){
+
+  try{
+
+    const frame =
+      FRAMES.find(
+        x => x.id === selectedFrame
+      ) || FRAMES[0];
+
+    const badge =
+      BADGES.find(
+        x => x.id === selectedBadge
+      ) || BADGES[0];
+
+    const entry =
+      ENTRY_EFFECTS.find(
+        x => x.id === selectedEntry
+      ) || ENTRY_EFFECTS[0];
+
+
+    const updated = {
+
+      ...me,
+
+      vipLevel:
+        Number(me.vipLevel || 0),
+
+      vipExp:
+        Number(me.vipExp || 0),
+
+      avatarFrame:{
+
+        id:frame.id,
+
+        name:frame.name,
+
+        image:"",
+
+        active:true
+
+      },
+
+      badge:{
+
+        id:badge.id,
+
+        name:badge.name,
+
+        image:"",
+
+        active:true
+
+      },
+
+      entryEffect:{
+
+        id:entry.id,
+
+        name:entry.name,
+
+        image:"",
+
+        active:true
+
+      },
+
+      vipUpdatedAt:
+        Date.now()
+
+    };
+
+
+    me =
+      await pvSaveUser(
+        updated
+      );
+
+
+    document.getElementById(
+      "message"
+    ).textContent =
+      "✓ VIP, Frame, Badge और Entry Effect save हो गए.";
+
+  }catch(e){
+
+    console.error(e);
+
+    document.getElementById(
+      "message"
+    ).textContent =
+      "Save failed. Firebase connection check करें.";
+
+  }
+
+}
+
+
+async function init(){
+
+  me =
+    await pvLoadUser();
+
+
+  document.getElementById(
+    "userDp"
+  ).src =
+    me.dp || PV_DEFAULT_DP;
+
+
+  document.getElementById(
+    "userName"
+  ).textContent =
+    me.name || "Pawan User";
+
+
+  selectedFrame =
+    me.avatarFrame?.id ||
+    "default";
+
+  selectedBadge =
+    me.badge?.id ||
+    "default";
+
+  selectedEntry =
+    me.entryEffect?.id ||
+    "default";
+
+
+  updateVIPUI();
+
+  renderLevels();
+
+  renderItems();
+
+  updatePreview();
+
+}
+
+
+init();
+
+</script>
+
+</body>
+
+</html>
