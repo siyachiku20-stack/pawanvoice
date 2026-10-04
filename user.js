@@ -25,11 +25,50 @@ const PV_DEFAULT_ENTRY = {
   active: true
 };
 
+function safeNumber(value, fallback = 0) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function safeObject(value, fallback) {
+  return value && typeof value === "object"
+    ? value
+    : fallback;
+}
+
 function pvGetUserId() {
-  return localStorage.getItem("pv_userId") || "pawan";
+  return (
+    localStorage.getItem("pv_userId") ||
+    "pawan"
+  );
 }
 
 function pvGetLocalUser() {
+
+  let frame = PV_DEFAULT_FRAME;
+  let badge = PV_DEFAULT_BADGE;
+  let entry = PV_DEFAULT_ENTRY;
+
+  try {
+    frame = JSON.parse(
+      localStorage.getItem("pv_avatarFrame") ||
+      JSON.stringify(PV_DEFAULT_FRAME)
+    );
+  } catch {}
+
+  try {
+    badge = JSON.parse(
+      localStorage.getItem("pv_badge") ||
+      JSON.stringify(PV_DEFAULT_BADGE)
+    );
+  } catch {}
+
+  try {
+    entry = JSON.parse(
+      localStorage.getItem("pv_entryEffect") ||
+      JSON.stringify(PV_DEFAULT_ENTRY)
+    );
+  } catch {}
 
   return {
 
@@ -45,60 +84,72 @@ function pvGetLocalUser() {
       PV_DEFAULT_DP,
 
     level:
-      Number(
-        localStorage.getItem("pv_level") || 1
+      safeNumber(
+        localStorage.getItem("pv_level"),
+        1
       ),
 
     exp:
-      Number(
-        localStorage.getItem("pv_exp") || 0
+      safeNumber(
+        localStorage.getItem("pv_exp"),
+        0
       ),
 
     coins:
-      Number(
-        localStorage.getItem("pv_coins") || 0
+      safeNumber(
+        localStorage.getItem("pv_coins"),
+        0
+      ),
+
+    diamonds:
+      safeNumber(
+        localStorage.getItem("pv_diamonds"),
+        0
       ),
 
     following:
-      Number(
-        localStorage.getItem("pv_following") || 0
+      safeNumber(
+        localStorage.getItem("pv_following"),
+        0
       ),
 
     followers:
-      Number(
-        localStorage.getItem("pv_followers") || 0
+      safeNumber(
+        localStorage.getItem("pv_followers"),
+        0
       ),
 
     vipLevel:
-      Number(
-        localStorage.getItem("pv_vipLevel") || 0
+      safeNumber(
+        localStorage.getItem("pv_vipLevel"),
+        0
       ),
 
     vipExp:
-      Number(
-        localStorage.getItem("pv_vipExp") || 0
+      safeNumber(
+        localStorage.getItem("pv_vipExp"),
+        0
       ),
 
     avatarFrame:
-      JSON.parse(
-        localStorage.getItem("pv_avatarFrame") ||
-        JSON.stringify(PV_DEFAULT_FRAME)
+      safeObject(
+        frame,
+        PV_DEFAULT_FRAME
       ),
 
     badge:
-      JSON.parse(
-        localStorage.getItem("pv_badge") ||
-        JSON.stringify(PV_DEFAULT_BADGE)
+      safeObject(
+        badge,
+        PV_DEFAULT_BADGE
       ),
 
     entryEffect:
-      JSON.parse(
-        localStorage.getItem("pv_entryEffect") ||
-        JSON.stringify(PV_DEFAULT_ENTRY)
+      safeObject(
+        entry,
+        PV_DEFAULT_ENTRY
       )
 
   };
-
 }
 
 function pvSaveLocalUser(user) {
@@ -122,60 +173,67 @@ function pvSaveLocalUser(user) {
 
   localStorage.setItem(
     "pv_level",
-    Number(user.level || 1)
+    safeNumber(user.level, 1)
   );
 
   localStorage.setItem(
     "pv_exp",
-    Number(user.exp || 0)
+    safeNumber(user.exp, 0)
   );
 
   localStorage.setItem(
     "pv_coins",
-    Number(user.coins || 0)
+    safeNumber(user.coins, 0)
+  );
+
+  localStorage.setItem(
+    "pv_diamonds",
+    safeNumber(user.diamonds, 0)
   );
 
   localStorage.setItem(
     "pv_following",
-    Number(user.following || 0)
+    safeNumber(user.following, 0)
   );
 
   localStorage.setItem(
     "pv_followers",
-    Number(user.followers || 0)
+    safeNumber(user.followers, 0)
   );
 
   localStorage.setItem(
     "pv_vipLevel",
-    Number(user.vipLevel || 0)
+    safeNumber(user.vipLevel, 0)
   );
 
   localStorage.setItem(
     "pv_vipExp",
-    Number(user.vipExp || 0)
+    safeNumber(user.vipExp, 0)
   );
 
   localStorage.setItem(
     "pv_avatarFrame",
     JSON.stringify(
-      user.avatarFrame || PV_DEFAULT_FRAME
+      user.avatarFrame ||
+      PV_DEFAULT_FRAME
     )
   );
 
   localStorage.setItem(
     "pv_badge",
     JSON.stringify(
-      user.badge || PV_DEFAULT_BADGE
+      user.badge ||
+      PV_DEFAULT_BADGE
     )
   );
 
   localStorage.setItem(
     "pv_entryEffect",
     JSON.stringify(
-      user.entryEffect || PV_DEFAULT_ENTRY
+      user.entryEffect ||
+      PV_DEFAULT_ENTRY
     )
   );
-
 }
 
 async function pvLoadUser() {
@@ -229,61 +287,70 @@ async function pvLoadUser() {
         localUser.dp,
 
       level:
-        Number(
-          firebaseUser.level ??
+        safeNumber(
+          firebaseUser.level,
           localUser.level
         ),
 
       exp:
-        Number(
-          firebaseUser.exp ??
+        safeNumber(
+          firebaseUser.exp,
           localUser.exp
         ),
 
       coins:
-        Number(
-          firebaseUser.coins ??
+        safeNumber(
+          firebaseUser.coins,
           localUser.coins
         ),
 
+      diamonds:
+        safeNumber(
+          firebaseUser.diamonds,
+          localUser.diamonds
+        ),
+
       following:
-        Number(
-          firebaseUser.following ??
+        safeNumber(
+          firebaseUser.following,
           localUser.following
         ),
 
       followers:
-        Number(
-          firebaseUser.followers ??
+        safeNumber(
+          firebaseUser.followers,
           localUser.followers
         ),
 
       vipLevel:
-        Number(
-          firebaseUser.vipLevel ??
+        safeNumber(
+          firebaseUser.vipLevel,
           localUser.vipLevel
         ),
 
       vipExp:
-        Number(
-          firebaseUser.vipExp ??
+        safeNumber(
+          firebaseUser.vipExp,
           localUser.vipExp
         ),
 
       avatarFrame:
-        firebaseUser.avatarFrame ||
-        localUser.avatarFrame ||
-        PV_DEFAULT_FRAME,
+        safeObject(
+          firebaseUser.avatarFrame,
+          localUser.avatarFrame
+        ),
 
       badge:
-        firebaseUser.badge ||
-        localUser.badge ||
-        PV_DEFAULT_BADGE,
+        safeObject(
+          firebaseUser.badge,
+          localUser.badge
+        ),
 
       entryEffect:
-        firebaseUser.entryEffect ||
-        localUser.entryEffect ||
-        PV_DEFAULT_ENTRY
+        safeObject(
+          firebaseUser.entryEffect,
+          localUser.entryEffect
+        )
 
     };
 
@@ -300,117 +367,28 @@ async function pvLoadUser() {
 
     return localUser;
   }
-
 }
 
 async function pvSaveUser(user) {
 
   if (!user || !user.userId) {
+
     throw new Error(
       "User ID missing"
     );
+
   }
-
-  const existing =
-    await pvLoadUser();
-
-  const finalUser = {
-
-    ...existing,
-
-    ...user,
-
-    userId:
-      user.userId ||
-      existing.userId,
-
-    name:
-      user.name ||
-      existing.name,
-
-    dp:
-      user.dp ||
-      existing.dp,
-
-    level:
-      Number(
-        user.level ??
-        existing.level ??
-        1
-      ),
-
-    exp:
-      Number(
-        user.exp ??
-        existing.exp ??
-        0
-      ),
-
-    coins:
-      Number(
-        user.coins ??
-        existing.coins ??
-        0
-      ),
-
-    following:
-      Number(
-        user.following ??
-        existing.following ??
-        0
-      ),
-
-    followers:
-      Number(
-        user.followers ??
-        existing.followers ??
-        0
-      ),
-
-    vipLevel:
-      Number(
-        user.vipLevel ??
-        existing.vipLevel ??
-        0
-      ),
-
-    vipExp:
-      Number(
-        user.vipExp ??
-        existing.vipExp ??
-        0
-      ),
-
-    avatarFrame:
-      user.avatarFrame ||
-      existing.avatarFrame ||
-      PV_DEFAULT_FRAME,
-
-    badge:
-      user.badge ||
-      existing.badge ||
-      PV_DEFAULT_BADGE,
-
-    entryEffect:
-      user.entryEffect ||
-      existing.entryEffect ||
-      PV_DEFAULT_ENTRY,
-
-    updatedAt:
-      Date.now()
-
-  };
 
   const response =
     await fetch(
       PV_FIREBASE_DB +
       "/users/" +
       encodeURIComponent(
-        finalUser.userId
+        user.userId
       ) +
       ".json",
       {
-        method: "PUT",
+        method: "PATCH",
 
         headers: {
           "Content-Type":
@@ -418,7 +396,83 @@ async function pvSaveUser(user) {
         },
 
         body:
-          JSON.stringify(finalUser)
+          JSON.stringify({
+
+            userId:
+              user.userId,
+
+            name:
+              user.name ||
+              "Pawan User",
+
+            dp:
+              user.dp ||
+              PV_DEFAULT_DP,
+
+            level:
+              safeNumber(
+                user.level,
+                1
+              ),
+
+            exp:
+              safeNumber(
+                user.exp,
+                0
+              ),
+
+            coins:
+              safeNumber(
+                user.coins,
+                0
+              ),
+
+            diamonds:
+              safeNumber(
+                user.diamonds,
+                0
+              ),
+
+            following:
+              safeNumber(
+                user.following,
+                0
+              ),
+
+            followers:
+              safeNumber(
+                user.followers,
+                0
+              ),
+
+            vipLevel:
+              safeNumber(
+                user.vipLevel,
+                0
+              ),
+
+            vipExp:
+              safeNumber(
+                user.vipExp,
+                0
+              ),
+
+            avatarFrame:
+              user.avatarFrame ||
+              PV_DEFAULT_FRAME,
+
+            badge:
+              user.badge ||
+              PV_DEFAULT_BADGE,
+
+            entryEffect:
+              user.entryEffect ||
+              PV_DEFAULT_ENTRY,
+
+            updatedAt:
+              Date.now()
+
+          })
       }
     );
 
@@ -434,10 +488,12 @@ async function pvSaveUser(user) {
   const saved =
     await response.json();
 
+  const finalUser =
+    saved || user;
+
   pvSaveLocalUser(
-    saved || finalUser
+    finalUser
   );
 
-  return saved || finalUser;
-
+  return finalUser;
 }
