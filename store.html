@@ -1,512 +1,514 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-  <title>PawanVoice Store</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      margin: 0;
-      background: #0b0b12;
-      color: #ffffff;
-      font-family: Arial, sans-serif;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-      font: inherit;
-    }
-
-    .app {
-      max-width: 520px;
-      min-height: 100vh;
-      margin: auto;
-      background:
-        radial-gradient(circle at top, #252044 0, #0b0b12 38%);
-      padding-bottom: 85px;
-    }
-
-    /* HEADER */
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 15px;
-      background: rgba(12, 12, 20, .96);
-      border-bottom: 1px solid #29293a;
-      backdrop-filter: blur(12px);
-    }
-
-    .back {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: #20202d;
-      color: white;
-      font-size: 22px;
-    }
-
-    .titleBox {
-      flex: 1;
-    }
-
-    .title {
-      font-size: 21px;
-      font-weight: 800;
-    }
-
-    .subtitle {
-      color: #9e9eae;
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    .historyBtn {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: #20202d;
-      color: white;
-      font-size: 19px;
-    }
-
-    /* WALLET */
-    .wallet {
-      margin: 16px;
-      padding: 18px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #30255b, #17182b);
-      border: 1px solid #51457d;
-    }
-
-    .walletTop {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .walletDp {
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #ffffff55;
-    }
-
-    .walletName {
-      font-size: 17px;
-      font-weight: 700;
-    }
-
-    .walletId {
-      color: #aaa8ba;
-      font-size: 12px;
-      margin-top: 4px;
-    }
-
-    .balances {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .balance {
-      background: #0e0e18aa;
-      border: 1px solid #ffffff16;
-      border-radius: 15px;
-      padding: 13px;
-    }
-
-    .balanceLabel {
-      color: #aaa8ba;
-      font-size: 12px;
-    }
-
-    .balanceValue {
-      margin-top: 5px;
-      font-size: 22px;
-      font-weight: 800;
-    }
-
-    .coinIcon {
-      color: #ffd34d;
-    }
-
-    .diamondIcon {
-      color: #68d7ff;
-    }
-
-    .recharge {
-      width: 100%;
-      margin-top: 14px;
-      padding: 13px;
-      border-radius: 13px;
-      background: linear-gradient(90deg, #ffb52e, #ff7b27);
-      color: #17120a;
-      font-weight: 800;
-    }
-
-    /* SECTION */
-    .section {
-      padding: 0 16px;
-    }
-
-    .sectionTitle {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 22px 0 12px;
-    }
-
-    .sectionTitle strong {
-      font-size: 18px;
-    }
-
-    .sectionTitle span {
-      color: #89899b;
-      font-size: 12px;
-    }
-
-    /* CATEGORIES */
-    .categories {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      padding-bottom: 4px;
-    }
-
-    .categories::-webkit-scrollbar {
-      display: none;
-    }
-
-    .cat {
-      flex: 0 0 auto;
-      padding: 10px 16px;
-      border-radius: 30px;
-      background: #1b1b27;
-      color: #bcbccc;
-      border: 1px solid #2d2d3b;
-    }
-
-    .cat.active {
-      background: #7b4dff;
-      color: white;
-      border-color: #9b78ff;
-    }
-
-    /* GIFTS */
-    .giftGrid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
-    .giftCard {
-      position: relative;
-      min-width: 0;
-      padding: 13px 8px;
-      border-radius: 17px;
-      background: #171720;
-      border: 1px solid #292936;
-      text-align: center;
-    }
-
-    .giftEmoji {
-      width: 62px;
-      height: 62px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 18px;
-      background: #242433;
-      font-size: 38px;
-    }
-
-    .giftName {
-      margin-top: 9px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .giftPrice {
-      margin-top: 6px;
-      color: #ffd34d;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .giftSend {
-      width: 100%;
-      margin-top: 9px;
-      padding: 9px 4px;
-      border-radius: 10px;
-      background: #29223f;
-      color: #d8c8ff;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .giftSend:active {
-      transform: scale(.97);
-    }
-
-    /* SPECIAL BANNER */
-    .banner {
-      margin: 18px 16px 0;
-      padding: 16px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, #47236b, #20284e);
-      border: 1px solid #70458f;
-    }
-
-    .bannerTitle {
-      font-size: 17px;
-      font-weight: 800;
-    }
-
-    .bannerText {
-      margin-top: 5px;
-      color: #bdb6ca;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    /* EMPTY */
-    .empty {
-      display: none;
-      text-align: center;
-      padding: 35px 10px;
-      color: #89899b;
-    }
-
-    /* BOTTOM NAV */
-    .bottomNav {
-      position: fixed;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-      z-index: 30;
-      width: min(520px, 100%);
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
-      background: rgba(12, 12, 20, .97);
-      border-top: 1px solid #292936;
-      backdrop-filter: blur(12px);
-    }
-
-    .navBtn {
-      background: transparent;
-      color: #858596;
-      padding: 7px 0;
-      font-size: 11px;
-    }
-
-    .navIcon {
-      display: block;
-      font-size: 21px;
-      margin-bottom: 3px;
-    }
-
-    .navBtn.active {
-      color: #a98aff;
-    }
-
-    /* MODAL */
-    .modal {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-      background: #00000099;
-    }
-
-    .modal.show {
-      display: flex;
-    }
-
-    .sheet {
-      width: min(520px, 100%);
-      max-height: 85vh;
-      overflow-y: auto;
-      background: #15151f;
-      border-radius: 24px 24px 0 0;
-      border: 1px solid #303040;
-      padding: 18px;
-    }
-
-    .sheetHead {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .sheetHead strong {
-      font-size: 19px;
-    }
-
-    .close {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: #252531;
-      color: white;
-    }
-
-    .package {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 14px;
-      margin-bottom: 10px;
-      border-radius: 15px;
-      background: #20202b;
-      border: 1px solid #30303e;
-    }
-
-    .packageLeft {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .packageIcon {
-      font-size: 30px;
-    }
-
-    .packageName {
-      font-weight: 800;
-    }
-
-    .packageCoins {
-      color: #ffd34d;
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    .buy {
-      padding: 10px 14px;
-      border-radius: 10px;
-      background: #714cff;
-      color: white;
-      font-weight: 700;
-      font-size: 12px;
-    }
-
-    .notice {
-      padding: 12px;
-      border-radius: 12px;
-      background: #25202e;
-      color: #aaa6b5;
-      font-size: 12px;
-      line-height: 1.5;
-      margin-top: 12px;
-    }
-
-    /* HISTORY */
-    .historyItem {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 13px 0;
-      border-bottom: 1px solid #292936;
-    }
-
-    .historyMain {
-      min-width: 0;
-    }
-
-    .historyReason {
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .historyTime {
-      margin-top: 4px;
-      color: #858596;
-      font-size: 11px;
-    }
-
-    .historyAmount {
-      white-space: nowrap;
-      font-weight: 800;
-    }
-
-    .plus {
-      color: #63dc91;
-    }
-
-    .minus {
-      color: #ff7272;
-    }
-
-    /* TOAST */
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 90px;
-      transform: translateX(-50%) translateY(20px);
-      z-index: 200;
-      opacity: 0;
-      pointer-events: none;
-      padding: 12px 17px;
-      border-radius: 12px;
-      background: #292936;
-      color: white;
-      font-size: 13px;
-      transition: .25s;
-      max-width: 90%;
-      text-align: center;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    @media (max-width: 360px) {
-      .giftGrid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PawanVoice Store</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#090910;
+  color:#fff;
+}
+
+.app{
+  width:100%;
+  max-width:560px;
+  margin:auto;
+  min-height:100vh;
+  background:#101019;
+  padding-bottom:80px;
+}
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 14px;
+  background:#171724;
+  border-bottom:1px solid #29293a;
+}
+
+.back{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:50%;
+  background:#282838;
+  color:#fff;
+  font-size:24px;
+}
+
+.titleBox{
+  flex:1;
+}
+
+.title{
+  font-size:19px;
+  font-weight:bold;
+}
+
+.subtitle{
+  color:#9292a5;
+  font-size:11px;
+  margin-top:3px;
+}
+
+.wallet{
+  margin:12px;
+  padding:15px;
+  border-radius:17px;
+  background:#1a1a29;
+  border:1px solid #303044;
+}
+
+.walletTop{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.walletDp{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#29293a;
+}
+
+.walletInfo{
+  flex:1;
+  min-width:0;
+}
+
+.walletName{
+  font-weight:bold;
+  font-size:15px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.walletId{
+  color:#858597;
+  font-size:10px;
+  margin-top:4px;
+}
+
+.balanceRow{
+  display:flex;
+  gap:8px;
+  margin-top:13px;
+}
+
+.balance{
+  flex:1;
+  padding:10px;
+  text-align:center;
+  border-radius:12px;
+  background:#242435;
+}
+
+.balanceIcon{
+  font-size:20px;
+}
+
+.balanceLabel{
+  color:#9999aa;
+  font-size:10px;
+  margin-top:3px;
+}
+
+.balanceValue{
+  margin-top:4px;
+  font-size:15px;
+  font-weight:bold;
+}
+
+.recharge{
+  margin:12px;
+  padding:13px;
+  border-radius:15px;
+  background:#1a1a29;
+  border:1px solid #303044;
+}
+
+.sectionTitle{
+  font-size:15px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.packages{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.package{
+  padding:12px 5px;
+  border:1px solid #303044;
+  border-radius:12px;
+  background:#222231;
+  color:#fff;
+  text-align:center;
+}
+
+.packageCoins{
+  font-size:14px;
+  font-weight:bold;
+}
+
+.packagePrice{
+  margin-top:5px;
+  font-size:11px;
+  color:#aaaabd;
+}
+
+.demo{
+  margin-top:8px;
+  color:#777789;
+  font-size:10px;
+  text-align:center;
+}
+
+.searchBox{
+  margin:12px;
+}
+
+.search{
+  width:100%;
+  border:1px solid #303044;
+  outline:none;
+  background:#1b1b2a;
+  color:#fff;
+  border-radius:22px;
+  padding:12px 15px;
+  font-size:14px;
+}
+
+.search:focus{
+  border-color:#7357ff;
+}
+
+.categories{
+  display:flex;
+  gap:7px;
+  padding:4px 12px 12px;
+  overflow-x:auto;
+}
+
+.cat{
+  flex:0 0 auto;
+  border:1px solid #303044;
+  background:#202030;
+  color:#aaaabd;
+  border-radius:20px;
+  padding:8px 13px;
+  font-size:12px;
+}
+
+.cat.active{
+  background:#7357ff;
+  color:#fff;
+  border-color:#7357ff;
+}
+
+.gifts{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+  padding:0 12px 15px;
+}
+
+.gift{
+  min-width:0;
+  border:1px solid #2d2d40;
+  border-radius:15px;
+  background:#191923;
+  padding:11px 7px;
+  text-align:center;
+  cursor:pointer;
+}
+
+.gift:active{
+  transform:scale(.98);
+}
+
+.giftIcon{
+  width:62px;
+  height:62px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:#242435;
+  font-size:35px;
+}
+
+.giftName{
+  margin-top:8px;
+  font-size:12px;
+  font-weight:bold;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.giftCategory{
+  margin-top:3px;
+  color:#777789;
+  font-size:9px;
+}
+
+.giftPrice{
+  margin-top:6px;
+  color:#ddd;
+  font-size:11px;
+  font-weight:bold;
+}
+
+.noResults{
+  grid-column:1/-1;
+  text-align:center;
+  color:#858597;
+  padding:40px 10px;
+}
+
+.modalBg{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.72);
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  z-index:100;
+}
+
+.modalBg.show{
+  display:flex;
+}
+
+.modal{
+  width:min(560px,100%);
+  background:#171724;
+  border-radius:22px 22px 0 0;
+  padding:20px;
+  border-top:1px solid #333348;
+}
+
+.modalGift{
+  text-align:center;
+}
+
+.modalIcon{
+  width:82px;
+  height:82px;
+  margin:auto;
+  border-radius:50%;
+  background:#282838;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:48px;
+}
+
+.modalName{
+  margin-top:9px;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.modalPrice{
+  margin-top:4px;
+  color:#aaaabd;
+  font-size:12px;
+}
+
+.field{
+  margin-top:14px;
+}
+
+.field label{
+  display:block;
+  color:#9999aa;
+  font-size:11px;
+  margin-bottom:6px;
+}
+
+.field input{
+  width:100%;
+  border:1px solid #343448;
+  outline:none;
+  background:#242435;
+  color:#fff;
+  border-radius:11px;
+  padding:12px;
+  font-size:14px;
+}
+
+.qtyRow{
+  display:flex;
+  gap:8px;
+}
+
+.qtyBtn{
+  width:46px;
+  border:0;
+  border-radius:11px;
+  background:#29293a;
+  color:#fff;
+  font-size:20px;
+}
+
+.qtyInput{
+  flex:1;
+  text-align:center;
+}
+
+.total{
+  margin-top:13px;
+  padding:11px;
+  border-radius:11px;
+  background:#222231;
+  text-align:center;
+  font-size:13px;
+}
+
+.modalActions{
+  display:flex;
+  gap:9px;
+  margin-top:15px;
+}
+
+.cancel,
+.send{
+  flex:1;
+  border:0;
+  border-radius:12px;
+  padding:13px;
+  font-weight:bold;
+}
+
+.cancel{
+  background:#29293a;
+  color:#fff;
+}
+
+.send{
+  background:#7357ff;
+  color:#fff;
+}
+
+.send:disabled{
+  opacity:.5;
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:75px;
+  transform:translateX(-50%);
+  background:#29293a;
+  color:#fff;
+  padding:11px 16px;
+  border-radius:20px;
+  font-size:12px;
+  display:none;
+  z-index:200;
+  max-width:90%;
+  text-align:center;
+}
+
+.toast.show{
+  display:block;
+}
+
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(560px,100%);
+  height:64px;
+  display:flex;
+  background:#171724;
+  border-top:1px solid #29293a;
+  z-index:50;
+}
+
+.nav{
+  flex:1;
+  border:0;
+  background:none;
+  color:#858597;
+  font-size:11px;
+}
+
+.navIcon{
+  display:block;
+  font-size:21px;
+  margin-bottom:3px;
+}
+
+.nav.active{
+  color:#fff;
+}
+
+@media(max-width:360px){
+  .packages{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .gifts{
+    grid-template-columns:repeat(3,1fr);
+    gap:6px;
+  }
+
+  .giftIcon{
+    width:54px;
+    height:54px;
+    font-size:30px;
+  }
+}
+</style>
 </head>
 
 <body>
 
 <div class="app">
 
-  <!-- HEADER -->
   <div class="header">
-    <button class="back" id="backBtn">‹</button>
+
+    <button
+      class="back"
+      id="backBtn"
+      type="button"
+    >‹</button>
 
     <div class="titleBox">
-      <div class="title">Store</div>
-      <div class="subtitle">Coins • Gifts • Wallet</div>
+
+      <div class="title">
+        🎁 PawanVoice Store
+      </div>
+
+      <div class="subtitle">
+        Gifts • Coins • VIP Items
+      </div>
+
     </div>
 
-    <button class="historyBtn" id="historyBtn">🧾</button>
   </div>
 
-  <!-- WALLET -->
+
   <div class="wallet">
 
     <div class="walletTop">
@@ -515,1589 +517,2008 @@
         id="walletDp"
         class="walletDp"
         src="https://i.pravatar.cc/200?img=12"
-        alt="Profile"
+        alt=""
       >
 
-      <div>
-        <div class="walletName" id="walletName">
-          Pawan User
+      <div class="walletInfo">
+
+        <div
+          id="walletName"
+          class="walletName"
+        >
+          Loading...
         </div>
 
-        <div class="walletId" id="walletId">
-          ID: pawan
-        </div>
+        <div
+          id="walletId"
+          class="walletId"
+        ></div>
+
       </div>
 
     </div>
 
-    <div class="balances">
+
+    <div class="balanceRow">
 
       <div class="balance">
-        <div class="balanceLabel">
-          🪙 Coins
+
+        <div class="balanceIcon">
+          🪙
         </div>
 
-        <div class="balanceValue coinIcon" id="coinBalance">
+        <div class="balanceValue"
+             id="coins">
           0
         </div>
+
+        <div class="balanceLabel">
+          Coins
+        </div>
+
       </div>
 
+
       <div class="balance">
-        <div class="balanceLabel">
-          💎 Diamonds
+
+        <div class="balanceIcon">
+          💎
         </div>
 
-        <div class="balanceValue diamondIcon" id="diamondBalance">
+        <div class="balanceValue"
+             id="diamonds">
           0
         </div>
+
+        <div class="balanceLabel">
+          Diamonds
+        </div>
+
       </div>
 
     </div>
-
-    <button class="recharge" id="rechargeBtn">
-      🪙 Recharge Coins
-    </button>
 
   </div>
 
-  <!-- BANNER -->
-  <div class="banner">
 
-    <div class="bannerTitle">
-      🎁 PawanVoice Gifts
-    </div>
-
-    <div class="bannerText">
-      Send gifts to friends and room users.
-      Your wallet and gift transactions are recorded in Firebase.
-    </div>
-
-  </div>
-
-  <!-- CATEGORIES -->
-  <div class="section">
+  <div class="recharge">
 
     <div class="sectionTitle">
-      <strong>Gift Store</strong>
-      <span id="giftCount">0 Gifts</span>
+      🪙 Recharge Coins
     </div>
 
-    <div class="categories" id="categories">
+    <div
+      class="packages"
+      id="packages"
+    ></div>
 
-      <button class="cat active" data-category="All">
-        All
-      </button>
-
-      <button class="cat" data-category="Love">
-        ❤️ Love
-      </button>
-
-      <button class="cat" data-category="Cute">
-        🧸 Cute
-      </button>
-
-      <button class="cat" data-category="Premium">
-        👑 Premium
-      </button>
-
-      <button class="cat" data-category="Special">
-        ✨ Special
-      </button>
-
+    <div class="demo">
+      Recharge अभी demo है — real payment बाद में secure payment system से connect होगा।
     </div>
 
   </div>
 
-  <!-- GIFTS -->
-  <div class="section">
 
-    <div class="giftGrid" id="giftGrid"></div>
+  <div class="searchBox">
 
-    <div class="empty" id="emptyGift">
-      No gifts in this category.
+    <input
+      id="search"
+      class="search"
+      type="search"
+      placeholder="🔎 Search gifts..."
+      autocomplete="off"
+    >
+
+  </div>
+
+
+  <div
+    id="categories"
+    class="categories"
+  ></div>
+
+
+  <div
+    id="gifts"
+    class="gifts"
+  ></div>
+
+</div>
+
+
+<div
+  id="modalBg"
+  class="modalBg"
+>
+
+  <div class="modal">
+
+    <div class="modalGift">
+
+      <div
+        id="modalIcon"
+        class="modalIcon"
+      >🎁</div>
+
+      <div
+        id="modalName"
+        class="modalName"
+      >
+        Gift
+      </div>
+
+      <div
+        id="modalPrice"
+        class="modalPrice"
+      >
+        0 Coins
+      </div>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Receiver User ID
+      </label>
+
+      <input
+        id="receiverId"
+        type="text"
+        maxlength="100"
+        placeholder="Enter receiver User ID"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Quantity
+      </label>
+
+      <div class="qtyRow">
+
+        <button
+          id="minusBtn"
+          class="qtyBtn"
+          type="button"
+        >−</button>
+
+        <input
+          id="quantity"
+          class="qtyInput"
+          type="number"
+          min="1"
+          max="99"
+          value="1"
+        >
+
+        <button
+          id="plusBtn"
+          class="qtyBtn"
+          type="button"
+        >+</button>
+
+      </div>
+
+    </div>
+
+
+    <div
+      id="total"
+      class="total"
+    >
+      Total: 0 Coins
+    </div>
+
+
+    <div class="modalActions">
+
+      <button
+        id="cancelBtn"
+        class="cancel"
+        type="button"
+      >
+        Cancel
+      </button>
+
+      <button
+        id="sendBtn"
+        class="send"
+        type="button"
+      >
+        🎁 Send Gift
+      </button>
+
     </div>
 
   </div>
 
 </div>
 
-<!-- BOTTOM NAV -->
-<div class="bottomNav">
 
-  <button class="navBtn" id="homeBtn">
-    <span class="navIcon">⌂</span>
+<div
+  id="toast"
+  class="toast"
+  aria-live="polite"
+></div>
+
+
+<div class="bottom">
+
+  <button
+    class="nav"
+    type="button"
+    onclick="location.href='index.html'"
+  >
+    <span class="navIcon">🏠</span>
     Home
   </button>
 
-  <button class="navBtn active">
-    <span class="navIcon">🛍️</span>
+  <button
+    class="nav"
+    type="button"
+    onclick="location.href='inbox.html'"
+  >
+    <span class="navIcon">💬</span>
+    Inbox
+  </button>
+
+  <button
+    class="nav active"
+    type="button"
+  >
+    <span class="navIcon">🎁</span>
     Store
   </button>
 
-  <button class="navBtn" id="profileBtn">
+  <button
+    class="nav"
+    type="button"
+    onclick="location.href='profile.html'"
+  >
     <span class="navIcon">👤</span>
     Profile
   </button>
 
 </div>
 
-<!-- RECHARGE MODAL -->
-<div class="modal" id="rechargeModal">
-
-  <div class="sheet">
-
-    <div class="sheetHead">
-      <strong>Recharge Coins</strong>
-      <button class="close" data-close="rechargeModal">✕</button>
-    </div>
-
-    <div id="packages"></div>
-
-    <div class="notice">
-      Demo recharge packages are shown here.
-      Real-money recharge should later be connected to
-      Google Play Billing or another supported payment provider.
-    </div>
-
-  </div>
-
-</div>
-
-<!-- HISTORY MODAL -->
-<div class="modal" id="historyModal">
-
-  <div class="sheet">
-
-    <div class="sheetHead">
-      <strong>Coin History</strong>
-      <button class="close" data-close="historyModal">✕</button>
-    </div>
-
-    <div id="historyList">
-      <div class="empty" style="display:block">
-        Loading history...
-      </div>
-    </div>
-
-  </div>
-
-</div>
-
-<!-- SEND GIFT MODAL -->
-<div class="modal" id="sendGiftModal">
-
-  <div class="sheet">
-
-    <div class="sheetHead">
-      <strong>Send Gift</strong>
-      <button class="close" data-close="sendGiftModal">✕</button>
-    </div>
-
-    <div id="selectedGiftInfo"></div>
-
-    <label style="display:block;margin:15px 0 7px;color:#aaa8ba;font-size:12px;">
-      Receiver User ID
-    </label>
-
-    <input
-      id="receiverId"
-      type="text"
-      placeholder="Enter receiver user ID"
-      style="
-        width:100%;
-        padding:14px;
-        border-radius:12px;
-        border:1px solid #363644;
-        background:#20202b;
-        color:white;
-        outline:none;
-        font-size:16px;
-      "
-    >
-
-    <label style="display:block;margin:15px 0 7px;color:#aaa8ba;font-size:12px;">
-      Quantity
-    </label>
-
-    <input
-      id="giftQuantity"
-      type="number"
-      min="1"
-      max="99"
-      value="1"
-      style="
-        width:100%;
-        padding:14px;
-        border-radius:12px;
-        border:1px solid #363644;
-        background:#20202b;
-        color:white;
-        outline:none;
-        font-size:16px;
-      "
-    >
-
-    <button
-      id="confirmGiftBtn"
-      style="
-        width:100%;
-        margin-top:16px;
-        padding:14px;
-        border-radius:13px;
-        background:#714cff;
-        color:white;
-        font-weight:800;
-      "
-    >
-      🎁 Send Gift
-    </button>
-
-  </div>
-
-</div>
-
-<div class="toast" id="toast"></div>
 
 <script src="user.js"></script>
 
 <script>
 
-  const DB =
-    "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
+const FIREBASE_DB =
+  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
 
-  let currentUser = null;
-  let wallet = {
-    coins: 0,
-    diamonds: 0
-  };
+const DEFAULT_DP =
+  "https://i.pravatar.cc/200?img=12";
 
-  let selectedCategory = "All";
-  let selectedGift = null;
 
-  /*
-    Default gift catalog.
+/* =========================
+   60 GIFTS
+========================= */
 
-    Later these same gifts can be moved completely
-    into Firebase /gifts/.
-  */
-  const defaultGifts = [
+const gifts = [
 
-    {
-      id: "rose",
-      name: "Rose",
-      emoji: "🌹",
-      price: 10,
-      category: "Love"
-    },
+  {
+    id:"rose",
+    name:"Rose",
+    category:"Love",
+    price:10,
+    icon:"🌹"
+  },
 
-    {
-      id: "heart",
-      name: "Heart",
-      emoji: "❤️",
-      price: 50,
-      category: "Love"
-    },
+  {
+    id:"heart",
+    name:"Heart",
+    category:"Love",
+    price:50,
+    icon:"❤️"
+  },
 
-    {
-      id: "teddy",
-      name: "Teddy",
-      emoji: "🧸",
-      price: 100,
-      category: "Cute"
-    },
+  {
+    id:"kiss",
+    name:"Kiss",
+    category:"Love",
+    price:80,
+    icon:"💋"
+  },
 
-    {
-      id: "cake",
-      name: "Cake",
-      emoji: "🎂",
-      price: 150,
-      category: "Cute"
-    },
+  {
+    id:"teddy",
+    name:"Teddy",
+    category:"Love",
+    price:100,
+    icon:"🧸"
+  },
 
-    {
-      id: "love",
-      name: "Love Box",
-      emoji: "💝",
-      price: 300,
-      category: "Love"
-    },
+  {
+    id:"love_box",
+    name:"Love Box",
+    category:"Love",
+    price:300,
+    icon:"💝"
+  },
 
-    {
-      id: "crown",
-      name: "Crown",
-      emoji: "👑",
-      price: 500,
-      category: "Premium"
-    },
+  {
+    id:"ring",
+    name:"Love Ring",
+    category:"Love",
+    price:500,
+    icon:"💍"
+  },
 
-    {
-      id: "diamond",
-      name: "Diamond",
-      emoji: "💎",
-      price: 1000,
-      category: "Premium"
-    },
+  {
+    id:"love_letter",
+    name:"Love Letter",
+    category:"Love",
+    price:700,
+    icon:"💌"
+  },
 
-    {
-      id: "ring",
-      name: "Royal Ring",
-      emoji: "💍",
-      price: 1500,
-      category: "Premium"
-    },
+  {
+    id:"cupid",
+    name:"Cupid",
+    category:"Love",
+    price:1000,
+    icon:"💘"
+  },
 
-    {
-      id: "rocket",
-      name: "Rocket",
-      emoji: "🚀",
-      price: 2500,
-      category: "Special"
-    },
 
-    {
-      id: "fireworks",
-      name: "Fireworks",
-      emoji: "🎆",
-      price: 5000,
-      category: "Special"
-    },
+  {
+    id:"cake",
+    name:"Cake",
+    category:"Party",
+    price:150,
+    icon:"🎂"
+  },
 
-    {
-      id: "castle",
-      name: "Castle",
-      emoji: "🏰",
-      price: 10000,
-      category: "Special"
-    },
+  {
+    id:"balloon",
+    name:"Balloon",
+    category:"Party",
+    price:200,
+    icon:"🎈"
+  },
 
-    {
-      id: "unicorn",
-      name: "Unicorn",
-      emoji: "🦄",
-      price: 20000,
-      category: "Special"
-    }
+  {
+    id:"party",
+    name:"Party Popper",
+    category:"Party",
+    price:300,
+    icon:"🎉"
+  },
 
-  ];
+  {
+    id:"gift_box",
+    name:"Gift Box",
+    category:"Party",
+    price:500,
+    icon:"🎁"
+  },
 
-  const rechargePackages = [
+  {
+    id:"confetti",
+    name:"Confetti",
+    category:"Party",
+    price:700,
+    icon:"🎊"
+  },
 
-    {
-      name: "Starter",
-      coins: 1000,
-      price: "₹10"
-    },
+  {
+    id:"birthday",
+    name:"Birthday",
+    category:"Party",
+    price:1000,
+    icon:"🥳"
+  },
 
-    {
-      name: "Basic",
-      coins: 5000,
-      price: "₹50"
-    },
+  {
+    id:"disco",
+    name:"Disco",
+    category:"Party",
+    price:1500,
+    icon:"🪩"
+  },
 
-    {
-      name: "Popular",
-      coins: 12000,
-      price: "₹100"
-    },
+  {
+    id:"music_party",
+    name:"Music Party",
+    category:"Party",
+    price:2500,
+    icon:"🎶"
+  },
 
-    {
-      name: "Premium",
-      coins: 65000,
-      price: "₹500"
-    },
 
-    {
-      name: "Mega",
-      coins: 140000,
-      price: "₹1000"
-    }
+  {
+    id:"crown",
+    name:"Crown",
+    category:"Royal",
+    price:500,
+    icon:"👑"
+  },
 
-  ];
+  {
+    id:"throne",
+    name:"Royal Throne",
+    category:"Royal",
+    price:1500,
+    icon:"🪑"
+  },
 
-  function escapeHtml(value) {
+  {
+    id:"king",
+    name:"King",
+    category:"Royal",
+    price:2500,
+    icon:"🤴"
+  },
 
-    return String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+  {
+    id:"queen",
+    name:"Queen",
+    category:"Royal",
+    price:2500,
+    icon:"👸"
+  },
 
+  {
+    id:"castle",
+    name:"Royal Castle",
+    category:"Royal",
+    price:10000,
+    icon:"🏰"
+  },
+
+  {
+    id:"royal_car",
+    name:"Royal Car",
+    category:"Royal",
+    price:15000,
+    icon:"🚘"
+  },
+
+  {
+    id:"gold_palace",
+    name:"Gold Palace",
+    category:"Royal",
+    price:30000,
+    icon:"🏯"
+  },
+
+  {
+    id:"royal_crown",
+    name:"Royal Crown",
+    category:"Royal",
+    price:50000,
+    icon:"👑"
+  },
+
+
+  {
+    id:"diamond",
+    name:"Diamond",
+    category:"Luxury",
+    price:1000,
+    icon:"💎"
+  },
+
+  {
+    id:"gold_bar",
+    name:"Gold Bar",
+    category:"Luxury",
+    price:2000,
+    icon:"🥇"
+  },
+
+  {
+    id:"diamond_ring",
+    name:"Diamond Ring",
+    category:"Luxury",
+    price:5000,
+    icon:"💍"
+  },
+
+  {
+    id:"treasure",
+    name:"Treasure",
+    category:"Luxury",
+    price:10000,
+    icon:"💰"
+  },
+
+  {
+    id:"luxury_car",
+    name:"Luxury Car",
+    category:"Luxury",
+    price:20000,
+    icon:"🏎️"
+  },
+
+  {
+    id:"private_jet",
+    name:"Private Jet",
+    category:"Luxury",
+    price:50000,
+    icon:"✈️"
+  },
+
+  {
+    id:"yacht",
+    name:"Yacht",
+    category:"Luxury",
+    price:75000,
+    icon:"🛥️"
+  },
+
+  {
+    id:"diamond_palace",
+    name:"Diamond Palace",
+    category:"Luxury",
+    price:100000,
+    icon:"💎"
+  },
+
+
+  {
+    id:"rocket",
+    name:"Rocket",
+    category:"Special",
+    price:2500,
+    icon:"🚀"
+  },
+
+  {
+    id:"spaceship",
+    name:"Spaceship",
+    category:"Special",
+    price:5000,
+    icon:"🛸"
+  },
+
+  {
+    id:"fireworks",
+    name:"Fireworks",
+    category:"Special",
+    price:5000,
+    icon:"🎆"
+  },
+
+  {
+    id:"galaxy",
+    name:"Galaxy",
+    category:"Special",
+    price:10000,
+    icon:"🌌"
+  },
+
+  {
+    id:"planet",
+    name:"Planet",
+    category:"Special",
+    price:15000,
+    icon:"🪐"
+  },
+
+  {
+    id:"meteor",
+    name:"Meteor",
+    category:"Special",
+    price:20000,
+    icon:"☄️"
+  },
+
+  {
+    id:"supernova",
+    name:"Supernova",
+    category:"Special",
+    price:50000,
+    icon:"🌠"
+  },
+
+  {
+    id:"universe",
+    name:"Universe",
+    category:"Special",
+    price:100000,
+    icon:"🌌"
+  },
+
+
+  {
+    id:"unicorn",
+    name:"Unicorn",
+    category:"Fantasy",
+    price:3000,
+    icon:"🦄"
+  },
+
+  {
+    id:"phoenix",
+    name:"Phoenix",
+    category:"Fantasy",
+    price:7000,
+    icon:"🔥"
+  },
+
+  {
+    id:"dragon",
+    name:"Dragon",
+    category:"Fantasy",
+    price:15000,
+    icon:"🐉"
+  },
+
+  {
+    id:"magic_wand",
+    name:"Magic Wand",
+    category:"Fantasy",
+    price:2000,
+    icon:"🪄"
+  },
+
+  {
+    id:"fairy",
+    name:"Fairy",
+    category:"Fantasy",
+    price:5000,
+    icon:"🧚"
+  },
+
+  {
+    id:"rainbow",
+    name:"Rainbow",
+    category:"Fantasy",
+    price:8000,
+    icon:"🌈"
+  },
+
+  {
+    id:"magic_castle",
+    name:"Magic Castle",
+    category:"Fantasy",
+    price:25000,
+    icon:"🏰"
+  },
+
+  {
+    id:"golden_dragon",
+    name:"Golden Dragon",
+    category:"Fantasy",
+    price:100000,
+    icon:"🐲"
+  },
+
+
+  {
+    id:"lollipop",
+    name:"Lollipop",
+    category:"Fun",
+    price:100,
+    icon:"🍭"
+  },
+
+  {
+    id:"icecream",
+    name:"Ice Cream",
+    category:"Fun",
+    price:150,
+    icon:"🍦"
+  },
+
+  {
+    id:"guitar",
+    name:"Guitar",
+    category:"Fun",
+    price:500,
+    icon:"🎸"
+  },
+
+  {
+    id:"camera",
+    name:"Camera",
+    category:"Fun",
+    price:700,
+    icon:"📸"
+  },
+
+  {
+    id:"football",
+    name:"Football",
+    category:"Fun",
+    price:800,
+    icon:"⚽"
+  },
+
+  {
+    id:"gaming",
+    name:"Gaming",
+    category:"Fun",
+    price:1200,
+    icon:"🎮"
+  },
+
+  {
+    id:"super_star",
+    name:"Super Star",
+    category:"Fun",
+    price:3000,
+    icon:"🌟"
+  },
+
+  {
+    id:"trophy",
+    name:"Trophy",
+    category:"Fun",
+    price:5000,
+    icon:"🏆"
   }
 
-  function formatNumber(number) {
+];
 
-    const n = Number(number || 0);
 
-    return n.toLocaleString("en-IN");
+let me = null;
 
-  }
+let selectedGift = null;
 
-  function showToast(message) {
+let selectedCategory = "All";
 
-    const toast =
-      document.getElementById("toast");
 
-    toast.textContent = message;
-    toast.classList.add("show");
+const walletDp =
+  document.getElementById(
+    "walletDp"
+  );
 
-    clearTimeout(window.pvToastTimer);
+const walletName =
+  document.getElementById(
+    "walletName"
+  );
 
-    window.pvToastTimer =
-      setTimeout(() => {
-        toast.classList.remove("show");
-      }, 2600);
+const walletId =
+  document.getElementById(
+    "walletId"
+  );
 
-  }
+const coinsEl =
+  document.getElementById(
+    "coins"
+  );
 
-  async function firebaseGet(path) {
+const diamondsEl =
+  document.getElementById(
+    "diamonds"
+  );
 
-    const response = await fetch(
-      DB + path + ".json"
-    );
+const giftsEl =
+  document.getElementById(
+    "gifts"
+  );
 
-    if (!response.ok) {
-      throw new Error(
-        "Firebase GET " + response.status
-      );
-    }
+const categoriesEl =
+  document.getElementById(
+    "categories"
+  );
 
-    return response.json();
+const searchEl =
+  document.getElementById(
+    "search"
+  );
 
-  }
+const modalBg =
+  document.getElementById(
+    "modalBg"
+  );
 
-  async function firebasePut(path, data) {
+const modalIcon =
+  document.getElementById(
+    "modalIcon"
+  );
 
-    const response = await fetch(
-      DB + path + ".json",
-      {
-        method: "PUT",
+const modalName =
+  document.getElementById(
+    "modalName"
+  );
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+const modalPrice =
+  document.getElementById(
+    "modalPrice"
+  );
 
-        body: JSON.stringify(data)
-      }
-    );
+const receiverId =
+  document.getElementById(
+    "receiverId"
+  );
 
-    if (!response.ok) {
-      throw new Error(
-        "Firebase PUT " + response.status
-      );
-    }
+const quantityEl =
+  document.getElementById(
+    "quantity"
+  );
 
-    return response.json();
+const totalEl =
+  document.getElementById(
+    "total"
+  );
 
-  }
+const sendBtn =
+  document.getElementById(
+    "sendBtn"
+  );
 
-  async function firebasePatch(path, data) {
+const toast =
+  document.getElementById(
+    "toast"
+  );
 
-    const response = await fetch(
-      DB + path + ".json",
-      {
-        method: "PATCH",
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+function esc(value){
 
-        body: JSON.stringify(data)
-      }
-    );
+  return String(
+    value ?? ""
+  )
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#039;");
+}
 
-    if (!response.ok) {
-      throw new Error(
-        "Firebase PATCH " + response.status
-      );
-    }
 
-    return response.json();
+function safeNumber(value){
 
-  }
+  const n =
+    Number(value);
 
-  async function loadStoreUser() {
+  return Number.isFinite(n)
+    ? n
+    : 0;
+}
 
-    try {
 
-      currentUser =
-        await pvLoadUser();
+function formatNumber(value){
 
-    } catch (error) {
+  return safeNumber(value)
+    .toLocaleString("en-IN");
+}
 
-      console.error(error);
 
-      currentUser =
-        pvGetLocalUser();
+function showToast(message){
 
-    }
+  toast.textContent =
+    message;
 
-    if (!currentUser) {
+  toast.classList.add(
+    "show"
+  );
 
-      currentUser = {
-        userId: "pawan",
-        name: "Pawan User",
-        dp: "https://i.pravatar.cc/200?img=12",
-        level: 1,
-        exp: 0,
-        coins: 0,
-        following: 0,
-        followers: 0
-      };
+  clearTimeout(
+    window.pvToastTimer
+  );
 
-    }
-
-    document.getElementById("walletName")
-      .textContent =
-      currentUser.name || "Pawan User";
-
-    document.getElementById("walletId")
-      .textContent =
-      "ID: " +
-      (currentUser.userId || "pawan");
-
-    document.getElementById("walletDp")
-      .src =
-      currentUser.dp ||
-      "https://i.pravatar.cc/200?img=12";
-
-    await loadWallet();
-
-  }
-
-  async function loadWallet() {
-
-    const id =
-      encodeURIComponent(
-        currentUser.userId
-      );
-
-    try {
-
-      const firebaseWallet =
-        await firebaseGet(
-          "/wallets/" + id
+  window.pvToastTimer =
+    setTimeout(
+      () => {
+        toast.classList.remove(
+          "show"
         );
+      },
+      2500
+    );
+}
 
-      if (firebaseWallet) {
 
-        wallet = {
-          coins:
-            Number(
-              firebaseWallet.coins ??
-              currentUser.coins ??
-              0
-            ),
+async function firebaseGet(path){
 
-          diamonds:
-            Number(
-              firebaseWallet.diamonds ??
-              currentUser.diamonds ??
-              0
-            )
-        };
+  const response =
+    await fetch(
+      FIREBASE_DB +
+      path +
+      ".json"
+    );
 
-      } else {
+  if(!response.ok){
 
-        wallet = {
-          coins:
-            Number(currentUser.coins || 0),
+    throw new Error(
+      "Firebase HTTP " +
+      response.status
+    );
+  }
 
-          diamonds:
-            Number(currentUser.diamonds || 0)
-        };
+  return await response.json();
+}
 
-        await firebasePut(
-          "/wallets/" + id,
-          {
-            coins: wallet.coins,
-            diamonds: wallet.diamonds,
-            updatedAt: Date.now()
+
+async function firebasePut(path,data){
+
+  const response =
+    await fetch(
+      FIREBASE_DB +
+      path +
+      ".json",
+      {
+        method:"PUT",
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+        body:
+          JSON.stringify(data)
+      }
+    );
+
+  if(!response.ok){
+
+    throw new Error(
+      "Firebase save error " +
+      response.status
+    );
+  }
+
+  return await response.json();
+}
+
+
+async function firebasePatch(path,data){
+
+  const response =
+    await fetch(
+      FIREBASE_DB +
+      path +
+      ".json",
+      {
+        method:"PATCH",
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+        body:
+          JSON.stringify(data)
+      }
+    );
+
+  if(!response.ok){
+
+    throw new Error(
+      "Firebase patch error " +
+      response.status
+    );
+  }
+
+  return await response.json();
+}
+
+
+function renderWallet(){
+
+  if(!me) return;
+
+  walletName.textContent =
+    me.name ||
+    "Pawan User";
+
+  walletId.textContent =
+    "ID: " +
+    (me.userId || "");
+
+  walletDp.src =
+    me.dp ||
+    DEFAULT_DP;
+
+  coinsEl.textContent =
+    formatNumber(
+      me.coins
+    );
+
+  diamondsEl.textContent =
+    formatNumber(
+      me.diamonds
+    );
+}
+
+
+function renderPackages(){
+
+  const packages = [
+
+    {
+      coins:1000,
+      price:"₹10"
+    },
+
+    {
+      coins:5000,
+      price:"₹50"
+    },
+
+    {
+      coins:11000,
+      price:"₹100"
+    },
+
+    {
+      coins:60000,
+      price:"₹500"
+    },
+
+    {
+      coins:130000,
+      price:"₹1,000"
+    },
+
+    {
+      coins:700000,
+      price:"₹5,000"
+    }
+
+  ];
+
+  document.getElementById(
+    "packages"
+  ).innerHTML =
+    packages.map(
+      item => `
+
+        <button
+          class="package"
+          type="button"
+          data-coins="${item.coins}"
+        >
+
+          <div class="packageCoins">
+            🪙 ${formatNumber(item.coins)}
+          </div>
+
+          <div class="packagePrice">
+            ${esc(item.price)}
+          </div>
+
+        </button>
+
+      `
+    ).join("");
+
+  document
+    .querySelectorAll(
+      ".package"
+    )
+    .forEach(
+      button => {
+
+        button.addEventListener(
+          "click",
+          function(){
+
+            showToast(
+              "Recharge अभी demo है। Real payment अभी connected नहीं है।"
+            );
+
           }
         );
 
       }
+    );
+}
 
-    } catch (error) {
 
-      console.error(
-        "Wallet load:",
-        error
+function getCategories(){
+
+  const names = [
+    "All",
+    ...new Set(
+      gifts.map(
+        gift =>
+          gift.category
+      )
+    )
+  ];
+
+  return names;
+}
+
+
+function renderCategories(){
+
+  categoriesEl.innerHTML =
+    getCategories()
+      .map(
+        category => `
+
+          <button
+            class="cat ${
+              category === selectedCategory
+                ? "active"
+                : ""
+            }"
+            type="button"
+            data-category="${esc(category)}"
+          >
+            ${esc(category)}
+          </button>
+
+        `
+      )
+      .join("");
+
+  categoriesEl
+    .querySelectorAll(
+      ".cat"
+    )
+    .forEach(
+      button => {
+
+        button.addEventListener(
+          "click",
+          function(){
+
+            selectedCategory =
+              this.dataset.category;
+
+            renderCategories();
+            renderGifts();
+
+          }
+        );
+
+      }
+    );
+}
+
+
+function renderGifts(){
+
+  const search =
+    searchEl.value
+      .trim()
+      .toLowerCase();
+
+  const filtered =
+    gifts.filter(
+      gift => {
+
+        const categoryMatch =
+          selectedCategory === "All" ||
+          gift.category ===
+            selectedCategory;
+
+        const searchMatch =
+          !search ||
+          gift.name
+            .toLowerCase()
+            .includes(search) ||
+          gift.category
+            .toLowerCase()
+            .includes(search);
+
+        return (
+          categoryMatch &&
+          searchMatch
+        );
+      }
+    );
+
+  if(!filtered.length){
+
+    giftsEl.innerHTML = `
+      <div class="noResults">
+        कोई gift नहीं मिला।
+      </div>
+    `;
+
+    return;
+  }
+
+  giftsEl.innerHTML =
+    filtered.map(
+      gift => `
+
+        <div
+          class="gift"
+          data-gift-id="${esc(gift.id)}"
+          role="button"
+          tabindex="0"
+        >
+
+          <div class="giftIcon">
+            ${esc(gift.icon)}
+          </div>
+
+          <div class="giftName">
+            ${esc(gift.name)}
+          </div>
+
+          <div class="giftCategory">
+            ${esc(gift.category)}
+          </div>
+
+          <div class="giftPrice">
+            🪙 ${formatNumber(gift.price)}
+          </div>
+
+        </div>
+
+      `
+    ).join("");
+
+  giftsEl
+    .querySelectorAll(
+      ".gift"
+    )
+    .forEach(
+      element => {
+
+        const open = () => {
+
+          const gift =
+            gifts.find(
+              item =>
+                item.id ===
+                element.dataset.giftId
+            );
+
+          if(gift){
+
+            openGiftModal(
+              gift
+            );
+
+          }
+
+        };
+
+        element.addEventListener(
+          "click",
+          open
+        );
+
+        element.addEventListener(
+          "keydown",
+          event => {
+
+            if(
+              event.key === "Enter" ||
+              event.key === " "
+            ){
+
+              event.preventDefault();
+              open();
+
+            }
+
+          }
+        );
+
+      }
+    );
+}
+
+
+function openGiftModal(gift){
+
+  selectedGift =
+    gift;
+
+  modalIcon.textContent =
+    gift.icon;
+
+  modalName.textContent =
+    gift.name;
+
+  modalPrice.textContent =
+    "🪙 " +
+    formatNumber(
+      gift.price
+    ) +
+    " Coins";
+
+  quantityEl.value =
+    1;
+
+  receiverId.value =
+    "";
+
+  updateTotal();
+
+  modalBg.classList.add(
+    "show"
+  );
+
+  setTimeout(
+    () => {
+      receiverId.focus();
+    },
+    50
+  );
+}
+
+
+function closeGiftModal(){
+
+  modalBg.classList.remove(
+    "show"
+  );
+
+  selectedGift =
+    null;
+}
+
+
+function getQuantity(){
+
+  let quantity =
+    parseInt(
+      quantityEl.value,
+      10
+    );
+
+  if(!Number.isFinite(quantity)){
+    quantity = 1;
+  }
+
+  quantity =
+    Math.max(
+      1,
+      Math.min(
+        99,
+        quantity
+      )
+    );
+
+  quantityEl.value =
+    quantity;
+
+  return quantity;
+}
+
+
+function updateTotal(){
+
+  if(!selectedGift){
+
+    totalEl.textContent =
+      "Total: 0 Coins";
+
+    return;
+  }
+
+  const quantity =
+    getQuantity();
+
+  const total =
+    selectedGift.price *
+    quantity;
+
+  totalEl.textContent =
+    "Total: " +
+    formatNumber(total) +
+    " Coins";
+
+  sendBtn.disabled =
+    !me ||
+    safeNumber(me.coins) <
+      total;
+}
+
+
+async function getReceiver(receiver){
+
+  const data =
+    await firebaseGet(
+      "/users/" +
+      encodeURIComponent(
+        receiver
+      )
+    );
+
+  return data;
+}
+
+
+async function sendGift(){
+
+  if(!selectedGift){
+
+    return;
+  }
+
+  const receiver =
+    receiverId.value
+      .trim();
+
+  if(!receiver){
+
+    showToast(
+      "Receiver User ID डालें।"
+    );
+
+    receiverId.focus();
+
+    return;
+  }
+
+  if(
+    !me ||
+    !me.userId
+  ){
+
+    showToast(
+      "Current user नहीं मिला।"
+    );
+
+    return;
+  }
+
+  if(
+    receiver ===
+    me.userId
+  ){
+
+    showToast(
+      "आप खुद को gift नहीं भेज सकते।"
+    );
+
+    return;
+  }
+
+  const quantity =
+    getQuantity();
+
+  const total =
+    selectedGift.price *
+    quantity;
+
+  if(
+    safeNumber(me.coins) <
+    total
+  ){
+
+    showToast(
+      "Coins कम हैं।"
+    );
+
+    return;
+  }
+
+  sendBtn.disabled =
+    true;
+
+  sendBtn.textContent =
+    "Sending...";
+
+  try{
+
+    const target =
+      await getReceiver(
+        receiver
       );
 
-      wallet = {
-        coins:
-          Number(currentUser.coins || 0),
+    if(!target){
 
-        diamonds:
-          Number(currentUser.diamonds || 0)
-      };
+      throw new Error(
+        "Receiver User ID नहीं मिला।"
+      );
+    }
+
+    const receiverName =
+      target.name ||
+      "User";
+
+    const receiverDp =
+      target.dp ||
+      DEFAULT_DP;
+
+    /*
+      NOTE:
+      यह client-side demo wallet flow है।
+      Production में coin deduction trusted
+      backend/Cloud Function से होना चाहिए।
+    */
+
+    const senderCoins =
+      safeNumber(me.coins) -
+      total;
+
+    const receiverCoins =
+      safeNumber(
+        target.coins
+      ) +
+      total;
+
+    const transactionId =
+      "GT_" +
+      Date.now() +
+      "_" +
+      Math.random()
+        .toString(36)
+        .slice(2,9);
+
+    const transaction = {
+
+      transactionId,
+
+      senderId:
+        me.userId,
+
+      senderName:
+        me.name ||
+        "Pawan User",
+
+      senderDp:
+        me.dp ||
+        DEFAULT_DP,
+
+      receiverId:
+        receiver,
+
+      receiverName,
+
+      receiverDp,
+
+      giftId:
+        selectedGift.id,
+
+      giftName:
+        selectedGift.name,
+
+      giftIcon:
+        selectedGift.icon,
+
+      category:
+        selectedGift.category,
+
+      quantity,
+
+      coinAmount:
+        total,
+
+      createdAt:
+        Date.now(),
+
+      status:
+        "completed"
+
+    };
+
+
+    /*
+      Save sender wallet
+    */
+
+    await firebasePatch(
+      "/users/" +
+      encodeURIComponent(
+        me.userId
+      ),
+      {
+        coins:
+          senderCoins,
+
+        updatedAt:
+          Date.now()
+      }
+    );
+
+
+    /*
+      Save receiver wallet
+    */
+
+    await firebasePatch(
+      "/users/" +
+      encodeURIComponent(
+        receiver
+      ),
+      {
+        coins:
+          receiverCoins,
+
+        updatedAt:
+          Date.now()
+      }
+    );
+
+
+    /*
+      Wallet records
+    */
+
+    await firebasePatch(
+      "/wallets/" +
+      encodeURIComponent(
+        me.userId
+      ),
+      {
+        coins:
+          senderCoins,
+
+        updatedAt:
+          Date.now()
+      }
+    );
+
+
+    await firebasePatch(
+      "/wallets/" +
+      encodeURIComponent(
+        receiver
+      ),
+      {
+        coins:
+          receiverCoins,
+
+        updatedAt:
+          Date.now()
+      }
+    );
+
+
+    /*
+      Gift transaction
+    */
+
+    await firebasePut(
+      "/giftTransactions/" +
+      encodeURIComponent(
+        transactionId
+      ),
+      transaction
+    );
+
+
+    /*
+      Sender coin transaction
+    */
+
+    await firebasePut(
+      "/coinTransactions/" +
+      encodeURIComponent(
+        transactionId +
+        "_S"
+      ),
+      {
+        transactionId:
+          transactionId +
+          "_S",
+
+        userId:
+          me.userId,
+
+        type:
+          "gift_sent",
+
+        amount:
+          -total,
+
+        reason:
+          "Gift sent: " +
+          selectedGift.name,
+
+        referenceId:
+          transactionId,
+
+        createdAt:
+          Date.now()
+      }
+    );
+
+
+    /*
+      Receiver coin transaction
+    */
+
+    await firebasePut(
+      "/coinTransactions/" +
+      encodeURIComponent(
+        transactionId +
+        "_R"
+      ),
+      {
+        transactionId:
+          transactionId +
+          "_R",
+
+        userId:
+          receiver,
+
+        type:
+          "gift_received",
+
+        amount:
+          total,
+
+        reason:
+          "Gift received: " +
+          selectedGift.name,
+
+        referenceId:
+          transactionId,
+
+        createdAt:
+          Date.now()
+      }
+    );
+
+
+    /*
+      Notification for receiver
+    */
+
+    const notificationId =
+      "NT_" +
+      Date.now() +
+      "_" +
+      Math.random()
+        .toString(36)
+        .slice(2,8);
+
+    await firebasePut(
+      "/notifications/" +
+      encodeURIComponent(
+        receiver
+      ) +
+      "/" +
+      encodeURIComponent(
+        notificationId
+      ),
+      {
+        id:
+          notificationId,
+
+        type:
+          "gift",
+
+        title:
+          "🎁 New Gift",
+
+        message:
+          (
+            me.name ||
+            "Someone"
+          ) +
+          " sent you " +
+          selectedGift.icon +
+          " " +
+          selectedGift.name,
+
+        senderId:
+          me.userId,
+
+        senderName:
+          me.name ||
+          "Pawan User",
+
+        senderDp:
+          me.dp ||
+          DEFAULT_DP,
+
+        giftId:
+          selectedGift.id,
+
+        quantity,
+
+        coinAmount:
+          total,
+
+        read:false,
+
+        createdAt:
+          Date.now()
+      }
+    );
+
+
+    /*
+      Update local user
+    */
+
+    me.coins =
+      senderCoins;
+
+    if(
+      typeof pvSaveLocalUser ===
+      "function"
+    ){
+
+      pvSaveLocalUser(
+        me
+      );
 
     }
 
     renderWallet();
 
-  }
-
-  function renderWallet() {
-
-    document.getElementById("coinBalance")
-      .textContent =
-      formatNumber(wallet.coins);
-
-    document.getElementById("diamondBalance")
-      .textContent =
-      formatNumber(wallet.diamonds);
-
-  }
-
-  function renderGifts() {
-
-    const grid =
-      document.getElementById("giftGrid");
-
-    const empty =
-      document.getElementById("emptyGift");
-
-    let gifts =
-      defaultGifts.filter(gift => {
-
-        if (selectedCategory === "All") {
-          return true;
-        }
-
-        return gift.category === selectedCategory;
-
-      });
-
-    document.getElementById("giftCount")
-      .textContent =
-      gifts.length + " Gifts";
-
-    grid.innerHTML = "";
-
-    if (!gifts.length) {
-
-      empty.style.display = "block";
-      return;
-
-    }
-
-    empty.style.display = "none";
-
-    gifts.forEach(gift => {
-
-      const card =
-        document.createElement("div");
-
-      card.className = "giftCard";
-
-      card.innerHTML = `
-
-        <div class="giftEmoji">
-          ${gift.emoji}
-        </div>
-
-        <div class="giftName">
-          ${escapeHtml(gift.name)}
-        </div>
-
-        <div class="giftPrice">
-          🪙 ${formatNumber(gift.price)}
-        </div>
-
-        <button
-          class="giftSend"
-          data-gift-id="${escapeHtml(gift.id)}"
-        >
-          Send Gift
-        </button>
-
-      `;
-
-      grid.appendChild(card);
-
-    });
-
-    grid
-      .querySelectorAll(".giftSend")
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            const gift =
-              defaultGifts.find(
-                item =>
-                  item.id ===
-                  button.dataset.giftId
-              );
-
-            if (gift) {
-              openSendGift(gift);
-            }
-
-          }
-        );
-
-      });
-
-  }
-
-  function openSendGift(gift) {
-
-    selectedGift = gift;
-
-    document.getElementById(
-      "selectedGiftInfo"
-    ).innerHTML = `
-
-      <div style="
-        display:flex;
-        align-items:center;
-        gap:12px;
-        padding:14px;
-        border-radius:15px;
-        background:#20202b;
-      ">
-
-        <div style="
-          width:60px;
-          height:60px;
-          border-radius:16px;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          background:#292938;
-          font-size:36px;
-        ">
-          ${gift.emoji}
-        </div>
-
-        <div>
-
-          <div style="
-            font-weight:800;
-            font-size:16px;
-          ">
-            ${escapeHtml(gift.name)}
-          </div>
-
-          <div style="
-            color:#ffd34d;
-            font-size:12px;
-            margin-top:5px;
-          ">
-            🪙 ${formatNumber(gift.price)} per gift
-          </div>
-
-        </div>
-
-      </div>
-
-    `;
-
-    document.getElementById(
-      "receiverId"
-    ).value = "";
-
-    document.getElementById(
-      "giftQuantity"
-    ).value = "1";
-
-    openModal("sendGiftModal");
-
-  }
-
-  async function sendGift() {
-
-    if (!selectedGift) {
-      return;
-    }
-
-    const receiverId =
-      document.getElementById(
-        "receiverId"
-      ).value.trim();
-
-    let quantity =
-      Number(
-        document.getElementById(
-          "giftQuantity"
-        ).value
-      );
-
-    if (!receiverId) {
-
-      showToast(
-        "Receiver User ID डालें."
-      );
-
-      return;
-
-    }
-
-    if (
-      !Number.isFinite(quantity) ||
-      quantity < 1
-    ) {
-
-      quantity = 1;
-
-    }
-
-    quantity =
-      Math.min(
-        99,
-        Math.floor(quantity)
-      );
-
-    if (
-      receiverId ===
-      currentUser.userId
-    ) {
-
-      showToast(
-        "आप खुद को gift नहीं भेज सकते."
-      );
-
-      return;
-
-    }
-
-    const total =
-      selectedGift.price *
-      quantity;
-
-    if (wallet.coins < total) {
-
-      showToast(
-        "Coins कम हैं. पहले recharge करें."
-      );
-
-      return;
-
-    }
-
-    const confirmButton =
-      document.getElementById(
-        "confirmGiftBtn"
-      );
-
-    confirmButton.disabled = true;
-    confirmButton.textContent =
-      "Sending...";
-
-    try {
-
-      /*
-        Receiver existence check.
-      */
-
-      const receiver =
-        await firebaseGet(
-          "/users/" +
-          encodeURIComponent(receiverId)
-        );
-
-      if (!receiver) {
-
-        showToast(
-          "Receiver User ID नहीं मिला."
-        );
-
-        return;
-
-      }
-
-      /*
-        IMPORTANT:
-        This client-side implementation records
-        the wallet update and transaction.
-
-        For production payments/economy security,
-        move this operation to a trusted server/
-        Cloud Function with Firebase security rules.
-      */
-
-      const now = Date.now();
-
-      const transactionId =
-        now +
-        "_" +
-        Math.random()
-          .toString(36)
-          .slice(2, 10);
-
-      const senderWalletPath =
-        "/wallets/" +
-        encodeURIComponent(
-          currentUser.userId
-        );
-
-      const receiverWalletPath =
-        "/wallets/" +
-        encodeURIComponent(
-          receiverId
-        );
-
-      const newSenderCoins =
-        wallet.coins - total;
-
-      const receiverCurrentCoins =
-        Number(
-          receiver.coins || 0
-        );
-
-      const newReceiverCoins =
-        receiverCurrentCoins + total;
-
-      /*
-        Update sender wallet.
-      */
-
-      await firebasePatch(
-        senderWalletPath,
-        {
-          coins: newSenderCoins,
-          updatedAt: now
-        }
-      );
-
-      /*
-        Update receiver wallet.
-      */
-
-      await firebasePatch(
-        receiverWalletPath,
-        {
-          coins: newReceiverCoins,
-          diamonds:
-            Number(
-              receiver.diamonds || 0
-            ),
-          updatedAt: now
-        }
-      );
-
-      /*
-        Gift transaction record.
-      */
-
-      await firebasePut(
-        "/giftTransactions/" +
-        transactionId,
-        {
-          transactionId,
-
-          senderId:
-            currentUser.userId,
-
-          senderName:
-            currentUser.name || "Pawan User",
-
-          senderDp:
-            currentUser.dp || "",
-
-          receiverId,
-
-          receiverName:
-            receiver.name || "Pawan User",
-
-          receiverDp:
-            receiver.dp || "",
-
-          giftId:
-            selectedGift.id,
-
-          giftName:
-            selectedGift.name,
-
-          giftEmoji:
-            selectedGift.emoji,
-
-          quantity,
-
-          coinAmount:
-            total,
-
-          roomId:
-            new URLSearchParams(
-              location.search
-            ).get("room") || "",
-
-          createdAt:
-            now
-        }
-      );
-
-      /*
-        Sender coin transaction.
-      */
-
-      await firebasePut(
-        "/coinTransactions/" +
-        transactionId +
-        "_sender",
-        {
-          transactionId,
-
-          userId:
-            currentUser.userId,
-
-          type: "gift_sent",
-
-          amount:
-            -total,
-
-          reason:
-            "Gift sent: " +
-            selectedGift.name,
-
-          giftId:
-            selectedGift.id,
-
-          receiverId,
-
-          createdAt:
-            now
-        }
-      );
-
-      /*
-        Receiver coin transaction.
-      */
-
-      await firebasePut(
-        "/coinTransactions/" +
-        transactionId +
-        "_receiver",
-        {
-          transactionId,
-
-          userId:
-            receiverId,
-
-          type: "gift_received",
-
-          amount:
-            total,
-
-          reason:
-            "Gift received: " +
-            selectedGift.name,
-
-          giftId:
-            selectedGift.id,
-
-          senderId:
-            currentUser.userId,
-
-          createdAt:
-            now
-        }
-      );
-
-      /*
-        Receiver notification.
-      */
-
-      await firebasePut(
-        "/giftNotifications/" +
-        encodeURIComponent(receiverId) +
-        "/" +
-        transactionId,
-        {
-          transactionId,
-
-          senderId:
-            currentUser.userId,
-
-          senderName:
-            currentUser.name || "Pawan User",
-
-          senderDp:
-            currentUser.dp || "",
-
-          giftName:
-            selectedGift.name,
-
-          giftEmoji:
-            selectedGift.emoji,
-
-          quantity,
-
-          coinAmount:
-            total,
-
-          createdAt:
-            now,
-
-          read: false
-        }
-      );
-
-      /*
-        Update local wallet.
-      */
-
-      wallet.coins =
-        newSenderCoins;
-
-      renderWallet();
-
-      /*
-        Keep user.js local data in sync.
-      */
-
-      try {
-
-        currentUser.coins =
-          newSenderCoins;
-
-        pvSaveLocalUser(
-          currentUser
-        );
-
-      } catch (e) {
-
-        console.warn(
-          "Local wallet sync:",
-          e
-        );
-
-      }
-
-      closeModal(
-        "sendGiftModal"
-      );
-
-      showToast(
-        "🎁 " +
-        selectedGift.name +
-        " भेज दिया गया!"
-      );
-
-    } catch (error) {
-
-      console.error(
-        "Send gift:",
-        error
-      );
-
-      showToast(
-        "Gift send नहीं हुआ. Firebase connection check करें."
-      );
-
-    } finally {
-
-      confirmButton.disabled = false;
-      confirmButton.textContent =
-        "🎁 Send Gift";
-
-    }
-
-  }
-
-  function renderPackages() {
-
-    const container =
-      document.getElementById(
-        "packages"
-      );
-
-    container.innerHTML = "";
-
-    rechargePackages.forEach(
-      pack => {
-
-        const item =
-          document.createElement(
-            "div"
-          );
-
-        item.className =
-          "package";
-
-        item.innerHTML = `
-
-          <div class="packageLeft">
-
-            <div class="packageIcon">
-              🪙
-            </div>
-
-            <div>
-
-              <div class="packageName">
-                ${escapeHtml(pack.name)}
-              </div>
-
-              <div class="packageCoins">
-                ${formatNumber(pack.coins)} Coins
-              </div>
-
-            </div>
-
-          </div>
-
-          <button class="buy">
-            ${escapeHtml(pack.price)}
-          </button>
-
-        `;
-
-        item
-          .querySelector(".buy")
-          .addEventListener(
-            "click",
-            () => {
-
-              showToast(
-                "Real payment अभी connect नहीं है."
-              );
-
-            }
-          );
-
-        container.appendChild(item);
-
-      }
+    closeGiftModal();
+
+    showToast(
+      "🎁 " +
+      selectedGift?.name +
+      " sent successfully!"
     );
 
+  }catch(error){
+
+    console.error(
+      "Send gift error:",
+      error
+    );
+
+    showToast(
+      error.message ||
+      "Gift send नहीं हुआ।"
+    );
+
+  }finally{
+
+    sendBtn.disabled =
+      false;
+
+    sendBtn.textContent =
+      "🎁 Send Gift";
+
+    updateTotal();
+
   }
+}
 
-  async function loadHistory() {
 
-    const list =
-      document.getElementById(
-        "historyList"
-      );
+document
+  .getElementById(
+    "minusBtn"
+  )
+  .addEventListener(
+    "click",
+    function(){
 
-    list.innerHTML = `
-      <div class="empty" style="display:block">
-        Loading history...
-      </div>
-    `;
+      quantityEl.value =
+        getQuantity() - 1;
 
-    try {
+      updateTotal();
 
-      const data =
-        await firebaseGet(
-          "/coinTransactions"
-        );
+    }
+  );
 
-      const rows = [];
 
-      if (data) {
+document
+  .getElementById(
+    "plusBtn"
+  )
+  .addEventListener(
+    "click",
+    function(){
 
-        Object.values(data)
-          .forEach(item => {
+      quantityEl.value =
+        getQuantity() + 1;
 
-            if (
-              item &&
-              item.userId ===
-              currentUser.userId
-            ) {
+      updateTotal();
 
-              rows.push(item);
+    }
+  );
 
-            }
 
-          });
+quantityEl.addEventListener(
+  "input",
+  updateTotal
+);
 
-      }
 
-      rows.sort(
-        (a, b) =>
-          Number(b.createdAt || 0) -
-          Number(a.createdAt || 0)
-      );
+searchEl.addEventListener(
+  "input",
+  renderGifts
+);
 
-      const latest =
-        rows.slice(0, 50);
 
-      if (!latest.length) {
+sendBtn.addEventListener(
+  "click",
+  sendGift
+);
 
-        list.innerHTML = `
-          <div class="empty" style="display:block">
-            अभी कोई coin transaction नहीं है.
-          </div>
-        `;
 
-        return;
+document
+  .getElementById(
+    "cancelBtn"
+  )
+  .addEventListener(
+    "click",
+    closeGiftModal
+  );
 
-      }
 
-      list.innerHTML = "";
+modalBg.addEventListener(
+  "click",
+  function(event){
 
-      latest.forEach(item => {
+    if(
+      event.target ===
+      modalBg
+    ){
 
-        const amount =
-          Number(
-            item.amount || 0
-          );
-
-        const row =
-          document.createElement(
-            "div"
-          );
-
-        row.className =
-          "historyItem";
-
-        row.innerHTML = `
-
-          <div class="historyMain">
-
-            <div class="historyReason">
-              ${escapeHtml(
-                item.reason ||
-                item.type ||
-                "Transaction"
-              )}
-            </div>
-
-            <div class="historyTime">
-              ${formatDate(
-                item.createdAt
-              )}
-            </div>
-
-          </div>
-
-          <div class="
-            historyAmount
-            ${amount >= 0 ? "plus" : "minus"}
-          ">
-            ${amount >= 0 ? "+" : ""}
-            ${formatNumber(amount)}
-          </div>
-
-        `;
-
-        list.appendChild(row);
-
-      });
-
-    } catch (error) {
-
-      console.error(
-        "History:",
-        error
-      );
-
-      list.innerHTML = `
-        <div class="empty" style="display:block">
-          History load नहीं हो सकी.
-        </div>
-      `;
+      closeGiftModal();
 
     }
 
   }
+);
 
-  function formatDate(timestamp) {
 
-    if (!timestamp) {
-      return "Unknown time";
-    }
+document
+  .getElementById(
+    "backBtn"
+  )
+  .addEventListener(
+    "click",
+    function(){
 
-    return new Date(
-      Number(timestamp)
-    ).toLocaleString(
-      "en-IN",
-      {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-      }
-    );
+      if(
+        document.referrer
+      ){
 
-  }
+        history.back();
 
-  function openModal(id) {
-
-    document
-      .getElementById(id)
-      .classList.add("show");
-
-  }
-
-  function closeModal(id) {
-
-    document
-      .getElementById(id)
-      .classList.remove("show");
-
-  }
-
-  document
-    .querySelectorAll("[data-close]")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          closeModal(
-            button.dataset.close
-          );
-
-        }
-      );
-
-    });
-
-  document
-    .querySelectorAll(".modal")
-    .forEach(modal => {
-
-      modal.addEventListener(
-        "click",
-        event => {
-
-          if (
-            event.target ===
-            modal
-          ) {
-
-            modal.classList.remove(
-              "show"
-            );
-
-          }
-
-        }
-      );
-
-    });
-
-  document
-    .querySelectorAll(".cat")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          document
-            .querySelectorAll(".cat")
-            .forEach(
-              item =>
-                item.classList.remove(
-                  "active"
-                )
-            );
-
-          button.classList.add(
-            "active"
-          );
-
-          selectedCategory =
-            button.dataset.category;
-
-          renderGifts();
-
-        }
-      );
-
-    });
-
-  document
-    .getElementById("rechargeBtn")
-    .addEventListener(
-      "click",
-      () => {
-
-        renderPackages();
-        openModal(
-          "rechargeModal"
-        );
-
-      }
-    );
-
-  document
-    .getElementById("historyBtn")
-    .addEventListener(
-      "click",
-      async () => {
-
-        openModal(
-          "historyModal"
-        );
-
-        await loadHistory();
-
-      }
-    );
-
-  document
-    .getElementById("confirmGiftBtn")
-    .addEventListener(
-      "click",
-      sendGift
-    );
-
-  document
-    .getElementById("backBtn")
-    .addEventListener(
-      "click",
-      () => {
-
-        if (
-          history.length > 1
-        ) {
-
-          history.back();
-
-        } else {
-
-          location.href =
-            "index.html";
-
-        }
-
-      }
-    );
-
-  document
-    .getElementById("homeBtn")
-    .addEventListener(
-      "click",
-      () => {
+      }else{
 
         location.href =
           "index.html";
 
       }
+
+    }
+  );
+
+
+async function loadUser(){
+
+  try{
+
+    if(
+      typeof pvLoadUser !==
+      "function"
+    ){
+
+      throw new Error(
+        "user.js load नहीं हुआ।"
+      );
+    }
+
+    me =
+      await pvLoadUser();
+
+    renderWallet();
+
+  }catch(error){
+
+    console.error(
+      "Store user error:",
+      error
     );
 
-  document
-    .getElementById("profileBtn")
-    .addEventListener(
-      "click",
-      () => {
+    walletName.textContent =
+      "Pawan User";
 
-        location.href =
-          "profile.html";
+    walletId.textContent =
+      "Guest";
 
-      }
-    );
+  }
+}
 
-  /*
-    START
-  */
+
+async function start(){
+
+  renderPackages();
+
+  renderCategories();
 
   renderGifts();
 
-  loadStoreUser();
+  await loadUser();
+
+}
+
+
+start();
 
 </script>
 
 </body>
-  </html>
+</html>
