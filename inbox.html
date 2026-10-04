@@ -1,400 +1,456 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>PawanVoice Inbox</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PawanVoice Inbox</title>
 
-<style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-html,body{
-  margin:0;
-  padding:0;
-  background:#090b12;
-  color:#fff;
-  font-family:Arial,Helvetica,sans-serif;
-}
+    body {
+      margin: 0;
+      background: #090b12;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-body{
-  min-height:100vh;
-  padding-bottom:75px;
-}
+    button,
+    input {
+      font: inherit;
+    }
 
-button,input{
-  font:inherit;
-}
+    button {
+      border: 0;
+      cursor: pointer;
+    }
 
-.app{
-  width:100%;
-  max-width:760px;
-  margin:auto;
-}
+    .app {
+      width: 100%;
+      max-width: 520px;
+      min-height: 100vh;
+      margin: auto;
+      background: #0d1018;
+      padding-bottom: 78px;
+    }
 
-/* HEADER */
+    /* HEADER */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #111522;
+      border-bottom: 1px solid #222735;
+    }
 
-.header{
-  position:sticky;
-  top:0;
-  z-index:20;
-  background:#0e1119;
-  border-bottom:1px solid #252b38;
-  padding:12px;
-}
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-.header-row{
-  display:flex;
-  align-items:center;
-  gap:11px;
-}
+    .my-dp {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ff4f9a;
+      background: #222;
+    }
 
-.back{
-  width:42px;
-  height:42px;
-  border:0;
-  border-radius:50%;
-  background:#1a1f2b;
-  color:#fff;
-  font-size:26px;
-}
+    .header-name {
+      font-size: 15px;
+      font-weight: 700;
+    }
 
-.title{
-  flex:1;
-  font-size:20px;
-  font-weight:800;
-}
+    .header-id {
+      color: #8f98aa;
+      font-size: 11px;
+      margin-top: 2px;
+    }
 
-.header-dp{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  object-fit:cover;
-}
+    .home-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: #1c2130;
+      color: white;
+      font-size: 20px;
+    }
 
-/* TABS */
+    /* TITLE */
+    .page-title {
+      padding: 17px 15px 10px;
+      font-size: 24px;
+      font-weight: 800;
+    }
 
-.tabs{
-  display:flex;
-  gap:8px;
-  padding:12px;
-  background:#0b0e16;
-  overflow-x:auto;
-  scrollbar-width:none;
-}
+    /* TABS */
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      padding: 5px 12px 13px;
+    }
 
-.tabs::-webkit-scrollbar{
-  display:none;
-}
+    .tab {
+      min-height: 42px;
+      border-radius: 13px;
+      background: #171b27;
+      color: #9da5b7;
+      font-size: 12px;
+      font-weight: 700;
+    }
 
-.tab{
-  position:relative;
-  flex:0 0 auto;
-  min-height:40px;
-  padding:0 15px;
-  border:1px solid #2b3140;
-  border-radius:21px;
-  background:#151925;
-  color:#aeb5c5;
-}
+    .tab.active {
+      background: #ff3f8e;
+      color: #fff;
+    }
 
-.tab.active{
-  background:#ffca28;
-  border-color:#ffca28;
-  color:#171717;
-  font-weight:800;
-}
+    /* CONTENT */
+    .content {
+      padding: 0 12px;
+    }
 
-.badge{
-  position:absolute;
-  right:-4px;
-  top:-7px;
-  min-width:18px;
-  height:18px;
-  padding:0 5px;
-  border-radius:12px;
-  background:#ff3b55;
-  color:#fff;
-  font-size:9px;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  font-weight:800;
-}
+    .section-title {
+      margin: 9px 3px 10px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #dce1ed;
+    }
 
-.badge.show{
-  display:flex;
-}
+    .empty {
+      text-align: center;
+      padding: 55px 20px;
+      color: #7e8799;
+    }
 
-/* CONTENT */
+    .empty-icon {
+      font-size: 42px;
+      margin-bottom: 12px;
+    }
 
-.content{
-  padding:12px;
-}
+    .empty-title {
+      color: #cfd5e2;
+      font-size: 16px;
+      font-weight: 700;
+    }
 
-.section-title{
-  color:#9da5b7;
-  font-size:13px;
-  font-weight:800;
-  margin:5px 3px 10px;
-}
+    .empty-text {
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
 
-.list{
-  display:grid;
-  gap:8px;
-}
+    /* MESSAGE CARD */
+    .message-card,
+    .request-card,
+    .cp-card,
+    .family-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px;
+      margin-bottom: 9px;
+      border-radius: 17px;
+      background: #151925;
+      border: 1px solid #202636;
+    }
 
-/* MESSAGE */
+    .user-dp {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #222;
+      flex-shrink: 0;
+    }
 
-.message{
-  width:100%;
-  display:flex;
-  align-items:center;
-  gap:11px;
-  padding:11px;
-  border:1px solid #252b38;
-  border-radius:15px;
-  background:#11141e;
-  color:#fff;
-  text-align:left;
-}
+    .item-info {
+      flex: 1;
+      min-width: 0;
+    }
 
-.message:active{
-  background:#181d28;
-}
+    .item-name {
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.dp{
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  object-fit:cover;
-  flex-shrink:0;
-}
+    .item-sub {
+      margin-top: 4px;
+      color: #858ea1;
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.info{
-  min-width:0;
-  flex:1;
-}
+    .item-time {
+      margin-top: 4px;
+      color: #646d7f;
+      font-size: 10px;
+    }
 
-.name-line{
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
+    .unread {
+      min-width: 21px;
+      height: 21px;
+      padding: 0 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #ff3f8e;
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+    }
 
-.name{
-  min-width:0;
-  font-size:14px;
-  font-weight:800;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
+    /* BUTTONS */
+    .small-btn {
+      min-height: 38px;
+      padding: 0 13px;
+      border-radius: 11px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
 
-.last-message{
-  margin-top:5px;
-  color:#8d96a8;
-  font-size:12px;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
+    .btn-pink {
+      background: #ff3f8e;
+      color: white;
+    }
 
-.time{
-  margin-top:5px;
-  color:#626b7d;
-  font-size:9px;
-}
+    .btn-dark {
+      background: #242a39;
+      color: #dbe0ea;
+    }
 
-.right{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:6px;
-  flex-shrink:0;
-}
+    .btn-red {
+      background: #4a202d;
+      color: #ff9ab9;
+    }
 
-.unread{
-  min-width:20px;
-  height:20px;
-  padding:0 6px;
-  border-radius:12px;
-  background:#ff3b55;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:10px;
-  font-weight:800;
-}
+    .request-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 9px;
+    }
 
-.arrow{
-  color:#697386;
-  font-size:18px;
-}
+    /* CP */
+    .cp-active {
+      padding: 16px;
+      margin-bottom: 14px;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #281528, #171a28);
+      border: 1px solid #59304e;
+    }
 
-/* REQUEST */
+    .cp-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
 
-.request{
-  background:#11141e;
-  border:1px solid #252b38;
-  border-radius:15px;
-  padding:12px;
-}
+    .cp-title {
+      font-size: 16px;
+      font-weight: 800;
+    }
 
-.request-top{
-  display:flex;
-  align-items:center;
-  gap:11px;
-}
+    .cp-status {
+      padding: 5px 9px;
+      border-radius: 20px;
+      background: #3d1c35;
+      color: #ff78ae;
+      font-size: 10px;
+      font-weight: 800;
+    }
 
-.request-dp{
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  object-fit:cover;
-}
+    .couple {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
 
-.request-info{
-  min-width:0;
-  flex:1;
-}
+    .couple-person {
+      text-align: center;
+      width: 100px;
+    }
 
-.request-name{
-  font-size:14px;
-  font-weight:800;
-}
+    .couple-dp {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #ff4f9a;
+      background: #222;
+    }
 
-.request-id{
-  color:#687285;
-  font-size:10px;
-  margin-top:4px;
-}
+    .couple-name {
+      margin-top: 7px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.request-text{
-  color:#8d96a8;
-  font-size:11px;
-  margin-top:5px;
-}
+    .heart {
+      font-size: 28px;
+      animation: heartBeat 1.2s infinite;
+    }
 
-.request-buttons{
-  display:flex;
-  gap:8px;
-  margin-top:11px;
-}
+    @keyframes heartBeat {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.12);
+      }
+    }
 
-.accept,
-.reject{
-  flex:1;
-  min-height:40px;
-  border:0;
-  border-radius:10px;
-  font-weight:800;
-}
+    .cp-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-top: 15px;
+    }
 
-.accept{
-  background:#ffca28;
-  color:#171717;
-}
+    .cp-stat {
+      padding: 10px 5px;
+      border-radius: 12px;
+      background: #11141e;
+      text-align: center;
+    }
 
-.reject{
-  background:#242936;
-  color:#d7dbe3;
-}
+    .cp-stat-value {
+      font-size: 14px;
+      font-weight: 800;
+    }
 
-/* EMPTY */
+    .cp-stat-label {
+      margin-top: 3px;
+      color: #777f91;
+      font-size: 9px;
+    }
 
-.empty{
-  text-align:center;
-  padding:40px 18px;
-  background:#11141e;
-  border:1px dashed #303646;
-  border-radius:16px;
-  color:#737d90;
-  line-height:1.6;
-}
+    /* FAMILY */
+    .family-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #252033;
+      font-size: 25px;
+      flex-shrink: 0;
+    }
 
-.empty-icon{
-  font-size:36px;
-  margin-bottom:8px;
-}
+    /* TOAST */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 85px;
+      transform: translateX(-50%) translateY(20px);
+      z-index: 100;
+      max-width: 90%;
+      padding: 12px 17px;
+      border-radius: 13px;
+      background: #242936;
+      color: white;
+      font-size: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s;
+      text-align: center;
+    }
 
-.loading{
-  text-align:center;
-  padding:40px;
-  color:#737d90;
-  font-size:12px;
-}
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
 
-/* BOTTOM */
+    /* LOADING */
+    .loading {
+      text-align: center;
+      padding: 35px;
+      color: #8992a5;
+      font-size: 13px;
+    }
 
-.bottom{
-  position:fixed;
-  left:0;
-  right:0;
-  bottom:0;
-  height:68px;
-  background:#0e1119;
-  border-top:1px solid #272d3a;
-  z-index:30;
-}
+    /* BOTTOM NAV */
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 520px;
+      height: 68px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: #111521;
+      border-top: 1px solid #252b3a;
+      z-index: 50;
+    }
 
-.bottom-inner{
-  width:100%;
-  max-width:760px;
-  height:100%;
-  margin:auto;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-}
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: #7d8699;
+      font-size: 10px;
+      font-weight: 700;
+      background: transparent;
+    }
 
-.nav{
-  position:relative;
-  border:0;
-  background:transparent;
-  color:#838c9f;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:3px;
-}
+    .nav-item.active {
+      color: #ff4f9a;
+    }
 
-.nav.active{
-  color:#ffca28;
-}
+    .nav-icon {
+      font-size: 20px;
+    }
 
-.nav-icon{
-  font-size:21px;
-}
+    /* RESPONSIVE */
+    @media (max-width: 360px) {
+      .tabs {
+        gap: 4px;
+        padding-left: 7px;
+        padding-right: 7px;
+      }
 
-.nav-label{
-  font-size:10px;
-}
+      .tab {
+        font-size: 10px;
+      }
 
-.bottom-badge{
-  position:absolute;
-  top:5px;
-  right:calc(50% - 25px);
-  min-width:18px;
-  height:18px;
-  padding:0 5px;
-  border-radius:12px;
-  background:#ff3b55;
-  color:#fff;
-  font-size:9px;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  font-weight:800;
-}
+      .message-card,
+      .request-card,
+      .cp-card,
+      .family-card {
+        padding: 10px;
+      }
 
-.bottom-badge.show{
-  display:flex;
-}
-</style>
+      .small-btn {
+        padding: 0 9px;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -402,1981 +458,1945 @@ button,input{
 <div class="app">
 
   <!-- HEADER -->
+  <div class="header">
 
-  <header class="header">
+    <div class="header-left">
+      <img id="myDp" class="my-dp" src="" alt="My profile">
 
-    <div class="header-row">
-
-      <button
-        class="back"
-        type="button"
-        onclick="goBack()"
-      >
-        ‹
-      </button>
-
-      <div class="title">
-        📩 Inbox
+      <div>
+        <div id="myName" class="header-name">PawanVoice User</div>
+        <div id="myId" class="header-id">ID: --</div>
       </div>
-
-      <img
-        id="headerDp"
-        class="header-dp"
-        src="https://i.pravatar.cc/200?img=12"
-        alt="My profile"
-      >
-
     </div>
 
-  </header>
+    <button class="home-btn" id="homeBtn">⌂</button>
 
+  </div>
+
+  <div class="page-title">Inbox</div>
 
   <!-- TABS -->
-
   <div class="tabs">
 
-    <button
-      class="tab active"
-      data-tab="messages"
-      type="button"
-    >
+    <button class="tab active" data-tab="messages">
       Messages
-      <span
-        id="messagesBadge"
-        class="badge"
-      ></span>
     </button>
 
-    <button
-      class="tab"
-      data-tab="friends"
-      type="button"
-    >
+    <button class="tab" data-tab="friends">
       Friends
-      <span
-        id="friendsBadge"
-        class="badge"
-      ></span>
     </button>
 
-    <button
-      class="tab"
-      data-tab="cp"
-      type="button"
-    >
-      CP
-      <span
-        id="cpBadge"
-        class="badge"
-      ></span>
+    <button class="tab" data-tab="cp">
+      💕 CP
     </button>
 
-    <button
-      class="tab"
-      data-tab="family"
-      type="button"
-    >
+    <button class="tab" data-tab="family">
       Family
-      <span
-        id="familyBadge"
-        class="badge"
-      ></span>
     </button>
 
   </div>
 
-
-  <!-- CONTENT -->
-
-  <main
-    id="content"
-    class="content"
-  >
-
-    <div class="loading">
-      Loading Inbox...
-    </div>
-
-  </main>
+  <div id="content" class="content">
+    <div class="loading">Loading inbox...</div>
+  </div>
 
 </div>
 
-
 <!-- BOTTOM NAV -->
+<div class="bottom-nav">
 
-<nav class="bottom">
+  <button class="nav-item" id="navHome">
+    <div class="nav-icon">⌂</div>
+    <div>Home</div>
+  </button>
 
-  <div class="bottom-inner">
+  <button class="nav-item active">
+    <div class="nav-icon">💬</div>
+    <div>Inbox</div>
+  </button>
 
-    <button
-      class="nav"
-      type="button"
-      onclick="location.href='index.html'"
-    >
-      <span class="nav-icon">🏠</span>
-      <span class="nav-label">Home</span>
-    </button>
+  <button class="nav-item" id="navProfile">
+    <div class="nav-icon">👤</div>
+    <div>Profile</div>
+  </button>
 
+</div>
 
-    <button
-      class="nav active"
-      type="button"
-      onclick="location.href='inbox.html'"
-    >
+<div id="toast" class="toast"></div>
 
-      <span class="nav-icon">
-        📩
-      </span>
-
-      <span class="nav-label">
-        Inbox
-      </span>
-
-      <span
-        id="bottomBadge"
-        class="bottom-badge"
-      ></span>
-
-    </button>
-
-
-    <button
-      class="nav"
-      type="button"
-      onclick="location.href='profile.html'"
-    >
-      <span class="nav-icon">👤</span>
-      <span class="nav-label">Profile</span>
-    </button>
-
-  </div>
-
-</nav>
-
+<script src="user.js"></script>
 
 <script>
-
-/* =========================================
+/* =========================================================
    PAWANVOICE INBOX
-========================================= */
+   Messages + Friends + CP + Family
+   Firebase Realtime Database REST
+========================================================= */
 
-const DB =
+const DB_URL =
   "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
 
 const DEFAULT_DP =
   "https://i.pravatar.cc/200?img=12";
 
+let currentUser = null;
+let activeTab = "messages";
 
-/* =========================================
-   CURRENT USER
-========================================= */
+let messagesData = [];
+let friendRequestsData = {};
+let cpRequestsData = {};
+let familyInvitesData = {};
+let usersData = {};
+let activeCpData = null;
 
-const currentUser = {
-
-  userId:
-    localStorage.getItem("pv_userId") ||
-    "pawan",
-
-  name:
-    localStorage.getItem("pv_name") ||
-    "Pawan User",
-
-  dp:
-    localStorage.getItem("pv_dp") ||
-    DEFAULT_DP
-
-};
+let refreshTimer = null;
 
 
-/* =========================================
-   STATE
-========================================= */
+/* =========================================================
+   HELPERS
+========================================================= */
 
-let currentTab =
-  "messages";
+function escapeHtml(value) {
 
-let privateMessages = [];
-
-let friendRequests = [];
-
-let cpRequests = [];
-
-let familyInvites = [];
-
-let loading = false;
-
-
-/* =========================================
-   ELEMENTS
-========================================= */
-
-const content =
-  document.getElementById(
-    "content"
-  );
-
-const headerDp =
-  document.getElementById(
-    "headerDp"
-  );
-
-
-headerDp.src =
-  currentUser.dp ||
-  DEFAULT_DP;
-
-headerDp.onerror =
-  function(){
-
-    this.src =
-      DEFAULT_DP;
-
-  };
-
-
-/* =========================================
-   ESCAPE
-========================================= */
-
-function esc(value){
-
-  return String(
-    value ?? ""
-  )
-  .replaceAll("&","&amp;")
-  .replaceAll("<","&lt;")
-  .replaceAll(">","&gt;")
-  .replaceAll('"',"&quot;")
-  .replaceAll("'","&#039;");
-
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 
-/* =========================================
-   TIME
-========================================= */
+function safeNumber(value, fallback = 0) {
 
-function timeAgo(timestamp){
+  const n = Number(value);
 
-  const time =
-    Number(timestamp || 0);
+  return Number.isFinite(n)
+    ? n
+    : fallback;
+}
 
-  if(!time){
-    return "";
+
+function showToast(message) {
+
+  const toast = document.getElementById("toast");
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(showToast.timer);
+
+  showToast.timer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2300);
+}
+
+
+function timeAgo(timestamp) {
+
+  const time = safeNumber(timestamp, Date.now());
+
+  const diff = Math.max(0, Date.now() - time);
+
+  const seconds = Math.floor(diff / 1000);
+
+  if (seconds < 60) {
+    return seconds + "s ago";
   }
 
-  const diff =
-    Date.now() -
-    time;
+  const minutes = Math.floor(seconds / 60);
 
-  const minute =
-    60 * 1000;
-
-  const hour =
-    60 * minute;
-
-  const day =
-    24 * hour;
-
-
-  if(diff < minute){
-    return "now";
+  if (minutes < 60) {
+    return minutes + "m ago";
   }
 
+  const hours = Math.floor(minutes / 60);
 
-  if(diff < hour){
-
-    return (
-      Math.floor(
-        diff / minute
-      ) + "m"
-    );
-
+  if (hours < 24) {
+    return hours + "h ago";
   }
 
+  const days = Math.floor(hours / 24);
 
-  if(diff < day){
+  return days + "d ago";
+}
 
-    return (
-      Math.floor(
-        diff / hour
-      ) + "h"
-    );
 
+function sortedPair(a, b) {
+
+  return [String(a), String(b)].sort();
+}
+
+
+function cpIdFor(a, b) {
+
+  return sortedPair(a, b).join("__");
+}
+
+
+async function firebaseGet(path) {
+
+  const response = await fetch(
+    DB_URL + path + ".json"
+  );
+
+  if (!response.ok) {
+    throw new Error("Firebase GET failed");
   }
 
-
-  if(diff < 7 * day){
-
-    return (
-      Math.floor(
-        diff / day
-      ) + "d"
-    );
-
-  }
+  return await response.json();
+}
 
 
-  return new Date(
-    time
-  ).toLocaleDateString(
-    [],
+async function firebasePut(path, data) {
+
+  const response = await fetch(
+    DB_URL + path + ".json",
     {
-      day:"numeric",
-      month:"short"
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
     }
   );
 
-}
-
-
-/* =========================================
-   OBJECT → ARRAY
-========================================= */
-
-function objectToArray(data){
-
-  if(
-    !data ||
-    typeof data !== "object"
-  ){
-
-    return [];
-
+  if (!response.ok) {
+    throw new Error("Firebase PUT failed");
   }
 
-  return Object.keys(data)
-    .map(
-      key => {
-
-        const value =
-          data[key];
-
-        if(
-          value &&
-          typeof value === "object"
-        ){
-
-          return {
-            requestId:key,
-            ...value
-          };
-
-        }
-
-        return {
-          requestId:key,
-          value:value
-        };
-
-      }
-    );
-
+  return await response.json();
 }
 
 
-/* =========================================
-   LOAD PRIVATE MESSAGES
-========================================= */
+async function firebasePatch(path, data) {
 
-async function loadPrivateMessages(){
+  const response = await fetch(
+    DB_URL + path + ".json",
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    }
+  );
 
-  try{
+  if (!response.ok) {
+    throw new Error("Firebase PATCH failed");
+  }
 
-    const response =
-      await fetch(
-        DB +
-        "/privateChats.json"
-      );
+  return await response.json();
+}
 
-    if(!response.ok){
 
-      throw new Error(
-        "Firebase HTTP " +
-        response.status
-      );
+async function firebaseDelete(path) {
 
+  const response = await fetch(
+    DB_URL + path + ".json",
+    {
+      method: "DELETE"
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Firebase DELETE failed");
+  }
+
+  return await response.json();
+}
+
+
+/* =========================================================
+   CURRENT USER
+========================================================= */
+
+async function loadCurrentUser() {
+
+  try {
+
+    if (typeof pvLoadUser === "function") {
+
+      const user = await pvLoadUser();
+
+      if (user) {
+        currentUser = user;
+      }
     }
 
-    const data =
-      await response.json();
+  } catch (error) {
 
-    const conversations =
-      new Map();
-
-
-    if(data){
-
-      Object.keys(data)
-        .forEach(
-          chatId => {
-
-            const chat =
-              data[chatId];
-
-            if(
-              !chat ||
-              typeof chat !== "object"
-            ){
-
-              return;
-
-            }
+    console.warn("pvLoadUser failed", error);
+  }
 
 
-            Object.keys(chat)
-              .forEach(
-                messageId => {
+  if (!currentUser) {
 
-                  const message =
-                    chat[messageId];
+    try {
 
-                  if(
-                    !message ||
-                    typeof message !==
-                    "object"
-                  ){
-
-                    return;
-
-                  }
-
-
-                  const senderId =
-                    String(
-                      message.senderId ||
-                      ""
-                    );
-
-                  const receiverId =
-                    String(
-                      message.receiverId ||
-                      ""
-                    );
-
-
-                  const myId =
-                    String(
-                      currentUser.userId
-                    );
-
-
-                  const isMine =
-                    senderId === myId;
-
-                  const isForMe =
-                    receiverId === myId;
-
-
-                  if(
-                    !isMine &&
-                    !isForMe
-                  ){
-
-                    return;
-
-                  }
-
-
-                  const otherId =
-                    isMine
-                      ? receiverId
-                      : senderId;
-
-
-                  if(!otherId){
-                    return;
-                  }
-
-
-                  const old =
-                    conversations.get(
-                      otherId
-                    );
-
-
-                  const messageTime =
-                    Number(
-                      message.time || 0
-                    );
-
-
-                  const unread =
-                    isForMe &&
-                    message.read !== true
-                      ? 1
-                      : 0;
-
-
-                  if(
-                    !old ||
-                    messageTime >
-                    Number(
-                      old.time || 0
-                    )
-                  ){
-
-                    conversations.set(
-                      otherId,
-                      {
-
-                        userId:
-                          otherId,
-
-                        name:
-                          isMine
-                            ? (
-                                message.receiverName ||
-                                "User"
-                              )
-                            : (
-                                message.senderName ||
-                                "User"
-                              ),
-
-                        dp:
-                          isMine
-                            ? (
-                                message.receiverDp ||
-                                DEFAULT_DP
-                              )
-                            : (
-                                message.senderDp ||
-                                DEFAULT_DP
-                              ),
-
-                        text:
-                          message.text ||
-                          "",
-
-                        time:
-                          messageTime,
-
-                        unread:
-                          unread
-
-                      }
-                    );
-
-                  }
-                  else if(unread){
-
-                    old.unread =
-                      Number(
-                        old.unread || 0
-                      ) + 1;
-
-                  }
-
-                }
-              );
-
-          }
+      currentUser =
+        JSON.parse(
+          localStorage.getItem("pawanvoice_user") || "null"
         );
 
+    } catch (error) {
+
+      currentUser = null;
     }
-
-
-    privateMessages =
-      Array.from(
-        conversations.values()
-      )
-      .sort(
-        (a,b) =>
-          Number(b.time || 0) -
-          Number(a.time || 0)
-      );
-
-
-    /*
-      Refresh name + DP from
-      Firebase users collection.
-    */
-
-    await refreshMessageProfiles();
-
-
-  }catch(error){
-
-    console.error(
-      "Private messages:",
-      error
-    );
-
-    privateMessages = [];
-
   }
 
-}
 
+  if (!currentUser) {
 
-/* =========================================
-   REFRESH MESSAGE PROFILES
-========================================= */
+    const userId =
+      "PV" +
+      Math.floor(
+        10000000 +
+        Math.random() * 89999999
+      );
 
-async function refreshMessageProfiles(){
+    currentUser = {
 
-  await Promise.all(
+      userId,
 
-    privateMessages.map(
-      async item => {
+      name: "PawanVoice User",
 
-        try{
+      dp: DEFAULT_DP,
 
-          const response =
-            await fetch(
-              DB +
-              "/users/" +
-              encodeURIComponent(
-                item.userId
-              ) +
-              ".json"
-            );
+      level: 1,
 
+      exp: 0,
 
-          if(!response.ok){
-            return;
-          }
+      coins: 0,
 
+      diamonds: 0,
 
-          const user =
-            await response.json();
+      following: 0,
 
+      followers: 0,
 
-          if(user){
+      vipLevel: 0
 
-            item.name =
-              user.name ||
-              item.name ||
-              "User";
+    };
 
-            item.dp =
-              user.dp ||
-              item.dp ||
-              DEFAULT_DP;
-
-          }
-
-        }catch(error){
-
-          console.error(
-            "User profile:",
-            error
-          );
-
-        }
-
-      }
-    )
-
-  );
-
-}
-
-
-/* =========================================
-   LOAD REQUESTS
-========================================= */
-
-async function loadRequests(){
-
-  const uid =
-    encodeURIComponent(
-      currentUser.userId
+    localStorage.setItem(
+      "pawanvoice_user",
+      JSON.stringify(currentUser)
     );
-
-
-  try{
-
-    const results =
-      await Promise.all([
-
-        fetch(
-          DB +
-          "/friendRequests/" +
-          uid +
-          ".json"
-        ),
-
-        fetch(
-          DB +
-          "/cpRequests/" +
-          uid +
-          ".json"
-        ),
-
-        fetch(
-          DB +
-          "/familyInvites/" +
-          uid +
-          ".json"
-        )
-
-      ]);
-
-
-    const friends =
-      results[0].ok
-        ? await results[0].json()
-        : null;
-
-    const cp =
-      results[1].ok
-        ? await results[1].json()
-        : null;
-
-    const family =
-      results[2].ok
-        ? await results[2].json()
-        : null;
-
-
-    friendRequests =
-      objectToArray(
-        friends
-      );
-
-    cpRequests =
-      objectToArray(
-        cp
-      );
-
-    familyInvites =
-      objectToArray(
-        family
-      );
-
-
-  }catch(error){
-
-    console.error(
-      "Inbox requests:",
-      error
-    );
-
-    friendRequests = [];
-    cpRequests = [];
-    familyInvites = [];
-
   }
 
+
+  currentUser.userId =
+    String(
+      currentUser.userId ||
+      currentUser.id ||
+      ""
+    );
+
+  currentUser.name =
+    currentUser.name ||
+    "PawanVoice User";
+
+  currentUser.dp =
+    currentUser.dp ||
+    DEFAULT_DP;
+
+
+  document.getElementById("myDp").src =
+    currentUser.dp;
+
+  document.getElementById("myName").textContent =
+    currentUser.name;
+
+  document.getElementById("myId").textContent =
+    "ID: " + currentUser.userId;
 }
 
 
-/* =========================================
-   BADGE
-========================================= */
+/* =========================================================
+   LOAD ALL DATA
+========================================================= */
 
-function setBadge(
-  id,
-  count
-){
+async function loadInboxData() {
 
-  const element =
-    document.getElementById(
-      id
-    );
-
-  if(!element){
+  if (!currentUser) {
     return;
   }
 
+  const uid = currentUser.userId;
 
-  const n =
-    Number(count || 0);
+  try {
+
+    const [
+      users,
+      privateChats,
+      friendRequests,
+      cpRequests,
+      familyInvites,
+      cps
+    ] = await Promise.all([
+
+      firebaseGet("/users"),
+
+      firebaseGet("/privateChats"),
+
+      firebaseGet(
+        "/friendRequests/" +
+        encodeURIComponent(uid)
+      ),
+
+      firebaseGet(
+        "/cpRequests/" +
+        encodeURIComponent(uid)
+      ),
+
+      firebaseGet(
+        "/familyInvites/" +
+        encodeURIComponent(uid)
+      ),
+
+      firebaseGet("/cp")
+
+    ]);
 
 
-  if(n > 0){
+    usersData =
+      users || {};
 
-    element.textContent =
-      n > 99
-        ? "99+"
-        : String(n);
+    friendRequestsData =
+      friendRequests || {};
 
-    element.classList.add(
-      "show"
-    );
+    cpRequestsData =
+      cpRequests || {};
 
-  }else{
+    familyInvitesData =
+      familyInvites || {};
 
-    element.textContent =
-      "";
 
-    element.classList.remove(
-      "show"
-    );
+    messagesData =
+      buildMessageList(privateChats || {});
 
+
+    activeCpData =
+      findMyActiveCp(cps || {});
+
+
+    renderCurrentTab();
+
+  } catch (error) {
+
+    console.error(error);
+
+    document.getElementById("content").innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-title">
+          Could not load Inbox
+        </div>
+        <div class="empty-text">
+          Check Firebase connection and try again.
+        </div>
+      </div>
+    `;
   }
-
 }
 
 
-/* =========================================
-   UPDATE BADGES
-========================================= */
+/* =========================================================
+   MESSAGE LIST
+========================================================= */
 
-function updateBadges(){
+function buildMessageList(privateChats) {
 
-  const messages =
-    privateMessages.reduce(
-      (
-        total,
-        item
-      ) =>
-        total +
-        Number(
-          item.unread || 0
+  const result = {};
+
+  Object.keys(privateChats || {}).forEach(chatId => {
+
+    const chat =
+      privateChats[chatId];
+
+    if (!chat || typeof chat !== "object") {
+      return;
+    }
+
+
+    const messages =
+      Object.values(chat);
+
+    if (!messages.length) {
+      return;
+    }
+
+
+    const latest =
+      messages
+        .sort(
+          (a, b) =>
+            safeNumber(a.time || a.createdAt) -
+            safeNumber(b.time || b.createdAt)
+        )
+        .at(-1);
+
+
+    if (!latest) {
+      return;
+    }
+
+
+    const senderId =
+      String(
+        latest.senderId ||
+        latest.sender ||
+        ""
+      );
+
+    const receiverId =
+      String(
+        latest.receiverId ||
+        latest.receiver ||
+        ""
+      );
+
+
+    let otherId = "";
+
+    if (senderId === currentUser.userId) {
+      otherId = receiverId;
+    } else {
+      otherId = senderId;
+    }
+
+
+    if (!otherId) {
+      return;
+    }
+
+
+    const unread =
+      messages.filter(message => {
+
+        const messageSender =
+          String(
+            message.senderId ||
+            message.sender ||
+            ""
+          );
+
+        const read =
+          message.read === true;
+
+        return (
+          messageSender !== currentUser.userId &&
+          !read
+        );
+
+      }).length;
+
+
+    const otherUser =
+      usersData[otherId] || {};
+
+
+    result[otherId] = {
+
+      userId: otherId,
+
+      name:
+        otherUser.name ||
+        latest.senderName ||
+        "User",
+
+      dp:
+        otherUser.dp ||
+        latest.senderDp ||
+        DEFAULT_DP,
+
+      text:
+        latest.text ||
+        latest.message ||
+        "Message",
+
+      time:
+        safeNumber(
+          latest.time ||
+          latest.createdAt,
+          Date.now()
         ),
-      0
-    );
+
+      unread
+
+    };
+
+  });
 
 
-  const friends =
-    friendRequests.length;
-
-  const cp =
-    cpRequests.length;
-
-  const family =
-    familyInvites.length;
-
-
-  setBadge(
-    "messagesBadge",
-    messages
-  );
-
-  setBadge(
-    "friendsBadge",
-    friends
-  );
-
-  setBadge(
-    "cpBadge",
-    cp
-  );
-
-  setBadge(
-    "familyBadge",
-    family
-  );
-
-
-  setBadge(
-    "bottomBadge",
-    messages +
-    friends +
-    cp +
-    family
-  );
-
+  return Object.values(result)
+    .sort((a, b) => b.time - a.time);
 }
 
 
-/* =========================================
-   RENDER
-========================================= */
+/* =========================================================
+   FIND ACTIVE CP
+========================================================= */
 
-function render(){
+function findMyActiveCp(allCps) {
 
-  updateBadges();
+  const uid =
+    currentUser.userId;
+
+  for (const cpId of Object.keys(allCps || {})) {
+
+    const cp =
+      allCps[cpId];
+
+    if (!cp || typeof cp !== "object") {
+      continue;
+    }
 
 
-  if(
-    currentTab ===
-    "messages"
-  ){
+    const user1 =
+      String(
+        cp.user1Id ||
+        cp.uid1 ||
+        ""
+      );
 
+    const user2 =
+      String(
+        cp.user2Id ||
+        cp.uid2 ||
+        ""
+      );
+
+
+    if (
+      user1 === uid ||
+      user2 === uid
+    ) {
+
+      const partnerId =
+        user1 === uid
+          ? user2
+          : user1;
+
+
+      const partner =
+        usersData[partnerId] || {};
+
+
+      return {
+
+        ...cp,
+
+        cpId,
+
+        partnerId,
+
+        partnerName:
+          partner.name ||
+          (
+            user1 === uid
+              ? cp.user2Name
+              : cp.user1Name
+          ) ||
+          "CP",
+
+        partnerDp:
+          partner.dp ||
+          (
+            user1 === uid
+              ? cp.user2Dp
+              : cp.user1Dp
+          ) ||
+          DEFAULT_DP
+
+      };
+    }
+  }
+
+
+  return null;
+}
+
+
+/* =========================================================
+   TAB RENDER
+========================================================= */
+
+function renderCurrentTab() {
+
+  if (activeTab === "messages") {
     renderMessages();
-
   }
 
-
-  else if(
-    currentTab ===
-    "friends"
-  ){
-
+  else if (activeTab === "friends") {
     renderFriends();
-
   }
 
-
-  else if(
-    currentTab ===
-    "cp"
-  ){
-
+  else if (activeTab === "cp") {
     renderCP();
-
   }
 
-
-  else if(
-    currentTab ===
-    "family"
-  ){
-
+  else if (activeTab === "family") {
     renderFamily();
-
   }
-
 }
 
 
-/* =========================================
-   RENDER MESSAGES
-========================================= */
+/* =========================================================
+   MESSAGES
+========================================================= */
 
-function renderMessages(){
+function renderMessages() {
 
-  if(
-    !privateMessages.length
-  ){
+  const content =
+    document.getElementById("content");
+
+
+  if (!messagesData.length) {
 
     content.innerHTML = `
-
-      <div class="section-title">
-        Messages
-      </div>
-
       <div class="empty">
-
-        <div class="empty-icon">
-          💬
+        <div class="empty-icon">💬</div>
+        <div class="empty-title">
+          No messages
         </div>
-
-        No private messages yet.
-
-        <br>
-
-        When someone messages you,
-        it will appear here.
-
+        <div class="empty-text">
+          Your private conversations will appear here.
+        </div>
       </div>
-
     `;
 
     return;
-
   }
 
 
-  content.innerHTML = `
+  content.innerHTML =
+    `<div class="section-title">Recent Messages</div>` +
+    messagesData.map(item => {
 
-    <div class="section-title">
-      Recent Messages
-    </div>
-
-    <div
-      id="messageList"
-      class="list"
-    ></div>
-
-  `;
-
-
-  const list =
-    document.getElementById(
-      "messageList"
-    );
-
-
-  privateMessages.forEach(
-    item => {
-
-      const button =
-        document.createElement(
-          "button"
-        );
-
-      button.type =
-        "button";
-
-      button.className =
-        "message";
-
-
-      const unread =
-        Number(
-          item.unread || 0
-        );
-
-
-      button.innerHTML = `
-
-        <img
-          class="dp"
-          src="${esc(
-            item.dp ||
-            DEFAULT_DP
-          )}"
-          alt="User"
-          onerror="this.src='${DEFAULT_DP}'"
+      return `
+        <div
+          class="message-card"
+          data-user="${escapeHtml(item.userId)}"
         >
 
-        <div class="info">
+          <img
+            class="user-dp"
+            src="${escapeHtml(item.dp)}"
+            alt=""
+          >
 
-          <div class="name-line">
+          <div class="item-info">
 
-            <div class="name">
-              ${esc(
-                item.name ||
-                "User"
-              )}
+            <div class="item-name">
+              ${escapeHtml(item.name)}
+            </div>
+
+            <div class="item-sub">
+              ${escapeHtml(item.text)}
+            </div>
+
+            <div class="item-time">
+              ${timeAgo(item.time)}
             </div>
 
           </div>
 
-          <div class="last-message">
-            ${esc(
-              item.text ||
-              "Message"
-            )}
-          </div>
-
-          <div class="time">
-            ${esc(
-              timeAgo(
-                item.time
-              )
-            )}
-          </div>
-
-        </div>
-
-        <div class="right">
-
           ${
-            unread > 0
-              ? `
-                <div class="unread">
-                  ${
-                    unread > 99
-                      ? "99+"
-                      : unread
-                  }
-                </div>
-              `
+            item.unread > 0
+              ? `<div class="unread">
+                   ${item.unread > 99 ? "99+" : item.unread}
+                 </div>`
               : ""
           }
 
-          <div class="arrow">
-            ›
-          </div>
-
         </div>
-
       `;
 
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          location.href =
-            "chat.html?user=" +
-            encodeURIComponent(
-              item.userId
-            );
-
-        }
-      );
+    }).join("");
 
 
-      list.appendChild(
-        button
-      );
+  document
+    .querySelectorAll(".message-card")
+    .forEach(card => {
 
-    }
-  );
+      card.addEventListener("click", () => {
 
+        const userId =
+          card.dataset.user;
+
+        window.location.href =
+          "chat.html?user=" +
+          encodeURIComponent(userId);
+
+      });
+
+    });
 }
 
 
-/* =========================================
-   REQUEST HELPERS
-========================================= */
+/* =========================================================
+   FRIENDS
+========================================================= */
 
-function requestName(item){
+function renderFriends() {
 
-  return (
-    item.name ||
-    item.senderName ||
-    item.userName ||
-    item.fromName ||
-    "User"
-  );
+  const content =
+    document.getElementById("content");
 
-}
+  const requests =
+    Object.entries(friendRequestsData || {});
 
 
-function requestUserId(item){
-
-  return (
-    item.userId ||
-    item.senderId ||
-    item.fromUserId ||
-    item.uid ||
-    ""
-  );
-
-}
-
-
-function requestDp(item){
-
-  return (
-    item.dp ||
-    item.senderDp ||
-    item.userDp ||
-    item.fromDp ||
-    DEFAULT_DP
-  );
-
-}
-
-
-/* =========================================
-   RENDER FRIENDS
-========================================= */
-
-function renderFriends(){
-
-  if(
-    !friendRequests.length
-  ){
+  if (!requests.length) {
 
     content.innerHTML = `
-
-      <div class="section-title">
-        Friend Requests
-      </div>
-
       <div class="empty">
-
-        <div class="empty-icon">
-          👥
+        <div class="empty-icon">👥</div>
+        <div class="empty-title">
+          No friend requests
         </div>
-
-        No friend requests.
-
+        <div class="empty-text">
+          New friend requests will appear here.
+        </div>
       </div>
-
     `;
 
     return;
-
   }
 
 
-  content.innerHTML = `
+  content.innerHTML =
+    `<div class="section-title">
+       Friend Requests
+     </div>` +
 
-    <div class="section-title">
-      Friend Requests
-    </div>
+    requests.map(([requestId, request]) => {
 
-    <div
-      id="friendList"
-      class="list"
-    ></div>
-
-  `;
-
-
-  const list =
-    document.getElementById(
-      "friendList"
-    );
-
-
-  friendRequests.forEach(
-    item => {
-
-      const box =
-        document.createElement(
-          "div"
+      const senderId =
+        String(
+          request.fromUserId ||
+          request.senderId ||
+          request.userId ||
+          ""
         );
 
-      box.className =
-        "request";
+
+      const sender =
+        usersData[senderId] ||
+        request;
 
 
-      box.innerHTML = `
-
-        <div class="request-top">
+      return `
+        <div
+          class="request-card"
+          data-request="${escapeHtml(requestId)}"
+        >
 
           <img
-            class="request-dp"
-            src="${esc(
-              requestDp(item)
+            class="user-dp"
+            src="${escapeHtml(
+              sender.dp || DEFAULT_DP
             )}"
-            alt="User"
-            onerror="this.src='${DEFAULT_DP}'"
+            alt=""
           >
 
-          <div class="request-info">
+          <div class="item-info">
 
-            <div class="request-name">
-              ${esc(
-                requestName(item)
+            <div class="item-name">
+              ${escapeHtml(
+                sender.name || "User"
               )}
             </div>
 
-            <div class="request-id">
-              ID:
-              ${esc(
-                requestUserId(item)
-              )}
-            </div>
-
-            <div class="request-text">
+            <div class="item-sub">
               Wants to add you as a friend
+            </div>
+
+            <div class="request-actions">
+
+              <button
+                class="small-btn btn-pink accept-friend"
+                type="button"
+              >
+                Accept
+              </button>
+
+              <button
+                class="small-btn btn-dark reject-friend"
+                type="button"
+              >
+                Reject
+              </button>
+
             </div>
 
           </div>
 
         </div>
-
-        <div class="request-buttons">
-
-          <button
-            class="accept"
-            type="button"
-            data-accept
-          >
-            Accept
-          </button>
-
-          <button
-            class="reject"
-            type="button"
-            data-reject
-          >
-            Reject
-          </button>
-
-        </div>
-
       `;
 
-
-      box
-        .querySelector(
-          "[data-accept]"
-        )
-        .addEventListener(
-          "click",
-          () =>
-            acceptFriend(item)
-        );
+    }).join("");
 
 
-      box
-        .querySelector(
-          "[data-reject]"
-        )
-        .addEventListener(
-          "click",
-          () =>
-            rejectRequest(
-              "friendRequests",
-              item.requestId
-            )
-        );
+  content
+    .querySelectorAll(".request-card")
+    .forEach(card => {
+
+      const requestId =
+        card.dataset.request;
+
+      const request =
+        friendRequestsData[requestId];
 
 
-      list.appendChild(
-        box
-      );
+      card
+        .querySelector(".accept-friend")
+        .addEventListener("click", () => {
 
-    }
-  );
+          acceptFriend(
+            requestId,
+            request
+          );
 
+        });
+
+
+      card
+        .querySelector(".reject-friend")
+        .addEventListener("click", () => {
+
+          rejectFriend(requestId);
+
+        });
+
+    });
 }
 
 
-/* =========================================
-   ACCEPT FRIEND
-========================================= */
+/* =========================================================
+   FRIEND ACCEPT
+========================================================= */
 
-async function acceptFriend(
-  item
-){
+async function acceptFriend(requestId, request) {
 
-  const otherId =
-    requestUserId(item);
-
-
-  if(!otherId){
-
-    alert(
-      "User ID missing."
+  const senderId =
+    String(
+      request.fromUserId ||
+      request.senderId ||
+      request.userId ||
+      ""
     );
 
-    return;
 
+  if (!senderId) {
+    showToast("Invalid friend request");
+    return;
   }
 
 
-  try{
+  try {
 
     const myId =
       currentUser.userId;
 
 
-    const friendData = {
-
-      userId:
-        otherId,
-
-      name:
-        requestName(item),
-
-      dp:
-        requestDp(item),
-
-      addedAt:
-        Date.now()
-
-    };
+    const timestamp =
+      Date.now();
 
 
-    const myData = {
-
-      userId:
-        myId,
-
-      name:
-        currentUser.name,
-
-      dp:
-        currentUser.dp,
-
-      addedAt:
-        Date.now()
-
-    };
-
-
-    await fetch(
-      DB +
+    await firebasePut(
       "/friends/" +
-      encodeURIComponent(
-        myId
-      ) +
+      encodeURIComponent(myId) +
       "/" +
-      encodeURIComponent(
-        otherId
-      ) +
-      ".json",
+      encodeURIComponent(senderId),
       {
-        method:"PUT",
-
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify(
-            friendData
-          )
+        userId: senderId,
+        since: timestamp
       }
     );
 
 
-    await fetch(
-      DB +
+    await firebasePut(
       "/friends/" +
-      encodeURIComponent(
-        otherId
-      ) +
+      encodeURIComponent(senderId) +
       "/" +
-      encodeURIComponent(
-        myId
-      ) +
-      ".json",
+      encodeURIComponent(myId),
       {
-        method:"PUT",
-
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify(
-            myData
-          )
+        userId: myId,
+        since: timestamp
       }
     );
 
 
-    await deleteRequest(
-      "friendRequests",
-      item.requestId
+    await firebaseDelete(
+      "/friendRequests/" +
+      encodeURIComponent(myId) +
+      "/" +
+      encodeURIComponent(requestId)
     );
 
 
-    await loadAll();
+    showToast("Friend request accepted");
 
-  }catch(error){
+    await loadInboxData();
 
-    console.error(
-      "Friend accept:",
-      error
-    );
+  } catch (error) {
 
-    alert(
-      "Friend request accept nahi hua."
-    );
+    console.error(error);
 
+    showToast("Could not accept request");
   }
-
 }
 
 
-/* =========================================
-   RENDER CP
-========================================= */
+async function rejectFriend(requestId) {
 
-function renderCP(){
+  try {
 
-  if(
-    !cpRequests.length
-  ){
-
-    content.innerHTML = `
-
-      <div class="section-title">
-        CP Requests
-      </div>
-
-      <div class="empty">
-
-        <div class="empty-icon">
-          💞
-        </div>
-
-        No CP requests.
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-  content.innerHTML = `
-
-    <div class="section-title">
-      CP Requests
-    </div>
-
-    <div
-      id="cpList"
-      class="list"
-    ></div>
-
-  `;
-
-
-  const list =
-    document.getElementById(
-      "cpList"
+    await firebaseDelete(
+      "/friendRequests/" +
+      encodeURIComponent(
+        currentUser.userId
+      ) +
+      "/" +
+      encodeURIComponent(requestId)
     );
 
 
-  cpRequests.forEach(
-    item => {
+    showToast("Friend request rejected");
 
-      const box =
-        document.createElement(
-          "div"
-        );
+    await loadInboxData();
 
-      box.className =
-        "request";
+  } catch (error) {
+
+    console.error(error);
+
+    showToast("Could not reject request");
+  }
+}
 
 
-      box.innerHTML = `
+/* =========================================================
+   CP TAB
+========================================================= */
 
-        <div class="request-top">
+function renderCP() {
 
-          <img
-            class="request-dp"
-            src="${esc(
-              requestDp(item)
-            )}"
-            alt="User"
-            onerror="this.src='${DEFAULT_DP}'"
-          >
+  const content =
+    document.getElementById("content");
 
-          <div class="request-info">
 
-            <div class="request-name">
-              ${esc(
-                requestName(item)
+  let html = "";
+
+
+  /* ACTIVE CP */
+
+  if (activeCpData) {
+
+    const cp =
+      activeCpData;
+
+
+    const points =
+      safeNumber(
+        cp.points ||
+        cp.cpPoints ||
+        cp.score,
+        0
+      );
+
+
+    const days =
+      safeNumber(
+        cp.days ||
+        cp.durationDays,
+        0
+      );
+
+
+    html += `
+
+      <div class="section-title">
+        My CP
+      </div>
+
+      <div class="cp-active">
+
+        <div class="cp-header">
+
+          <div class="cp-title">
+            💕 Couple
+          </div>
+
+          <div class="cp-status">
+            ACTIVE
+          </div>
+
+        </div>
+
+        <div class="couple">
+
+          <div class="couple-person">
+
+            <img
+              class="couple-dp"
+              src="${escapeHtml(
+                currentUser.dp ||
+                DEFAULT_DP
+              )}"
+              alt=""
+            >
+
+            <div class="couple-name">
+              ${escapeHtml(
+                currentUser.name
               )}
             </div>
 
-            <div class="request-id">
-              ID:
-              ${esc(
-                requestUserId(item)
-              )}
-            </div>
+          </div>
 
-            <div class="request-text">
-              Sent you a CP request
+
+          <div class="heart">
+            ❤️
+          </div>
+
+
+          <div class="couple-person">
+
+            <img
+              class="couple-dp"
+              src="${escapeHtml(
+                cp.partnerDp ||
+                DEFAULT_DP
+              )}"
+              alt=""
+            >
+
+            <div class="couple-name">
+              ${escapeHtml(
+                cp.partnerName
+              )}
             </div>
 
           </div>
 
         </div>
 
-        <div class="request-buttons">
 
-          <button
-            class="accept"
-            type="button"
-            data-accept
-          >
-            Accept
-          </button>
+        <div class="cp-stats">
 
-          <button
-            class="reject"
-            type="button"
-            data-reject
-          >
-            Reject
-          </button>
+          <div class="cp-stat">
+
+            <div class="cp-stat-value">
+              ${points}
+            </div>
+
+            <div class="cp-stat-label">
+              CP Points
+            </div>
+
+          </div>
+
+
+          <div class="cp-stat">
+
+            <div class="cp-stat-value">
+              ${days}
+            </div>
+
+            <div class="cp-stat-label">
+              Days
+            </div>
+
+          </div>
+
+
+          <div class="cp-stat">
+
+            <div class="cp-stat-value">
+              💕
+            </div>
+
+            <div class="cp-stat-label">
+              Couple
+            </div>
+
+          </div>
 
         </div>
 
-      `;
+      </div>
 
-
-      box
-        .querySelector(
-          "[data-accept]"
-        )
-        .addEventListener(
-          "click",
-          () =>
-            acceptCP(item)
-        );
-
-
-      box
-        .querySelector(
-          "[data-reject]"
-        )
-        .addEventListener(
-          "click",
-          () =>
-            rejectRequest(
-              "cpRequests",
-              item.requestId
-            )
-        );
-
-
-      list.appendChild(
-        box
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================================
-   ACCEPT CP
-========================================= */
-
-async function acceptCP(
-  item
-){
-
-  const otherId =
-    requestUserId(item);
-
-
-  if(!otherId){
-
-    alert(
-      "User ID missing."
-    );
-
-    return;
-
+    `;
   }
 
 
-  try{
+  /* CP REQUESTS */
 
-    const ids = [
+  const requests =
+    Object.entries(cpRequestsData || {});
 
-      currentUser.userId,
 
-      otherId
+  if (requests.length) {
 
-    ]
-    .sort();
+    html += `
+      <div class="section-title">
+        CP Requests
+      </div>
+    `;
+
+
+    html += requests.map(
+      ([requestId, request]) => {
+
+        const senderId =
+          String(
+            request.fromUserId ||
+            request.senderId ||
+            request.userId ||
+            ""
+          );
+
+
+        const sender =
+          usersData[senderId] ||
+          request;
+
+
+        return `
+
+          <div
+            class="request-card cp-request"
+            data-request="${escapeHtml(requestId)}"
+          >
+
+            <img
+              class="user-dp"
+              src="${escapeHtml(
+                sender.dp ||
+                DEFAULT_DP
+              )}"
+              alt=""
+            >
+
+
+            <div class="item-info">
+
+              <div class="item-name">
+                ${escapeHtml(
+                  sender.name ||
+                  "User"
+                )}
+              </div>
+
+              <div class="item-sub">
+                💕 Wants to become your CP
+              </div>
+
+
+              <div class="request-actions">
+
+                <button
+                  class="small-btn btn-pink accept-cp"
+                  type="button"
+                >
+                  Accept CP
+                </button>
+
+                <button
+                  class="small-btn btn-dark reject-cp"
+                  type="button"
+                >
+                  Reject
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }
+    ).join("");
+  }
+
+
+  /* NO CP */
+
+  if (!activeCpData && !requests.length) {
+
+    html += `
+
+      <div class="empty">
+
+        <div class="empty-icon">
+          💕
+        </div>
+
+        <div class="empty-title">
+          No CP yet
+        </div>
+
+        <div class="empty-text">
+          When someone sends you a CP request,
+          it will appear here.
+        </div>
+
+      </div>
+
+    `;
+  }
+
+
+  content.innerHTML =
+    html;
+
+
+  /* CP ACCEPT BUTTONS */
+
+  content
+    .querySelectorAll(".accept-cp")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const card =
+            button.closest(
+              ".cp-request"
+            );
+
+          const requestId =
+            card.dataset.request;
+
+          const request =
+            cpRequestsData[requestId];
+
+
+          acceptCP(
+            requestId,
+            request
+          );
+
+        }
+      );
+
+    });
+
+
+  /* CP REJECT BUTTONS */
+
+  content
+    .querySelectorAll(".reject-cp")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const card =
+            button.closest(
+              ".cp-request"
+            );
+
+          const requestId =
+            card.dataset.request;
+
+
+          rejectCP(requestId);
+
+        }
+      );
+
+    });
+}
+
+
+/* =========================================================
+   CP ACCEPT
+========================================================= */
+
+async function acceptCP(requestId, request) {
+
+  if (!request) {
+
+    showToast("Invalid CP request");
+
+    return;
+  }
+
+
+  const myId =
+    String(
+      currentUser.userId
+    );
+
+
+  const senderId =
+    String(
+      request.fromUserId ||
+      request.senderId ||
+      request.userId ||
+      ""
+    );
+
+
+  if (!senderId) {
+
+    showToast(
+      "CP user information missing"
+    );
+
+    return;
+  }
+
+
+  if (senderId === myId) {
+
+    showToast(
+      "You cannot make yourself CP"
+    );
+
+    return;
+  }
+
+
+  if (activeCpData) {
+
+    showToast(
+      "You already have an active CP"
+    );
+
+    return;
+  }
+
+
+  try {
+
+    /* Check whether sender already has CP */
+
+    const allCps =
+      await firebaseGet("/cp");
+
+
+    const existing =
+      findCpForUser(
+        allCps || {},
+        senderId
+      );
+
+
+    if (existing) {
+
+      showToast(
+        "This user already has a CP"
+      );
+
+      return;
+    }
+
+
+    /* Check whether I already have CP */
+
+    const myExisting =
+      findCpForUser(
+        allCps || {},
+        myId
+      );
+
+
+    if (myExisting) {
+
+      showToast(
+        "You already have an active CP"
+      );
+
+      return;
+    }
+
+
+    const sender =
+      usersData[senderId] ||
+      request;
 
 
     const cpId =
-      ids.join("__");
+      cpIdFor(
+        myId,
+        senderId
+      );
+
+
+    const timestamp =
+      Date.now();
 
 
     const cpData = {
 
-      cpId:
+      cpId,
 
-        cpId,
+      user1Id:
+        sortedPair(
+          myId,
+          senderId
+        )[0],
 
-      user1:
-        ids[0],
-
-      user2:
-        ids[1],
+      user2Id:
+        sortedPair(
+          myId,
+          senderId
+        )[1],
 
       user1Name:
-        ids[0] ===
-        currentUser.userId
+        myId <
+        senderId
           ? currentUser.name
-          : requestName(item),
+          : sender.name || "User",
 
       user2Name:
-        ids[1] ===
-        currentUser.userId
-          ? currentUser.name
-          : requestName(item),
+        myId <
+        senderId
+          ? sender.name || "User"
+          : currentUser.name,
 
       user1Dp:
-        ids[0] ===
-        currentUser.userId
+        myId <
+        senderId
           ? currentUser.dp
-          : requestDp(item),
+          : sender.dp || DEFAULT_DP,
 
       user2Dp:
-        ids[1] ===
-        currentUser.userId
-          ? currentUser.dp
-          : requestDp(item),
+        myId <
+        senderId
+          ? sender.dp || DEFAULT_DP
+          : currentUser.dp,
 
-      score:
-        0,
+      points: 0,
 
-      createdAt:
-        Date.now()
+      days: 0,
+
+      status: "active",
+
+      createdAt: timestamp,
+
+      acceptedAt: timestamp
 
     };
 
 
-    await fetch(
-      DB +
+    /* Save CP */
+
+    await firebasePut(
       "/cp/" +
-      encodeURIComponent(
-        cpId
-      ) +
-      ".json",
-      {
-        method:"PUT",
-
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify(
-            cpData
-          )
-      }
+      encodeURIComponent(cpId),
+      cpData
     );
 
 
-    /*
-      Also create a ranking entry.
-      Score starts at 0 and can later
-      increase through gifts/activity.
-    */
+    /* CP ranking entry */
 
-    await fetch(
-      DB +
+    await firebasePut(
       "/cpRanking/" +
-      encodeURIComponent(
-        cpId
-      ) +
-      ".json",
+      encodeURIComponent(cpId),
       {
-        method:"PUT",
 
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
+        cpId,
 
-        body:
-          JSON.stringify({
+        user1Id:
+          cpData.user1Id,
 
-            cpId:
-              cpId,
+        user2Id:
+          cpData.user2Id,
 
-            user1:
-              ids[0],
+        user1Name:
+          cpData.user1Name,
 
-            user2:
-              ids[1],
+        user2Name:
+          cpData.user2Name,
 
-            user1Name:
-              cpData.user1Name,
+        user1Dp:
+          cpData.user1Dp,
 
-            user2Name:
-              cpData.user2Name,
+        user2Dp:
+          cpData.user2Dp,
 
-            user1Dp:
-              cpData.user1Dp,
+        points: 0,
 
-            user2Dp:
-              cpData.user2Dp,
+        status: "active",
 
-            score:
-              0,
+        createdAt: timestamp
 
-            updatedAt:
-              Date.now()
-
-          })
       }
     );
 
 
-    await deleteRequest(
-      "cpRequests",
-      item.requestId
+    /* Save CP reference under both users */
+
+    await firebasePatch(
+      "/users/" +
+      encodeURIComponent(myId),
+      {
+        cpId,
+        cpUserId: senderId
+      }
     );
 
 
-    await loadAll();
+    await firebasePatch(
+      "/users/" +
+      encodeURIComponent(senderId),
+      {
+        cpId,
+        cpUserId: myId
+      }
+    );
 
-  }catch(error){
+
+    /* Delete request */
+
+    await firebaseDelete(
+      "/cpRequests/" +
+      encodeURIComponent(myId) +
+      "/" +
+      encodeURIComponent(requestId)
+    );
+
+
+    /* Notification for sender */
+
+    const notificationId =
+      "CP_ACCEPT_" +
+      Date.now();
+
+
+    await firebasePut(
+      "/notifications/" +
+      encodeURIComponent(senderId) +
+      "/" +
+      notificationId,
+      {
+
+        type: "cp_accept",
+
+        title: "CP Accepted",
+
+        text:
+          currentUser.name +
+          " accepted your CP request ❤️",
+
+        fromUserId: myId,
+
+        fromUserName:
+          currentUser.name,
+
+        fromUserDp:
+          currentUser.dp,
+
+        createdAt: timestamp,
+
+        read: false
+
+      }
+    );
+
+
+    showToast(
+      "💕 CP created successfully!"
+    );
+
+
+    await loadInboxData();
+
+  } catch (error) {
 
     console.error(
-      "CP accept:",
+      "CP accept error:",
       error
     );
 
-    alert(
-      "CP request accept nahi hua."
+    showToast(
+      "Could not create CP"
     );
-
   }
-
 }
 
 
-/* =========================================
-   RENDER FAMILY
-========================================= */
+/* =========================================================
+   FIND CP FOR USER
+========================================================= */
 
-function renderFamily(){
+function findCpForUser(
+  allCps,
+  userId
+) {
 
-  if(
-    !familyInvites.length
-  ){
+  const uid =
+    String(userId);
 
-    content.innerHTML = `
 
-      <div class="section-title">
-        Family Invites
-      </div>
+  for (
+    const cpId of Object.keys(
+      allCps || {}
+    )
+  ) {
 
-      <div class="empty">
+    const cp =
+      allCps[cpId];
 
-        <div class="empty-icon">
-          👨‍👩‍👧
-        </div>
 
-        No family invites.
+    if (!cp) {
+      continue;
+    }
 
-      </div>
 
-    `;
+    const user1 =
+      String(
+        cp.user1Id ||
+        cp.uid1 ||
+        ""
+      );
 
-    return;
 
+    const user2 =
+      String(
+        cp.user2Id ||
+        cp.uid2 ||
+        ""
+      );
+
+
+    if (
+      user1 === uid ||
+      user2 === uid
+    ) {
+
+      return {
+        ...cp,
+        cpId
+      };
+    }
   }
 
 
-  content.innerHTML = `
-
-    <div class="section-title">
-      Family Invites
-    </div>
-
-    <div
-      id="familyList"
-      class="list"
-    ></div>
-
-  `;
+  return null;
+}
 
 
-  const list =
-    document.getElementById(
-      "familyList"
+/* =========================================================
+   CP REJECT
+========================================================= */
+
+async function rejectCP(requestId) {
+
+  try {
+
+    await firebaseDelete(
+      "/cpRequests/" +
+      encodeURIComponent(
+        currentUser.userId
+      ) +
+      "/" +
+      encodeURIComponent(
+        requestId
+      )
     );
 
 
-  familyInvites.forEach(
-    item => {
-
-      const box =
-        document.createElement(
-          "div"
-        );
-
-      box.className =
-        "request";
+    showToast(
+      "CP request rejected"
+    );
 
 
-      box.innerHTML = `
+    await loadInboxData();
 
-        <div class="request-top">
+  } catch (error) {
 
-          <img
-            class="request-dp"
-            src="${esc(
-              requestDp(item)
+    console.error(error);
+
+    showToast(
+      "Could not reject CP request"
+    );
+  }
+}
+
+
+/* =========================================================
+   FAMILY
+========================================================= */
+
+function renderFamily() {
+
+  const content =
+    document.getElementById("content");
+
+
+  const invites =
+    Object.entries(
+      familyInvitesData || {}
+    );
+
+
+  if (!invites.length) {
+
+    content.innerHTML = `
+      <div class="empty">
+
+        <div class="empty-icon">
+          👨‍👩‍👧‍👦
+        </div>
+
+        <div class="empty-title">
+          No family invitations
+        </div>
+
+        <div class="empty-text">
+          Family invitations will appear here.
+        </div>
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  content.innerHTML =
+    `<div class="section-title">
+       Family Invitations
+     </div>` +
+
+    invites.map(
+      ([inviteId, invite]) => {
+
+        return `
+
+          <div
+            class="family-card"
+            data-invite="${escapeHtml(
+              inviteId
             )}"
-            alt="Family"
-            onerror="this.src='${DEFAULT_DP}'"
           >
 
-          <div class="request-info">
-
-            <div class="request-name">
-              ${esc(
-                item.familyName ||
-                item.name ||
-                "PawanVoice Family"
-              )}
+            <div class="family-icon">
+              👨‍👩‍👧‍👦
             </div>
 
-            <div class="request-id">
-              Family ID:
-              ${esc(
-                item.familyId ||
-                item.id ||
-                "-"
-              )}
-            </div>
 
-            <div class="request-text">
-              Invited by
-              ${esc(
-                requestName(item)
-              )}
+            <div class="item-info">
+
+              <div class="item-name">
+                ${escapeHtml(
+                  invite.familyName ||
+                  invite.name ||
+                  "Family"
+                )}
+              </div>
+
+              <div class="item-sub">
+                You have received a family invitation.
+              </div>
+
+
+              <div class="request-actions">
+
+                <button
+                  class="small-btn btn-pink accept-family"
+                  type="button"
+                >
+                  Accept
+                </button>
+
+                <button
+                  class="small-btn btn-dark reject-family"
+                  type="button"
+                >
+                  Reject
+                </button>
+
+              </div>
+
             </div>
 
           </div>
 
-        </div>
+        `;
 
-        <div class="request-buttons">
-
-          <button
-            class="accept"
-            type="button"
-            data-accept
-          >
-            Join
-          </button>
-
-          <button
-            class="reject"
-            type="button"
-            data-reject
-          >
-            Reject
-          </button>
-
-        </div>
-
-      `;
+      }
+    ).join("");
 
 
-      box
-        .querySelector(
-          "[data-accept]"
-        )
-        .addEventListener(
-          "click",
-          () =>
-            acceptFamily(item)
-        );
+  content
+    .querySelectorAll(".accept-family")
+    .forEach(button => {
 
+      button.addEventListener(
+        "click",
+        () => {
 
-      box
-        .querySelector(
-          "[data-reject]"
-        )
-        .addEventListener(
-          "click",
-          () =>
-            rejectRequest(
-              "familyInvites",
-              item.requestId
-            )
-        );
+          const card =
+            button.closest(
+              ".family-card"
+            );
 
+          acceptFamily(
+            card.dataset.invite,
+            familyInvitesData[
+              card.dataset.invite
+            ]
+          );
 
-      list.appendChild(
-        box
+        }
       );
 
-    }
-  );
+    });
 
+
+  content
+    .querySelectorAll(".reject-family")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const card =
+            button.closest(
+              ".family-card"
+            );
+
+          rejectFamily(
+            card.dataset.invite
+          );
+
+        }
+      );
+
+    });
 }
 
 
-/* =========================================
-   ACCEPT FAMILY
-========================================= */
+/* =========================================================
+   FAMILY ACCEPT
+========================================================= */
 
 async function acceptFamily(
-  item
-){
+  inviteId,
+  invite
+) {
 
-  const familyId =
-    item.familyId ||
-    item.id;
+  try {
 
-
-  if(!familyId){
-
-    alert(
-      "Family ID missing."
-    );
-
-    return;
-
-  }
+    const familyId =
+      invite.familyId ||
+      inviteId;
 
 
-  try{
-
-    await fetch(
-      DB +
+    await firebasePut(
       "/families/" +
       encodeURIComponent(
         familyId
@@ -2384,131 +2404,114 @@ async function acceptFamily(
       "/members/" +
       encodeURIComponent(
         currentUser.userId
+      ),
+      {
+
+        userId:
+          currentUser.userId,
+
+        name:
+          currentUser.name,
+
+        dp:
+          currentUser.dp,
+
+        joinedAt:
+          Date.now()
+
+      }
+    );
+
+
+    await firebaseDelete(
+      "/familyInvites/" +
+      encodeURIComponent(
+        currentUser.userId
       ) +
-      ".json",
-      {
-        method:"PUT",
-
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify({
-
-            userId:
-              currentUser.userId,
-
-            name:
-              currentUser.name,
-
-            dp:
-              currentUser.dp,
-
-            joinedAt:
-              Date.now()
-
-          })
-      }
+      "/" +
+      encodeURIComponent(
+        inviteId
+      )
     );
 
 
-    await deleteRequest(
-      "familyInvites",
-      item.requestId
+    showToast(
+      "Family invitation accepted"
     );
 
 
-    await loadAll();
+    await loadInboxData();
 
-  }catch(error){
+  } catch (error) {
 
-    console.error(
-      "Family accept:",
-      error
+    console.error(error);
+
+    showToast(
+      "Could not accept invitation"
     );
-
-    alert(
-      "Family invite accept nahi hua."
-    );
-
   }
-
 }
 
 
-/* =========================================
-   DELETE REQUEST
-========================================= */
+/* =========================================================
+   FAMILY REJECT
+========================================================= */
 
-async function deleteRequest(
-  collection,
-  requestId
-){
+async function rejectFamily(
+  inviteId
+) {
 
-  if(!requestId){
-    return;
-  }
+  try {
 
-
-  const url =
-    DB +
-    "/" +
-    collection +
-    "/" +
-    encodeURIComponent(
-      currentUser.userId
-    ) +
-    "/" +
-    encodeURIComponent(
-      requestId
-    ) +
-    ".json";
-
-
-  const response =
-    await fetch(
-      url,
-      {
-        method:"DELETE"
-      }
+    await firebaseDelete(
+      "/familyInvites/" +
+      encodeURIComponent(
+        currentUser.userId
+      ) +
+      "/" +
+      encodeURIComponent(
+        inviteId
+      )
     );
 
 
-  if(!response.ok){
-
-    throw new Error(
-      "Delete failed: " +
-      response.status
+    showToast(
+      "Family invitation rejected"
     );
 
-  }
 
+    await loadInboxData();
+
+  } catch (error) {
+
+    console.error(error);
+
+    showToast(
+      "Could not reject invitation"
+    );
+  }
 }
 
 
-/* =========================================
-   TAB CLICK
-========================================= */
+/* =========================================================
+   TAB EVENTS
+========================================================= */
 
-document.querySelectorAll(
-  ".tab"
-).forEach(
-  tab => {
+document
+  .querySelectorAll(".tab")
+  .forEach(tab => {
 
     tab.addEventListener(
       "click",
       () => {
 
-        document.querySelectorAll(
-          ".tab"
-        ).forEach(
-          item =>
-            item.classList.remove(
+        document
+          .querySelectorAll(".tab")
+          .forEach(t => {
+            t.classList.remove(
               "active"
-            )
-        );
+            );
+          });
 
 
         tab.classList.add(
@@ -2516,93 +2519,91 @@ document.querySelectorAll(
         );
 
 
-        currentTab =
-          tab.dataset.tab ||
-          "messages";
+        activeTab =
+          tab.dataset.tab;
 
 
-        render();
+        renderCurrentTab();
 
       }
     );
 
-  }
-);
+  });
 
 
-/* =========================================
-   LOAD ALL
-========================================= */
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
-async function loadAll(){
-
-  if(loading){
-    return;
-  }
-
-  loading = true;
-
-
-  try{
-
-    await Promise.all([
-
-      loadPrivateMessages(),
-
-      loadRequests()
-
-    ]);
+document
+  .getElementById("homeBtn")
+  .addEventListener(
+    "click",
+    () => {
+      window.location.href =
+        "index.html";
+    }
+  );
 
 
-    render();
-
-  }finally{
-
-    loading = false;
-
-  }
-
-}
-
-
-/* =========================================
-   BACK
-========================================= */
-
-function goBack(){
-
-  if(
-    history.length > 1
-  ){
-
-    history.back();
-
-  }else{
-
-    location.href =
-      "index.html";
-
-  }
-
-}
+document
+  .getElementById("navHome")
+  .addEventListener(
+    "click",
+    () => {
+      window.location.href =
+        "index.html";
+    }
+  );
 
 
-/* =========================================
-   START
-========================================= */
+document
+  .getElementById("navProfile")
+  .addEventListener(
+    "click",
+    () => {
+      window.location.href =
+        "profile.html";
+    }
+  );
 
-loadAll();
 
-
-/* =========================================
+/* =========================================================
    AUTO REFRESH
-========================================= */
+========================================================= */
 
-setInterval(
-  loadAll,
-  5000
-);
+function startRefresh() {
 
+  clearInterval(
+    refreshTimer
+  );
+
+
+  refreshTimer =
+    setInterval(
+      () => {
+
+        loadInboxData();
+
+      },
+      5000
+    );
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+(async function init() {
+
+  await loadCurrentUser();
+
+  await loadInboxData();
+
+  startRefresh();
+
+})();
 </script>
 
 </body>
