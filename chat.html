@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<title>PawanVoice Chat</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  background:#090b12;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+  overflow:hidden;
+}
+
+.app{
+  width:100%;
+  max-width:760px;
+  height:100%;
+  margin:auto;
+  display:flex;
+  flex-direction:column;
+  background:#090b12;
+}
+
+/* HEADER */
+
+.header{
+  flex-shrink:0;
+  height:64px;
+  background:#0e1119;
+  border-bottom:1px solid #252b38;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 12px;
+  z-index:5;
+}
+
+.back{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:50%;
+  background:#1a1f2b;
+  color:#fff;
+  font-size:26px;
+}
+
+.header-dp{
+  width:43px;
+  height:43px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#202532;
+}
+
+.header-info{
+  min-width:0;
+  flex:1;
+}
+
+.header-name{
+  font-size:15px;
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.header-id{
+  margin-top:3px;
+  font-size:10px;
+  color:#7f899c;
+}
+
+.header-action{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:50%;
+  background:#1a1f2b;
+  color:#fff;
+  font-size:19px;
+}
+
+/* STATUS */
+
+.status{
+  flex-shrink:0;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:10px;
+  color:#7f899c;
+  background:#0b0e16;
+}
+
+/* MESSAGES */
+
+.messages{
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  padding:14px 12px 10px;
+  scroll-behavior:smooth;
+}
+
+.date-line{
+  text-align:center;
+  color:#626b7d;
+  font-size:10px;
+  margin:8px 0 14px;
+}
+
+.message-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:12px;
+  align-items:flex-end;
+}
+
+.message-row.mine{
+  justify-content:flex-end;
+}
+
+.message-dp{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  object-fit:cover;
+  flex-shrink:0;
+}
+
+.message-content{
+  max-width:78%;
+}
+
+.message-name{
+  font-size:10px;
+  color:#7f899c;
+  margin:0 0 4px 4px;
+}
+
+.message-row.mine .message-name{
+  text-align:right;
+  margin-right:4px;
+}
+
+.bubble{
+  padding:9px 12px;
+  border-radius:15px;
+  background:#171b25;
+  border:1px solid #282e3b;
+  color:#f5f6f8;
+  font-size:14px;
+  line-height:1.4;
+  word-break:break-word;
+}
+
+.message-row.mine .bubble{
+  background:#242a38;
+  border-color:#353c4c;
+}
+
+.message-time{
+  font-size:9px;
+  color:#5f6879;
+  margin-top:3px;
+  padding:0 4px;
+}
+
+/* EMPTY */
+
+.empty-chat{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#6f788b;
+  font-size:13px;
+  padding:30px;
+}
+
+/* INPUT */
+
+.composer{
+  flex-shrink:0;
+  background:#0e1119;
+  border-top:1px solid #252b38;
+  padding:9px 10px;
+}
+
+.composer-row{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+.icon-btn{
+  width:43px;
+  height:43px;
+  flex-shrink:0;
+  border:0;
+  border-radius:50%;
+  background:#1a1f2b;
+  color:#fff;
+  font-size:19px;
+}
+
+.text-box{
+  flex:1;
+  min-width:0;
+  height:43px;
+  border-radius:22px;
+  border:1px solid #303746;
+  background:#171b25;
+  color:#fff;
+  outline:none;
+  padding:0 15px;
+  font-size:14px;
+}
+
+.text-box:focus{
+  border-color:#596273;
+}
+
+.send{
+  width:46px;
+  height:43px;
+  flex-shrink:0;
+  border:0;
+  border-radius:22px;
+  background:#ffca28;
+  color:#171717;
+  font-size:18px;
+  font-weight:800;
+}
+
+/* EMOJI */
+
+.emoji-panel{
+  display:none;
+  background:#11151f;
+  border:1px solid #292f3c;
+  border-radius:14px;
+  padding:9px;
+  margin-bottom:8px;
+  max-height:150px;
+  overflow-y:auto;
+}
+
+.emoji-panel.show{
+  display:block;
+}
+
+.emoji-grid{
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  gap:5px;
+}
+
+.emoji{
+  min-height:34px;
+  border:0;
+  border-radius:8px;
+  background:#1a1f2a;
+  font-size:20px;
+}
+
+/* LOADING */
+
+.loading{
+  text-align:center;
+  padding:30px;
+  color:#737d90;
+  font-size:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+
+  <header class="header">
+
+    <button
+      class="back"
+      type="button"
+      onclick="goBack()"
+      aria-label="Back"
+    >
+      ‹
+    </button>
+
+    <img
+      id="headerDp"
+      class="header-dp"
+      src="https://i.pravatar.cc/200?img=12"
+      alt="User"
+    >
+
+    <div class="header-info">
+
+      <div
+        id="headerName"
+        class="header-name"
+      >
+        Loading...
+      </div>
+
+      <div
+        id="headerId"
+        class="header-id"
+      >
+        ID: -
+      </div>
+
+    </div>
+
+    <button
+      class="header-action"
+      type="button"
+      onclick="openProfile()"
+      aria-label="Profile"
+    >
+      👤
+    </button>
+
+  </header>
+
+
+  <!-- STATUS -->
+
+  <div
+    id="status"
+    class="status"
+  >
+    Connecting...
+  </div>
+
+
+  <!-- MESSAGES -->
+
+  <main
+    id="messages"
+    class="messages"
+  >
+
+    <div
+      id="loading"
+      class="loading"
+    >
+      Loading messages...
+    </div>
+
+  </main>
+
+
+  <!-- COMPOSER -->
+
+  <footer class="composer">
+
+    <div
+      id="emojiPanel"
+      class="emoji-panel"
+    >
+
+      <div class="emoji-grid">
+
+        <button class="emoji" type="button">😀</button>
+        <button class="emoji" type="button">😂</button>
+        <button class="emoji" type="button">🤣</button>
+        <button class="emoji" type="button">😊</button>
+        <button class="emoji" type="button">😍</button>
+        <button class="emoji" type="button">😘</button>
+        <button class="emoji" type="button">🥰</button>
+        <button class="emoji" type="button">😎</button>
+
+        <button class="emoji" type="button">😢</button>
+        <button class="emoji" type="button">😭</button>
+        <button class="emoji" type="button">😡</button>
+        <button class="emoji" type="button">😱</button>
+        <button class="emoji" type="button">😴</button>
+        <button class="emoji" type="button">🤔</button>
+        <button class="emoji" type="button">🙄</button>
+        <button class="emoji" type="button">😇</button>
+
+        <button class="emoji" type="button">❤️</button>
+        <button class="emoji" type="button">🧡</button>
+        <button class="emoji" type="button">💛</button>
+        <button class="emoji" type="button">💚</button>
+        <button class="emoji" type="button">💙</button>
+        <button class="emoji" type="button">💜</button>
+        <button class="emoji" type="button">🖤</button>
+        <button class="emoji" type="button">💖</button>
+
+        <button class="emoji" type="button">👍</button>
+        <button class="emoji" type="button">👎</button>
+        <button class="emoji" type="button">👏</button>
+        <button class="emoji" type="button">🙏</button>
+        <button class="emoji" type="button">🔥</button>
+        <button class="emoji" type="button">🎉</button>
+        <button class="emoji" type="button">💯</button>
+        <button class="emoji" type="button">✨</button>
+
+        <button class="emoji" type="button">🌹</button>
+        <button class="emoji" type="button">🎁</button>
+        <button class="emoji" type="button">💎</button>
+        <button class="emoji" type="button">👑</button>
+        <button class="emoji" type="button">🎂</button>
+        <button class="emoji" type="button">🚀</button>
+        <button class="emoji" type="button">💰</button>
+        <button class="emoji" type="button">🥳</button>
+
+      </div>
+
+    </div>
+
+
+    <div class="composer-row">
+
+      <button
+        id="emojiBtn"
+        class="icon-btn"
+        type="button"
+        aria-label="Emoji"
+      >
+        😊
+      </button>
+
+      <input
+        id="messageInput"
+        class="text-box"
+        type="text"
+        maxlength="500"
+        autocomplete="off"
+        placeholder="Type a message..."
+      >
+
+      <button
+        id="sendBtn"
+        class="send"
+        type="button"
+      >
+        ➤
+      </button>
+
+    </div>
+
+  </footer>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   PAWANVOICE CHAT
+========================================= */
+
+const DB =
+  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
+
+const DEFAULT_DP =
+  "https://i.pravatar.cc/200?img=12";
+
+
+/* =========================================
+   URL TARGET USER
+========================================= */
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const targetUserId =
+  (
+    params.get("user") ||
+    params.get("uid") ||
+    ""
+  ).trim();
+
+
+/* =========================================
+   CURRENT USER
+========================================= */
+
+const currentUser = {
+
+  userId:
+    localStorage.getItem("pv_userId") ||
+    "pawan",
+
+  name:
+    localStorage.getItem("pv_name") ||
+    "Pawan User",
+
+  dp:
+    localStorage.getItem("pv_dp") ||
+    DEFAULT_DP
+
+};
+
+
+/* =========================================
+   STATE
+========================================= */
+
+let targetUser = {
+
+  userId:
+    targetUserId,
+
+  name:
+    "User",
+
+  dp:
+    DEFAULT_DP
+
+};
+
+let messages = [];
+
+let loading = false;
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const messagesBox =
+  document.getElementById(
+    "messages"
+  );
+
+const input =
+  document.getElementById(
+    "messageInput"
+  );
+
+const sendBtn =
+  document.getElementById(
+    "sendBtn"
+  );
+
+const emojiBtn =
+  document.getElementById(
+    "emojiBtn"
+  );
+
+const emojiPanel =
+  document.getElementById(
+    "emojiPanel"
+  );
+
+const statusBox =
+  document.getElementById(
+    "status"
+  );
+
+const headerName =
+  document.getElementById(
+    "headerName"
+  );
+
+const headerId =
+  document.getElementById(
+    "headerId"
+  );
+
+const headerDp =
+  document.getElementById(
+    "headerDp"
+  );
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function esc(value){
+
+  return String(
+    value ?? ""
+  )
+  .replaceAll("&","&amp;")
+  .replaceAll("<","&lt;")
+  .replaceAll(">","&gt;")
+  .replaceAll('"',"&quot;")
+  .replaceAll("'","&#039;");
+}
+
+
+/* =========================================
+   FIREBASE PATH
+========================================= */
+
+function userPath(id){
+
+  return encodeURIComponent(
+    id
+  );
+}
+
+
+/* =========================================
+   CHAT PATH
+========================================= */
+
+/*
+  Both users get the same conversation ID.
+
+  Example:
+
+  pawan + rahul
+
+  always becomes:
+
+  pawan__rahul
+
+  regardless of who opens the chat.
+*/
+
+function conversationId(){
+
+  const a =
+    String(
+      currentUser.userId
+    );
+
+  const b =
+    String(
+      targetUser.userId
+    );
+
+  return [
+    a,
+    b
+  ]
+  .sort()
+  .join("__");
+}
+
+
+/* =========================================
+   LOAD TARGET PROFILE
+========================================= */
+
+async function loadTargetUser(){
+
+  if(!targetUserId){
+
+    targetUser = {
+      userId:"",
+      name:"Unknown User",
+      dp:DEFAULT_DP
+    };
+
+    updateHeader();
+
+    return;
+  }
+
+  try{
+
+    const response =
+      await fetch(
+        DB +
+        "/users/" +
+        userPath(
+          targetUserId
+        ) +
+        ".json"
+      );
+
+    if(
+      response.ok
+    ){
+
+      const data =
+        await response.json();
+
+      if(data){
+
+        targetUser = {
+
+          userId:
+            data.userId ||
+            targetUserId,
+
+          name:
+            data.name ||
+            "Pawan User",
+
+          dp:
+            data.dp ||
+            DEFAULT_DP
+
+        };
+
+      }
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "Target user:",
+      error
+    );
+
+  }
+
+  updateHeader();
+
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+function updateHeader(){
+
+  headerName.textContent =
+    targetUser.name ||
+    "User";
+
+  headerId.textContent =
+    "ID: " +
+    (
+      targetUser.userId ||
+      "-"
+    );
+
+  headerDp.src =
+    targetUser.dp ||
+    DEFAULT_DP;
+
+  headerDp.onerror =
+    function(){
+
+      this.src =
+        DEFAULT_DP;
+
+    };
+
+}
+
+
+/* =========================================
+   LOAD CHAT
+========================================= */
+
+async function loadMessages(){
+
+  if(
+    !currentUser.userId ||
+    !targetUser.userId
+  ){
+
+    renderEmpty(
+      "User not found."
+    );
+
+    return;
+  }
+
+  if(loading){
+    return;
+  }
+
+  loading = true;
+
+  statusBox.textContent =
+    "Loading messages...";
+
+  try{
+
+    const chatId =
+      conversationId();
+
+    const response =
+      await fetch(
+        DB +
+        "/privateChats/" +
+        encodeURIComponent(
+          chatId
+        ) +
+        ".json"
+      );
+
+    if(!response.ok){
+
+      throw new Error(
+        "Firebase HTTP " +
+        response.status
+      );
+
+    }
+
+    const data =
+      await response.json();
+
+    messages = [];
+
+    if(data){
+
+      Object.keys(data)
+        .forEach(
+          key => {
+
+            const message =
+              data[key];
+
+            if(
+              message &&
+              typeof message ===
+              "object"
+            ){
+
+              messages.push({
+
+                id:
+                  message.id ||
+                  key,
+
+                senderId:
+                  message.senderId ||
+                  "",
+
+                receiverId:
+                  message.receiverId ||
+                  "",
+
+                senderName:
+                  message.senderName ||
+                  "User",
+
+                senderDp:
+                  message.senderDp ||
+                  DEFAULT_DP,
+
+                text:
+                  message.text ||
+                  "",
+
+                time:
+                  Number(
+                    message.time ||
+                    0
+                  )
+
+              });
+
+            }
+
+          }
+        );
+
+    }
+
+    messages.sort(
+      (a,b) =>
+        Number(a.time || 0) -
+        Number(b.time || 0)
+    );
+
+    /*
+      Keep only latest 200 messages
+      on the screen.
+    */
+
+    if(messages.length > 200){
+
+      messages =
+        messages.slice(
+          -200
+        );
+
+    }
+
+    renderMessages();
+
+    statusBox.textContent =
+      "Online chat";
+
+  }catch(error){
+
+    console.error(
+      "Chat load:",
+      error
+    );
+
+    statusBox.textContent =
+      "Unable to load messages";
+
+    renderEmpty(
+      "No messages yet.\nSend the first message."
+    );
+
+  }finally{
+
+    loading = false;
+
+  }
+
+}
+
+
+/* =========================================
+   RENDER EMPTY
+========================================= */
+
+function renderEmpty(text){
+
+  messagesBox.innerHTML = `
+    <div class="empty-chat">
+      ${esc(text)}
+    </div>
+  `;
+
+}
+
+
+/* =========================================
+   FORMAT TIME
+========================================= */
+
+function formatTime(timestamp){
+
+  const date =
+    new Date(
+      Number(timestamp)
+    );
+
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+
+    return "";
+
+  }
+
+  return date.toLocaleTimeString(
+    [],
+    {
+      hour:"2-digit",
+      minute:"2-digit"
+    }
+  );
+
+}
+
+
+/* =========================================
+   FORMAT DATE
+========================================= */
+
+function formatDate(timestamp){
+
+  const date =
+    new Date(
+      Number(timestamp)
+    );
+
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+
+    return "";
+
+  }
+
+  return date.toLocaleDateString(
+    [],
+    {
+      day:"numeric",
+      month:"short",
+      year:"numeric"
+    }
+  );
+
+}
+
+
+/* =========================================
+   RENDER MESSAGES
+========================================= */
+
+function renderMessages(){
+
+  if(!messages.length){
+
+    renderEmpty(
+      "No messages yet.\nSend the first message."
+    );
+
+    return;
+
+  }
+
+  let html = "";
+
+  let previousDate = "";
+
+  messages.forEach(
+    message => {
+
+      const mine =
+        message.senderId ===
+        currentUser.userId;
+
+      const dateText =
+        formatDate(
+          message.time
+        );
+
+      if(
+        dateText !==
+        previousDate
+      ){
+
+        html += `
+          <div class="date-line">
+            ${esc(dateText)}
+          </div>
+        `;
+
+        previousDate =
+          dateText;
+
+      }
+
+      html += `
+
+        <div
+          class="message-row ${
+            mine ? "mine" : ""
+          }"
+        >
+
+          ${
+            !mine
+              ? `
+                <img
+                  class="message-dp"
+                  src="${esc(
+                    message.senderDp ||
+                    DEFAULT_DP
+                  )}"
+                  alt="User"
+                  onerror="this.src='${DEFAULT_DP}'"
+                >
+              `
+              : ""
+          }
+
+          <div class="message-content">
+
+            <div class="message-name">
+              ${esc(
+                message.senderName ||
+                "User"
+              )}
+            </div>
+
+            <div class="bubble">
+              ${esc(
+                message.text
+              )}
+            </div>
+
+            <div class="message-time">
+              ${esc(
+                formatTime(
+                  message.time
+                )
+              )}
+            </div>
+
+          </div>
+
+          ${
+            mine
+              ? `
+                <img
+                  class="message-dp"
+                  src="${esc(
+                    currentUser.dp ||
+                    DEFAULT_DP
+                  )}"
+                  alt="You"
+                  onerror="this.src='${DEFAULT_DP}'"
+                >
+              `
+              : ""
+          }
+
+        </div>
+
+      `;
+
+    }
+  );
+
+  messagesBox.innerHTML =
+    html;
+
+  scrollToBottom();
+
+}
+
+
+/* =========================================
+   SCROLL
+========================================= */
+
+function scrollToBottom(){
+
+  setTimeout(
+    () => {
+
+      messagesBox.scrollTop =
+        messagesBox.scrollHeight;
+
+    },
+    30
+  );
+
+}
+
+
+/* =========================================
+   SEND MESSAGE
+========================================= */
+
+async function sendMessage(){
+
+  const text =
+    input.value.trim();
+
+  if(!text){
+    return;
+  }
+
+  if(!targetUser.userId){
+
+    alert(
+      "User ID missing."
+    );
+
+    return;
+
+  }
+
+  if(
+    !currentUser.userId
+  ){
+
+    alert(
+      "Your User ID is missing."
+    );
+
+    return;
+
+  }
+
+  input.disabled = true;
+  sendBtn.disabled = true;
+
+  try{
+
+    const chatId =
+      conversationId();
+
+    const messageId =
+      "msg_" +
+      Date.now() +
+      "_" +
+      Math.random()
+        .toString(36)
+        .slice(2,9);
+
+    const message = {
+
+      id:
+        messageId,
+
+      senderId:
+        currentUser.userId,
+
+      receiverId:
+        targetUser.userId,
+
+      senderName:
+        currentUser.name,
+
+      senderDp:
+        currentUser.dp,
+
+      text:
+        text.slice(0,500),
+
+      time:
+        Date.now()
+
+    };
+
+    const response =
+      await fetch(
+        DB +
+        "/privateChats/" +
+        encodeURIComponent(
+          chatId
+        ) +
+        "/" +
+        encodeURIComponent(
+          messageId
+        ) +
+        ".json",
+        {
+          method:"PUT",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(
+              message
+            )
+        }
+      );
+
+    if(!response.ok){
+
+      throw new Error(
+        "Firebase save failed: " +
+        response.status
+      );
+
+    }
+
+    /*
+      Add immediately to screen.
+    */
+
+    messages.push(
+      message
+    );
+
+    renderMessages();
+
+    input.value = "";
+
+    emojiPanel.classList.remove(
+      "show"
+    );
+
+    /*
+      Create notification entry
+      for the receiver.
+    */
+
+    await createMessageNotification(
+      message
+    );
+
+  }catch(error){
+
+    console.error(
+      "Send message:",
+      error
+    );
+
+    alert(
+      "Message send nahi hua. Internet/Firebase check karein."
+    );
+
+  }finally{
+
+    input.disabled = false;
+    sendBtn.disabled = false;
+
+    input.focus();
+
+  }
+
+}
+
+
+/* =========================================
+   MESSAGE NOTIFICATION
+========================================= */
+
+async function createMessageNotification(
+  message
+){
+
+  if(
+    !message.receiverId
+  ){
+
+    return;
+
+  }
+
+  const notificationId =
+    "n_" +
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2,7);
+
+  const notification = {
+
+    id:
+      notificationId,
+
+    type:
+      "message",
+
+    fromUserId:
+      message.senderId,
+
+    fromName:
+      message.senderName,
+
+    fromDp:
+      message.senderDp,
+
+    text:
+      message.text,
+
+    time:
+      Date.now(),
+
+    read:
+      false
+
+  };
+
+  try{
+
+    await fetch(
+      DB +
+      "/notifications/" +
+      encodeURIComponent(
+        message.receiverId
+      ) +
+      "/" +
+      encodeURIComponent(
+        notificationId
+      ) +
+      ".json",
+      {
+        method:"PUT",
+
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+
+        body:
+          JSON.stringify(
+            notification
+          )
+      }
+    );
+
+  }catch(error){
+
+    console.error(
+      "Notification:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   EMOJI
+========================================= */
+
+emojiBtn.addEventListener(
+  "click",
+  () => {
+
+    emojiPanel.classList.toggle(
+      "show"
+    );
+
+  }
+);
+
+
+document.querySelectorAll(
+  ".emoji"
+).forEach(
+  button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        input.value +=
+          button.textContent;
+
+        input.focus();
+
+      }
+    );
+
+  }
+);
+
+
+/* =========================================
+   SEND BUTTON
+========================================= */
+
+sendBtn.addEventListener(
+  "click",
+  sendMessage
+);
+
+
+/* =========================================
+   ENTER TO SEND
+========================================= */
+
+input.addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      event.key === "Enter"
+    ){
+
+      event.preventDefault();
+
+      sendMessage();
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   PROFILE
+========================================= */
+
+function openProfile(){
+
+  if(
+    targetUser.userId
+  ){
+
+    location.href =
+      "profile.html?user=" +
+      encodeURIComponent(
+        targetUser.userId
+      );
+
+  }
+
+}
+
+
+/* =========================================
+   BACK
+========================================= */
+
+function goBack(){
+
+  if(
+    history.length > 1
+  ){
+
+    history.back();
+
+  }else{
+
+    location.href =
+      "inbox.html";
+
+  }
+
+}
+
+
+/* =========================================
+   INITIAL LOAD
+========================================= */
+
+async function init(){
+
+  if(
+    !targetUserId
+  ){
+
+    statusBox.textContent =
+      "User ID missing";
+
+    renderEmpty(
+      "Chat user not found."
+    );
+
+    return;
+
+  }
+
+  await loadTargetUser();
+
+  await loadMessages();
+
+}
+
+
+/* =========================================
+   AUTO REFRESH
+========================================= */
+
+setInterval(
+  async () => {
+
+    if(
+      !loading
+    ){
+
+      await loadMessages();
+
+    }
+
+  },
+  5000
+);
+
+
+/* =========================================
+   START
+========================================= */
+
+init();
+
+</script>
+
+</body>
+  </html>
