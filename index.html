@@ -1,567 +1,596 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>PawanVoice</title>
-
-<style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
-html,body{
-  margin:0;
-  padding:0;
-  background:#090b12;
-  color:#fff;
-  font-family:Arial,Helvetica,sans-serif;
-}
-
-body{
-  padding-bottom:76px;
-}
-
-button,
-input{
-  font:inherit;
-}
-
-button{
-  border:0;
-  cursor:pointer;
-}
-
-.app{
-  width:100%;
-  max-width:760px;
-  margin:auto;
-}
-
-/* HEADER */
-
-.header{
-  position:sticky;
-  top:0;
-  z-index:20;
-  background:#0d1019;
-  border-bottom:1px solid #202532;
-  padding:12px;
-}
-
-.header-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.dp{
-  width:48px;
-  height:48px;
-  border-radius:50%;
-  object-fit:cover;
-  border:2px solid #ffca28;
-  background:#222;
-}
-
-.user-info{
-  min-width:0;
-  flex:1;
-}
-
-.user-name{
-  font-size:16px;
-  font-weight:700;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.user-id{
-  color:#8991a5;
-  font-size:12px;
-  margin-top:3px;
-}
-
-.wallet{
-  display:flex;
-  gap:7px;
-}
-
-.wallet-box{
-  background:#171b27;
-  border:1px solid #292f3d;
-  border-radius:14px;
-  padding:7px 10px;
-  font-size:12px;
-  white-space:nowrap;
-}
-
-.wallet-box b{
-  color:#ffd54f;
-}
-
-/* SEARCH */
-
-.search-wrap{
-  padding:12px;
-}
-
-.search{
-  width:100%;
-  background:#151925;
-  border:1px solid #292f3d;
-  border-radius:15px;
-  color:white;
-  padding:13px 15px;
-  outline:none;
-}
-
-.search:focus{
-  border-color:#ffca28;
-}
-
-/* BANNERS */
-
-.banner-scroll{
-  display:flex;
-  gap:10px;
-  overflow-x:auto;
-  padding:0 12px 12px;
-  scrollbar-width:none;
-}
-
-.banner-scroll::-webkit-scrollbar{
-  display:none;
-}
-
-.banner{
-  flex:0 0 220px;
-  min-height:92px;
-  border-radius:18px;
-  padding:13px;
-  border:1px solid #303746;
-  background:linear-gradient(135deg,#171b2a,#22283a);
-}
-
-.banner-title{
-  font-size:16px;
-  font-weight:800;
-}
-
-.banner-text{
-  font-size:12px;
-  color:#aab1c1;
-  margin-top:7px;
-}
-
-.banner-button{
-  margin-top:9px;
-  background:#ffca28;
-  color:#151515;
-  border-radius:10px;
-  padding:6px 10px;
-  font-size:11px;
-  font-weight:700;
-}
-
-/* TABS */
-
-.tabs{
-  display:flex;
-  gap:8px;
-  padding:0 12px 12px;
-  overflow-x:auto;
-}
-
-.tab{
-  flex:0 0 auto;
-  background:#151925;
-  color:#aab1c1;
-  border:1px solid #292f3d;
-  padding:9px 15px;
-  border-radius:20px;
-}
-
-.tab.active{
-  background:#ffca28;
-  color:#171717;
-  border-color:#ffca28;
-  font-weight:700;
-}
-
-/* SECTION */
-
-.section{
-  padding:0 12px 14px;
-}
-
-.section-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:10px;
-}
-
-.section-title{
-  font-size:18px;
-  font-weight:800;
-}
-
-.section-link{
-  color:#ffca28;
-  font-size:12px;
-}
-
-/* ROOM CARDS */
-
-.rooms{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.room{
-  background:#11141e;
-  border:1px solid #252b38;
-  border-radius:18px;
-  padding:10px;
-  overflow:hidden;
-  transition:.15s;
-}
-
-.room:active{
-  transform:scale(.98);
-}
-
-.room-top{
-  display:flex;
-  gap:9px;
-  align-items:center;
-}
-
-.room-dp{
-  width:55px;
-  height:55px;
-  border-radius:15px;
-  object-fit:cover;
-  background:#222;
-}
-
-.room-main{
-  min-width:0;
-  flex:1;
-}
-
-.room-name{
-  font-weight:800;
-  font-size:14px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.room-id{
-  font-size:10px;
-  color:#7f879a;
-  margin-top:4px;
-}
-
-.room-category{
-  display:inline-block;
-  font-size:10px;
-  background:#202635;
-  color:#b7bfd0;
-  padding:4px 7px;
-  border-radius:7px;
-  margin-top:5px;
-}
-
-.room-owner{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  margin-top:10px;
-}
-
-.owner-dp{
-  width:25px;
-  height:25px;
-  border-radius:50%;
-  object-fit:cover;
-}
-
-.owner-name{
-  font-size:11px;
-  color:#c5cad6;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
-
-.room-bottom{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-top:10px;
-}
-
-.room-users{
-  font-size:11px;
-  color:#9da5b7;
-}
-
-.join-btn{
-  background:#ffca28;
-  color:#171717;
-  padding:7px 12px;
-  border-radius:10px;
-  font-size:11px;
-  font-weight:800;
-}
-
-/* QUICK */
-
-.quick{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
-}
-
-.quick-btn{
-  background:#141824;
-  border:1px solid #282e3b;
-  border-radius:14px;
-  padding:12px 5px;
-  color:#fff;
-  text-align:center;
-}
-
-.quick-icon{
-  font-size:23px;
-}
-
-.quick-label{
-  display:block;
-  font-size:10px;
-  color:#aeb5c5;
-  margin-top:5px;
-}
-
-/* EMPTY */
-
-.empty{
-  background:#11141e;
-  border:1px dashed #303646;
-  border-radius:16px;
-  padding:25px 15px;
-  text-align:center;
-  color:#8e96a8;
-}
-
-/* CREATE ROOM */
-
-.create-card{
-  background:#11141e;
-  border:1px solid #282e3b;
-  border-radius:18px;
-  padding:14px;
-}
-
-.form-label{
-  display:block;
-  color:#aeb5c5;
-  font-size:12px;
-  margin-bottom:6px;
-}
-
-.form-input,
-.form-select{
-  width:100%;
-  background:#181c28;
-  color:white;
-  border:1px solid #303646;
-  border-radius:12px;
-  padding:12px;
-  outline:none;
-  margin-bottom:12px;
-}
-
-.create-btn{
-  width:100%;
-  background:#ffca28;
-  color:#171717;
-  padding:13px;
-  border-radius:12px;
-  font-weight:800;
-}
-
-/* PROFILE MODAL */
-
-.modal{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  display:none;
-  align-items:flex-end;
-  background:rgba(0,0,0,.72);
-}
-
-.modal.show{
-  display:flex;
-}
-
-.sheet{
-  width:100%;
-  max-width:760px;
-  margin:auto;
-  background:#11141e;
-  border-radius:24px 24px 0 0;
-  padding:18px;
-  max-height:85vh;
-  overflow:auto;
-}
-
-.sheet-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:15px;
-}
-
-.close{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:#202533;
-  color:#fff;
-  font-size:20px;
-}
-
-.profile-big{
-  text-align:center;
-}
-
-.profile-big .dp{
-  width:90px;
-  height:90px;
-}
-
-.profile-big-name{
-  font-size:20px;
-  font-weight:800;
-  margin-top:9px;
-}
-
-.profile-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:9px;
-  margin-top:16px;
-}
-
-.profile-stat{
-  background:#191d29;
-  border:1px solid #2a3040;
-  border-radius:14px;
-  padding:12px;
-}
-
-.profile-stat span{
-  display:block;
-  color:#858da0;
-  font-size:11px;
-}
-
-.profile-stat b{
-  display:block;
-  margin-top:5px;
-  font-size:15px;
-}
-
-.menu-list{
-  margin-top:15px;
-  display:grid;
-  gap:8px;
-}
-
-.menu-btn{
-  width:100%;
-  text-align:left;
-  background:#191d29;
-  color:white;
-  border:1px solid #2a3040;
-  padding:13px;
-  border-radius:12px;
-}
-
-/* BOTTOM NAV */
-
-.bottom-nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  z-index:50;
-  height:68px;
-  background:#0e1119;
-  border-top:1px solid #272d3a;
-  display:flex;
-  justify-content:center;
-}
-
-.bottom-inner{
-  width:100%;
-  max-width:760px;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-}
-
-.nav-btn{
-  background:transparent;
-  color:#80899d;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:3px;
-}
-
-.nav-btn.active{
-  color:#ffca28;
-}
-
-.nav-icon{
-  font-size:21px;
-}
-
-.nav-label{
-  font-size:10px;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:480px){
-  .rooms{
-    grid-template-columns:1fr;
-  }
-
-  .wallet-box{
-    padding:6px 8px;
-  }
-
-  .wallet-box:nth-child(2){
-    display:none;
-  }
-}
-
-@media(min-width:650px){
-  .rooms{
-    grid-template-columns:repeat(3,1fr);
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>PawanVoice</title>
+
+  <style>
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html,body{
+      margin:0;
+      padding:0;
+      background:#090b12;
+      color:#fff;
+      font-family:Arial,Helvetica,sans-serif;
+    }
+
+    body{
+      min-height:100vh;
+      padding-bottom:78px;
+    }
+
+    button,input,select{
+      font:inherit;
+    }
+
+    button{
+      border:0;
+      cursor:pointer;
+    }
+
+    .app{
+      width:100%;
+      max-width:720px;
+      margin:auto;
+    }
+
+    .top{
+      padding:14px 14px 10px;
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:rgba(9,11,18,.96);
+      backdrop-filter:blur(12px);
+      border-bottom:1px solid #191d29;
+    }
+
+    .top-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .dp{
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      object-fit:cover;
+      border:2px solid #ffca3a;
+      background:#222;
+    }
+
+    .user-info{
+      flex:1;
+      min-width:0;
+    }
+
+    .user-name{
+      font-size:16px;
+      font-weight:700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .user-id{
+      margin-top:3px;
+      font-size:11px;
+      color:#8e95a8;
+    }
+
+    .wallet{
+      display:flex;
+      gap:6px;
+    }
+
+    .wallet-box{
+      min-width:64px;
+      padding:7px 8px;
+      border-radius:12px;
+      background:#141823;
+      border:1px solid #242a39;
+      text-align:center;
+      font-size:11px;
+    }
+
+    .wallet-box b{
+      display:block;
+      margin-top:2px;
+      color:#ffd166;
+    }
+
+    .search{
+      margin-top:12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background:#141823;
+      border:1px solid #242a39;
+      border-radius:14px;
+      padding:0 12px;
+    }
+
+    .search span{
+      color:#737b8e;
+    }
+
+    .search input{
+      width:100%;
+      height:44px;
+      border:0;
+      outline:0;
+      background:transparent;
+      color:#fff;
+    }
+
+    .search input::placeholder{
+      color:#70788b;
+    }
+
+    main{
+      padding:12px;
+    }
+
+    .section-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin:12px 2px 9px;
+    }
+
+    .section-title h2{
+      margin:0;
+      font-size:17px;
+    }
+
+    .section-title span{
+      color:#7f8799;
+      font-size:11px;
+    }
+
+    /* BANNERS */
+
+    .banner-wrap{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+    }
+
+    .banner{
+      min-height:94px;
+      border-radius:16px;
+      padding:12px 10px;
+      position:relative;
+      overflow:hidden;
+      border:1px solid #292e3d;
+      background:linear-gradient(145deg,#171b28,#10131c);
+    }
+
+    .banner:nth-child(1){
+      background:linear-gradient(145deg,#38230f,#17120c);
+    }
+
+    .banner:nth-child(2){
+      background:linear-gradient(145deg,#21183c,#11121d);
+    }
+
+    .banner:nth-child(3){
+      background:linear-gradient(145deg,#11322c,#10181a);
+    }
+
+    .banner-icon{
+      font-size:24px;
+    }
+
+    .banner strong{
+      display:block;
+      margin-top:6px;
+      font-size:12px;
+    }
+
+    .banner small{
+      display:block;
+      margin-top:4px;
+      color:#9ba2b3;
+      font-size:9px;
+      line-height:1.3;
+    }
+
+    /* TABS */
+
+    .tabs{
+      display:flex;
+      gap:7px;
+      overflow-x:auto;
+      padding:4px 0 8px;
+      scrollbar-width:none;
+    }
+
+    .tabs::-webkit-scrollbar{
+      display:none;
+    }
+
+    .tab{
+      flex:0 0 auto;
+      padding:9px 16px;
+      border-radius:20px;
+      background:#141823;
+      border:1px solid #242a39;
+      color:#9ca4b6;
+      font-size:12px;
+    }
+
+    .tab.active{
+      background:#ffd166;
+      color:#111;
+      border-color:#ffd166;
+      font-weight:700;
+    }
+
+    /* ROOMS */
+
+    #rooms{
+      display:grid;
+      gap:10px;
+    }
+
+    .room-card{
+      background:#11151f;
+      border:1px solid #242a39;
+      border-radius:17px;
+      padding:12px;
+      display:flex;
+      gap:11px;
+      align-items:center;
+    }
+
+    .room-dp{
+      width:62px;
+      height:62px;
+      border-radius:15px;
+      object-fit:cover;
+      background:#222;
+      border:1px solid #343b4e;
+      flex:0 0 auto;
+    }
+
+    .room-main{
+      min-width:0;
+      flex:1;
+    }
+
+    .room-name{
+      font-size:14px;
+      font-weight:700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .room-host{
+      color:#b0b6c5;
+      font-size:11px;
+      margin-top:4px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .room-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:5px;
+      margin-top:7px;
+    }
+
+    .pill{
+      padding:4px 7px;
+      border-radius:7px;
+      background:#1a1f2b;
+      color:#9ea6b8;
+      font-size:9px;
+    }
+
+    .live{
+      color:#73e6a3;
+    }
+
+    .join{
+      min-width:64px;
+      padding:10px 11px;
+      border-radius:12px;
+      background:#ffd166;
+      color:#111;
+      font-size:11px;
+      font-weight:700;
+    }
+
+    .empty{
+      text-align:center;
+      padding:38px 20px;
+      border:1px dashed #303747;
+      border-radius:16px;
+      color:#858da0;
+    }
+
+    .empty-icon{
+      font-size:34px;
+      margin-bottom:8px;
+    }
+
+    /* QUICK */
+
+    .quick-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:8px;
+    }
+
+    .quick{
+      background:#121722;
+      border:1px solid #252b3a;
+      border-radius:14px;
+      min-height:76px;
+      color:#fff;
+      padding:8px 4px;
+    }
+
+    .quick-icon{
+      font-size:22px;
+      display:block;
+    }
+
+    .quick span:last-child{
+      display:block;
+      margin-top:5px;
+      font-size:10px;
+      color:#a4abbc;
+    }
+
+    /* CREATE */
+
+    .create-box{
+      background:#11151f;
+      border:1px solid #242a39;
+      border-radius:17px;
+      padding:13px;
+    }
+
+    .field{
+      margin-bottom:10px;
+    }
+
+    .field label{
+      display:block;
+      color:#9aa2b5;
+      font-size:11px;
+      margin-bottom:6px;
+    }
+
+    .field input,
+    .field select{
+      width:100%;
+      height:44px;
+      border-radius:11px;
+      border:1px solid #2b3141;
+      outline:0;
+      background:#0c1018;
+      color:#fff;
+      padding:0 12px;
+    }
+
+    .create-btn{
+      width:100%;
+      height:45px;
+      border-radius:12px;
+      background:#ffd166;
+      color:#111;
+      font-weight:700;
+    }
+
+    /* PROFILE MODAL */
+
+    .modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:100;
+      background:rgba(0,0,0,.75);
+      align-items:flex-end;
+      justify-content:center;
+    }
+
+    .modal.show{
+      display:flex;
+    }
+
+    .modal-box{
+      width:100%;
+      max-width:720px;
+      max-height:85vh;
+      overflow:auto;
+      background:#11151f;
+      border:1px solid #292f3e;
+      border-radius:24px 24px 0 0;
+      padding:18px;
+    }
+
+    .modal-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:16px;
+    }
+
+    .modal-head h3{
+      margin:0;
+    }
+
+    .close{
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      background:#202532;
+      color:#fff;
+    }
+
+    .profile-big{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      background:#171c27;
+      padding:12px;
+      border-radius:15px;
+    }
+
+    .profile-big img{
+      width:64px;
+      height:64px;
+      border-radius:50%;
+      object-fit:cover;
+    }
+
+    .profile-stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:7px;
+      margin-top:10px;
+    }
+
+    .stat{
+      background:#171c27;
+      border-radius:12px;
+      padding:10px 5px;
+      text-align:center;
+    }
+
+    .stat b{
+      display:block;
+      font-size:13px;
+    }
+
+    .stat small{
+      display:block;
+      margin-top:3px;
+      color:#7f8799;
+      font-size:9px;
+    }
+
+    .profile-actions{
+      display:grid;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .profile-action{
+      height:44px;
+      border-radius:12px;
+      background:#1a1f2b;
+      color:#fff;
+      text-align:left;
+      padding:0 13px;
+    }
+
+    /* BOTTOM */
+
+    .bottom{
+      position:fixed;
+      z-index:50;
+      left:0;
+      right:0;
+      bottom:0;
+      background:rgba(12,15,23,.97);
+      border-top:1px solid #252b39;
+      display:flex;
+      justify-content:center;
+      backdrop-filter:blur(10px);
+    }
+
+    .bottom-inner{
+      width:100%;
+      max-width:720px;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+    }
+
+    .nav{
+      height:68px;
+      background:transparent;
+      color:#7f8799;
+    }
+
+    .nav.active{
+      color:#ffd166;
+    }
+
+    .nav-icon{
+      display:block;
+      font-size:21px;
+    }
+
+    .nav-text{
+      display:block;
+      margin-top:4px;
+      font-size:10px;
+    }
+
+    .toast{
+      position:fixed;
+      z-index:200;
+      left:50%;
+      bottom:85px;
+      transform:translateX(-50%);
+      background:#f5f5f5;
+      color:#111;
+      padding:10px 15px;
+      border-radius:12px;
+      font-size:12px;
+      display:none;
+      max-width:90%;
+    }
+
+    .toast.show{
+      display:block;
+    }
+
+    @media(max-width:420px){
+      .banner-wrap{
+        grid-template-columns:repeat(3,1fr);
+      }
+
+      .banner{
+        min-height:88px;
+        padding:9px 7px;
+      }
+
+      .banner-icon{
+        font-size:21px;
+      }
+
+      .banner strong{
+        font-size:10px;
+      }
+
+      .banner small{
+        font-size:8px;
+      }
+
+      .room-dp{
+        width:56px;
+        height:56px;
+      }
+
+      .join{
+        min-width:58px;
+        padding:9px 7px;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -569,9 +598,8 @@ button{
 <div class="app">
 
   <!-- HEADER -->
-
-  <header class="header">
-    <div class="header-row">
+  <header class="top">
+    <div class="top-row">
 
       <img
         id="headerDp"
@@ -581,1442 +609,1100 @@ button{
       >
 
       <div class="user-info">
-        <div
-          id="headerName"
-          class="user-name"
-        >
-          Pawan User
-        </div>
-
-        <div
-          id="headerId"
-          class="user-id"
-        >
-          ID: pawan
-        </div>
+        <div id="headerName" class="user-name">Pawan User</div>
+        <div id="headerId" class="user-id">ID: pawan</div>
       </div>
 
       <div class="wallet">
-
         <div class="wallet-box">
-          🪙 <b id="coinText">0</b>
+          🪙
+          <b id="coins">0</b>
         </div>
 
         <div class="wallet-box">
-          💎 <b id="diamondText">0</b>
+          💎
+          <b id="diamonds">0</b>
         </div>
-
       </div>
 
+    </div>
+
+    <div class="search">
+      <span>🔎</span>
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Search room, host or room ID"
+        autocomplete="off"
+      >
     </div>
   </header>
 
+  <main>
 
-  <!-- SEARCH -->
+    <!-- BANNERS -->
+    <div class="section-title">
+      <h2>🔥 Events & Rankings</h2>
+      <span>Explore</span>
+    </div>
 
-  <div class="search-wrap">
+    <div class="banner-wrap">
 
-    <input
-      id="searchInput"
-      class="search"
-      type="search"
-      placeholder="🔎 Search rooms..."
-      autocomplete="off"
-    >
-
-  </div>
-
-
-  <!-- TOP BANNERS -->
-
-  <div class="banner-scroll">
-
-    <div class="banner">
-      <div class="banner-title">
-        👨‍👩‍👧 Family Ranking
-      </div>
-
-      <div class="banner-text">
-        See top families and their activity.
-      </div>
-
-      <button
-        class="banner-button"
-        type="button"
-        onclick="openPage('family.html')"
-      >
-        Open
+      <button class="banner" type="button" onclick="openRanking('family')">
+        <div class="banner-icon">👨‍👩‍👧‍👦</div>
+        <strong>Family</strong>
+        <small>Family ranking & activities</small>
       </button>
-    </div>
 
-
-    <div class="banner">
-      <div class="banner-title">
-        💞 CP Ranking
-      </div>
-
-      <div class="banner-text">
-        Top CP couples are shown here.
-      </div>
-
-      <button
-        class="banner-button"
-        type="button"
-        onclick="openPage('ranking.html?type=cp')"
-      >
-        View
+      <button class="banner" type="button" onclick="openRanking('cp')">
+        <div class="banner-icon">💞</div>
+        <strong>CP Ranking</strong>
+        <small>Top CP couples</small>
       </button>
-    </div>
 
-
-    <div class="banner">
-      <div class="banner-title">
-        👑 Rich King
-      </div>
-
-      <div class="banner-text">
-        Top wealth ranking and rewards.
-      </div>
-
-      <button
-        class="banner-button"
-        type="button"
-        onclick="openPage('ranking.html?type=wealth')"
-      >
-        View
+      <button class="banner" type="button" onclick="openRanking('rich')">
+        <div class="banner-icon">👑</div>
+        <strong>Rich King</strong>
+        <small>Top wealthy users</small>
       </button>
+
     </div>
 
-  </div>
-
-
-  <!-- TABS -->
-
-  <div class="tabs">
-
-    <button
-      class="tab active"
-      type="button"
-      data-tab="Popular"
-    >
-      🔥 Popular
-    </button>
-
-    <button
-      class="tab"
-      type="button"
-      data-tab="New"
-    >
-      ✨ New
-    </button>
-
-    <button
-      class="tab"
-      type="button"
-      data-tab="All"
-    >
-      🌎 All Rooms
-    </button>
-
-  </div>
-
-
-  <!-- QUICK ACCESS -->
-
-  <section class="section">
-
-    <div class="section-head">
-      <div class="section-title">
-        Quick Access
-      </div>
+    <!-- QUICK ACCESS -->
+    <div class="section-title">
+      <h2>⚡ Quick Access</h2>
     </div>
 
-    <div class="quick">
+    <div class="quick-grid">
 
-      <button
-        class="quick-btn"
-        type="button"
-        onclick="openPage('profile.html')"
-      >
+      <button class="quick" type="button" onclick="location.href='profile.html'">
         <span class="quick-icon">👤</span>
-        <span class="quick-label">Profile</span>
+        <span>Profile</span>
       </button>
 
-      <button
-        class="quick-btn"
-        type="button"
-        onclick="openPage('inbox.html')"
-      >
-        <span class="quick-icon">📩</span>
-        <span class="quick-label">Inbox</span>
+      <button class="quick" type="button" onclick="location.href='inbox.html'">
+        <span class="quick-icon">💬</span>
+        <span>Inbox</span>
       </button>
 
-      <button
-        class="quick-btn"
-        type="button"
-        onclick="openPage('ranking.html')"
-      >
+      <button class="quick" type="button" onclick="location.href='ranking.html'">
         <span class="quick-icon">🏆</span>
-        <span class="quick-label">Ranking</span>
+        <span>Ranking</span>
       </button>
 
-      <button
-        class="quick-btn"
-        type="button"
-        onclick="showCreate()"
-      >
-        <span class="quick-icon">➕</span>
-        <span class="quick-label">Create Room</span>
+      <button class="quick" type="button" onclick="showCreateRoom()">
+        <span class="quick-icon">🎙️</span>
+        <span>Create Room</span>
       </button>
 
     </div>
 
-  </section>
+    <!-- ROOM TABS -->
+    <div class="section-title">
+      <h2>🎙️ Live Voice Rooms</h2>
+      <span id="roomStatus">Updating...</span>
+    </div>
 
+    <div class="tabs">
 
-  <!-- ROOM LIST -->
+      <button
+        class="tab active"
+        data-tab="popular"
+        type="button"
+        onclick="changeTab('popular')"
+      >
+        🔥 Popular
+      </button>
 
-  <section class="section">
+      <button
+        class="tab"
+        data-tab="new"
+        type="button"
+        onclick="changeTab('new')"
+      >
+        🆕 New
+      </button>
 
-    <div class="section-head">
+      <button
+        class="tab"
+        data-tab="all"
+        type="button"
+        onclick="changeTab('all')"
+      >
+        🌎 All Rooms
+      </button>
+
+    </div>
+
+    <div id="rooms"></div>
+
+    <!-- CREATE ROOM -->
+    <section id="createSection" style="display:none">
 
       <div class="section-title">
-        🎙️ Live Voice Rooms
+        <h2>➕ Create Voice Room</h2>
+        <span>9 seats</span>
       </div>
 
-      <button
-        id="refreshBtn"
-        class="section-link"
-        type="button"
-      >
-        Refresh
-      </button>
+      <div class="create-box">
 
-    </div>
+        <div class="field">
+          <label>Room Name</label>
+          <input
+            id="roomName"
+            type="text"
+            maxlength="40"
+            placeholder="Enter room name"
+          >
+        </div>
 
-    <div
-      id="roomStatus"
-      style="font-size:11px;color:#7f879a;margin-bottom:9px;"
-    >
-      Loading rooms...
-    </div>
+        <div class="field">
+          <label>Category</label>
 
-    <div
-      id="roomList"
-      class="rooms"
-    ></div>
+          <select id="roomCategory">
+            <option value="General">General</option>
+            <option value="Music">Music</option>
+            <option value="Friends">Friends</option>
+            <option value="Gaming">Gaming</option>
+            <option value="Chat">Chat</option>
+          </select>
 
-  </section>
+        </div>
 
+        <button
+          class="create-btn"
+          type="button"
+          onclick="createRoom()"
+        >
+          🎙️ Create & Enter Room
+        </button>
 
-  <!-- CREATE ROOM -->
-
-  <section
-    id="createSection"
-    class="section"
-    style="display:none;"
-  >
-
-    <div class="section-head">
-
-      <div class="section-title">
-        ➕ Create Voice Room
       </div>
 
-      <button
-        type="button"
-        class="section-link"
-        onclick="hideCreate()"
-      >
-        Close
-      </button>
+    </section>
 
-    </div>
-
-    <div class="create-card">
-
-      <label class="form-label">
-        Room Name
-      </label>
-
-      <input
-        id="roomNameInput"
-        class="form-input"
-        maxlength="40"
-        placeholder="Enter room name"
-      >
-
-      <label class="form-label">
-        Category
-      </label>
-
-      <select
-        id="roomCategoryInput"
-        class="form-select"
-      >
-        <option>General</option>
-        <option>Music</option>
-        <option>Friends</option>
-        <option>Gaming</option>
-        <option>Chat</option>
-      </select>
-
-      <button
-        id="createRoomBtn"
-        class="create-btn"
-        type="button"
-      >
-        🎙️ Create Room
-      </button>
-
-    </div>
-
-  </section>
-
+  </main>
 </div>
-
 
 <!-- PROFILE MODAL -->
 
-<div
-  id="profileModal"
-  class="modal"
->
+<div id="profileModal" class="modal" onclick="closeProfileOutside(event)">
 
-  <div class="sheet">
+  <div class="modal-box">
 
-    <div class="sheet-head">
-
-      <strong>
-        My Profile
-      </strong>
+    <div class="modal-head">
+      <h3>My Profile</h3>
 
       <button
-        id="closeProfile"
         class="close"
         type="button"
+        onclick="closeProfile()"
       >
-        ×
+        ✕
       </button>
-
     </div>
 
     <div class="profile-big">
 
-      <img
-        id="modalDp"
-        class="dp"
-        src="https://i.pravatar.cc/200?img=12"
-        alt="Profile"
-      >
+      <img id="modalDp" src="" alt="Profile">
 
-      <div
-        id="modalName"
-        class="profile-big-name"
-      >
-        Pawan User
-      </div>
-
-      <div
-        id="modalId"
-        class="user-id"
-      >
-        ID: pawan
+      <div>
+        <div id="modalName" class="user-name">Pawan User</div>
+        <div id="modalId" class="user-id">ID: pawan</div>
       </div>
 
     </div>
 
-    <div class="profile-grid">
+    <div class="profile-stats">
 
-      <div class="profile-stat">
-        <span>Level</span>
+      <div class="stat">
         <b id="modalLevel">1</b>
+        <small>Level</small>
       </div>
 
-      <div class="profile-stat">
-        <span>VIP</span>
-        <b id="modalVip">VIP 0</b>
+      <div class="stat">
+        <b id="modalVip">0</b>
+        <small>VIP</small>
       </div>
 
-      <div class="profile-stat">
-        <span>Coins</span>
-        <b id="modalCoins">0</b>
-      </div>
-
-      <div class="profile-stat">
-        <span>Diamonds</span>
-        <b id="modalDiamonds">0</b>
-      </div>
-
-      <div class="profile-stat">
-        <span>Following</span>
+      <div class="stat">
         <b id="modalFollowing">0</b>
+        <small>Following</small>
       </div>
 
-      <div class="profile-stat">
-        <span>Followers</span>
+      <div class="stat">
         <b id="modalFollowers">0</b>
+        <small>Followers</small>
       </div>
 
     </div>
 
-    <div class="menu-list">
+    <div class="profile-stats">
+
+      <div class="stat">
+        <b id="modalCoins">0</b>
+        <small>Coins</small>
+      </div>
+
+      <div class="stat">
+        <b id="modalDiamonds">0</b>
+        <small>Diamonds</small>
+      </div>
+
+      <div class="stat">
+        <b id="modalExp">0</b>
+        <small>EXP</small>
+      </div>
+
+      <div class="stat">
+        <b id="modalRoomCount">0</b>
+        <small>Rooms</small>
+      </div>
+
+    </div>
+
+    <div class="profile-actions">
 
       <button
-        class="menu-btn"
+        class="profile-action"
         type="button"
-        onclick="openPage('profile.html')"
+        onclick="location.href='profile.html'"
       >
-        👤 Full Profile
+        👤 Open Full Profile
       </button>
 
       <button
-        class="menu-btn"
+        class="profile-action"
         type="button"
-        onclick="openPage('level.html')"
-      >
-        ⭐ Level & EXP
-      </button>
-
-      <button
-        class="menu-btn"
-        type="button"
-        onclick="openPage('vip.html')"
+        onclick="location.href='vip.html'"
       >
         👑 VIP Center
       </button>
 
       <button
-        class="menu-btn"
+        class="profile-action"
         type="button"
-        onclick="openPage('store.html')"
+        onclick="location.href='ranking.html'"
       >
-        🛍️ Store
+        🏆 Rankings
       </button>
 
       <button
-        class="menu-btn"
+        class="profile-action"
         type="button"
-        onclick="openPage('inbox.html')"
+        onclick="location.href='store.html'"
       >
-        📩 Inbox
+        🎁 Gift Store
+      </button>
+
+      <button
+        class="profile-action"
+        type="button"
+        onclick="location.href='inbox.html'"
+      >
+        💬 Inbox
       </button>
 
     </div>
 
   </div>
-
 </div>
 
+<div id="toast" class="toast"></div>
 
 <!-- BOTTOM NAV -->
 
-<nav class="bottom-nav">
+<nav class="bottom">
 
   <div class="bottom-inner">
 
-    <button
-      class="nav-btn active"
-      type="button"
-      onclick="goHome()"
-    >
+    <button class="nav active" type="button" onclick="goHome()">
       <span class="nav-icon">🏠</span>
-      <span class="nav-label">Home</span>
+      <span class="nav-text">Home</span>
     </button>
 
-    <button
-      class="nav-btn"
-      type="button"
-      onclick="openPage('inbox.html')"
-    >
-      <span class="nav-icon">📩</span>
-      <span class="nav-label">Inbox</span>
+    <button class="nav" type="button" onclick="location.href='inbox.html'">
+      <span class="nav-icon">💬</span>
+      <span class="nav-text">Inbox</span>
     </button>
 
-    <button
-      class="nav-btn"
-      type="button"
-      onclick="openProfile()"
-    >
+    <button class="nav" type="button" onclick="openProfile()">
       <span class="nav-icon">👤</span>
-      <span class="nav-label">Profile</span>
+      <span class="nav-text">Profile</span>
     </button>
 
   </div>
 
 </nav>
 
+<script src="user.js"></script>
 
 <script>
+  "use strict";
 
-/* --------------------------------------------------
-   PAWANVOICE FIREBASE
--------------------------------------------------- */
+  const FIREBASE_DB =
+    "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
 
-const FIREBASE_DB =
-  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
+  const SERVER_URL =
+    window.location.origin;
 
+  let currentUser = null;
+  let allRooms = [];
+  let currentTab = "popular";
+  let refreshTimer = null;
 
-/* --------------------------------------------------
-   DEFAULT USER
--------------------------------------------------- */
-
-const DEFAULT_DP =
-  "https://i.pravatar.cc/200?img=12";
-
-
-let currentUser = {
-  userId:
-    localStorage.getItem("pv_userId") ||
-    "pawan",
-
-  name:
-    localStorage.getItem("pv_name") ||
-    "Pawan User",
-
-  dp:
-    localStorage.getItem("pv_dp") ||
-    DEFAULT_DP,
-
-  level:
-    Number(
-      localStorage.getItem("pv_level") ||
-      1
-    ),
-
-  exp:
-    Number(
-      localStorage.getItem("pv_exp") ||
-      0
-    ),
-
-  coins:
-    Number(
-      localStorage.getItem("pv_coins") ||
-      0
-    ),
-
-  diamonds:
-    Number(
-      localStorage.getItem("pv_diamonds") ||
-      0
-    ),
-
-  following:
-    Number(
-      localStorage.getItem("pv_following") ||
-      0
-    ),
-
-  followers:
-    Number(
-      localStorage.getItem("pv_followers") ||
-      0
-    ),
-
-  vipLevel:
-    Number(
-      localStorage.getItem("pv_vipLevel") ||
-      0
-    )
-};
+  const DEFAULT_DP =
+    "https://i.pravatar.cc/200?img=12";
 
 
-/* --------------------------------------------------
-   SAVE LOCAL USER
--------------------------------------------------- */
+  /* =========================
+     HELPERS
+  ========================= */
 
-function saveLocalUser(){
+  function safeNumber(value, fallback = 0){
+    const n = Number(value);
+    return Number.isFinite(n) ? n : fallback;
+  }
 
-  localStorage.setItem(
-    "pv_userId",
-    currentUser.userId
-  );
+  function escapeHtml(value){
+    return String(value ?? "")
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
+  }
 
-  localStorage.setItem(
-    "pv_name",
-    currentUser.name
-  );
+  function showToast(message){
+    const toast =
+      document.getElementById("toast");
 
-  localStorage.setItem(
-    "pv_dp",
-    currentUser.dp
-  );
+    toast.textContent = message;
+    toast.classList.add("show");
 
-  localStorage.setItem(
-    "pv_level",
-    String(currentUser.level)
-  );
+    clearTimeout(showToast.timer);
 
-  localStorage.setItem(
-    "pv_exp",
-    String(currentUser.exp)
-  );
+    showToast.timer =
+      setTimeout(() => {
+        toast.classList.remove("show");
+      },2200);
+  }
 
-  localStorage.setItem(
-    "pv_coins",
-    String(currentUser.coins)
-  );
-
-  localStorage.setItem(
-    "pv_diamonds",
-    String(currentUser.diamonds)
-  );
-
-  localStorage.setItem(
-    "pv_following",
-    String(currentUser.following)
-  );
-
-  localStorage.setItem(
-    "pv_followers",
-    String(currentUser.followers)
-  );
-
-  localStorage.setItem(
-    "pv_vipLevel",
-    String(currentUser.vipLevel)
-  );
-}
+  function getRoomId(){
+    return (
+      "PV" +
+      Math.floor(
+        100000 +
+        Math.random() * 900000
+      )
+    );
+  }
 
 
-/* --------------------------------------------------
-   LOAD USER FROM FIREBASE
--------------------------------------------------- */
+  /* =========================
+     USER
+  ========================= */
 
-async function loadUser(){
+  async function loadCurrentUser(){
 
-  saveLocalUser();
+    try{
 
-  try{
+      if(typeof pvLoadUser === "function"){
+        currentUser =
+          await pvLoadUser();
+      }
+
+    }catch(error){
+      console.error(error);
+    }
+
+    if(!currentUser){
+
+      currentUser = {
+        userId:
+          localStorage.getItem("pv_userId") ||
+          "pawan",
+
+        name:
+          localStorage.getItem("pv_name") ||
+          "Pawan User",
+
+        dp:
+          localStorage.getItem("pv_dp") ||
+          DEFAULT_DP,
+
+        level:
+          safeNumber(
+            localStorage.getItem("pv_level"),
+            1
+          ),
+
+        exp:
+          safeNumber(
+            localStorage.getItem("pv_exp"),
+            0
+          ),
+
+        coins:
+          safeNumber(
+            localStorage.getItem("pv_coins"),
+            0
+          ),
+
+        diamonds:
+          safeNumber(
+            localStorage.getItem("pv_diamonds"),
+            0
+          ),
+
+        following:
+          safeNumber(
+            localStorage.getItem("pv_following"),
+            0
+          ),
+
+        followers:
+          safeNumber(
+            localStorage.getItem("pv_followers"),
+            0
+          ),
+
+        vipLevel:
+          safeNumber(
+            localStorage.getItem("pv_vipLevel"),
+            0
+          )
+      };
+    }
+
+    renderUser();
+  }
+
+
+  function renderUser(){
+
+    if(!currentUser) return;
+
+    const dp =
+      currentUser.dp ||
+      DEFAULT_DP;
+
+    document.getElementById("headerDp").src = dp;
+
+    document.getElementById("headerName")
+      .textContent =
+      currentUser.name ||
+      "Pawan User";
+
+    document.getElementById("headerId")
+      .textContent =
+      "ID: " +
+      (currentUser.userId || "pawan");
+
+    document.getElementById("coins")
+      .textContent =
+      safeNumber(currentUser.coins,0)
+      .toLocaleString();
+
+    document.getElementById("diamonds")
+      .textContent =
+      safeNumber(currentUser.diamonds,0)
+      .toLocaleString();
+  }
+
+
+  /* =========================
+     FIREBASE
+  ========================= */
+
+  async function firebaseGet(path){
 
     const response =
       await fetch(
         FIREBASE_DB +
-        "/users/" +
-        encodeURIComponent(
-          currentUser.userId
-        ) +
+        "/" +
+        path +
         ".json"
       );
 
     if(!response.ok){
-      return;
-    }
-
-    const data =
-      await response.json();
-
-    if(data){
-
-      currentUser = {
-        ...currentUser,
-        ...data
-      };
-
-      saveLocalUser();
-    }
-
-  }catch(error){
-
-    console.log(
-      "Firebase user load:",
-      error
-    );
-  }
-
-  renderUser();
-}
-
-
-/* --------------------------------------------------
-   RENDER USER
--------------------------------------------------- */
-
-function renderUser(){
-
-  document.getElementById(
-    "headerDp"
-  ).src =
-    currentUser.dp ||
-    DEFAULT_DP;
-
-  document.getElementById(
-    "headerName"
-  ).textContent =
-    currentUser.name ||
-    "Pawan User";
-
-  document.getElementById(
-    "headerId"
-  ).textContent =
-    "ID: " +
-    (
-      currentUser.userId ||
-      "pawan"
-    );
-
-  document.getElementById(
-    "coinText"
-  ).textContent =
-    Number(
-      currentUser.coins || 0
-    ).toLocaleString();
-
-  document.getElementById(
-    "diamondText"
-  ).textContent =
-    Number(
-      currentUser.diamonds || 0
-    ).toLocaleString();
-
-  document.getElementById(
-    "modalDp"
-  ).src =
-    currentUser.dp ||
-    DEFAULT_DP;
-
-  document.getElementById(
-    "modalName"
-  ).textContent =
-    currentUser.name ||
-    "Pawan User";
-
-  document.getElementById(
-    "modalId"
-  ).textContent =
-    "ID: " +
-    (
-      currentUser.userId ||
-      "pawan"
-    );
-
-  document.getElementById(
-    "modalLevel"
-  ).textContent =
-    currentUser.level || 1;
-
-  document.getElementById(
-    "modalVip"
-  ).textContent =
-    "VIP " +
-    (
-      currentUser.vipLevel || 0
-    );
-
-  document.getElementById(
-    "modalCoins"
-  ).textContent =
-    Number(
-      currentUser.coins || 0
-    ).toLocaleString();
-
-  document.getElementById(
-    "modalDiamonds"
-  ).textContent =
-    Number(
-      currentUser.diamonds || 0
-    ).toLocaleString();
-
-  document.getElementById(
-    "modalFollowing"
-  ).textContent =
-    Number(
-      currentUser.following || 0
-    ).toLocaleString();
-
-  document.getElementById(
-    "modalFollowers"
-  ).textContent =
-    Number(
-      currentUser.followers || 0
-    ).toLocaleString();
-}
-
-
-/* --------------------------------------------------
-   ROOM DATA
--------------------------------------------------- */
-
-let allRooms = [];
-
-let currentTab =
-  "Popular";
-
-
-/* --------------------------------------------------
-   LOAD ROOMS
--------------------------------------------------- */
-
-async function loadRooms(){
-
-  const status =
-    document.getElementById(
-      "roomStatus"
-    );
-
-  status.textContent =
-    "Loading rooms...";
-
-  try{
-
-    const response =
-      await fetch(
-        FIREBASE_DB +
-        "/rooms.json"
-      );
-
-    if(!response.ok){
-
       throw new Error(
-        "Firebase HTTP " +
+        "Firebase GET " +
         response.status
       );
     }
 
-    const data =
-      await response.json();
+    return await response.json();
+  }
 
-    allRooms = [];
 
-    if(data){
+  async function firebasePatch(path,data){
 
-      Object.keys(data).forEach(
-        key => {
+    const response =
+      await fetch(
+        FIREBASE_DB +
+        "/" +
+        path +
+        ".json",
+        {
+          method:"PATCH",
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+          body:
+            JSON.stringify(data)
+        }
+      );
+
+    if(!response.ok){
+      throw new Error(
+        "Firebase PATCH " +
+        response.status
+      );
+    }
+
+    return await response.json();
+  }
+
+
+  /* =========================
+     ROOMS
+  ========================= */
+
+  async function loadRooms(){
+
+    const status =
+      document.getElementById("roomStatus");
+
+    status.textContent =
+      "Updating...";
+
+    try{
+
+      const data =
+        await firebaseGet("rooms");
+
+      const list = [];
+
+      if(data && typeof data === "object"){
+
+        Object.keys(data).forEach(key => {
 
           const room =
             data[key];
 
-          if(
-            room &&
-            typeof room === "object"
-          ){
-
-            allRooms.push({
-              id:
-                room.id ||
-                key,
-
-              name:
-                room.name ||
-                "PawanVoice Room",
-
-              dp:
-                room.dp ||
-                room.ownerDp ||
-                DEFAULT_DP,
-
-              owner:
-                room.owner ||
-                "Host",
-
-              ownerId:
-                room.ownerId ||
-                "",
-
-              ownerDp:
-                room.ownerDp ||
-                room.dp ||
-                DEFAULT_DP,
-
-              category:
-                room.category ||
-                "General",
-
-              users:
-                Number(
-                  room.users || 1
-                ),
-
-              seats:
-                Number(
-                  room.seats || 9
-                ),
-
-              createdAt:
-                Number(
-                  room.createdAt ||
-                  0
-                )
-            });
+          if(!room || typeof room !== "object"){
+            return;
           }
 
-        }
+          const roomId =
+            room.id ||
+            key;
+
+          list.push({
+            ...room,
+            id: roomId,
+            users:
+              safeNumber(
+                room.users,
+                0
+              ),
+            seats:
+              safeNumber(
+                room.seats,
+                9
+              )
+          });
+
+        });
+      }
+
+      allRooms = list;
+
+      renderRooms();
+
+      status.textContent =
+        allRooms.length +
+        " rooms";
+
+    }catch(error){
+
+      console.error(
+        "Rooms load:",
+        error
       );
+
+      status.textContent =
+        "Offline";
+
+      renderRooms();
     }
-
-    /*
-      New rooms first.
-    */
-    allRooms.sort(
-      (a,b) =>
-        b.createdAt -
-        a.createdAt
-    );
-
-    status.textContent =
-      allRooms.length +
-      " room" +
-      (
-        allRooms.length === 1
-          ? ""
-          : "s"
-      ) +
-      " available";
-
-    renderRooms();
-
-  }catch(error){
-
-    console.error(
-      "Room load error:",
-      error
-    );
-
-    status.textContent =
-      "Unable to load Firebase rooms.";
-
-    renderRooms();
   }
-}
 
 
-/* --------------------------------------------------
-   FILTER ROOMS
--------------------------------------------------- */
+  function getFilteredRooms(){
 
-function getVisibleRooms(){
+    let rooms =
+      [...allRooms];
 
-  const search =
-    document.getElementById(
-      "searchInput"
-    ).value
+    const search =
+      document.getElementById(
+        "searchInput"
+      ).value
       .trim()
       .toLowerCase();
 
-  let rooms =
-    [...allRooms];
+    if(search){
 
-  if(currentTab === "Popular"){
+      rooms =
+        rooms.filter(room => {
 
-    rooms.sort(
-      (a,b) =>
-        (
-          Number(b.users) || 0
-        ) -
-        (
-          Number(a.users) || 0
-        )
-    );
-
-  }else if(currentTab === "New"){
-
-    rooms.sort(
-      (a,b) =>
-        (
-          Number(b.createdAt) || 0
-        ) -
-        (
-          Number(a.createdAt) || 0
-        )
-    );
-  }
-
-  if(search){
-
-    rooms =
-      rooms.filter(
-        room => {
-
-          const text =
-            (
-              room.name +
-              " " +
-              room.id +
-              " " +
-              room.owner +
-              " " +
-              room.category
-            ).toLowerCase();
-
-          return text.includes(
-            search
-          );
-        }
-      );
-  }
-
-  return rooms;
-}
-
-
-/* --------------------------------------------------
-   RENDER ROOMS
--------------------------------------------------- */
-
-function renderRooms(){
-
-  const list =
-    document.getElementById(
-      "roomList"
-    );
-
-  const rooms =
-    getVisibleRooms();
-
-  if(!rooms.length){
-
-    list.innerHTML = `
-      <div class="empty" style="grid-column:1/-1;">
-        🎙️<br><br>
-        No rooms found.<br>
-        Create your first PawanVoice room.
-      </div>
-    `;
-
-    return;
-  }
-
-  list.innerHTML =
-    rooms.map(
-      room => {
-
-        const safeId =
-          encodeURIComponent(
+          const text = [
+            room.name,
+            room.owner,
+            room.ownerName,
+            room.category,
             room.id
+          ]
+          .join(" ")
+          .toLowerCase();
+
+          return text.includes(search);
+        });
+    }
+
+
+    if(currentTab === "new"){
+
+      rooms.sort(
+        (a,b) =>
+          safeNumber(b.createdAt,0) -
+          safeNumber(a.createdAt,0)
+      );
+
+    }else if(currentTab === "popular"){
+
+      rooms.sort(
+        (a,b) =>
+          safeNumber(b.users,0) -
+          safeNumber(a.users,0)
+      );
+
+    }else{
+
+      rooms.sort(
+        (a,b) =>
+          safeNumber(b.lastActiveAt,b.createdAt || 0) -
+          safeNumber(a.lastActiveAt,a.createdAt || 0)
+      );
+    }
+
+    return rooms;
+  }
+
+
+  function renderRooms(){
+
+    const container =
+      document.getElementById("rooms");
+
+    const rooms =
+      getFilteredRooms();
+
+    if(!rooms.length){
+
+      container.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">🎙️</div>
+          <div>No live rooms found</div>
+          <small>Create a room and become the first host.</small>
+        </div>
+      `;
+
+      return;
+    }
+
+    container.innerHTML =
+      rooms.map(room => {
+
+        const users =
+          Math.max(
+            0,
+            safeNumber(room.users,0)
           );
+
+        const seats =
+          Math.max(
+            1,
+            safeNumber(room.seats,9)
+          );
+
+        const dp =
+          room.dp ||
+          room.ownerDp ||
+          DEFAULT_DP;
+
+        const owner =
+          room.owner ||
+          room.ownerName ||
+          "Host";
+
+        const category =
+          room.category ||
+          "General";
+
+        const roomName =
+          room.name ||
+          "PawanVoice Room";
 
         return `
-          <article class="room">
+          <article class="room-card">
 
-            <div class="room-top">
+            <img
+              class="room-dp"
+              src="${escapeHtml(dp)}"
+              alt="Room"
+              onerror="this.src='${DEFAULT_DP}'"
+            >
 
-              <img
-                class="room-dp"
-                src="${escapeHtml(room.dp)}"
-                alt="Room"
-                onerror="this.src='${DEFAULT_DP}'"
-              >
+            <div class="room-main">
 
-              <div class="room-main">
+              <div class="room-name">
+                ${escapeHtml(roomName)}
+              </div>
 
-                <div class="room-name">
-                  ${escapeHtml(room.name)}
-                </div>
+              <div class="room-host">
+                👑 ${escapeHtml(owner)}
+              </div>
 
-                <div class="room-id">
-                  ID: ${escapeHtml(room.id)}
-                </div>
+              <div class="room-meta">
 
-                <span class="room-category">
-                  ${escapeHtml(room.category)}
+                <span class="pill live">
+                  🟢 LIVE
+                </span>
+
+                <span class="pill">
+                  👥 ${users}/${seats}
+                </span>
+
+                <span class="pill">
+                  🎙️ ${escapeHtml(category)}
+                </span>
+
+                <span class="pill">
+                  #${escapeHtml(room.id)}
                 </span>
 
               </div>
 
             </div>
 
-            <div class="room-owner">
-
-              <img
-                class="owner-dp"
-                src="${escapeHtml(room.ownerDp)}"
-                alt="Host"
-                onerror="this.src='${DEFAULT_DP}'"
-              >
-
-              <div class="owner-name">
-                Host: ${escapeHtml(room.owner)}
-              </div>
-
-            </div>
-
-            <div class="room-bottom">
-
-              <div class="room-users">
-                👥 ${Number(room.users || 0)}/${Number(room.seats || 9)}
-              </div>
-
-              <button
-                class="join-btn"
-                type="button"
-                onclick="joinRoom('${safeId}')"
-              >
-                JOIN
-              </button>
-
-            </div>
+            <button
+              class="join"
+              type="button"
+              onclick="joinRoom('${escapeHtml(room.id)}')"
+            >
+              JOIN
+            </button>
 
           </article>
         `;
-      }
-    ).join("");
-}
 
-
-/* --------------------------------------------------
-   ESCAPE HTML
--------------------------------------------------- */
-
-function escapeHtml(value){
-
-  return String(
-    value ?? ""
-  )
-  .replaceAll("&","&amp;")
-  .replaceAll("<","&lt;")
-  .replaceAll(">","&gt;")
-  .replaceAll('"',"&quot;")
-  .replaceAll("'","&#039;");
-}
-
-
-/* --------------------------------------------------
-   JOIN ROOM
--------------------------------------------------- */
-
-function joinRoom(encodedId){
-
-  const roomId =
-    decodeURIComponent(
-      encodedId
-    );
-
-  location.href =
-    "room.html?room=" +
-    encodeURIComponent(
-      roomId
-    );
-}
-
-
-/* --------------------------------------------------
-   CREATE ROOM
--------------------------------------------------- */
-
-function showCreate(){
-
-  const section =
-    document.getElementById(
-      "createSection"
-    );
-
-  section.style.display =
-    "block";
-
-  section.scrollIntoView({
-    behavior:"smooth",
-    block:"start"
-  });
-}
-
-
-function hideCreate(){
-
-  document.getElementById(
-    "createSection"
-  ).style.display =
-    "none";
-}
-
-
-/* --------------------------------------------------
-   CREATE ROOM FIREBASE
--------------------------------------------------- */
-
-async function createRoom(){
-
-  const nameInput =
-    document.getElementById(
-      "roomNameInput"
-    );
-
-  const categoryInput =
-    document.getElementById(
-      "roomCategoryInput"
-    );
-
-  const name =
-    nameInput.value.trim();
-
-  const category =
-    categoryInput.value;
-
-  if(!name){
-
-    alert(
-      "Room name enter करें."
-    );
-
-    nameInput.focus();
-
-    return;
+      }).join("");
   }
 
-  const roomId =
-    "PV" +
-    Math.floor(
-      100000 +
-      Math.random() *
-      900000
-    );
 
-  const room = {
+  /* =========================
+     TAB
+  ========================= */
 
-    id:
-      roomId,
+  function changeTab(tab){
 
-    name:
-      name,
+    currentTab =
+      tab;
 
-    dp:
-      currentUser.dp ||
-      DEFAULT_DP,
+    document
+      .querySelectorAll(".tab")
+      .forEach(button => {
 
-    owner:
-      currentUser.name ||
-      "Pawan User",
+        button.classList.toggle(
+          "active",
+          button.dataset.tab === tab
+        );
 
-    ownerId:
-      currentUser.userId ||
-      "pawan",
+      });
 
-    ownerDp:
-      currentUser.dp ||
-      DEFAULT_DP,
-
-    category:
-      category,
-
-    users:
-      1,
-
-    seats:
-      9,
-
-    createdAt:
-      Date.now()
-  };
+    renderRooms();
+  }
 
 
-  const button =
-    document.getElementById(
-      "createRoomBtn"
-    );
+  /* =========================
+     JOIN
+  ========================= */
 
-  button.disabled =
-    true;
+  function joinRoom(roomId){
 
-  button.textContent =
-    "Creating...";
-
-
-  try{
-
-    const response =
-      await fetch(
-        FIREBASE_DB +
-        "/rooms/" +
-        encodeURIComponent(
-          roomId
-        ) +
-        ".json",
-        {
-          method:"PUT",
-
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-
-          body:
-            JSON.stringify(room)
-        }
-      );
-
-    if(!response.ok){
-
-      throw new Error(
-        "Firebase HTTP " +
-        response.status
-      );
+    if(!roomId){
+      showToast("Room ID missing");
+      return;
     }
 
-    nameInput.value = "";
-
-    hideCreate();
-
-    await loadRooms();
-
-    /*
-      Open room after successful creation.
-    */
     location.href =
       "room.html?room=" +
-      encodeURIComponent(
-        roomId
+      encodeURIComponent(roomId);
+  }
+
+
+  /* =========================
+     CREATE ROOM
+  ========================= */
+
+  function showCreateRoom(){
+
+    const section =
+      document.getElementById(
+        "createSection"
       );
 
-  }catch(error){
+    if(section.style.display === "none"){
 
-    console.error(
-      "Create room:",
-      error
-    );
+      section.style.display =
+        "block";
 
-    alert(
-      "Room create नहीं हुआ. Firebase connection/rules check करें."
-    );
+      section.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+      });
 
-  }finally{
+    }else{
 
-    button.disabled =
-      false;
-
-    button.textContent =
-      "🎙️ Create Room";
+      section.style.display =
+        "none";
+    }
   }
-}
 
 
-/* --------------------------------------------------
-   PROFILE
--------------------------------------------------- */
+  async function createRoom(){
 
-function openProfile(){
+    if(!currentUser){
 
-  renderUser();
+      showToast(
+        "User is loading..."
+      );
 
-  document.getElementById(
-    "profileModal"
-  ).classList.add(
-    "show"
-  );
-}
+      return;
+    }
 
+    const input =
+      document.getElementById(
+        "roomName"
+      );
 
-function closeProfile(){
+    const category =
+      document.getElementById(
+        "roomCategory"
+      ).value;
 
-  document.getElementById(
-    "profileModal"
-  ).classList.remove(
-    "show"
-  );
-}
+    const name =
+      input.value.trim();
 
+    if(!name){
 
-/* --------------------------------------------------
-   PAGE NAVIGATION
--------------------------------------------------- */
+      showToast(
+        "Room name enter karo"
+      );
 
-function openPage(page){
+      input.focus();
 
-  location.href =
-    page;
-}
+      return;
+    }
 
+    const roomId =
+      getRoomId();
 
-function goHome(){
+    const room = {
 
-  location.href =
-    "index.html";
-}
+      id: roomId,
 
+      name: name,
 
-/* --------------------------------------------------
-   TABS
--------------------------------------------------- */
+      dp:
+        currentUser.dp ||
+        DEFAULT_DP,
 
-document.querySelectorAll(
-  ".tab"
-).forEach(
-  button => {
+      owner:
+        currentUser.name ||
+        "Host",
 
-    button.addEventListener(
-      "click",
-      () => {
+      ownerId:
+        currentUser.userId ||
+        "pawan",
 
-        document.querySelectorAll(
-          ".tab"
-        ).forEach(
-          b =>
-            b.classList.remove(
-              "active"
-            )
-        );
+      ownerDp:
+        currentUser.dp ||
+        DEFAULT_DP,
 
-        button.classList.add(
-          "active"
-        );
+      category:
+        category ||
+        "General",
 
-        currentTab =
-          button.dataset.tab ||
-          "Popular";
+      users: 0,
 
-        renderRooms();
-      }
-    );
+      seats: 9,
+
+      live: true,
+
+      createdAt:
+        Date.now(),
+
+      lastActiveAt:
+        Date.now()
+
+    };
+
+    try{
+
+      await firebasePatch(
+        "rooms/" +
+        encodeURIComponent(roomId),
+        room
+      );
+
+      input.value = "";
+
+      showToast(
+        "Room created!"
+      );
+
+      await loadRooms();
+
+      setTimeout(() => {
+        joinRoom(roomId);
+      },500);
+
+    }catch(error){
+
+      console.error(
+        "Create room:",
+        error
+      );
+
+      showToast(
+        "Room create nahi hua"
+      );
+    }
   }
-);
 
 
-/* --------------------------------------------------
-   SEARCH
--------------------------------------------------- */
+  /* =========================
+     PROFILE
+  ========================= */
 
-document.getElementById(
-  "searchInput"
-).addEventListener(
-  "input",
-  renderRooms
-);
+  function openProfile(){
+
+    if(!currentUser){
+      return;
+    }
+
+    document.getElementById(
+      "modalDp"
+    ).src =
+      currentUser.dp ||
+      DEFAULT_DP;
+
+    document.getElementById(
+      "modalName"
+    ).textContent =
+      currentUser.name ||
+      "Pawan User";
+
+    document.getElementById(
+      "modalId"
+    ).textContent =
+      "ID: " +
+      (currentUser.userId || "pawan");
+
+    document.getElementById(
+      "modalLevel"
+    ).textContent =
+      safeNumber(
+        currentUser.level,
+        1
+      );
+
+    document.getElementById(
+      "modalVip"
+    ).textContent =
+      safeNumber(
+        currentUser.vipLevel,
+        0
+      );
+
+    document.getElementById(
+      "modalFollowing"
+    ).textContent =
+      safeNumber(
+        currentUser.following,
+        0
+      );
+
+    document.getElementById(
+      "modalFollowers"
+    ).textContent =
+      safeNumber(
+        currentUser.followers,
+        0
+      );
+
+    document.getElementById(
+      "modalCoins"
+    ).textContent =
+      safeNumber(
+        currentUser.coins,
+        0
+      ).toLocaleString();
+
+    document.getElementById(
+      "modalDiamonds"
+    ).textContent =
+      safeNumber(
+        currentUser.diamonds,
+        0
+      ).toLocaleString();
+
+    document.getElementById(
+      "modalExp"
+    ).textContent =
+      safeNumber(
+        currentUser.exp,
+        0
+      ).toLocaleString();
+
+    document.getElementById(
+      "modalRoomCount"
+    ).textContent =
+      allRooms.filter(
+        room =>
+          room.ownerId ===
+          currentUser.userId
+      ).length;
+
+    document.getElementById(
+      "profileModal"
+    ).classList.add("show");
+  }
 
 
-/* --------------------------------------------------
-   REFRESH
--------------------------------------------------- */
+  function closeProfile(){
 
-document.getElementById(
-  "refreshBtn"
-).addEventListener(
-  "click",
-  loadRooms
-);
+    document.getElementById(
+      "profileModal"
+    ).classList.remove("show");
+  }
 
 
-/* --------------------------------------------------
-   CREATE BUTTON
--------------------------------------------------- */
-
-document.getElementById(
-  "createRoomBtn"
-).addEventListener(
-  "click",
-  createRoom
-);
-
-
-/* --------------------------------------------------
-   CLOSE PROFILE
--------------------------------------------------- */
-
-document.getElementById(
-  "closeProfile"
-).addEventListener(
-  "click",
-  closeProfile
-);
-
-
-/* --------------------------------------------------
-   CLOSE MODAL OUTSIDE
--------------------------------------------------- */
-
-document.getElementById(
-  "profileModal"
-).addEventListener(
-  "click",
-  event => {
+  function closeProfileOutside(event){
 
     if(
       event.target.id ===
@@ -2024,34 +1710,89 @@ document.getElementById(
     ){
       closeProfile();
     }
-
   }
-);
 
 
-/* --------------------------------------------------
-   INITIAL LOAD
--------------------------------------------------- */
+  /* =========================
+     RANKING
+  ========================= */
 
-(async function(){
+  function openRanking(type){
 
-  renderUser();
+    if(type === "rich"){
+      location.href =
+        "ranking.html?type=rich";
+      return;
+    }
 
-  await loadUser();
+    if(type === "cp"){
+      location.href =
+        "ranking.html?type=cp";
+      return;
+    }
 
-  await loadRooms();
+    if(type === "family"){
+      location.href =
+        "ranking.html?type=family";
+      return;
+    }
 
-})();
+    location.href =
+      "ranking.html";
+  }
 
 
-/* --------------------------------------------------
-   AUTO REFRESH ROOM LIST
--------------------------------------------------- */
+  function goHome(){
 
-setInterval(
-  loadRooms,
-  10000
-);
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+  }
+
+
+  /* =========================
+     SEARCH
+  ========================= */
+
+  document
+    .getElementById("searchInput")
+    .addEventListener(
+      "input",
+      renderRooms
+    );
+
+
+  /* =========================
+     INIT
+  ========================= */
+
+  async function init(){
+
+    await loadCurrentUser();
+
+    await loadRooms();
+
+    /*
+      Firebase REST polling.
+      Server.js will keep the room
+      summary updated as users join
+      and leave.
+    */
+
+    clearInterval(
+      refreshTimer
+    );
+
+    refreshTimer =
+      setInterval(
+        loadRooms,
+        4000
+      );
+  }
+
+
+  init();
 
 </script>
 
