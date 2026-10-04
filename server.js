@@ -1,6 +1,3 @@
-// PawanVoice - Realtime Voice Room Server
-// Node.js + Express + Socket.IO + WebRTC Signaling
-
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
@@ -10,59 +7,147 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-// --------------------------------------------------
-// BASIC CONFIG
-// --------------------------------------------------
-
 const PORT = process.env.PORT || 3000;
-
-const SEAT_COUNT = 9;
 
 const TURN_URL = process.env.TURN_URL || "";
 const TURN_USERNAME = process.env.TURN_USERNAME || "";
 const TURN_CREDENTIAL = process.env.TURN_CREDENTIAL || "";
 
-// --------------------------------------------------
-// MIDDLEWARE
-// --------------------------------------------------
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST"]
+}));
 
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"]
-  })
-);
+app.use(express.json());
 
-app.use(express.json({ limit: "2mb" }));
+/*
+====================================================
+STATIC FILES
+====================================================
+*/
 
-// Serve files from project root
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(__dirname));
 
-// --------------------------------------------------
-// SOCKET.IO
-// --------------------------------------------------
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
+app.get("/room.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "room.html"));
+});
+
+/*
+====================================================
+HEALTH
+====================================================
+*/
+
+app.get("/health", (req, res) => {
+
+  res.json({
+    app: "PawanVoice Room Server",
+    status: "running",
+    socketIO: true,
+    webRTC: true,
+    turnConfigured: Boolean(
+      TURN_URL &&
+      TURN_USERNAME &&
+      TURN_CREDENTIAL
+    ),
+    seats: 9,
+    rooms: rooms.size
+  });
+
+});
+
+/*
+====================================================
+WEBRTC / TURN CONFIG
+====================================================
+*/
+
+app.get("/rtc-config", (req, res) => {
+
+  const iceServers = [
+
+    {
+      urls: [
+        "stun:stun.l.google.com:19302",
+        "stun:stun1.l.google.com:19302"
+      ]
+    }
+
+  ];
+
+  if (
+    TURN_URL &&
+    TURN_USERNAME &&
+    TURN_CREDENTIAL
+  ) {
+
+    iceServers.push({
+
+      urls: [
+        TURN_URL,
+        TURN_URL.replace(
+          "turn:",
+          "turns:"
+        ) + "?transport=tcp"
+      ],
+
+      username: TURN_USERNAME,
+
+      credential: TURN_CREDENTIAL
+
+    });
+
+  }
+
+  res.json({
+    iceServers
+  });
+
+});
+
+/*
+====================================================
+SOCKET.IO
+====================================================
+*/
 
 const io = new Server(server, {
+
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
   },
-  transports: ["websocket", "polling"]
+
+  transports: [
+    "websocket",
+    "polling"
+  ]
+
 });
 
-// --------------------------------------------------
-// ROOMS
-// --------------------------------------------------
+/*
+====================================================
+ROOM STORAGE
+====================================================
+*/
 
 const rooms = new Map();
 
+const SEAT_COUNT = 9;
+
 function makeRoom(roomId) {
+
   return {
+
     id: roomId,
 
     name: "PawanVoice Room",
 
-    dp: "",
+    dp: "https://i.pravatar.cc/300?img=12",
 
     seats: Array(SEAT_COUNT).fill(null),
 
@@ -73,79 +158,90 @@ function makeRoom(roomId) {
     gifts: [],
 
     createdAt: Date.now()
+
   };
+
 }
 
 function getRoom(roomId) {
+
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, makeRoom(roomId));
+
+    rooms.set(
+      roomId,
+      makeRoom(roomId)
+    );
+
   }
 
   return rooms.get(roomId);
+
 }
 
-// --------------------------------------------------
-// USER CLEANER
-// --------------------------------------------------
+/*
+====================================================
+USER CLEAN
+====================================================
+*/
 
 function cleanUser(user) {
+
   if (!user) return null;
 
   return {
-    userId: String(user.userId || ""),
-    socketId: String(user.socketId || ""),
 
-    name: String(user.name || "Guest"),
+    userId: user.userId,
 
-    dp: String(user.dp || ""),
+    socketId: user.socketId,
+
+    name: user.name || "Guest",
+
+    dp:
+      user.dp ||
+      "https://i.pravatar.cc/200?img=12",
 
     level: Number(user.level || 1),
 
     exp: Number(user.exp || 0),
 
-    vipLevel: Number(user.vipLevel || 0),
+    vipLevel:
+      Number(user.vipLevel || 0),
 
-    vipExp: Number(user.vipExp || 0),
+    vipExp:
+      Number(user.vipExp || 0),
 
-    avatarFrame: user.avatarFrame || {
-      id: "default",
-      name: "Default Frame",
-      image: "",
-      active: true
-    },
+    avatarFrame:
+      user.avatarFrame || null,
 
-    badge: user.badge || {
-      id: "default",
-      name: "New User",
-      image: "",
-      active: true
-    },
+    badge:
+      user.badge || null,
 
-    entryEffect: user.entryEffect || {
-      id: "default",
-      name: "Default Entry",
-      image: "",
-      active: true
-    },
+    entryEffect:
+      user.entryEffect || null,
 
-    mic: Boolean(user.mic),
+    mic:
+      Boolean(user.mic),
 
-    joinedAt: Number(user.joinedAt || Date.now())
+    muted:
+      Boolean(user.muted),
+
+    joinedAt:
+      user.joinedAt || Date.now()
+
   };
+
 }
 
-// --------------------------------------------------
-// ROOM STATE
-// --------------------------------------------------
+/*
+====================================================
+ROOM STATE
+====================================================
+*/
 
-function roomData(room) {
-  const users = {};
-
-  for (const [userId, user] of room.users.entries()) {
-    users[userId] = cleanUser(user);
-  }
+function roomState(room) {
 
   return {
+
     id: room.id,
 
     name: room.name,
@@ -154,409 +250,247 @@ function roomData(room) {
 
     seats: room.seats,
 
-    users,
+    users:
+      Array.from(room.users.values())
+        .map(cleanUser),
 
-    messages: room.messages.slice(-100),
+    messages:
+      room.messages.slice(-100),
 
-    gifts: room.gifts.slice(-50),
+    gifts:
+      room.gifts.slice(-100)
 
-    createdAt: room.createdAt
   };
+
 }
 
-function sendRoomState(room) {
-  const data = roomData(room);
+function broadcastRoom(room) {
 
-  io.to(room.id).emit("room-state", data);
+  io.to(room.id).emit(
+    "room-state",
+    roomState(room)
+  );
 
-  // Compatibility with older room.html
-  io.to(room.id).emit("roomState", data);
+  io.to(room.id).emit(
+    "roomState",
+    roomState(room)
+  );
+
 }
 
-// --------------------------------------------------
-// BASIC ROUTES
-// --------------------------------------------------
+/*
+====================================================
+JOIN ROOM
+====================================================
+*/
 
-app.get("/", (req, res) => {
-  res.json({
-    app: "PawanVoice Room Server",
-    status: "running",
-    socketIO: true,
-    seats: SEAT_COUNT,
-    rooms: rooms.size
-  });
-});
-
-app.get("/health", (req, res) => {
-  res.json({
-    ok: true,
-    app: "PawanVoice",
-    rooms: rooms.size,
-    seats: SEAT_COUNT,
-    time: Date.now()
-  });
-});
-
-// --------------------------------------------------
-// WEBRTC CONFIG
-// --------------------------------------------------
-
-app.get("/rtc-config", (req, res) => {
-  const iceServers = [
-    {
-      urls: [
-        "stun:stun.l.google.com:19302"
-      ]
-    }
-  ];
-
-  // TURN is added only when Render environment
-  // variables are configured.
-  if (
-    TURN_URL &&
-    TURN_USERNAME &&
-    TURN_CREDENTIAL
-  ) {
-    iceServers.push({
-      urls: TURN_URL,
-      username: TURN_USERNAME,
-      credential: TURN_CREDENTIAL
-    });
-  }
-
-  res.json({
-    iceServers
-  });
-});
-
-// --------------------------------------------------
-// ROOM.HTML ROUTE
-// --------------------------------------------------
-
-app.get("/room.html", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "room.html")
-  );
-});
-
-// --------------------------------------------------
-// INDEX.HTML ROUTE
-// --------------------------------------------------
-
-app.get("/index.html", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "index.html")
-  );
-});
-
-// --------------------------------------------------
-// SOCKET CONNECTION
-// --------------------------------------------------
-
-io.on("connection", (socket) => {
+io.on("connection", socket => {
 
   console.log(
     "Socket connected:",
     socket.id
   );
 
-  // ------------------------------------------------
-  // JOIN ROOM
-  // ------------------------------------------------
-
-  socket.on("join-room", (data = {}) => {
-
-    try {
-
-      const roomId =
-        String(
-          data.roomId ||
-          "main"
-        ).trim();
-
-      const userId =
-        String(
-          data.userId ||
-          socket.id
-        ).trim();
-
-      const room =
-        getRoom(roomId);
-
-      // Prevent same socket from joining twice
-      if (socket.data.roomId) {
-
-        socket.leave(
-          socket.data.roomId
-        );
-
-      }
-
-      socket.join(roomId);
-
-      socket.data.roomId = roomId;
-      socket.data.userId = userId;
-
-      const user = cleanUser({
-        userId,
-
-        socketId: socket.id,
-
-        name:
-          data.name ||
-          "Guest",
-
-        dp:
-          data.dp ||
-          "",
-
-        level:
-          data.level ||
-          1,
-
-        exp:
-          data.exp ||
-          0,
-
-        vipLevel:
-          data.vipLevel ||
-          0,
-
-        vipExp:
-          data.vipExp ||
-          0,
-
-        avatarFrame:
-          data.avatarFrame,
-
-        badge:
-          data.badge,
-
-        entryEffect:
-          data.entryEffect,
-
-        mic: false,
-
-        joinedAt: Date.now()
-      });
-
-      // If same user was already in this room,
-      // remove old socket's seat/user.
-      const oldUser =
-        room.users.get(userId);
-
-      if (oldUser) {
-
-        const oldSocketId =
-          oldUser.socketId;
-
-        room.seats =
-          room.seats.map(
-            (seat) => {
-
-              if (
-                seat &&
-                seat.userId === userId
-              ) {
-                return null;
-              }
-
-              return seat;
-            }
-          );
-
-        const oldSocket =
-          io.sockets.sockets.get(
-            oldSocketId
-          );
-
-        if (oldSocket) {
-
-          oldSocket.leave(roomId);
-
-          oldSocket.data.roomId = null;
-          oldSocket.data.userId = null;
-        }
-      }
-
-      room.users.set(
-        userId,
-        user
-      );
-
-      // First user automatically becomes host.
-      const hasAnySeat =
-        room.seats.some(
-          seat => seat !== null
-        );
-
-      if (!hasAnySeat) {
-
-        room.seats[0] = {
-          userId: user.userId,
-
-          socketId: user.socketId,
-
-          name: user.name,
-
-          dp: user.dp,
-
-          level: user.level,
-
-          vipLevel: user.vipLevel,
-
-          mic: false
-        };
-
-      }
-
-      // Send current state to new user
-      socket.emit(
-        "room-state",
-        roomData(room)
-      );
-
-      socket.emit(
-        "roomState",
-        roomData(room)
-      );
-
-      // Notify existing users about new user.
-      socket.to(roomId).emit(
-        "user-entry",
-        {
-          userId: user.userId,
-
-          socketId: user.socketId,
-
-          name: user.name,
-
-          dp: user.dp,
-
-          level: user.level,
-
-          vipLevel: user.vipLevel
-        }
-      );
-
-      sendRoomState(room);
-
-      console.log(
-        `User ${userId} joined room ${roomId}`
-      );
-
-    } catch (error) {
-
-      console.error(
-        "join-room error:",
-        error
-      );
-
-      socket.emit(
-        "server-error",
-        {
-          message:
-            "Unable to join room"
-        }
-      );
-    }
-  });
-
-  // ------------------------------------------------
-  // GET ROOM STATE
-  // ------------------------------------------------
-
   socket.on(
-    "get-room-state",
-    () => {
+    "join-room",
+    data => {
 
-      const roomId =
-        socket.data.roomId;
+      try {
 
-      if (!roomId) return;
+        data = data || {};
 
-      const room =
-        rooms.get(roomId);
+        const roomId =
+          String(
+            data.roomId ||
+            "main"
+          ).trim();
 
-      if (!room) return;
+        const userId =
+          String(
+            data.userId ||
+            socket.id
+          );
 
-      socket.emit(
-        "room-state",
-        roomData(room)
-      );
+        const room =
+          getRoom(roomId);
 
-      socket.emit(
-        "roomState",
-        roomData(room)
-      );
+        const user = cleanUser({
+
+          userId,
+
+          socketId: socket.id,
+
+          name:
+            data.name ||
+            "Guest",
+
+          dp:
+            data.dp ||
+            "https://i.pravatar.cc/200?img=12",
+
+          level:
+            data.level || 1,
+
+          exp:
+            data.exp || 0,
+
+          vipLevel:
+            data.vipLevel || 0,
+
+          vipExp:
+            data.vipExp || 0,
+
+          avatarFrame:
+            data.avatarFrame || null,
+
+          badge:
+            data.badge || null,
+
+          entryEffect:
+            data.entryEffect || null,
+
+          mic: false,
+
+          joinedAt:
+            Date.now()
+
+        });
+
+        socket.join(roomId);
+
+        socket.data.roomId =
+          roomId;
+
+        socket.data.userId =
+          userId;
+
+        room.users.set(
+          socket.id,
+          user
+        );
+
+        /*
+        First user becomes host.
+        */
+
+        if (
+          !room.seats.some(Boolean)
+        ) {
+
+          room.seats[0] =
+            socket.id;
+
+        }
+
+        /*
+        Send current state.
+        */
+
+        socket.emit(
+          "room-state",
+          roomState(room)
+        );
+
+        socket.emit(
+          "roomState",
+          roomState(room)
+        );
+
+        /*
+        Tell existing users about
+        newly connected socket.
+        */
+
+        socket.to(roomId).emit(
+          "user-entry",
+          {
+            socketId: socket.id,
+            userId: userId,
+            name: user.name
+          }
+        );
+
+        broadcastRoom(room);
+
+        console.log(
+          `${user.name} joined ${roomId}`
+        );
+
+      } catch (error) {
+
+        console.error(
+          "join-room error:",
+          error
+        );
+
+      }
+
     }
   );
 
-  // ------------------------------------------------
-  // TAKE SEAT
-  // ------------------------------------------------
+  /*
+  ==================================================
+  TAKE SEAT
+  ==================================================
+  */
 
   socket.on(
     "take-seat",
-    (data = {}) => {
-
-      const roomId =
-        socket.data.roomId;
-
-      const userId =
-        socket.data.userId;
-
-      if (!roomId || !userId) return;
+    data => {
 
       const room =
-        rooms.get(roomId);
+        rooms.get(
+          socket.data.roomId
+        );
 
       if (!room) return;
 
+      const user =
+        room.users.get(
+          socket.id
+        );
+
+      if (!user) return;
+
       let seatIndex =
-        Number.isInteger(
-          data.seatIndex
-        )
-          ? data.seatIndex
-          : Number(data.seat);
-
-      if (!Number.isFinite(seatIndex)) {
-        return;
-      }
-
-      // Accept 1-9 from older clients
-      if (
-        seatIndex >= 1 &&
-        seatIndex <= SEAT_COUNT
-      ) {
-        seatIndex =
-          seatIndex - 1;
-      }
+        Number(
+          data?.seatIndex ??
+          data?.seat
+        );
 
       if (
+        !Number.isInteger(seatIndex) ||
         seatIndex < 0 ||
         seatIndex >= SEAT_COUNT
       ) {
         return;
       }
 
-      // Remove this user from any previous seat.
-      room.seats =
-        room.seats.map(
-          seat => {
+      /*
+      Remove old seat.
+      */
 
-            if (
-              seat &&
-              seat.userId === userId
-            ) {
-              return null;
-            }
+      for (
+        let i = 0;
+        i < room.seats.length;
+        i++
+      ) {
 
-            return seat;
-          }
-        );
+        if (
+          room.seats[i] ===
+          socket.id
+        ) {
 
-      // Seat occupied?
+          room.seats[i] = null;
+
+        }
+
+      }
+
+      /*
+      Don't allow occupied seat.
+      */
+
       if (
         room.seats[seatIndex]
       ) {
@@ -565,539 +499,275 @@ io.on("connection", (socket) => {
           "seat-error",
           {
             message:
-              "This seat is already occupied"
+              "This seat is already occupied."
           }
         );
 
-        sendRoomState(room);
-
         return;
+
       }
 
-      const user =
-        room.users.get(userId);
+      room.seats[seatIndex] =
+        socket.id;
 
-      if (!user) return;
+      broadcastRoom(room);
 
-      room.seats[seatIndex] = {
-        userId: user.userId,
-
-        socketId: user.socketId,
-
-        name: user.name,
-
-        dp: user.dp,
-
-        level: user.level,
-
-        vipLevel: user.vipLevel,
-
-        mic: Boolean(user.mic)
-      };
-
-      sendRoomState(room);
     }
   );
 
-  // ------------------------------------------------
-  // LEAVE SEAT
-  // ------------------------------------------------
+  /*
+  ==================================================
+  LEAVE SEAT
+  ==================================================
+  */
 
   socket.on(
     "leave-seat",
     () => {
 
-      const roomId =
-        socket.data.roomId;
-
-      const userId =
-        socket.data.userId;
-
-      if (!roomId || !userId) return;
-
       const room =
-        rooms.get(roomId);
+        rooms.get(
+          socket.data.roomId
+        );
 
       if (!room) return;
 
-      room.seats =
-        room.seats.map(
-          seat => {
+      for (
+        let i = 0;
+        i < room.seats.length;
+        i++
+      ) {
 
-            if (
-              seat &&
-              seat.userId === userId
-            ) {
-              return null;
-            }
+        if (
+          room.seats[i] ===
+          socket.id
+        ) {
 
-            return seat;
-          }
+          room.seats[i] = null;
+
+        }
+
+      }
+
+      const user =
+        room.users.get(
+          socket.id
         );
 
-      sendRoomState(room);
+      if (user) {
+
+        user.mic = false;
+
+      }
+
+      broadcastRoom(room);
+
     }
   );
 
-  // ------------------------------------------------
-  // MIC STATUS
-  // ------------------------------------------------
+  /*
+  ==================================================
+  MIC STATUS
+  ==================================================
+  */
 
   socket.on(
     "mic-status",
-    (data = {}) => {
-
-      const roomId =
-        socket.data.roomId;
-
-      const userId =
-        socket.data.userId;
-
-      if (!roomId || !userId) return;
+    data => {
 
       const room =
-        rooms.get(roomId);
+        rooms.get(
+          socket.data.roomId
+        );
 
       if (!room) return;
 
       const user =
-        room.users.get(userId);
+        room.users.get(
+          socket.id
+        );
 
       if (!user) return;
 
       user.mic =
-        Boolean(data.mic);
+        Boolean(data?.mic);
 
-      room.seats =
-        room.seats.map(
-          seat => {
+      broadcastRoom(room);
 
-            if (
-              seat &&
-              seat.userId === userId
-            ) {
-
-              return {
-                ...seat,
-                mic: user.mic
-              };
-            }
-
-            return seat;
-          }
-        );
-
-      io.to(roomId).emit(
-        "mic-status",
-        {
-          userId,
-          mic: user.mic
-        }
-      );
-
-      sendRoomState(room);
     }
   );
 
-  // ------------------------------------------------
-  // CHAT MESSAGE
-  // ------------------------------------------------
+  /*
+  ==================================================
+  CHAT
+  ==================================================
+  */
 
   socket.on(
     "chat-message",
-    (data = {}) => {
-
-      const roomId =
-        socket.data.roomId;
-
-      const userId =
-        socket.data.userId;
-
-      if (!roomId || !userId) return;
+    data => {
 
       const room =
-        rooms.get(roomId);
+        rooms.get(
+          socket.data.roomId
+        );
 
       if (!room) return;
 
       const user =
-        room.users.get(userId);
+        room.users.get(
+          socket.id
+        );
 
       if (!user) return;
 
       const text =
         String(
-          data.text ||
-          ""
+          data?.text || ""
         ).trim();
 
       if (!text) return;
 
-      if (text.length > 500) {
-        return;
-      }
-
       const message = {
+
         id:
-          Date.now().toString() +
-          "-" +
-          Math.random()
-            .toString(36)
-            .slice(2),
+          `${Date.now()}_${Math.random()}`,
 
-        userId: user.userId,
+        userId:
+          user.userId,
 
-        name: user.name,
+        socketId:
+          socket.id,
 
-        dp: user.dp,
+        name:
+          user.name,
+
+        dp:
+          user.dp,
 
         text,
 
-        time: Date.now()
+        time:
+          Date.now()
+
       };
 
       room.messages.push(
         message
       );
 
-      if (
-        room.messages.length >
-        100
-      ) {
-        room.messages =
-          room.messages.slice(-100);
-      }
-
-      io.to(roomId).emit(
+      io.to(room.id).emit(
         "chat-message",
         message
       );
+
+      broadcastRoom(room);
+
     }
   );
 
-  // ------------------------------------------------
-  // SEND GIFT
-  // ------------------------------------------------
+  /*
+  ==================================================
+  GIFTS
+  ==================================================
+  */
 
   socket.on(
     "send-gift",
-    (data = {}) => {
-
-      const roomId =
-        socket.data.roomId;
-
-      const senderId =
-        socket.data.userId;
-
-      if (!roomId || !senderId) {
-        return;
-      }
+    data => {
 
       const room =
-        rooms.get(roomId);
+        rooms.get(
+          socket.data.roomId
+        );
 
       if (!room) return;
 
-      const sender =
-        room.users.get(senderId);
-
-      if (!sender) return;
-
       const gift = {
+
         id:
-          data.id ||
-          (
-            Date.now() +
-            "-" +
-            Math.random()
-              .toString(36)
-              .slice(2)
-          ),
+          data?.id ||
+          `${Date.now()}`,
 
-        giftId:
-          String(data.giftId || ""),
-
-        giftName:
-          String(
-            data.giftName ||
-            data.name ||
-            "Gift"
-          ),
+        name:
+          data?.name ||
+          "Gift",
 
         icon:
-          String(
-            data.icon ||
-            "🎁"
-          ),
+          data?.icon ||
+          "🎁",
 
         price:
-          Number(data.price || 0),
+          Number(data?.price || 0),
 
         quantity:
-          Math.max(
-            1,
-            Math.min(
-              99,
-              Number(data.quantity || 1)
-            )
-          ),
+          Number(data?.quantity || 1),
 
-        senderId,
+        fromUserId:
+          socket.data.userId,
 
-        senderName:
-          sender.name,
+        fromName:
+          data?.fromName ||
+          "Guest",
 
-        senderDp:
-          sender.dp,
+        toUserId:
+          data?.toUserId ||
+          "",
 
-        receiverId:
-          String(
-            data.receiverId ||
-            ""
-          ),
+        toName:
+          data?.toName ||
+          "",
 
-        receiverName:
-          String(
-            data.receiverName ||
-            ""
-          ),
+        time:
+          Date.now()
 
-        time: Date.now()
       };
 
       room.gifts.push(
         gift
       );
 
-      if (
-        room.gifts.length >
-        50
-      ) {
-        room.gifts =
-          room.gifts.slice(-50);
-      }
-
-      io.to(roomId).emit(
+      io.to(room.id).emit(
         "gift-received",
         gift
       );
 
-      io.to(roomId).emit(
-        "giftReceived",
-        gift
-      );
+      broadcastRoom(room);
+
     }
   );
 
-  // ------------------------------------------------
-  // ADMIN CHECK
-  // ------------------------------------------------
-
-  function isHost() {
-
-    const roomId =
-      socket.data.roomId;
-
-    const userId =
-      socket.data.userId;
-
-    const room =
-      rooms.get(roomId);
-
-    if (!room) return false;
-
-    const host =
-      room.seats[0];
-
-    return Boolean(
-      host &&
-      host.userId === userId
-    );
-  }
-
-  // ------------------------------------------------
-  // ADMIN KICK
-  // ------------------------------------------------
+  /*
+  ==================================================
+  ADMIN KICK
+  ==================================================
+  */
 
   socket.on(
     "admin-kick",
-    (data = {}) => {
-
-      if (!isHost()) {
-
-        socket.emit(
-          "admin-error",
-          {
-            message:
-              "Only room host can kick users"
-          }
-        );
-
-        return;
-      }
-
-      const roomId =
-        socket.data.roomId;
+    data => {
 
       const room =
-        rooms.get(roomId);
+        rooms.get(
+          socket.data.roomId
+        );
 
       if (!room) return;
 
-      const targetUserId =
-        String(
-          data.userId ||
-          data.targetUserId ||
-          ""
-        );
+      const hostSocket =
+        room.seats[0];
 
-      if (!targetUserId) return;
-
-      const targetUser =
-        room.users.get(
-          targetUserId
-        );
-
-      if (!targetUser) return;
-
-      const targetSocket =
-        io.sockets.sockets.get(
-          targetUser.socketId
-        );
-
-      // Remove seats
-      room.seats =
-        room.seats.map(
-          seat => {
-
-            if (
-              seat &&
-              seat.userId ===
-                targetUserId
-            ) {
-              return null;
-            }
-
-            return seat;
-          }
-        );
-
-      // Remove user
-      room.users.delete(
-        targetUserId
-      );
-
-      if (targetSocket) {
-
-        targetSocket.emit(
-          "kicked",
-          {
-            roomId,
-            message:
-              "You were removed from the room"
-          }
-        );
-
-        targetSocket.leave(
-          roomId
-        );
-
-        targetSocket.data.roomId =
-          null;
-
-        targetSocket.data.userId =
-          null;
-      }
-
-      io.to(roomId).emit(
-        "user-kicked",
-        {
-          userId: targetUserId
-        }
-      );
-
-      sendRoomState(room);
-    }
-  );
-
-  // ------------------------------------------------
-  // ADMIN MUTE
-  // ------------------------------------------------
-
-  socket.on(
-    "admin-mute",
-    (data = {}) => {
-
-      if (!isHost()) {
-
-        socket.emit(
-          "admin-error",
-          {
-            message:
-              "Only room host can mute users"
-          }
-        );
+      if (
+        hostSocket !==
+        socket.id
+      ) {
 
         return;
+
       }
-
-      const roomId =
-        socket.data.roomId;
-
-      const room =
-        rooms.get(roomId);
-
-      if (!room) return;
-
-      const targetUserId =
-        String(
-          data.userId ||
-          data.targetUserId ||
-          ""
-        );
-
-      const target =
-        room.users.get(
-          targetUserId
-        );
-
-      if (!target) return;
-
-      const muted =
-        data.muted !== undefined
-          ? Boolean(data.muted)
-          : true;
-
-      io.to(roomId).emit(
-        "admin-mute",
-        {
-          userId:
-            targetUserId,
-
-          muted
-        }
-      );
-    }
-  );
-
-  // ------------------------------------------------
-  // WEBRTC OFFER
-  // ------------------------------------------------
-
-  socket.on(
-    "webrtc-offer",
-    (data = {}) => {
-
-      const roomId =
-        socket.data.roomId;
-
-      if (!roomId) return;
 
       const targetSocketId =
-        String(
-          data.targetSocketId ||
-          ""
-        );
+        data?.targetSocketId;
 
       if (!targetSocketId) return;
 
@@ -1106,13 +776,92 @@ io.on("connection", (socket) => {
           targetSocketId
         );
 
-      if (!targetSocket) return;
+      if (targetSocket) {
 
-      targetSocket.emit(
+        targetSocket.emit(
+          "kicked",
+          {
+            message:
+              "You were removed from the room."
+          }
+        );
+
+        targetSocket.disconnect(
+          true
+        );
+
+      }
+
+    }
+  );
+
+  /*
+  ==================================================
+  ADMIN MUTE
+  ==================================================
+  */
+
+  socket.on(
+    "admin-mute",
+    data => {
+
+      const room =
+        rooms.get(
+          socket.data.roomId
+        );
+
+      if (!room) return;
+
+      if (
+        room.seats[0] !==
+        socket.id
+      ) {
+
+        return;
+
+      }
+
+      const targetSocketId =
+        data?.targetSocketId;
+
+      const target =
+        room.users.get(
+          targetSocketId
+        );
+
+      if (!target) return;
+
+      target.muted = true;
+
+      io.to(
+        targetSocketId
+      ).emit(
+        "force-mute"
+      );
+
+      broadcastRoom(room);
+
+    }
+  );
+
+  /*
+  ==================================================
+  WEBRTC OFFER
+  ==================================================
+  */
+
+  socket.on(
+    "webrtc-offer",
+    data => {
+
+      const target =
+        data?.targetSocketId;
+
+      if (!target) return;
+
+      io.to(target).emit(
         "webrtc-offer",
         {
-          roomId,
-
           fromSocketId:
             socket.id,
 
@@ -1123,42 +872,28 @@ io.on("connection", (socket) => {
             data.offer
         }
       );
+
     }
   );
 
-  // ------------------------------------------------
-  // WEBRTC ANSWER
-  // ------------------------------------------------
+  /*
+  ==================================================
+  WEBRTC ANSWER
+  ==================================================
+  */
 
   socket.on(
     "webrtc-answer",
-    (data = {}) => {
+    data => {
 
-      const roomId =
-        socket.data.roomId;
+      const target =
+        data?.targetSocketId;
 
-      if (!roomId) return;
+      if (!target) return;
 
-      const targetSocketId =
-        String(
-          data.targetSocketId ||
-          ""
-        );
-
-      if (!targetSocketId) return;
-
-      const targetSocket =
-        io.sockets.sockets.get(
-          targetSocketId
-        );
-
-      if (!targetSocket) return;
-
-      targetSocket.emit(
+      io.to(target).emit(
         "webrtc-answer",
         {
-          roomId,
-
           fromSocketId:
             socket.id,
 
@@ -1169,130 +904,103 @@ io.on("connection", (socket) => {
             data.answer
         }
       );
+
     }
   );
 
-  // ------------------------------------------------
-  // WEBRTC ICE CANDIDATE
-  // ------------------------------------------------
+  /*
+  ==================================================
+  ICE CANDIDATE
+  ==================================================
+  */
 
   socket.on(
     "ice-candidate",
-    (data = {}) => {
+    data => {
 
-      const roomId =
-        socket.data.roomId;
+      const target =
+        data?.targetSocketId;
 
-      if (!roomId) return;
+      if (!target) return;
 
-      const targetSocketId =
-        String(
-          data.targetSocketId ||
-          ""
-        );
-
-      if (!targetSocketId) return;
-
-      const targetSocket =
-        io.sockets.sockets.get(
-          targetSocketId
-        );
-
-      if (!targetSocket) return;
-
-      const payload = {
-        roomId,
-
-        fromSocketId:
-          socket.id,
-
-        fromUserId:
-          socket.data.userId,
-
-        candidate:
-          data.candidate
-      };
-
-      targetSocket.emit(
+      io.to(target).emit(
         "ice-candidate",
-        payload
+        {
+          fromSocketId:
+            socket.id,
+
+          candidate:
+            data.candidate
+        }
       );
 
-      // Compatibility with older room.html
-      targetSocket.emit(
-        "iceCandidate",
-        payload
-      );
     }
   );
 
-  // ------------------------------------------------
-  // OLD WEBRTC EVENT NAMES
-  // ------------------------------------------------
+  /*
+  compatibility
+  */
 
   socket.on(
-    "webrtc-ice-candidate",
-    (data = {}) => {
+    "iceCandidate",
+    data => {
 
-      const targetSocketId =
-        String(
-          data.targetSocketId ||
-          ""
-        );
+      const target =
+        data?.targetSocketId;
 
-      if (!targetSocketId) return;
+      if (!target) return;
 
-      const targetSocket =
-        io.sockets.sockets.get(
-          targetSocketId
-        );
-
-      if (!targetSocket) return;
-
-      const payload = {
-        roomId:
-          socket.data.roomId,
-
-        fromSocketId:
-          socket.id,
-
-        fromUserId:
-          socket.data.userId,
-
-        candidate:
-          data.candidate
-      };
-
-      targetSocket.emit(
-        "ice-candidate",
-        payload
-      );
-
-      targetSocket.emit(
+      io.to(target).emit(
         "iceCandidate",
-        payload
+        {
+          fromSocketId:
+            socket.id,
+
+          candidate:
+            data.candidate
+        }
       );
+
     }
   );
 
-  // ------------------------------------------------
-  // DISCONNECT
-  // ------------------------------------------------
+  /*
+  ==================================================
+  GET ROOM STATE
+  ==================================================
+  */
+
+  socket.on(
+    "get-room-state",
+    () => {
+
+      const room =
+        rooms.get(
+          socket.data.roomId
+        );
+
+      if (!room) return;
+
+      socket.emit(
+        "room-state",
+        roomState(room)
+      );
+
+    }
+  );
+
+  /*
+  ==================================================
+  DISCONNECT
+  ==================================================
+  */
 
   socket.on(
     "disconnect",
-    () => {
-
-      console.log(
-        "Socket disconnected:",
-        socket.id
-      );
+    reason => {
 
       const roomId =
         socket.data.roomId;
-
-      const userId =
-        socket.data.userId;
 
       if (!roomId) return;
 
@@ -1301,109 +1009,53 @@ io.on("connection", (socket) => {
 
       if (!room) return;
 
-      // Remove user from seats
-      room.seats =
-        room.seats.map(
-          seat => {
+      /*
+      Remove from seats.
+      */
 
-            if (
-              seat &&
-              (
-                seat.socketId ===
-                  socket.id ||
-                seat.userId ===
-                  userId
-              )
-            ) {
-              return null;
-            }
-
-            return seat;
-          }
-        );
-
-      // Remove user
-      if (userId) {
-
-        const current =
-          room.users.get(
-            userId
-          );
+      for (
+        let i = 0;
+        i < room.seats.length;
+        i++
+      ) {
 
         if (
-          current &&
-          current.socketId ===
-            socket.id
+          room.seats[i] ===
+          socket.id
         ) {
-          room.users.delete(
-            userId
-          );
+
+          room.seats[i] = null;
+
         }
+
       }
 
-      // Tell remaining users
-      io.to(roomId).emit(
-        "user-left",
-        {
-          userId,
-          socketId:
-            socket.id
-        }
+      room.users.delete(
+        socket.id
       );
 
-      // If host left, assign first
-      // available user as new host.
+      /*
+      If host left,
+      first remaining user becomes host.
+      */
+
       if (
-        !room.seats[0] &&
+        room.seats[0] === null &&
         room.users.size > 0
       ) {
 
-        const firstUser =
-          room.users.values()
-            .next()
-            .value;
+        const first =
+          room.users.keys().next().value;
 
-        if (firstUser) {
+        room.seats[0] =
+          first;
 
-          room.seats[0] = {
-            userId:
-              firstUser.userId,
-
-            socketId:
-              firstUser.socketId,
-
-            name:
-              firstUser.name,
-
-            dp:
-              firstUser.dp,
-
-            level:
-              firstUser.level,
-
-            vipLevel:
-              firstUser.vipLevel,
-
-            mic:
-              Boolean(
-                firstUser.mic
-              )
-          };
-
-          io.to(roomId).emit(
-            "new-host",
-            {
-              userId:
-                firstUser.userId,
-
-              socketId:
-                firstUser.socketId
-            }
-          );
-        }
       }
 
-      // Delete empty rooms
+      /*
+      Delete empty room.
+      */
+
       if (
         room.users.size === 0
       ) {
@@ -1417,43 +1069,28 @@ io.on("connection", (socket) => {
           roomId
         );
 
-      } else {
+        return;
 
-        sendRoomState(room);
       }
+
+      broadcastRoom(room);
+
+      console.log(
+        "Socket disconnected:",
+        socket.id,
+        reason
+      );
+
     }
   );
+
 });
 
-// --------------------------------------------------
-// ERROR HANDLING
-// --------------------------------------------------
-
-process.on(
-  "uncaughtException",
-  (error) => {
-
-    console.error(
-      "Uncaught exception:",
-      error
-    );
-  }
-);
-
-process.on(
-  "unhandledRejection",
-  (error) => {
-
-    console.error(
-      "Unhandled rejection:",
-      error
-    );
-  }
-);
-
-// --------------------------------------------------
-// START SERVER
-// --------------------------------------------------
+/*
+====================================================
+START
+====================================================
+*/
 
 server.listen(
   PORT,
@@ -1465,17 +1102,13 @@ server.listen(
     );
 
     console.log(
-      `Seats: ${SEAT_COUNT}`
-    );
-
-    console.log(
-      `TURN configured: ${
+      "TURN configured:",
+      Boolean(
         TURN_URL &&
         TURN_USERNAME &&
         TURN_CREDENTIAL
-          ? "YES"
-          : "NO"
-      }`
+      )
     );
+
   }
 );
