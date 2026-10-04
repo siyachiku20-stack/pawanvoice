@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>PawanVoice Rankings</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+body{
+  margin:0;
+  background:#090b12;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+  padding-bottom:75px;
+}
+
+.app{
+  width:100%;
+  max-width:760px;
+  margin:auto;
+}
+
+/* HEADER */
+
+.header{
+  padding:15px;
+  background:#0d1019;
+  border-bottom:1px solid #242a37;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.header-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.back{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:#1b202c;
+  color:#fff;
+  font-size:21px;
+}
+
+.title{
+  flex:1;
+  font-size:19px;
+  font-weight:800;
+}
+
+.my-level{
+  font-size:11px;
+  color:#9da5b7;
+}
+
+/* TYPE TABS */
+
+.tabs{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:12px;
+}
+
+.tab{
+  flex:0 0 auto;
+  border:1px solid #2b3140;
+  background:#151925;
+  color:#aeb5c5;
+  border-radius:20px;
+  padding:9px 14px;
+}
+
+.tab.active{
+  background:#ffca28;
+  color:#171717;
+  border-color:#ffca28;
+  font-weight:800;
+}
+
+/* PODIUM */
+
+.podium{
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:12px;
+  padding:18px 12px 25px;
+}
+
+.podium-user{
+  width:30%;
+  text-align:center;
+}
+
+.podium-dp{
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #555d70;
+}
+
+.rank1 .podium-dp{
+  width:82px;
+  height:82px;
+  border-color:#ffca28;
+}
+
+.rank-number{
+  font-size:22px;
+  margin-top:5px;
+}
+
+.rank-name{
+  font-size:12px;
+  font-weight:800;
+  margin-top:5px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.rank-value{
+  font-size:11px;
+  color:#9da5b7;
+  margin-top:4px;
+}
+
+/* LIST */
+
+.section{
+  padding:0 12px;
+}
+
+.list{
+  display:grid;
+  gap:8px;
+}
+
+.item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:11px;
+  border-radius:15px;
+  background:#11141e;
+  border:1px solid #252b38;
+}
+
+.position{
+  width:32px;
+  text-align:center;
+  font-weight:800;
+  color:#aeb5c5;
+}
+
+.item-dp{
+  width:48px;
+  height:48px;
+  object-fit:cover;
+  border-radius:50%;
+}
+
+.item-info{
+  flex:1;
+  min-width:0;
+}
+
+.item-name{
+  font-weight:800;
+  font-size:14px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.item-id{
+  color:#737c90;
+  font-size:10px;
+  margin-top:4px;
+}
+
+.item-value{
+  text-align:right;
+  font-size:12px;
+  color:#ffca28;
+  font-weight:800;
+}
+
+/* EMPTY */
+
+.empty{
+  text-align:center;
+  padding:30px 15px;
+  color:#858da0;
+  background:#11141e;
+  border:1px dashed #303646;
+  border-radius:16px;
+}
+
+/* BOTTOM */
+
+.bottom{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  height:68px;
+  background:#0e1119;
+  border-top:1px solid #272d3a;
+  z-index:20;
+}
+
+.bottom-inner{
+  max-width:760px;
+  margin:auto;
+  height:100%;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+}
+
+.nav{
+  background:transparent;
+  color:#838c9f;
+  border:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+}
+
+.nav.active{
+  color:#ffca28;
+}
+
+.nav-icon{
+  font-size:21px;
+}
+
+.nav-label{
+  font-size:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <header class="header">
+
+    <div class="header-row">
+
+      <button
+        class="back"
+        type="button"
+        onclick="history.back()"
+      >
+        ‹
+      </button>
+
+      <div class="title">
+        🏆 Rankings
+      </div>
+
+      <div
+        id="myLevel"
+        class="my-level"
+      >
+        Lv 1
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <div class="tabs">
+
+    <button
+      class="tab active"
+      data-type="wealth"
+      type="button"
+    >
+      👑 Wealth
+    </button>
+
+    <button
+      class="tab"
+      data-type="cp"
+      type="button"
+    >
+      💞 CP
+    </button>
+
+    <button
+      class="tab"
+      data-type="level"
+      type="button"
+    >
+      ⭐ Level
+    </button>
+
+    <button
+      class="tab"
+      data-type="coins"
+      type="button"
+    >
+      🪙 Coins
+    </button>
+
+    <button
+      class="tab"
+      data-type="diamonds"
+      type="button"
+    >
+      💎 Diamonds
+    </button>
+
+    <button
+      class="tab"
+      data-type="family"
+      type="button"
+    >
+      👨‍👩‍👧 Family
+    </button>
+
+  </div>
+
+
+  <div
+    id="podium"
+    class="podium"
+  ></div>
+
+
+  <section class="section">
+
+    <div
+      id="list"
+      class="list"
+    ></div>
+
+  </section>
+
+</div>
+
+
+<nav class="bottom">
+
+  <div class="bottom-inner">
+
+    <button
+      class="nav active"
+      type="button"
+      onclick="location.href='index.html'"
+    >
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Home</span>
+    </button>
+
+    <button
+      class="nav"
+      type="button"
+      onclick="location.href='inbox.html'"
+    >
+      <span class="nav-icon">📩</span>
+      <span class="nav-label">Inbox</span>
+    </button>
+
+    <button
+      class="nav"
+      type="button"
+      onclick="location.href='profile.html'"
+    >
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">Profile</span>
+    </button>
+
+  </div>
+
+</nav>
+
+
+<script>
+
+const DB =
+  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
+
+const DEFAULT_DP =
+  "https://i.pravatar.cc/200?img=12";
+
+let users = [];
+
+let currentType =
+  "wealth";
+
+
+/* -----------------------------------------
+   LOCAL USER
+----------------------------------------- */
+
+const myUser = {
+
+  userId:
+    localStorage.getItem("pv_userId") ||
+    "pawan",
+
+  name:
+    localStorage.getItem("pv_name") ||
+    "Pawan User",
+
+  dp:
+    localStorage.getItem("pv_dp") ||
+    DEFAULT_DP,
+
+  level:
+    Number(
+      localStorage.getItem("pv_level") ||
+      1
+    ),
+
+  coins:
+    Number(
+      localStorage.getItem("pv_coins") ||
+      0
+    ),
+
+  diamonds:
+    Number(
+      localStorage.getItem("pv_diamonds") ||
+      0
+    )
+};
+
+document.getElementById(
+  "myLevel"
+).textContent =
+  "Lv " +
+  myUser.level;
+
+
+/* -----------------------------------------
+   ESCAPE
+----------------------------------------- */
+
+function esc(value){
+
+  return String(
+    value ?? ""
+  )
+  .replaceAll("&","&amp;")
+  .replaceAll("<","&lt;")
+  .replaceAll(">","&gt;")
+  .replaceAll('"',"&quot;")
+  .replaceAll("'","&#039;");
+}
+
+
+/* -----------------------------------------
+   LOAD USERS
+----------------------------------------- */
+
+async function loadUsers(){
+
+  try{
+
+    const response =
+      await fetch(
+        DB + "/users.json"
+      );
+
+    if(!response.ok){
+      throw new Error(
+        "Firebase HTTP " +
+        response.status
+      );
+    }
+
+    const data =
+      await response.json();
+
+    users = [];
+
+    if(data){
+
+      Object.keys(data).forEach(
+        key => {
+
+          const u =
+            data[key];
+
+          if(
+            u &&
+            typeof u === "object"
+          ){
+
+            users.push({
+
+              userId:
+                u.userId ||
+                key,
+
+              name:
+                u.name ||
+                "Pawan User",
+
+              dp:
+                u.dp ||
+                DEFAULT_DP,
+
+              level:
+                Number(
+                  u.level || 1
+                ),
+
+              exp:
+                Number(
+                  u.exp || 0
+                ),
+
+              coins:
+                Number(
+                  u.coins || 0
+                ),
+
+              diamonds:
+                Number(
+                  u.diamonds || 0
+                ),
+
+              vipLevel:
+                Number(
+                  u.vipLevel || 0
+                )
+
+            });
+
+          }
+
+        }
+      );
+    }
+
+    /*
+      Add local user if Firebase
+      doesn't contain the account.
+    */
+
+    if(
+      !users.some(
+        u =>
+          u.userId ===
+          myUser.userId
+      )
+    ){
+
+      users.push({
+        ...myUser,
+        exp: Number(
+          localStorage.getItem(
+            "pv_exp"
+          ) || 0
+        ),
+        vipLevel: Number(
+          localStorage.getItem(
+            "pv_vipLevel"
+          ) || 0
+        )
+      });
+    }
+
+    render();
+
+  }catch(error){
+
+    console.error(
+      "Ranking load:",
+      error
+    );
+
+    users = [
+      {
+        ...myUser,
+        exp: Number(
+          localStorage.getItem(
+            "pv_exp"
+          ) || 0
+        )
+      }
+    ];
+
+    render();
+  }
+}
+
+
+/* -----------------------------------------
+   RANK VALUE
+----------------------------------------- */
+
+function getValue(user){
+
+  if(currentType === "wealth"){
+    return Number(
+      user.diamonds || 0
+    ) + Number(
+      user.coins || 0
+    );
+  }
+
+  if(currentType === "cp"){
+    /*
+      CP score can later be connected
+      to /cpRanking.
+    */
+    return Number(
+      user.cpScore || 0
+    );
+  }
+
+  if(currentType === "level"){
+    return Number(
+      user.level || 1
+    ) * 100000 +
+    Number(
+      user.exp || 0
+    );
+  }
+
+  if(currentType === "coins"){
+    return Number(
+      user.coins || 0
+    );
+  }
+
+  if(currentType === "diamonds"){
+    return Number(
+      user.diamonds || 0
+    );
+  }
+
+  if(currentType === "family"){
+    return Number(
+      user.familyScore || 0
+    );
+  }
+
+  return 0;
+}
+
+
+/* -----------------------------------------
+   LABEL
+----------------------------------------- */
+
+function valueLabel(user){
+
+  const value =
+    getValue(user);
+
+  if(currentType === "level"){
+
+    return (
+      "Lv " +
+      Number(
+        user.level || 1
+      )
+    );
+  }
+
+  if(currentType === "cp"){
+
+    return (
+      "CP " +
+      value.toLocaleString()
+    );
+  }
+
+  if(currentType === "family"){
+
+    return (
+      "Score " +
+      value.toLocaleString()
+    );
+  }
+
+  return value.toLocaleString();
+}
+
+
+/* -----------------------------------------
+   SORT
+----------------------------------------- */
+
+function sortedUsers(){
+
+  return [...users]
+    .sort(
+      (a,b) =>
+        getValue(b) -
+        getValue(a)
+    );
+}
+
+
+/* -----------------------------------------
+   RENDER
+----------------------------------------- */
+
+function render(){
+
+  const sorted =
+    sortedUsers();
+
+  renderPodium(
+    sorted.slice(0,3)
+  );
+
+  renderList(
+    sorted
+  );
+}
+
+
+/* -----------------------------------------
+   PODIUM
+----------------------------------------- */
+
+function renderPodium(top){
+
+  const podium =
+    document.getElementById(
+      "podium"
+    );
+
+  if(!top.length){
+
+    podium.innerHTML = "";
+
+    return;
+  }
+
+  const positions = [
+    {
+      rank:2,
+      cls:"",
+      user:top[1]
+    },
+    {
+      rank:1,
+      cls:"rank1",
+      user:top[0]
+    },
+    {
+      rank:3,
+      cls:"",
+      user:top[2]
+    }
+  ];
+
+  podium.innerHTML =
+    positions
+      .filter(
+        item =>
+          item.user
+      )
+      .map(
+        item => `
+
+          <div
+            class="podium-user ${item.cls}"
+          >
+
+            <img
+              class="podium-dp"
+              src="${esc(item.user.dp || DEFAULT_DP)}"
+              alt="User"
+              onerror="this.src='${DEFAULT_DP}'"
+            >
+
+            <div class="rank-number">
+              ${
+                item.rank === 1
+                  ? "👑"
+                  : item.rank
+              }
+            </div>
+
+            <div class="rank-name">
+              ${esc(item.user.name)}
+            </div>
+
+            <div class="rank-value">
+              ${esc(valueLabel(item.user))}
+            </div>
+
+          </div>
+
+        `
+      )
+      .join("");
+}
+
+
+/* -----------------------------------------
+   LIST
+----------------------------------------- */
+
+function renderList(sorted){
+
+  const list =
+    document.getElementById(
+      "list"
+    );
+
+  if(!sorted.length){
+
+    list.innerHTML = `
+      <div class="empty">
+        No ranking data available.
+      </div>
+    `;
+
+    return;
+  }
+
+  list.innerHTML =
+    sorted
+      .map(
+        (user,index) => `
+
+          <div class="item">
+
+            <div class="position">
+              #${index + 1}
+            </div>
+
+            <img
+              class="item-dp"
+              src="${esc(user.dp || DEFAULT_DP)}"
+              alt="User"
+              onerror="this.src='${DEFAULT_DP}'"
+            >
+
+            <div class="item-info">
+
+              <div class="item-name">
+                ${esc(user.name)}
+              </div>
+
+              <div class="item-id">
+                ID: ${esc(user.userId)}
+              </div>
+
+            </div>
+
+            <div class="item-value">
+              ${esc(valueLabel(user))}
+            </div>
+
+          </div>
+
+        `
+      )
+      .join("");
+}
+
+
+/* -----------------------------------------
+   TABS
+----------------------------------------- */
+
+document.querySelectorAll(
+  ".tab"
+).forEach(
+  tab => {
+
+    tab.addEventListener(
+      "click",
+      () => {
+
+        document.querySelectorAll(
+          ".tab"
+        ).forEach(
+          t =>
+            t.classList.remove(
+              "active"
+            )
+        );
+
+        tab.classList.add(
+          "active"
+        );
+
+        currentType =
+          tab.dataset.type ||
+          "wealth";
+
+        render();
+
+      }
+    );
+
+  }
+);
+
+
+/* -----------------------------------------
+   INITIAL
+----------------------------------------- */
+
+loadUsers();
+
+
+/* -----------------------------------------
+   REFRESH
+----------------------------------------- */
+
+setInterval(
+  loadUsers,
+  15000
+);
+
+</script>
+
+</body>
+</html>
