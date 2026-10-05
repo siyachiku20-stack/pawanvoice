@@ -553,6 +553,14 @@ body{
   color:#fff;
 }
 
+.cpActionBtn{
+  min-height:44px;
+  border-radius:13px;
+  background:linear-gradient(135deg,#e94d8a,#8a5cf6);
+  color:#fff;
+  font-weight:700;
+}
+
 .danger{
   background:#6b273b;
 }
@@ -927,6 +935,13 @@ body{
         💬 Message
       </button>
 
+      <!-- =========================
+           CP REQUEST BUTTON
+           ========================= -->
+      <button class="cpActionBtn" id="cpRequestBtn">
+        💕 Send CP Request
+      </button>
+
       <button class="actionBtn" id="giftProfileBtn">
         🎁 Send Gift
       </button>
@@ -1182,6 +1197,7 @@ async function loadRtcConfig(){
     );
 
   }
+
 }
 
 
@@ -1536,6 +1552,62 @@ async function saveUserToFirebase(){
     );
 
   }
+
+}
+
+
+/* ==============================
+   FIREBASE HELPERS
+============================== */
+
+async function firebaseGet(path){
+
+  const response =
+    await fetch(
+      FIREBASE_DB +
+      path +
+      ".json"
+    );
+
+  if(!response.ok){
+    throw new Error(
+      "Firebase GET failed"
+    );
+  }
+
+  return await response.json();
+
+}
+
+
+async function firebasePut(
+  path,
+  data
+){
+
+  const response =
+    await fetch(
+      FIREBASE_DB +
+      path +
+      ".json",
+      {
+        method:"PUT",
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+        body:
+          JSON.stringify(data)
+      }
+    );
+
+  if(!response.ok){
+    throw new Error(
+      "Firebase PUT failed"
+    );
+  }
+
+  return await response.json();
 
 }
 
@@ -2357,9 +2429,344 @@ function openUserProfile(user){
   }
 
 
+  /* CP button */
+
+  const cpBtn =
+    document.getElementById(
+      "cpRequestBtn"
+    );
+
+  if(
+    user.userId ===
+    currentUser.userId
+  ){
+
+    cpBtn.style.display =
+      "none";
+
+  }else{
+
+    cpBtn.style.display =
+      "block";
+
+  }
+
+
   showModal(
     "profileModal"
   );
+
+}
+
+
+/* ==============================
+   CP REQUEST
+============================== */
+
+/*
+   SAFETY LOCK
+   Existing CP listeners are kept.
+   This prevents duplicate CP requests
+   if the button is clicked/listened twice.
+*/
+let cpRequestSending = false;
+
+
+document.getElementById(
+  "cpRequestBtn"
+).addEventListener(
+  "click",
+  sendCPRequestFromRoom
+);
+
+
+async function sendCPRequestFromRoom(){
+
+  /*
+     DUPLICATE REQUEST PROTECTION
+  */
+  if(cpRequestSending){
+
+    return;
+
+  }
+
+  cpRequestSending = true;
+
+
+  if(!selectedUser){
+
+    showToast(
+      "User select nahi hai"
+    );
+
+    cpRequestSending = false;
+
+    return;
+
+  }
+
+
+  const receiverId =
+    selectedUser.userId;
+
+
+  if(!receiverId){
+
+    showToast(
+      "User ID nahi mila"
+    );
+
+    cpRequestSending = false;
+
+    return;
+
+  }
+
+
+  if(
+    receiverId ===
+    currentUser.userId
+  ){
+
+    showToast(
+      "Khud ko CP request nahi bhej sakte"
+    );
+
+    cpRequestSending = false;
+
+    return;
+
+  }
+
+
+  try{
+
+    /* =========================
+       CHECK MY USER
+    ========================= */
+
+    const myUser =
+      await firebaseGet(
+        "/users/" +
+        encodeURIComponent(
+          currentUser.userId
+        )
+      );
+
+
+    if(
+      myUser &&
+      myUser.cpUserId
+    ){
+
+      showToast(
+        "Aapka already CP hai 💕"
+      );
+
+      return;
+
+    }
+
+
+    /* =========================
+       CHECK RECEIVER
+    ========================= */
+
+    const receiver =
+      await firebaseGet(
+        "/users/" +
+        encodeURIComponent(
+          receiverId
+        )
+      );
+
+
+    if(!receiver){
+
+      showToast(
+        "User Firebase me nahi mila"
+      );
+
+      return;
+
+    }
+
+
+    if(
+      receiver.cpUserId
+    ){
+
+      showToast(
+        "Is user ka already CP hai 💕"
+      );
+
+      return;
+
+    }
+
+
+    /* =========================
+       REQUEST ID
+    ========================= */
+
+    const requestId =
+      "CPREQ_" +
+      Date.now() +
+      "_" +
+      Math.random()
+        .toString(36)
+        .substring(2,8);
+
+
+    /* =========================
+       REQUEST DATA
+    ========================= */
+
+    const request = {
+
+      requestId:
+
+        requestId,
+
+      fromUserId:
+
+        currentUser.userId,
+
+      fromUserName:
+
+        currentUser.name ||
+        "User",
+
+      fromUserDp:
+
+        currentUser.dp ||
+        "",
+
+      toUserId:
+
+        receiverId,
+
+      toUserName:
+
+        receiver.name ||
+        selectedUser.name ||
+        "User",
+
+      toUserDp:
+
+        receiver.dp ||
+        selectedUser.dp ||
+        "",
+
+      status:
+
+        "pending",
+
+      createdAt:
+
+        Date.now()
+
+    };
+
+
+    /* =========================
+       SAVE CP REQUEST
+    ========================= */
+
+    await firebasePut(
+      "/cpRequests/" +
+      encodeURIComponent(
+        receiverId
+      ) +
+      "/" +
+      requestId,
+      request
+    );
+
+
+    /* =========================
+       SAVE NOTIFICATION
+    ========================= */
+
+    await firebasePut(
+      "/users/" +
+      encodeURIComponent(
+        receiverId
+      ) +
+      "/notifications/" +
+      requestId,
+      {
+
+        type:
+          "cp_request",
+
+        requestId:
+
+          requestId,
+
+        fromUserId:
+
+          currentUser.userId,
+
+        fromUserName:
+
+          currentUser.name ||
+          "User",
+
+        fromUserDp:
+
+          currentUser.dp ||
+          "",
+
+        text:
+
+          (currentUser.name ||
+          "Someone") +
+          " sent you a CP Request 💕",
+
+        read:
+
+          false,
+
+        createdAt:
+
+          Date.now()
+
+      }
+    );
+
+
+    closeModal(
+      "profileModal"
+    );
+
+
+    showToast(
+      "💕 CP Request Sent"
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "CP Request Error:",
+      error
+    );
+
+    showToast(
+      "CP Request failed"
+    );
+
+  }finally{
+
+    /*
+       RELEASE SAFETY LOCK
+       after request finishes
+    */
+    cpRequestSending = false;
+
+  }
 
 }
 
@@ -3322,6 +3729,18 @@ document.getElementById(
 );
 
 
+/* ==============================
+   CP REQUEST BUTTON
+============================== */
+
+document.getElementById(
+  "cpRequestBtn"
+).addEventListener(
+  "click",
+  sendCPRequestFromRoom
+);
+
+
 document.getElementById(
   "giftProfileBtn"
 ).addEventListener(
@@ -3542,4 +3961,4 @@ document
 </script>
 
 </body>
-          </html>
+            </html>
