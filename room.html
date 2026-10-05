@@ -2463,6 +2463,15 @@ function openUserProfile(user){
    CP REQUEST
 ============================== */
 
+/*
+   SAFETY LOCK
+   Existing CP listeners are kept.
+   This prevents duplicate CP requests
+   if the button is clicked/listened twice.
+*/
+let cpRequestSending = false;
+
+
 document.getElementById(
   "cpRequestBtn"
 ).addEventListener(
@@ -2473,11 +2482,25 @@ document.getElementById(
 
 async function sendCPRequestFromRoom(){
 
+  /*
+     DUPLICATE REQUEST PROTECTION
+  */
+  if(cpRequestSending){
+
+    return;
+
+  }
+
+  cpRequestSending = true;
+
+
   if(!selectedUser){
 
     showToast(
       "User select nahi hai"
     );
+
+    cpRequestSending = false;
 
     return;
 
@@ -2494,6 +2517,8 @@ async function sendCPRequestFromRoom(){
       "User ID nahi mila"
     );
 
+    cpRequestSending = false;
+
     return;
 
   }
@@ -2507,6 +2532,8 @@ async function sendCPRequestFromRoom(){
     showToast(
       "Khud ko CP request nahi bhej sakte"
     );
+
+    cpRequestSending = false;
 
     return;
 
@@ -2730,6 +2757,14 @@ async function sendCPRequestFromRoom(){
     showToast(
       "CP Request failed"
     );
+
+  }finally{
+
+    /*
+       RELEASE SAFETY LOCK
+       after request finishes
+    */
+    cpRequestSending = false;
 
   }
 
