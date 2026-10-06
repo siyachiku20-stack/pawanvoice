@@ -1,1296 +1,929 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-  <title>PawanVoice</title>
-
-  <style>
-    *{
-      box-sizing:border-box;
-      -webkit-tap-highlight-color:transparent;
-    }
-
-    html,body{
-      margin:0;
-      padding:0;
-      width:100%;
-      min-height:100%;
-      background:#080914;
-      color:#fff;
-      font-family:Arial,Helvetica,sans-serif;
-    }
-
-    body{
-      padding-bottom:78px;
-    }
-
-    button,
-    input,
-    select{
-      font:inherit;
-    }
-
-    button{
-      border:0;
-      cursor:pointer;
-    }
-
-    .app{
-      width:100%;
-      max-width:600px;
-      margin:auto;
-      min-height:100vh;
-      background:
-        radial-gradient(circle at 50% -10%,rgba(114,70,255,.28),transparent 35%),
-        #080914;
-    }
-
-    /* ================= HEADER ================= */
-
-    .top-header{
-      position:sticky;
-      top:0;
-      z-index:50;
-      padding:12px 12px 10px;
-      background:rgba(8,9,20,.94);
-      backdrop-filter:blur(14px);
-      border-bottom:1px solid rgba(255,255,255,.06);
-    }
-
-    .header-row{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .avatar{
-      width:48px;
-      height:48px;
-      min-width:48px;
-      border-radius:50%;
-      object-fit:cover;
-      background:#22243a;
-      border:2px solid #8d6cff;
-    }
-
-    .user-info{
-      flex:1;
-      min-width:0;
-    }
-
-    .user-name{
-      font-size:17px;
-      font-weight:800;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .user-id{
-      margin-top:3px;
-      color:#9da0b8;
-      font-size:12px;
-    }
-
-    .wallet{
-      display:flex;
-      gap:5px;
-    }
-
-    .wallet-item{
-      min-width:63px;
-      padding:7px 8px;
-      border-radius:14px;
-      background:#17182a;
-      border:1px solid rgba(255,255,255,.06);
-      text-align:center;
-    }
-
-    .wallet-icon{
-      font-size:15px;
-    }
-
-    .wallet-value{
-      margin-top:2px;
-      font-size:11px;
-      color:#ddd;
-    }
-
-    /* ================= SEARCH ================= */
-
-    .search-box{
-      margin:12px;
-      position:relative;
-    }
-
-    .search-box input{
-      width:100%;
-      height:44px;
-      border:1px solid #282a40;
-      border-radius:23px;
-      outline:none;
-      padding:0 45px 0 42px;
-      background:#141527;
-      color:#fff;
-    }
-
-    .search-box input::placeholder{
-      color:#777b96;
-    }
-
-    .search-icon{
-      position:absolute;
-      left:16px;
-      top:12px;
-      color:#969ab3;
-      font-size:18px;
-    }
-
-    .clear-search{
-      display:none;
-      position:absolute;
-      right:12px;
-      top:9px;
-      width:27px;
-      height:27px;
-      border-radius:50%;
-      background:#303249;
-      color:#fff;
-    }
-
-    /* ================= BANNERS ================= */
-
-    .banner-section{
-      padding:0 12px;
-    }
-
-    .banner-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:8px;
-    }
-
-    .banner{
-      min-height:82px;
-      padding:11px 8px;
-      border-radius:17px;
-      overflow:hidden;
-      position:relative;
-      background:linear-gradient(135deg,#2c1b5e,#11152e);
-      border:1px solid rgba(255,255,255,.07);
-    }
-
-    .banner:nth-child(2){
-      background:linear-gradient(135deg,#153b5d,#14162d);
-    }
-
-    .banner:nth-child(3){
-      background:linear-gradient(135deg,#55263e,#1a152d);
-    }
-
-    .banner-title{
-      position:relative;
-      z-index:2;
-      font-size:12px;
-      font-weight:800;
-    }
-
-    .banner-value{
-      position:relative;
-      z-index:2;
-      margin-top:8px;
-      font-size:11px;
-      color:#ddd;
-    }
-
-    .banner-emoji{
-      position:absolute;
-      right:6px;
-      bottom:1px;
-      font-size:35px;
-      opacity:.75;
-    }
-
-    /* ================= QUICK ACCESS ================= */
-
-    .quick-section{
-      padding:14px 12px 4px;
-    }
-
-    .section-title{
-      font-size:17px;
-      font-weight:800;
-      margin-bottom:10px;
-    }
-
-    .quick-grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:8px;
-    }
-
-    .quick-btn{
-      padding:11px 4px;
-      border-radius:15px;
-      background:#141527;
-      color:#fff;
-      border:1px solid rgba(255,255,255,.05);
-    }
-
-    .quick-icon{
-      display:block;
-      font-size:21px;
-      margin-bottom:5px;
-    }
-
-    .quick-text{
-      display:block;
-      font-size:10px;
-      color:#c5c7d7;
-    }
-
-    /* ================= TABS ================= */
-
-    .room-tabs{
-      display:flex;
-      gap:7px;
-      overflow-x:auto;
-      padding:14px 12px 10px;
-      scrollbar-width:none;
-    }
-
-    .room-tabs::-webkit-scrollbar{
-      display:none;
-    }
-
-    .tab{
-      flex:0 0 auto;
-      padding:9px 17px;
-      border-radius:20px;
-      background:#151628;
-      color:#9699b1;
-      font-size:13px;
-    }
-
-    .tab.active{
-      background:linear-gradient(135deg,#7959ff,#a64cff);
-      color:#fff;
-      font-weight:800;
-    }
-
-    /* ================= ROOM LIST ================= */
-
-    .rooms-section{
-      padding:0 12px;
-    }
-
-    .rooms-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:10px;
-    }
-
-    .live-count{
-      color:#777b96;
-      font-size:12px;
-    }
-
-    .room-list{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .room-card{
-      display:flex;
-      align-items:center;
-      gap:11px;
-      padding:10px;
-      border-radius:18px;
-      background:linear-gradient(135deg,#15172b,#10111e);
-      border:1px solid rgba(255,255,255,.06);
-      min-height:78px;
-    }
-
-    .room-dp-wrap{
-      position:relative;
-      flex:0 0 auto;
-    }
-
-    .room-dp{
-      width:58px;
-      height:58px;
-      border-radius:16px;
-      object-fit:cover;
-      background:#272941;
-    }
-
-    .live-dot{
-      position:absolute;
-      right:-2px;
-      bottom:-2px;
-      width:17px;
-      height:17px;
-      border-radius:50%;
-      background:#2ce27d;
-      border:3px solid #11121f;
-    }
-
-    .room-info{
-      min-width:0;
-      flex:1;
-    }
-
-    .room-name{
-      font-size:14px;
-      font-weight:800;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .room-owner{
-      margin-top:4px;
-      color:#a7aac0;
-      font-size:11px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .room-meta{
-      display:flex;
-      gap:7px;
-      margin-top:7px;
-      flex-wrap:wrap;
-    }
-
-    .meta-chip{
-      padding:3px 7px;
-      border-radius:8px;
-      background:#202237;
-      color:#aeb1c6;
-      font-size:9px;
-    }
-
-    .join-room{
-      padding:9px 13px;
-      border-radius:17px;
-      background:linear-gradient(135deg,#7959ff,#a64cff);
-      color:#fff;
-      font-size:11px;
-      font-weight:800;
-    }
-
-    .empty{
-      padding:30px 10px;
-      text-align:center;
-      color:#777b96;
-    }
-
-    .empty-icon{
-      font-size:42px;
-      margin-bottom:8px;
-    }
-
-    /* ================= CREATE ROOM ================= */
-
-    .create-section{
-      margin:15px 12px;
-      padding:14px;
-      border-radius:20px;
-      background:#111321;
-      border:1px solid rgba(255,255,255,.06);
-    }
-
-    .create-form{
-      display:none;
-    }
-
-    .create-form.show{
-      display:block;
-    }
-
-    .form-label{
-      display:block;
-      margin:10px 0 6px;
-      color:#a7aac0;
-      font-size:11px;
-    }
-
-    .form-input,
-    .form-select{
-      width:100%;
-      height:42px;
-      padding:0 12px;
-      border-radius:12px;
-      border:1px solid #292b42;
-      background:#181a2b;
-      color:#fff;
-      outline:none;
-    }
-
-    .create-main-btn{
-      width:100%;
-      height:43px;
-      border-radius:14px;
-      background:linear-gradient(135deg,#7b5cff,#ad4cff);
-      color:#fff;
-      font-weight:800;
-    }
-
-    .create-submit{
-      width:100%;
-      height:43px;
-      margin-top:13px;
-      border-radius:14px;
-      background:#8b61ff;
-      color:#fff;
-      font-weight:800;
-    }
-
-    /* ================= PROFILE MODAL ================= */
-
-    .modal-bg{
-      display:none;
-      position:fixed;
-      inset:0;
-      z-index:100;
-      background:rgba(0,0,0,.72);
-      padding:20px 12px;
-      overflow:auto;
-    }
-
-    .modal-bg.show{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-
-    .modal{
-      width:100%;
-      max-width:520px;
-      max-height:92vh;
-      overflow:auto;
-      border-radius:24px;
-      background:#111321;
-      border:1px solid #292b42;
-      padding:17px;
-    }
-
-    .modal-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:15px;
-    }
-
-    .modal-title{
-      font-size:19px;
-      font-weight:800;
-    }
-
-    .close-btn{
-      width:33px;
-      height:33px;
-      border-radius:50%;
-      background:#23253a;
-      color:#fff;
-    }
-
-    .profile-top{
-      text-align:center;
-      padding:8px 0 15px;
-    }
-
-    .profile-big-dp{
-      width:86px;
-      height:86px;
-      border-radius:50%;
-      object-fit:cover;
-      border:3px solid #8b61ff;
-    }
-
-    .profile-name{
-      margin-top:9px;
-      font-size:18px;
-      font-weight:800;
-    }
-
-    .profile-id{
-      color:#8d91aa;
-      font-size:12px;
-      margin-top:4px;
-    }
-
-    .stats{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:7px;
-      margin-top:14px;
-    }
-
-    .stat{
-      padding:10px 4px;
-      text-align:center;
-      background:#191b2c;
-      border-radius:13px;
-    }
-
-    .stat-number{
-      font-size:15px;
-      font-weight:800;
-    }
-
-    .stat-label{
-      margin-top:3px;
-      color:#8589a2;
-      font-size:9px;
-    }
-
-    .profile-menu{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:8px;
-      margin-top:14px;
-    }
-
-    .profile-menu button{
-      padding:13px 4px;
-      border-radius:14px;
-      background:#191b2c;
-      color:#ddd;
-      font-size:10px;
-    }
-
-    /* ================= LEVEL ================= */
-
-    .level-box{
-      margin-top:14px;
-      padding:13px;
-      border-radius:16px;
-      background:linear-gradient(135deg,#241b43,#15172a);
-    }
-
-    .level-line{
-      display:flex;
-      justify-content:space-between;
-      font-size:12px;
-      font-weight:800;
-    }
-
-    .progress{
-      height:8px;
-      margin-top:9px;
-      border-radius:10px;
-      background:#292b40;
-      overflow:hidden;
-    }
-
-    .progress-bar{
-      height:100%;
-      width:0%;
-      background:linear-gradient(90deg,#7659ff,#d354ff);
-      border-radius:10px;
-    }
-
-    .level-list{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:7px;
-      margin-top:12px;
-    }
-
-    .level-item{
-      padding:8px;
-      border-radius:11px;
-      background:#1a1c2e;
-      color:#9da0b6;
-      text-align:center;
-      font-size:9px;
-    }
-
-    .level-item.current{
-      color:#fff;
-      background:#7659ff;
-      font-weight:800;
-    }
-
-    /* ================= INBOX ================= */
-
-    .inbox-item{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:12px;
-      margin-bottom:8px;
-      border-radius:15px;
-      background:#191b2c;
-    }
-
-    .inbox-icon{
-      width:38px;
-      height:38px;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      background:#282a42;
-      font-size:18px;
-    }
-
-    .inbox-text{
-      flex:1;
-    }
-
-    .inbox-title{
-      font-size:13px;
-      font-weight:800;
-    }
-
-    .inbox-sub{
-      margin-top:3px;
-      color:#81859e;
-      font-size:10px;
-    }
-
-    /* ================= BOTTOM NAV ================= */
-
-    .bottom-nav{
-      position:fixed;
-      z-index:60;
-      left:50%;
-      bottom:0;
-      transform:translateX(-50%);
-      width:100%;
-      max-width:600px;
-      height:70px;
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      background:rgba(13,14,27,.97);
-      border-top:1px solid rgba(255,255,255,.07);
-      backdrop-filter:blur(15px);
-    }
-
-    .nav-btn{
-      background:transparent;
-      color:#777b96;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      align-items:center;
-      gap:4px;
-      font-size:10px;
-    }
-
-    .nav-icon{
-      font-size:20px;
-    }
-
-    .nav-btn.active{
-      color:#a979ff;
-      font-weight:800;
-    }
-
-    /* ================= TOAST ================= */
-
-    .toast{
-      position:fixed;
-      z-index:200;
-      left:50%;
-      bottom:85px;
-      transform:translateX(-50%) translateY(15px);
-      max-width:90%;
-      padding:11px 16px;
-      border-radius:13px;
-      background:#292b40;
-      color:#fff;
-      font-size:12px;
-      opacity:0;
-      pointer-events:none;
-      transition:.25s;
-    }
-
-    .toast.show{
-      opacity:1;
-      transform:translateX(-50%) translateY(0);
-    }
-
-    @media(max-width:380px){
-      .wallet-item{
-        min-width:53px;
-        padding:6px 4px;
-      }
-
-      .quick-grid{
-        grid-template-columns:repeat(4,1fr);
-      }
-
-      .banner-grid{
-        gap:5px;
-      }
-
-      .banner{
-        padding:9px 5px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>PawanVoice</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#090b12;
+  color:#fff;
+  min-height:100vh;
+}
+
+button,input,select{
+  font:inherit;
+}
+
+button{
+  border:0;
+  cursor:pointer;
+}
+
+.hidden{
+  display:none!important;
+}
+
+/* ================= HEADER ================= */
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  height:70px;
+  padding:10px 14px;
+  background:#10131d;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid #242838;
+}
+
+.profile-mini{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+
+.profile-mini img{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #ffcc55;
+  background:#222;
+}
+
+.profile-mini-info{
+  min-width:0;
+}
+
+.profile-mini-info .name{
+  font-weight:bold;
+  font-size:15px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.profile-mini-info .uid{
+  color:#9da3b8;
+  font-size:11px;
+  margin-top:3px;
+}
+
+.wallet{
+  display:flex;
+  gap:7px;
+}
+
+.wallet-box{
+  background:#191d29;
+  border:1px solid #2c3142;
+  border-radius:18px;
+  padding:7px 10px;
+  font-size:12px;
+  white-space:nowrap;
+}
+
+.coin{
+  color:#ffd54a;
+}
+
+.diamond{
+  color:#6edcff;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+  padding:12px 12px 90px;
+  max-width:700px;
+  margin:auto;
+}
+
+.search{
+  display:flex;
+  align-items:center;
+  background:#171a25;
+  border:1px solid #292e3e;
+  border-radius:24px;
+  padding:0 14px;
+  height:44px;
+  margin-bottom:12px;
+}
+
+.search span{
+  color:#8e95a9;
+  margin-right:8px;
+}
+
+.search input{
+  width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:white;
+}
+
+.search input::placeholder{
+  color:#777d91;
+}
+
+/* ================= BANNERS ================= */
+
+.banner-scroll{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  margin-bottom:14px;
+}
+
+.banner-scroll::-webkit-scrollbar{
+  display:none;
+}
+
+.banner{
+  flex:0 0 220px;
+  height:92px;
+  border-radius:16px;
+  padding:14px;
+  position:relative;
+  overflow:hidden;
+  border:1px solid #34394c;
+}
+
+.banner.family{
+  background:linear-gradient(135deg,#4b207b,#b23a91);
+}
+
+.banner.cp{
+  background:linear-gradient(135deg,#183f78,#237cc7);
+}
+
+.banner.rich{
+  background:linear-gradient(135deg,#735019,#c88b26);
+}
+
+.banner-title{
+  font-size:17px;
+  font-weight:bold;
+}
+
+.banner-sub{
+  font-size:11px;
+  color:#eee;
+  margin-top:7px;
+}
+
+/* ================= QUICK ACCESS ================= */
+
+.quick{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-bottom:15px;
+}
+
+.quick-btn{
+  background:#151924;
+  border:1px solid #292e3e;
+  border-radius:14px;
+  padding:12px 4px;
+  color:#fff;
+  text-align:center;
+}
+
+.quick-btn .icon{
+  font-size:23px;
+  margin-bottom:5px;
+}
+
+.quick-btn span:last-child{
+  font-size:11px;
+  color:#c9ccda;
+}
+
+/* ================= SECTION ================= */
+
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:14px 2px 10px;
+}
+
+.section-title h2{
+  font-size:17px;
+}
+
+.section-title button{
+  background:none;
+  color:#aeb5ca;
+  font-size:12px;
+}
+
+/* ================= ROOM TABS ================= */
+
+.tabs{
+  display:flex;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.tab{
+  padding:8px 18px;
+  background:#171b27;
+  border:1px solid #2a3040;
+  color:#9fa6ba;
+  border-radius:18px;
+  font-size:13px;
+}
+
+.tab.active{
+  color:#fff;
+  background:#6846e8;
+  border-color:#7655f2;
+}
+
+/* ================= ROOMS ================= */
+
+.room-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.room-card{
+  background:#151923;
+  border:1px solid #292e3d;
+  border-radius:16px;
+  padding:11px;
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+
+.room-dp{
+  width:58px;
+  height:58px;
+  border-radius:14px;
+  object-fit:cover;
+  background:#252a38;
+  flex:none;
+}
+
+.room-info{
+  flex:1;
+  min-width:0;
+}
+
+.room-name{
+  font-size:15px;
+  font-weight:bold;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.room-owner{
+  font-size:11px;
+  color:#969daf;
+  margin-top:5px;
+}
+
+.room-meta{
+  display:flex;
+  gap:8px;
+  margin-top:6px;
+  flex-wrap:wrap;
+}
+
+.badge{
+  background:#202534;
+  color:#c4c9d8;
+  border-radius:10px;
+  padding:3px 7px;
+  font-size:10px;
+}
+
+.live{
+  color:#63f19b;
+}
+
+.enter-btn{
+  background:#6846e8;
+  color:white;
+  border-radius:18px;
+  padding:9px 13px;
+  font-size:12px;
+}
+
+/* ================= CREATE ROOM ================= */
+
+.create-box{
+  background:#151923;
+  border:1px solid #292e3d;
+  border-radius:16px;
+  padding:14px;
+  margin-top:14px;
+}
+
+.input{
+  width:100%;
+  height:44px;
+  border-radius:11px;
+  border:1px solid #303647;
+  background:#0e1119;
+  color:#fff;
+  padding:0 12px;
+  outline:none;
+  margin-bottom:10px;
+}
+
+.select{
+  width:100%;
+  height:44px;
+  border-radius:11px;
+  border:1px solid #303647;
+  background:#0e1119;
+  color:#fff;
+  padding:0 12px;
+  outline:none;
+  margin-bottom:10px;
+}
+
+.primary{
+  width:100%;
+  height:45px;
+  border-radius:12px;
+  background:#6846e8;
+  color:white;
+  font-weight:bold;
+}
+
+.secondary{
+  width:100%;
+  height:43px;
+  border-radius:12px;
+  background:#202534;
+  color:white;
+}
+
+/* ================= PROFILE MODAL ================= */
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:rgba(0,0,0,.72);
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+}
+
+.modal-card{
+  width:100%;
+  max-width:700px;
+  max-height:90vh;
+  overflow:auto;
+  background:#11141e;
+  border-radius:22px 22px 0 0;
+  padding:18px 15px 25px;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.close{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:#252a38;
+  color:white;
+}
+
+.profile-big{
+  text-align:center;
+  margin-bottom:18px;
+}
+
+.profile-big img{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid #ffcc55;
+}
+
+.profile-big h2{
+  margin-top:8px;
+  font-size:19px;
+}
+
+.profile-big p{
+  color:#9299aa;
+  font-size:12px;
+  margin-top:4px;
+}
+
+.profile-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.stat{
+  background:#1a1e2a;
+  border-radius:12px;
+  padding:12px 4px;
+  text-align:center;
+}
+
+.stat strong{
+  display:block;
+  font-size:16px;
+}
+
+.stat span{
+  color:#8f96a8;
+  font-size:10px;
+  margin-top:4px;
+  display:block;
+}
+
+.menu-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.menu-item{
+  background:#191d28;
+  border:1px solid #292e3d;
+  border-radius:12px;
+  padding:13px 5px;
+  text-align:center;
+  color:#dce0ec;
+  font-size:11px;
+}
+
+/* ================= BOTTOM NAV ================= */
+
+.bottom-nav{
+  position:fixed;
+  z-index:60;
+  left:0;
+  right:0;
+  bottom:0;
+  height:66px;
+  background:#10131d;
+  border-top:1px solid #282d3c;
+  display:flex;
+  justify-content:center;
+}
+
+.bottom-inner{
+  width:100%;
+  max-width:700px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+}
+
+.nav-btn{
+  background:none;
+  color:#858ca0;
+  text-align:center;
+  padding-top:8px;
+}
+
+.nav-btn .nav-icon{
+  font-size:21px;
+}
+
+.nav-btn div:last-child{
+  font-size:10px;
+  margin-top:3px;
+}
+
+.nav-btn.active{
+  color:#8e6bff;
+}
+
+/* ================= EMPTY ================= */
+
+.empty{
+  padding:35px 10px;
+  text-align:center;
+  color:#777e91;
+  font-size:13px;
+}
+
+/* ================= TOAST ================= */
+
+.toast{
+  position:fixed;
+  z-index:200;
+  left:50%;
+  bottom:80px;
+  transform:translateX(-50%);
+  background:#272c3a;
+  color:white;
+  padding:10px 15px;
+  border-radius:20px;
+  font-size:12px;
+  display:none;
+  max-width:85%;
+  text-align:center;
+}
+
+.toast.show{
+  display:block;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:360px){
+  .quick{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .wallet-box{
+    padding:6px 7px;
+    font-size:10px;
+  }
+
+  .profile-mini-info{
+    max-width:90px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<div class="app">
+<!-- ================= HEADER ================= -->
 
-  <!-- ================= HEADER ================= -->
+<header class="header">
 
-  <header class="top-header">
+  <div class="profile-mini" onclick="openProfile()">
 
-    <div class="header-row">
+    <img id="headerDP"
+         src="https://i.pravatar.cc/150?img=12"
+         alt="DP">
 
-      <img
-        id="headerDP"
-        class="avatar"
-        src="https://i.pravatar.cc/150?img=12"
-        alt="DP"
-      >
-
-      <div class="user-info">
-        <div id="headerName" class="user-name">Pawan</div>
-        <div class="user-id">
-          ID: <span id="headerUserId">100052</span>
-        </div>
-      </div>
-
-      <div class="wallet">
-
-        <div class="wallet-item">
-          <div class="wallet-icon">🪙</div>
-          <div id="coinValue" class="wallet-value">0</div>
-        </div>
-
-        <div class="wallet-item">
-          <div class="wallet-icon">💎</div>
-          <div id="diamondValue" class="wallet-value">0</div>
-        </div>
-
-      </div>
-
+    <div class="profile-mini-info">
+      <div class="name" id="headerName">Pawan</div>
+      <div class="uid">ID: <span id="headerUID">100052</span></div>
     </div>
 
-  </header>
+  </div>
+
+  <div class="wallet">
+    <div class="wallet-box coin">
+      🪙 <span id="coinValue">0</span>
+    </div>
+
+    <div class="wallet-box diamond">
+      💎 <span id="diamondValue">0</span>
+    </div>
+  </div>
+
+</header>
 
 
-  <!-- ================= SEARCH ================= -->
+<!-- ================= MAIN ================= -->
 
-  <div class="search-box">
+<main class="main">
 
-    <span class="search-icon">🔍</span>
+  <!-- SEARCH -->
 
+  <div class="search">
+    <span>🔍</span>
     <input
       id="searchInput"
       type="text"
-      placeholder="Search room, user or room ID..."
-      autocomplete="off"
-    >
+      placeholder="Search rooms or users..."
+      oninput="filterRooms()">
+  </div>
 
-    <button
-      id="clearSearch"
-      class="clear-search"
-      type="button"
-    >×</button>
+
+  <!-- BANNERS -->
+
+  <div class="banner-scroll">
+
+    <div class="banner family">
+      <div class="banner-title">👨‍👩‍👧 Family</div>
+      <div class="banner-sub">
+        Join family and enjoy special rewards
+      </div>
+    </div>
+
+    <div class="banner cp">
+      <div class="banner-title">💞 CP Ranking</div>
+      <div class="banner-sub">
+        Check top CP couples
+      </div>
+    </div>
+
+    <div class="banner rich">
+      <div class="banner-title">👑 Rich King</div>
+      <div class="banner-sub">
+        Top wealth ranking
+      </div>
+    </div>
 
   </div>
 
 
-  <!-- ================= BANNERS ================= -->
+  <!-- QUICK ACCESS -->
 
-  <section class="banner-section">
+  <div class="quick">
 
-    <div class="banner-grid">
+    <button class="quick-btn" onclick="openProfile()">
+      <div class="icon">👤</div>
+      <span>Profile</span>
+    </button>
 
-      <button class="banner" onclick="showToast('Family Ranking opened')">
-        <div class="banner-title">👨‍👩‍👧 Family</div>
-        <div class="banner-value">Family Ranking</div>
-        <div class="banner-emoji">🏠</div>
-      </button>
+    <button class="quick-btn" onclick="openInbox()">
+      <div class="icon">💬</div>
+      <span>Inbox</span>
+    </button>
 
-      <button class="banner" onclick="showToast('CP Ranking opened')">
-        <div class="banner-title">❤️ CP Ranking</div>
-        <div class="banner-value">Top Couples</div>
-        <div class="banner-emoji">💞</div>
-      </button>
+    <button class="quick-btn" onclick="showRanking()">
+      <div class="icon">🏆</div>
+      <span>Ranking</span>
+    </button>
 
-      <button class="banner" onclick="showToast('Rich King Ranking opened')">
-        <div class="banner-title">👑 Rich King</div>
-        <div class="banner-value">Top Wealth</div>
-        <div class="banner-emoji">💰</div>
-      </button>
+    <button class="quick-btn" onclick="scrollToCreate()">
+      <div class="icon">🎙️</div>
+      <span>Create Room</span>
+    </button>
 
-    </div>
-
-  </section>
+  </div>
 
 
-  <!-- ================= QUICK ACCESS ================= -->
+  <!-- ROOMS -->
 
-  <section class="quick-section">
-
-    <div class="section-title">Quick Access</div>
-
-    <div class="quick-grid">
-
-      <button class="quick-btn" onclick="openProfile()">
-        <span class="quick-icon">👤</span>
-        <span class="quick-text">Profile</span>
-      </button>
-
-      <button class="quick-btn" onclick="openInbox()">
-        <span class="quick-icon">💌</span>
-        <span class="quick-text">Inbox</span>
-      </button>
-
-      <button class="quick-btn" onclick="openRanking()">
-        <span class="quick-icon">🏆</span>
-        <span class="quick-text">Ranking</span>
-      </button>
-
-      <button class="quick-btn" onclick="toggleCreateRoom()">
-        <span class="quick-icon">🎙️</span>
-        <span class="quick-text">Create Room</span>
-      </button>
-
-    </div>
-
-  </section>
+  <div class="section-title">
+    <h2>🎙️ Voice Rooms</h2>
+    <button onclick="loadRooms(true)">Refresh</button>
+  </div>
 
 
-  <!-- ================= ROOM TABS ================= -->
+  <div class="tabs">
 
-  <div class="room-tabs">
-
-    <button class="tab active" data-tab="popular">
+    <button
+      class="tab active"
+      id="popularTab"
+      onclick="changeRoomTab('popular',this)">
       Popular
     </button>
 
-    <button class="tab" data-tab="new">
+    <button
+      class="tab"
+      onclick="changeRoomTab('new',this)">
       New
     </button>
 
-    <button class="tab" data-tab="all">
-      All Rooms
-    </button>
-
-    <button class="tab" data-tab="my">
-      My Room
-    </button>
-
-    <button class="tab" data-tab="wealth">
-      Wealth
-    </button>
-
-    <button class="tab" data-tab="cp">
-      CP Ranking
-    </button>
-
-    <button class="tab" data-tab="country">
-      Country
+    <button
+      class="tab"
+      onclick="changeRoomTab('all',this)">
+      All
     </button>
 
   </div>
 
 
-  <!-- ================= ROOM LIST ================= -->
+  <div id="roomList" class="room-list">
 
-  <section class="rooms-section">
-
-    <div class="rooms-header">
-
-      <div class="section-title" style="margin:0;">
-        Live Voice Rooms
-      </div>
-
-      <div id="liveCount" class="live-count">
-        0 rooms
-      </div>
-
+    <div class="empty">
+      Loading rooms...
     </div>
 
-    <div id="roomList" class="room-list">
+  </div>
 
-      <div class="empty">
-        <div class="empty-icon">🎙️</div>
-        Loading rooms...
-      </div>
 
+  <!-- CREATE ROOM -->
+
+  <div id="createSection" class="create-box">
+
+    <div class="section-title" style="margin-top:0">
+      <h2>🎙️ Create Voice Room</h2>
     </div>
 
-  </section>
+    <input
+      id="roomNameInput"
+      class="input"
+      type="text"
+      maxlength="40"
+      placeholder="Room name">
 
+    <select id="roomCategory" class="select">
 
-  <!-- ================= CREATE ROOM ================= -->
+      <option value="General">
+        General
+      </option>
 
-  <section id="createSection" class="create-section">
+      <option value="Music">
+        Music
+      </option>
+
+      <option value="Friends">
+        Friends
+      </option>
+
+      <option value="Gaming">
+        Gaming
+      </option>
+
+      <option value="Chat">
+        Chat
+      </option>
+
+    </select>
 
     <button
-      id="createMainBtn"
-      class="create-main-btn"
-      type="button"
-      onclick="toggleCreateRoom()"
-    >
-      ➕ Create Voice Room
+      class="primary"
+      onclick="createRoom()">
+      🎙️ Create My Room
     </button>
 
-    <div id="createForm" class="create-form">
+  </div>
 
-      <label class="form-label">
-        Room Name
-      </label>
-
-      <input
-        id="roomNameInput"
-        class="form-input"
-        type="text"
-        maxlength="40"
-        placeholder="Enter room name"
-      >
-
-      <label class="form-label">
-        Category
-      </label>
-
-      <select id="roomCategory" class="form-select">
-
-        <option value="General">General</option>
-        <option value="Music">Music</option>
-        <option value="Friends">Friends</option>
-        <option value="Gaming">Gaming</option>
-        <option value="Chat">Chat</option>
-
-      </select>
-
-      <button
-        class="create-submit"
-        type="button"
-        onclick="createRoom()"
-      >
-        🎙️ Create & Enter Room
-      </button>
-
-    </div>
-
-  </section>
-
-</div>
+</main>
 
 
 <!-- ================= PROFILE MODAL ================= -->
 
-<div id="profileModal" class="modal-bg">
+<div
+  id="profileModal"
+  class="modal hidden"
+  onclick="closeModalOutside(event)">
 
-  <div class="modal">
+  <div class="modal-card">
 
     <div class="modal-head">
-
-      <div class="modal-title">
-        My Profile
-      </div>
+      <h2>My Profile</h2>
 
       <button
-        class="close-btn"
-        type="button"
-        onclick="closeModal('profileModal')"
-      >
-        ×
+        class="close"
+        onclick="closeProfile()">
+        ✕
       </button>
-
     </div>
 
 
-    <div class="profile-top">
+    <div class="profile-big">
 
       <img
         id="profileDP"
-        class="profile-big-dp"
         src="https://i.pravatar.cc/150?img=12"
-        alt="Profile"
-      >
+        alt="DP">
 
-      <div
-        id="profileName"
-        class="profile-name"
-      >
+      <h2 id="profileName">
         Pawan
-      </div>
+      </h2>
 
-      <div class="profile-id">
-        User ID:
-        <span id="profileUserId">100052</span>
-      </div>
+      <p>
+        ID: <span id="profileUID">100052</span>
+      </p>
 
     </div>
 
 
-    <div class="stats">
+    <div class="profile-stats">
 
       <div class="stat">
-        <div id="followingValue" class="stat-number">0</div>
-        <div class="stat-label">Following</div>
-      </div>
-
-      <div class="stat">
-        <div id="followersValue" class="stat-number">0</div>
-        <div class="stat-label">Followers</div>
+        <strong id="profileLevel">1</strong>
+        <span>Level</span>
       </div>
 
       <div class="stat">
-        <div id="visitorsValue" class="stat-number">0</div>
-        <div class="stat-label">Visitors</div>
+        <strong id="profileFollowers">0</strong>
+        <span>Followers</span>
+      </div>
+
+      <div class="stat">
+        <strong id="profileFollowing">0</strong>
+        <span>Following</span>
       </div>
 
     </div>
 
 
-    <div class="level-box">
+    <input
+      id="profileNameInput"
+      class="input"
+      type="text"
+      maxlength="30"
+      placeholder="Your name">
 
-      <div class="level-line">
+    <select
+      id="profileGender"
+      class="select">
 
-        <span>
-          Level <span id="profileLevel">1</span>
-        </span>
+      <option value="Male">
+        Male
+      </option>
 
-        <span>
-          <span id="profileExp">0</span> EXP
-        </span>
+      <option value="Female">
+        Female
+      </option>
 
-      </div>
+      <option value="Other">
+        Other
+      </option>
 
-      <div class="progress">
-        <div
-          id="levelProgress"
-          class="progress-bar"
-        ></div>
-      </div>
-
-    </div>
-
-
-    <div class="level-list">
-
-      <div class="level-item" data-min="1">
-        Lv 1–9
-      </div>
-
-      <div class="level-item" data-min="10">
-        Lv 10–19
-      </div>
-
-      <div class="level-item" data-min="20">
-        Lv 20–29
-      </div>
-
-      <div class="level-item" data-min="30">
-        Lv 30–39
-      </div>
-
-      <div class="level-item" data-min="40">
-        Lv 40–49
-      </div>
-
-      <div class="level-item" data-min="50">
-        Lv 50–59
-      </div>
-
-      <div class="level-item" data-min="60">
-        Lv 60–69
-      </div>
-
-      <div class="level-item" data-min="70">
-        Lv 70–79
-      </div>
-
-      <div class="level-item" data-min="80">
-        Lv 80–89
-      </div>
-
-      <div class="level-item" data-min="90">
-        Lv 90–99
-      </div>
-
-      <div class="level-item" data-min="100">
-        Lv 100–109
-      </div>
-
-    </div>
+    </select>
 
 
-    <div class="profile-menu">
+    <input
+      id="profileDPInput"
+      class="input"
+      type="url"
+      placeholder="DP image URL">
 
-      <button onclick="showToast('CP Space opened')">
-        ❤️<br>CP Space
+    <button
+      class="primary"
+      onclick="saveProfile()">
+      💾 Save Profile
+    </button>
+
+
+    <div style="height:14px"></div>
+
+
+    <div class="menu-grid">
+
+      <button class="menu-item" onclick="showRanking()">
+        🏆 Ranking
       </button>
 
-      <button onclick="showToast('Bag opened')">
-        🎒<br>Bag
+      <button class="menu-item" onclick="showLevel()">
+        🏅 Level
       </button>
 
-      <button onclick="showToast('Dress opened')">
-        👕<br>My Dress
+      <button class="menu-item" onclick="showVIP()">
+        👑 VIP
       </button>
 
-      <button onclick="showToast('VIP opened')">
-        👑<br>VIP
+      <button class="menu-item" onclick="showCP()">
+        💞 CP Space
       </button>
 
-      <button onclick="showToast('Badge opened')">
-        🏅<br>Badge
+      <button class="menu-item" onclick="showStore()">
+        🛍️ Store
       </button>
 
-      <button onclick="showToast('Avatar Frame opened')">
-        🖼️<br>Frame
+      <button class="menu-item" onclick="showInvite()">
+        🎁 Invite Friend
       </button>
 
-      <button onclick="showToast('Vehicle opened')">
-        🚗<br>Vehicle
+      <button class="menu-item">
+        🎨 My Dress
       </button>
 
-      <button onclick="showToast('Gifts opened')">
-        🎁<br>Gifts
+      <button class="menu-item">
+        🏅 Medal
       </button>
 
-      <button onclick="showToast('Invite Friend opened')">
-        👥<br>Invite
+      <button class="menu-item">
+        🖼️ Avatar Frame
       </button>
 
-      <button onclick="showToast('Store opened')">
-        🛍️<br>Store
+      <button class="menu-item">
+        🎖️ Personal Badge
       </button>
 
-      <button onclick="showToast('Daily Reward opened')">
-        🎁<br>Daily Reward
+      <button class="menu-item">
+        💎 Coins
       </button>
 
-      <button onclick="showToast('Settings opened')">
-        ⚙️<br>Settings
+      <button class="menu-item">
+        ⚙️ Settings
       </button>
 
     </div>
 
   </div>
-
-</div>
-
-
-<!-- ================= INBOX MODAL ================= -->
-
-<div id="inboxModal" class="modal-bg">
-
-  <div class="modal">
-
-    <div class="modal-head">
-
-      <div class="modal-title">
-        Inbox
-      </div>
-
-      <button
-        class="close-btn"
-        onclick="closeModal('inboxModal')"
-      >
-        ×
-      </button>
-
-    </div>
-
-    <div class="inbox-item">
-
-      <div class="inbox-icon">🎁</div>
-
-      <div class="inbox-text">
-
-        <div class="inbox-title">
-          System Message
-        </div>
-
-        <div class="inbox-sub">
-          Welcome to PawanVoice
-        </div>
-
-      </div>
-
-    </div>
-
-    <div class="inbox-item">
-
-      <div class="inbox-icon">💌</div>
-
-      <div class="inbox-text">
-
-        <div class="inbox-title">
-          Private Chat
-        </div>
-
-        <div class="inbox-sub">
-          Your private messages will appear here.
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- ================= RANKING MODAL ================= -->
-
-<div id="rankingModal" class="modal-bg">
-
-  <div class="modal">
-
-    <div class="modal-head">
-
-      <div class="modal-title">
-        Rankings
-      </div>
-
-      <button
-        class="close-btn"
-        onclick="closeModal('rankingModal')"
-      >
-        ×
-      </button>
-
-    </div>
-
-    <div class="inbox-item">
-      <div class="inbox-icon">👑</div>
-      <div class="inbox-text">
-        <div class="inbox-title">Rich King Ranking</div>
-        <div class="inbox-sub">Top wealthy users</div>
-      </div>
-    </div>
-
-    <div class="inbox-item">
-      <div class="inbox-icon">❤️</div>
-      <div class="inbox-text">
-        <div class="inbox-title">CP Ranking</div>
-        <div class="inbox-sub">Top couples</div>
-      </div>
-    </div>
-
-    <div class="inbox-item">
-      <div class="inbox-icon">🏠</div>
-      <div class="inbox-text">
-        <div class="inbox-title">Family Ranking</div>
-        <div class="inbox-sub">Top families</div>
-      </div>
-    </div>
-
-  </div>
-
 </div>
 
 
@@ -1303,82 +936,85 @@
 
 <nav class="bottom-nav">
 
-  <button
-    class="nav-btn active"
-    onclick="goHome()"
-  >
-    <span class="nav-icon">🏠</span>
-    Home
-  </button>
+  <div class="bottom-inner">
 
-  <button
-    class="nav-btn"
-    onclick="openInbox()"
-  >
-    <span class="nav-icon">💌</span>
-    Inbox
-  </button>
+    <button
+      class="nav-btn active"
+      onclick="goHome()">
 
-  <button
-    class="nav-btn"
-    onclick="openRanking()"
-  >
-    <span class="nav-icon">🏆</span>
-    Ranking
-  </button>
+      <div class="nav-icon">🏠</div>
+      <div>Home</div>
 
-  <button
-    class="nav-btn"
-    onclick="openProfile()"
-  >
-    <span class="nav-icon">👤</span>
-    Profile
-  </button>
+    </button>
+
+
+    <button
+      class="nav-btn"
+      onclick="openInbox()">
+
+      <div class="nav-icon">💬</div>
+      <div>Inbox</div>
+
+    </button>
+
+
+    <button
+      class="nav-btn"
+      onclick="openProfile()">
+
+      <div class="nav-icon">👤</div>
+      <div>Profile</div>
+
+    </button>
+
+  </div>
 
 </nav>
 
 
-<!-- ================= SOCKET.IO ================= -->
-
-<script src="/socket.io/socket.io.js"></script>
-
-
 <script>
 /* =========================================================
-   PAWANVOICE INDEX.JS
-   ========================================================= */
-
-const RENDER_SERVER = window.location.origin;
+   PAWANVOICE CONFIG
+========================================================= */
 
 const FIREBASE_DB =
   "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
 
+const RENDER_SERVER =
+  "https://pawanvoice-1.onrender.com";
+
 
 /* =========================================================
-   DEFAULT USER
-   User ID starts from 100052
-   ========================================================= */
+   USER
+========================================================= */
+
+const DEFAULT_DP =
+  "https://i.pravatar.cc/150?img=12";
 
 let currentUser = {
   userId: "100052",
   name: "Pawan",
   gender: "Male",
-  dp: "https://i.pravatar.cc/150?img=12",
+  dp: DEFAULT_DP,
   level: 1,
   exp: 0,
-  vip: 0,
-  vipLevel: 0,
+  coins: 0,
+  diamonds: 0,
   followers: 0,
   following: 0,
   visitors: 0,
-  coins: 0,
-  diamonds: 0
+  vip: 0
 };
 
 
+let rooms = [];
+
+let activeRoomTab = "popular";
+
+
 /* =========================================================
-   LOCAL STORAGE
-   ========================================================= */
+   LOCAL USER LOAD
+========================================================= */
 
 function loadLocalUser(){
 
@@ -1399,14 +1035,41 @@ function loadLocalUser(){
 
     }
 
-  }catch(error){
+  }catch(e){
 
-    console.log("Local user load error",error);
+    console.log(
+      "Local user load error",
+      e
+    );
 
   }
 
+
+  /*
+   * IMPORTANT:
+   * Old random PV IDs are no longer used.
+   * User IDs start from 100052.
+   */
+
+  if(
+    !currentUser.userId ||
+    String(currentUser.userId)
+      .startsWith("PV")
+  ){
+
+    currentUser.userId =
+      "100052";
+
+  }
+
+  saveLocalUser();
+
 }
 
+
+/* =========================================================
+   SAVE LOCAL USER
+========================================================= */
 
 function saveLocalUser(){
 
@@ -1417,56 +1080,12 @@ function saveLocalUser(){
       JSON.stringify(currentUser)
     );
 
-  }catch(error){
+  }catch(e){
 
-    console.log("Local user save error",error);
-
-  }
-
-}
-
-
-/* =========================================================
-   NORMALIZE USER ID
-   ========================================================= */
-
-function normalizeUserId(id){
-
-  const value =
-    String(id || "").trim();
-
-  if(!value){
-    return "100052";
-  }
-
-  return value;
-
-}
-
-
-/* =========================================================
-   LOAD USER FROM user.js IF AVAILABLE
-   ========================================================= */
-
-async function loadExternalUser(){
-
-  try{
-
-    if(
-      typeof window.PawanVoiceUser !==
-      "undefined"
-    ){
-
-      currentUser = {
-        ...currentUser,
-        ...window.PawanVoiceUser
-      };
-
-    }
-
-  }catch(error){
-
-    console.log("user.js not available");
+    console.log(
+      "Local user save error",
+      e
+    );
 
   }
 
@@ -1474,8 +1093,21 @@ async function loadExternalUser(){
 
 
 /* =========================================================
-   FIREBASE GET
-   ========================================================= */
+   USER ID
+========================================================= */
+
+function getUserId(){
+
+  return String(
+    currentUser.userId || "100052"
+  );
+
+}
+
+
+/* =========================================================
+   FIREBASE HELPERS
+========================================================= */
 
 async function firebaseGet(path){
 
@@ -1485,21 +1117,21 @@ async function firebaseGet(path){
       await fetch(
         FIREBASE_DB +
         path +
-        ".json",
-        {
-          cache:"no-store"
-        }
+        ".json"
       );
 
     if(!response.ok){
-      throw new Error("Firebase GET failed");
+      return null;
     }
 
     return await response.json();
 
-  }catch(error){
+  }catch(e){
 
-    console.log("Firebase GET:",error);
+    console.log(
+      "Firebase GET error",
+      e
+    );
 
     return null;
 
@@ -1507,10 +1139,6 @@ async function firebaseGet(path){
 
 }
 
-
-/* =========================================================
-   FIREBASE PUT
-   ========================================================= */
 
 async function firebasePut(path,data){
 
@@ -1533,9 +1161,47 @@ async function firebasePut(path,data){
 
     return response.ok;
 
-  }catch(error){
+  }catch(e){
 
-    console.log("Firebase PUT:",error);
+    console.log(
+      "Firebase PUT error",
+      e
+    );
+
+    return false;
+
+  }
+
+}
+
+
+async function firebasePatch(path,data){
+
+  try{
+
+    const response =
+      await fetch(
+        FIREBASE_DB +
+        path +
+        ".json",
+        {
+          method:"PATCH",
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+          body:JSON.stringify(data)
+        }
+      );
+
+    return response.ok;
+
+  }catch(e){
+
+    console.log(
+      "Firebase PATCH error",
+      e
+    );
 
     return false;
 
@@ -1545,46 +1211,98 @@ async function firebasePut(path,data){
 
 
 /* =========================================================
-   LOAD USER
-   ========================================================= */
+   SYNC USER TO FIREBASE
+========================================================= */
+
+async function syncUser(){
+
+  const id =
+    getUserId();
+
+  const userData = {
+
+    userId:id,
+
+    name:currentUser.name,
+
+    gender:currentUser.gender,
+
+    dp:currentUser.dp,
+
+    level:Number(
+      currentUser.level || 1
+    ),
+
+    exp:Number(
+      currentUser.exp || 0
+    ),
+
+    coins:Number(
+      currentUser.coins || 0
+    ),
+
+    diamonds:Number(
+      currentUser.diamonds || 0
+    ),
+
+    followers:Number(
+      currentUser.followers || 0
+    ),
+
+    following:Number(
+      currentUser.following || 0
+    ),
+
+    visitors:Number(
+      currentUser.visitors || 0
+    ),
+
+    vip:Number(
+      currentUser.vip || 0
+    ),
+
+    updatedAt:
+      Date.now()
+
+  };
+
+
+  await firebasePut(
+    "/users/" + encodeURIComponent(id),
+    userData
+  );
+
+}
+
+
+/* =========================================================
+   LOAD USER FROM FIREBASE
+========================================================= */
 
 async function loadUser(){
 
-  loadLocalUser();
+  const id =
+    getUserId();
 
-  await loadExternalUser();
-
-  currentUser.userId =
-    normalizeUserId(
-      currentUser.userId
-    );
-
-
-  const firebaseUser =
+  const remote =
     await firebaseGet(
       "/users/" +
-      encodeURIComponent(
-        currentUser.userId
-      )
+      encodeURIComponent(id)
     );
 
 
-  if(firebaseUser){
+  if(remote){
 
     currentUser = {
       ...currentUser,
-      ...firebaseUser,
-      userId:
-        normalizeUserId(
-          firebaseUser.userId ||
-          currentUser.userId
-        )
+      ...remote,
+      userId:id
     };
+
+    saveLocalUser();
 
   }
 
-
-  saveLocalUser();
 
   renderUser();
 
@@ -1592,333 +1310,296 @@ async function loadUser(){
 
 
 /* =========================================================
-   SAVE USER
-   ========================================================= */
-
-async function saveUser(){
-
-  currentUser.userId =
-    normalizeUserId(
-      currentUser.userId
-    );
-
-  saveLocalUser();
-
-  await firebasePut(
-    "/users/" +
-    encodeURIComponent(
-      currentUser.userId
-    ),
-    currentUser
-  );
-
-}
-
-
-/* =========================================================
    RENDER USER
-   ========================================================= */
+========================================================= */
 
 function renderUser(){
-
-  const dp =
-    currentUser.dp ||
-    "https://i.pravatar.cc/150?img=12";
 
   const name =
     currentUser.name ||
     "Pawan";
 
-  const id =
-    normalizeUserId(
-      currentUser.userId
-    );
+  const dp =
+    currentUser.dp ||
+    DEFAULT_DP;
 
+  const uid =
+    getUserId();
 
-  document.getElementById(
-    "headerDP"
-  ).src = dp;
 
   document.getElementById(
     "headerName"
   ).textContent = name;
 
   document.getElementById(
-    "headerUserId"
-  ).textContent = id;
+    "headerUID"
+  ).textContent = uid;
+
+  document.getElementById(
+    "headerDP"
+  ).src = dp;
 
 
   document.getElementById(
     "coinValue"
   ).textContent =
-    formatNumber(
+    Number(
       currentUser.coins || 0
-    );
+    ).toLocaleString();
+
 
   document.getElementById(
     "diamondValue"
   ).textContent =
-    formatNumber(
+    Number(
       currentUser.diamonds || 0
-    );
+    ).toLocaleString();
 
-
-  document.getElementById(
-    "profileDP"
-  ).src = dp;
 
   document.getElementById(
     "profileName"
   ).textContent = name;
 
   document.getElementById(
-    "profileUserId"
-  ).textContent = id;
-
-
-  document.getElementById(
-    "followingValue"
-  ).textContent =
-    formatNumber(
-      currentUser.following || 0
-    );
+    "profileUID"
+  ).textContent = uid;
 
   document.getElementById(
-    "followersValue"
-  ).textContent =
-    formatNumber(
-      currentUser.followers || 0
-    );
-
-  document.getElementById(
-    "visitorsValue"
-  ).textContent =
-    formatNumber(
-      currentUser.visitors || 0
-    );
-
-
-  updateLevelUI();
-
-}
-
-
-/* =========================================================
-   FORMAT NUMBER
-   ========================================================= */
-
-function formatNumber(number){
-
-  const n =
-    Number(number || 0);
-
-  if(n >= 1000000){
-    return (
-      (n / 1000000)
-      .toFixed(1)
-      .replace(".0","") +
-      "M"
-    );
-  }
-
-  if(n >= 1000){
-    return (
-      (n / 1000)
-      .toFixed(1)
-      .replace(".0","") +
-      "K"
-    );
-  }
-
-  return String(n);
-
-}
-
-
-/* =========================================================
-   LEVEL UI
-   ========================================================= */
-
-function updateLevelUI(){
-
-  const level =
-    Math.max(
-      1,
-      Number(
-        currentUser.level || 1
-      )
-    );
-
-  const exp =
-    Math.max(
-      0,
-      Number(
-        currentUser.exp || 0
-      )
-    );
+    "profileDP"
+  ).src = dp;
 
 
   document.getElementById(
     "profileLevel"
-  ).textContent = level;
-
-  document.getElementById(
-    "profileExp"
   ).textContent =
-    formatNumber(exp);
-
-
-  const expInsideLevel =
-    exp % 1000;
-
-  const progress =
-    Math.min(
-      100,
-      (expInsideLevel / 1000) * 100
-    );
-
+    currentUser.level || 1;
 
   document.getElementById(
-    "levelProgress"
-  ).style.width =
-    progress + "%";
+    "profileFollowers"
+  ).textContent =
+    currentUser.followers || 0;
 
-
-  document
-    .querySelectorAll(".level-item")
-    .forEach(item => {
-
-      const min =
-        Number(
-          item.dataset.min
-        );
-
-      item.classList.toggle(
-        "current",
-        level >= min &&
-        level < min + 10
-      );
-
-    });
+  document.getElementById(
+    "profileFollowing"
+  ).textContent =
+    currentUser.following || 0;
 
 }
 
 
 /* =========================================================
-   ROOM DATA
-   ========================================================= */
+   PROFILE
+========================================================= */
 
-let allRooms = [];
+function openProfile(){
 
-let activeTab = "popular";
+  document.getElementById(
+    "profileModal"
+  ).classList.remove("hidden");
 
-let socket = null;
+
+  document.getElementById(
+    "profileNameInput"
+  ).value =
+    currentUser.name || "";
+
+
+  document.getElementById(
+    "profileGender"
+  ).value =
+    currentUser.gender || "Male";
+
+
+  document.getElementById(
+    "profileDPInput"
+  ).value =
+    currentUser.dp || "";
+
+}
+
+
+function closeProfile(){
+
+  document.getElementById(
+    "profileModal"
+  ).classList.add("hidden");
+
+}
+
+
+function closeModalOutside(event){
+
+  if(
+    event.target.id ===
+    "profileModal"
+  ){
+
+    closeProfile();
+
+  }
+
+}
 
 
 /* =========================================================
-   SOCKET CONNECT
-   ========================================================= */
+   SAVE PROFILE
+========================================================= */
 
-function connectSocket(){
+async function saveProfile(){
+
+  const name =
+    document.getElementById(
+      "profileNameInput"
+    ).value.trim();
+
+
+  const gender =
+    document.getElementById(
+      "profileGender"
+    ).value;
+
+
+  const dpInput =
+    document.getElementById(
+      "profileDPInput"
+    ).value.trim();
+
+
+  if(!name){
+
+    showToast(
+      "Please enter your name"
+    );
+
+    return;
+
+  }
+
+
+  currentUser.name =
+    name;
+
+  currentUser.gender =
+    gender;
+
+  currentUser.dp =
+    dpInput ||
+    DEFAULT_DP;
+
+
+  saveLocalUser();
+
+  renderUser();
+
+  await syncUser();
+
+
+  /*
+   * OWNER ROOM ALSO GETS
+   * SAME NAME + DP
+   */
+
+  await syncOwnerRoom();
+
+
+  showToast(
+    "Profile saved successfully"
+  );
+
+}
+
+
+/* =========================================================
+   SYNC OWNER ROOM
+========================================================= */
+
+async function syncOwnerRoom(){
+
+  const id =
+    getUserId();
+
+
+  const roomPath =
+    "/rooms/" +
+    encodeURIComponent(id);
+
+
+  const room =
+    await firebaseGet(
+      roomPath
+    );
+
+
+  if(room){
+
+    room.ownerId =
+      id;
+
+    room.ownerName =
+      currentUser.name;
+
+    room.ownerDp =
+      currentUser.dp;
+
+    room.name =
+      currentUser.name;
+
+    room.dp =
+      currentUser.dp;
+
+    room.updatedAt =
+      Date.now();
+
+
+    await firebasePut(
+      roomPath,
+      room
+    );
+
+  }
+
+
+  /*
+   * Tell Render server too.
+   */
 
   try{
 
-    if(
-      typeof io ===
-      "undefined"
-    ){
+    await fetch(
+      RENDER_SERVER +
+      "/api/rooms/" +
+      encodeURIComponent(id),
+      {
+        method:"PATCH",
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+        body:JSON.stringify({
 
-      console.log(
-        "Socket.IO client unavailable"
-      );
+          ownerId:id,
 
-      return;
+          ownerName:
+            currentUser.name,
 
-    }
+          ownerDp:
+            currentUser.dp,
 
+          name:
+            currentUser.name,
 
-    socket =
-      io(
-        RENDER_SERVER,
-        {
-          transports:[
-            "websocket",
-            "polling"
-          ]
-        }
-      );
+          dp:
+            currentUser.dp
 
-
-    socket.on(
-      "connect",
-      () => {
-
-        console.log(
-          "PawanVoice Socket connected"
-        );
-
-        loadServerRooms();
-
+        })
       }
     );
 
-
-    socket.on(
-      "rooms-list",
-      rooms => {
-
-        if(Array.isArray(rooms)){
-
-          mergeRooms(
-            rooms,
-            "server"
-          );
-
-        }
-
-      }
-    );
-
-
-    socket.on(
-      "room-created",
-      room => {
-
-        if(room){
-
-          mergeRooms(
-            [room],
-            "server"
-          );
-
-        }
-
-      }
-    );
-
-
-    socket.on(
-      "room-updated",
-      room => {
-
-        if(room){
-
-          mergeRooms(
-            [room],
-            "server"
-          );
-
-        }
-
-      }
-    );
-
-
-  }catch(error){
+  }catch(e){
 
     console.log(
-      "Socket error",
-      error
+      "Render owner sync skipped",
+      e
     );
 
   }
@@ -1927,10 +1608,158 @@ function connectSocket(){
 
 
 /* =========================================================
-   LOAD SERVER ROOMS
-   ========================================================= */
+   ROOM DATA NORMALIZER
+========================================================= */
 
-async function loadServerRooms(){
+function normalizeRoom(room){
+
+  if(!room){
+    return null;
+  }
+
+
+  const id =
+    String(
+      room.id ||
+      room.roomId ||
+      room.ownerId ||
+      ""
+    );
+
+
+  if(!id){
+    return null;
+  }
+
+
+  const ownerId =
+    String(
+      room.ownerId ||
+      room.userId ||
+      id
+    );
+
+
+  const ownerName =
+    room.ownerName ||
+    room.name ||
+    "Guest";
+
+
+  const ownerDp =
+    room.ownerDp ||
+    room.dp ||
+    DEFAULT_DP;
+
+
+  return {
+
+    ...room,
+
+    id:id,
+
+    roomId:id,
+
+    ownerId:ownerId,
+
+    ownerName:ownerName,
+
+    ownerDp:ownerDp,
+
+    name:
+      room.name ||
+      ownerName,
+
+    dp:
+      room.dp ||
+      ownerDp,
+
+    category:
+      room.category ||
+      "General",
+
+    seats:
+      Number(
+        room.seatCount ||
+        room.seatsCount ||
+        9
+      ),
+
+    users:
+      room.users ||
+      {},
+
+    createdAt:
+      Number(
+        room.createdAt ||
+        Date.now()
+      ),
+
+    updatedAt:
+      Number(
+        room.updatedAt ||
+        room.createdAt ||
+        Date.now()
+      )
+
+  };
+
+}
+
+
+/* =========================================================
+   FIREBASE ROOMS
+========================================================= */
+
+async function loadFirebaseRooms(){
+
+  const data =
+    await firebaseGet(
+      "/rooms"
+    );
+
+
+  const list = [];
+
+
+  if(
+    data &&
+    typeof data === "object"
+  ){
+
+    Object.keys(data)
+      .forEach(key => {
+
+        const room =
+          normalizeRoom({
+            ...data[key],
+            id:
+              data[key]?.id ||
+              key
+          });
+
+
+        if(room){
+
+          list.push(room);
+
+        }
+
+      });
+
+  }
+
+
+  return list;
+
+}
+
+
+/* =========================================================
+   RENDER ROOMS
+========================================================= */
+
+async function loadRenderRooms(){
 
   try{
 
@@ -1945,7 +1774,9 @@ async function loadServerRooms(){
 
 
     if(!response.ok){
-      return;
+
+      return [];
+
     }
 
 
@@ -1953,28 +1784,29 @@ async function loadServerRooms(){
       await response.json();
 
 
-    const rooms =
+    let raw =
       Array.isArray(data)
         ? data
         : (
-            Array.isArray(data.rooms)
-              ? data.rooms
-              : []
+            data.rooms ||
+            data.data ||
+            []
           );
 
 
-    mergeRooms(
-      rooms,
-      "server"
-    );
+    return raw
+      .map(normalizeRoom)
+      .filter(Boolean);
 
 
-  }catch(error){
+  }catch(e){
 
     console.log(
-      "Server rooms error",
-      error
+      "Render rooms unavailable",
+      e
     );
+
+    return [];
 
   }
 
@@ -1982,254 +1814,216 @@ async function loadServerRooms(){
 
 
 /* =========================================================
-   LOAD FIREBASE ROOMS
-   ========================================================= */
-
-async function loadFirebaseRooms(){
-
-  const data =
-    await firebaseGet(
-      "/rooms"
-    );
-
-
-  if(!data){
-    return;
-  }
-
-
-  const rooms =
-    Object.keys(data)
-      .map(key => {
-
-        const room =
-          data[key] || {};
-
-        return {
-          ...room,
-          id:
-            String(
-              room.id || key
-            ),
-          source:"firebase"
-        };
-
-      });
-
-
-  mergeRooms(
-    rooms,
-    "firebase"
-  );
-
-}
-
-
-/* =========================================================
-   MERGE ROOMS
-   ========================================================= */
+   MERGE ALL ROOMS
+========================================================= */
 
 function mergeRooms(
-  rooms,
-  source
+  firebaseRooms,
+  renderRooms
 ){
 
-  if(!Array.isArray(rooms)){
-    return;
-  }
+  const map =
+    new Map();
 
 
-  rooms.forEach(room => {
+  /*
+   * Firebase first
+   */
 
-    if(!room){
-      return;
-    }
+  firebaseRooms.forEach(room => {
 
+    map.set(
+      String(room.id),
+      room
+    );
 
-    const id =
-      String(
-        room.id ||
-        room.roomId ||
-        room.roomID ||
-        ""
-      ).trim();
+  });
 
 
-    if(!id){
-      return;
-    }
+  /*
+   * Render live room data
+   * overrides Firebase.
+   */
+
+  renderRooms.forEach(room => {
+
+    const key =
+      String(room.id);
 
 
-    const index =
-      allRooms.findIndex(
-        r =>
-          String(r.id) === id
-      );
+    if(map.has(key)){
+
+      const old =
+        map.get(key);
 
 
-    const normalized =
-      normalizeRoom(
+      map.set(
+        key,
         {
+          ...old,
           ...room,
-          id
+
+          /*
+           * Owner profile must remain
+           * available.
+           */
+
+          ownerId:
+            room.ownerId ||
+            old.ownerId,
+
+          ownerName:
+            room.ownerName ||
+            old.ownerName,
+
+          ownerDp:
+            room.ownerDp ||
+            old.ownerDp
+
         }
-      );
-
-
-    if(index === -1){
-
-      allRooms.push(
-        normalized
       );
 
     }else{
 
-      /*
-       * Server live data is preferred
-       * over old Firebase summary data.
-       */
-
-      if(
-        source === "server" ||
-        allRooms[index].source !== "server"
-      ){
-
-        allRooms[index] =
-          normalized;
-
-      }
+      map.set(
+        key,
+        room
+      );
 
     }
 
   });
 
 
-  renderRooms();
+  return Array.from(
+    map.values()
+  );
 
 }
 
 
 /* =========================================================
-   NORMALIZE ROOM
-   ========================================================= */
+   LOAD ROOMS
+========================================================= */
 
-function normalizeRoom(room){
+async function loadRooms(showToastMessage=false){
 
-  const ownerId =
-    String(
-      room.ownerId ||
-      room.userId ||
-      room.hostId ||
-      room.id ||
-      "100052"
+  const old =
+    document.getElementById(
+      "roomList"
     );
 
 
-  const ownerName =
-    room.ownerName ||
-    room.name ||
-    room.hostName ||
-    "Pawan";
+  if(!rooms.length){
 
-
-  const ownerDp =
-    room.ownerDp ||
-    room.dp ||
-    room.hostDp ||
-    "https://i.pravatar.cc/150?img=12";
-
-
-  const seats =
-    Array.isArray(room.seats)
-      ? room.seats
-      : [];
-
-
-  let memberCount =
-    Number(
-      room.memberCount ??
-      room.count ??
-      room.userCount ??
-      seats.filter(Boolean).length ??
-      0
-    );
-
-
-  if(
-    room.users &&
-    typeof room.users === "object"
-  ){
-
-    memberCount =
-      Object.keys(
-        room.users
-      ).length;
+    old.innerHTML =
+      '<div class="empty">Loading rooms...</div>';
 
   }
 
 
-  return {
+  const [
+    firebaseRooms,
+    renderRooms
+  ] =
+    await Promise.all([
+      loadFirebaseRooms(),
+      loadRenderRooms()
+    ]);
 
-    id:
-      String(room.id),
 
-    roomId:
-      String(room.id),
+  rooms =
+    mergeRooms(
+      firebaseRooms,
+      renderRooms
+    );
 
-    name:
-      room.name ||
-      ownerName ||
-      "PawanVoice Room",
 
-    dp:
-      room.dp ||
-      ownerDp,
+  renderRoomsList();
 
-    ownerId,
 
-    ownerName,
+  if(showToastMessage){
 
-    ownerDp,
+    showToast(
+      "Rooms refreshed"
+    );
 
-    category:
-      room.category ||
-      "General",
-
-    memberCount,
-
-    seats,
-
-    exp:
-      Number(
-        room.exp || 0
-      ),
-
-    familyId:
-      room.familyId ||
-      "",
-
-    familyName:
-      room.familyName ||
-      "",
-
-    source:
-      room.source ||
-      "firebase",
-
-    updatedAt:
-      room.updatedAt ||
-      Date.now()
-
-  };
+  }
 
 }
 
 
 /* =========================================================
-   RENDER ROOMS
-   ========================================================= */
+   ROOM MEMBER COUNT
+========================================================= */
 
-function renderRooms(){
+function getRoomMemberCount(room){
+
+  if(
+    typeof room.memberCount ===
+    "number"
+  ){
+
+    return room.memberCount;
+
+  }
+
+
+  if(
+    typeof room.count ===
+    "number"
+  ){
+
+    return room.count;
+
+  }
+
+
+  if(
+    room.users &&
+    typeof room.users ===
+    "object"
+  ){
+
+    return Object.keys(
+      room.users
+    ).length;
+
+  }
+
+
+  if(
+    Array.isArray(room.seats)
+  ){
+
+    return room.seats.filter(
+      Boolean
+    ).length;
+
+  }
+
+
+  return 0;
+
+}
+
+
+/* =========================================================
+   FILTER
+========================================================= */
+
+function filterRooms(){
+
+  renderRoomsList();
+
+}
+
+
+/* =========================================================
+   RENDER ROOM LIST
+========================================================= */
+
+function renderRoomsList(){
 
   const list =
     document.getElementById(
@@ -2245,49 +2039,34 @@ function renderRooms(){
       .toLowerCase();
 
 
-  let rooms =
-    [...allRooms];
+  let result =
+    rooms.slice();
 
 
-  /* SEARCH */
+  /*
+   * Search
+   */
 
   if(search){
 
-    rooms =
-      rooms.filter(room => {
+    result =
+      result.filter(room => {
 
-        return (
-
-          String(
-            room.name || ""
+        const text =
+          (
+            room.name +
+            " " +
+            room.ownerName +
+            " " +
+            room.ownerId +
+            " " +
+            room.id
           )
-          .toLowerCase()
-          .includes(search)
+          .toLowerCase();
 
-          ||
 
-          String(
-            room.ownerName || ""
-          )
-          .toLowerCase()
-          .includes(search)
-
-          ||
-
-          String(
-            room.id || ""
-          )
-          .toLowerCase()
-          .includes(search)
-
-          ||
-
-          String(
-            room.ownerId || ""
-          )
-          .toLowerCase()
-          .includes(search)
-
+        return text.includes(
+          search
         );
 
       });
@@ -2295,27 +2074,35 @@ function renderRooms(){
   }
 
 
-  /* TAB */
+  /*
+   * Tabs
+   */
 
-  if(activeTab === "my"){
+  if(
+    activeRoomTab ===
+    "new"
+  ){
 
-    rooms =
-      rooms.filter(
-        room =>
-          String(
-            room.ownerId
-          ) ===
-          String(
-            currentUser.userId
-          )
-      );
+    result.sort(
+      (a,b) =>
+        Number(b.createdAt || 0) -
+        Number(a.createdAt || 0)
+    );
 
-  }
+  }else if(
+    activeRoomTab ===
+    "popular"
+  ){
 
+    result.sort(
+      (a,b) =>
+        getRoomMemberCount(b) -
+        getRoomMemberCount(a)
+    );
 
-  if(activeTab === "new"){
+  }else{
 
-    rooms.sort(
+    result.sort(
       (a,b) =>
         Number(b.updatedAt || 0) -
         Number(a.updatedAt || 0)
@@ -2324,77 +2111,24 @@ function renderRooms(){
   }
 
 
-  if(activeTab === "popular"){
+  if(!result.length){
 
-    rooms.sort(
-      (a,b) =>
-        Number(b.memberCount || 0) -
-        Number(a.memberCount || 0)
-    );
-
-  }
-
-
-  if(activeTab === "wealth"){
-
-    rooms.sort(
-      (a,b) =>
-        Number(b.exp || 0) -
-        Number(a.exp || 0)
-    );
-
-  }
-
-
-  if(activeTab === "cp"){
-
-    rooms.sort(
-      (a,b) =>
-        Number(b.cp || 0) -
-        Number(a.cp || 0)
-    );
-
-  }
-
-
-  if(!rooms.length){
-
-    list.innerHTML = `
+    list.innerHTML =
+      `
       <div class="empty">
-        <div class="empty-icon">🎙️</div>
-        No rooms found.
-        <br>
-        Create the first voice room.
+        No rooms found.<br><br>
+        Create your first PawanVoice room.
       </div>
-    `;
-
-    document.getElementById(
-      "liveCount"
-    ).textContent =
-      "0 rooms";
+      `;
 
     return;
 
   }
 
 
-  document.getElementById(
-    "liveCount"
-  ).textContent =
-    rooms.length +
-    (
-      rooms.length === 1
-        ? " room"
-        : " rooms"
-    );
-
-
   list.innerHTML =
-    rooms
-      .map(
-        room =>
-          roomCardHTML(room)
-      )
+    result
+      .map(roomCardHTML)
       .join("");
 
 }
@@ -2402,132 +2136,124 @@ function renderRooms(){
 
 /* =========================================================
    ROOM CARD
-   ========================================================= */
+========================================================= */
 
 function roomCardHTML(room){
 
-  const members =
-    Math.max(
-      0,
-      Number(
-        room.memberCount || 0
+  const count =
+    getRoomMemberCount(room);
+
+
+  const id =
+    escapeHTML(
+      String(
+        room.id
       )
     );
 
 
-  const roomName =
+  const name =
     escapeHTML(
-      room.name ||
-      "PawanVoice Room"
+      String(
+        room.name ||
+        room.ownerName ||
+        "Voice Room"
+      )
     );
 
 
   const ownerName =
     escapeHTML(
-      room.ownerName ||
-      "Pawan"
+      String(
+        room.ownerName ||
+        "Guest"
+      )
     );
 
 
-  const roomId =
+  const ownerId =
     escapeHTML(
-      room.id
+      String(
+        room.ownerId ||
+        room.id
+      )
+    );
+
+
+  const dp =
+    escapeAttribute(
+      room.dp ||
+      room.ownerDp ||
+      DEFAULT_DP
     );
 
 
   const category =
     escapeHTML(
-      room.category ||
-      "General"
-    );
-
-
-  const dp =
-    escapeAttr(
-      room.dp ||
-      room.ownerDp ||
-      "https://i.pravatar.cc/150?img=12"
+      String(
+        room.category ||
+        "General"
+      )
     );
 
 
   return `
+    <div class="room-card">
 
-    <div
-      class="room-card"
-      data-room-id="${roomId}"
-    >
-
-      <div class="room-dp-wrap">
-
-        <img
-          class="room-dp"
-          src="${dp}"
-          alt="Room"
-          onerror="this.src='https://i.pravatar.cc/150?img=12'"
-        >
-
-        <span class="live-dot"></span>
-
-      </div>
-
+      <img
+        class="room-dp"
+        src="${dp}"
+        alt="room"
+        onerror="this.src='${DEFAULT_DP}'">
 
       <div class="room-info">
 
         <div class="room-name">
-          ${roomName}
+          ${name}
         </div>
 
         <div class="room-owner">
           👤 ${ownerName}
-          · ID ${escapeHTML(room.ownerId)}
+          · ID ${ownerId}
         </div>
 
         <div class="room-meta">
 
-          <span class="meta-chip">
-            👥 ${members}/9
-          </span>
-
-          <span class="meta-chip">
+          <span class="badge">
             ${category}
           </span>
 
-          <span class="meta-chip">
-            #${roomId}
+          <span class="badge live">
+            🟢 ${count}/9
+          </span>
+
+          <span class="badge">
+            Room ${id}
           </span>
 
         </div>
 
       </div>
 
-
       <button
-        class="join-room"
-        onclick="joinRoom('${escapeJS(room.id)}')"
-      >
-        JOIN
+        class="enter-btn"
+        onclick="enterRoom('${escapeJS(id)}')">
+        Enter
       </button>
 
     </div>
-
   `;
 
 }
 
 
 /* =========================================================
-   JOIN ROOM
-   ========================================================= */
+   ENTER ROOM
+========================================================= */
 
-function joinRoom(roomId){
+function enterRoom(roomId){
 
-  const id =
-    String(
-      roomId || ""
-    ).trim();
-
-
-  if(!id){
+  if(!roomId){
 
     showToast(
       "Room ID missing"
@@ -2539,20 +2265,21 @@ function joinRoom(roomId){
 
 
   /*
-   * IMPORTANT:
-   * Room ID is used directly.
+   * Room ID is owner's User ID.
    */
 
   window.location.href =
-    "/room.html?room=" +
-    encodeURIComponent(id);
+    "room.html?room=" +
+    encodeURIComponent(
+      roomId
+    );
 
 }
 
 
 /* =========================================================
    CREATE ROOM
-   ========================================================= */
+========================================================= */
 
 async function createRoom(){
 
@@ -2579,52 +2306,57 @@ async function createRoom(){
   }
 
 
+  const ownerId =
+    getUserId();
+
+
   /*
    * IMPORTANT:
-   * Owner User ID = Room ID
+   *
+   * Room ID = User ID
+   *
+   * Example:
+   * User ID 100052
+   * Room ID 100052
    */
 
-  const userId =
-    normalizeUserId(
-      currentUser.userId
-    );
-
-
   const roomId =
-    userId;
+    ownerId;
 
 
-  const room = {
+  const roomData = {
 
-    id:
-      roomId,
+    id:roomId,
 
-    roomId:
-      roomId,
+    roomId:roomId,
 
-    name:
-      roomName,
+    name:roomName,
 
     dp:
-      currentUser.dp,
+      currentUser.dp ||
+      DEFAULT_DP,
 
-    category:
-      category,
-
-    ownerId:
-      userId,
+    ownerId:ownerId,
 
     ownerName:
       currentUser.name,
 
     ownerDp:
-      currentUser.dp,
+      currentUser.dp ||
+      DEFAULT_DP,
 
-    memberCount:
-      0,
+    gender:
+      currentUser.gender ||
+      "Male",
 
-    seats:
-      Array(9).fill(null),
+    category:
+      category,
+
+    seatCount:9,
+
+    memberCount:0,
+
+    seats:Array(9).fill(null),
 
     users:{},
 
@@ -2634,13 +2366,8 @@ async function createRoom(){
 
     exp:0,
 
-    familyId:
-      currentUser.familyId ||
-      "",
-
-    familyName:
-      currentUser.familyName ||
-      "",
+    createdAt:
+      Date.now(),
 
     updatedAt:
       Date.now()
@@ -2648,192 +2375,145 @@ async function createRoom(){
   };
 
 
-  showToast(
-    "Creating room..."
-  );
-
-
   /*
-   * Save to Firebase.
+   * Firebase room.
    */
 
   const firebaseOK =
     await firebasePut(
       "/rooms/" +
-      encodeURIComponent(
-        roomId
-      ),
-      room
+      encodeURIComponent(roomId),
+      roomData
     );
 
 
   /*
-   * Also tell Render server.
+   * Tell Render server.
+   *
+   * If endpoint is available,
+   * server creates/updates room.
    */
 
   try{
 
     await fetch(
       RENDER_SERVER +
-      "/api/rooms/" +
-      encodeURIComponent(
-        roomId
-      ),
+      "/api/rooms",
       {
-        method:"PUT",
+        method:"POST",
         headers:{
           "Content-Type":
             "application/json"
         },
-        body:JSON.stringify(room)
+        body:JSON.stringify(
+          roomData
+        )
       }
     );
 
-  }catch(error){
+  }catch(e){
 
     console.log(
-      "Render room update:",
-      error
+      "Render room create skipped",
+      e
     );
 
   }
 
 
-  mergeRooms(
-    [room],
-    "firebase"
-  );
+  if(firebaseOK){
 
+    showToast(
+      "Room created. Opening room..."
+    );
 
-  document.getElementById(
-    "createForm"
-  ).classList.remove(
-    "show"
-  );
+  }else{
+
+    showToast(
+      "Opening room..."
+    );
+
+  }
 
 
   /*
-   * Open room.
+   * Owner's room opens with
+   * owner's User ID.
    */
 
-  setTimeout(
-    () => {
+  setTimeout(() => {
 
-      window.location.href =
-        "/room.html?room=" +
-        encodeURIComponent(
-          roomId
-        );
+    window.location.href =
+      "room.html?room=" +
+      encodeURIComponent(
+        roomId
+      );
 
-    },
-    300
-  );
+  },500);
 
 }
 
 
 /* =========================================================
-   CREATE FORM
-   ========================================================= */
+   TAB
+========================================================= */
 
-function toggleCreateRoom(){
+function changeRoomTab(
+  tab,
+  button
+){
 
-  const form =
-    document.getElementById(
-      "createForm"
-    );
-
-
-  form.classList.toggle(
-    "show"
-  );
+  activeRoomTab =
+    tab;
 
 
-  if(
-    form.classList.contains(
-      "show"
+  document
+    .querySelectorAll(
+      ".tab"
     )
-  ){
+    .forEach(btn => {
 
-    document.getElementById(
-      "roomNameInput"
-    ).value =
-      currentUser.name +
-      "'s Room";
+      btn.classList.remove(
+        "active"
+      );
 
-    document
-      .getElementById(
-        "createSection"
-      )
-      .scrollIntoView({
-        behavior:"smooth",
-        block:"center"
-      });
+    });
+
+
+  if(button){
+
+    button.classList.add(
+      "active"
+    );
 
   }
 
+
+  renderRoomsList();
+
 }
 
 
 /* =========================================================
-   PROFILE
-   ========================================================= */
+   CREATE SCROLL
+========================================================= */
 
-function openProfile(){
-
-  renderUser();
+function scrollToCreate(){
 
   document
     .getElementById(
-      "profileModal"
+      "createSection"
     )
-    .classList.add(
-      "show"
-    );
-
-}
-
-
-function openInbox(){
-
-  document
-    .getElementById(
-      "inboxModal"
-    )
-    .classList.add(
-      "show"
-    );
-
-}
-
-
-function openRanking(){
-
-  document
-    .getElementById(
-      "rankingModal"
-    )
-    .classList.add(
-      "show"
-    );
-
-}
-
-
-function closeModal(id){
-
-  document
-    .getElementById(id)
-    .classList.remove(
-      "show"
-    );
+    .scrollIntoView({
+      behavior:"smooth"
+    });
 
 }
 
 
 /* =========================================================
    HOME
-   ========================================================= */
+========================================================= */
 
 function goHome(){
 
@@ -2846,106 +2526,146 @@ function goHome(){
 
 
 /* =========================================================
-   SEARCH
-   ========================================================= */
+   INBOX
+========================================================= */
 
-document
-  .getElementById(
-    "searchInput"
-  )
-  .addEventListener(
-    "input",
-    function(){
+function openInbox(){
 
-      const clear =
-        document.getElementById(
-          "clearSearch"
-        );
-
-
-      clear.style.display =
-        this.value
-          ? "block"
-          : "none";
-
-
-      renderRooms();
-
-    }
+  showToast(
+    "Inbox is ready for chat integration"
   );
 
-
-document
-  .getElementById(
-    "clearSearch"
-  )
-  .addEventListener(
-    "click",
-    function(){
-
-      document.getElementById(
-        "searchInput"
-      ).value = "";
-
-      this.style.display =
-        "none";
-
-      renderRooms();
-
-    }
-  );
+}
 
 
 /* =========================================================
-   ROOM TABS
-   ========================================================= */
+   RANKING
+========================================================= */
 
-document
-  .querySelectorAll(
-    ".tab"
-  )
-  .forEach(
-    tab => {
+function showRanking(){
 
-      tab.addEventListener(
-        "click",
-        function(){
-
-          document
-            .querySelectorAll(
-              ".tab"
-            )
-            .forEach(
-              t =>
-                t.classList.remove(
-                  "active"
-                )
-            );
-
-
-          this.classList.add(
-            "active"
-          );
-
-
-          activeTab =
-            this.dataset.tab;
-
-
-          renderRooms();
-
-        }
-      );
-
-    }
+  showToast(
+    "Ranking section"
   );
+
+}
+
+
+/* =========================================================
+   LEVEL
+========================================================= */
+
+function showLevel(){
+
+  const level =
+    Number(
+      currentUser.level || 1
+    );
+
+
+  showToast(
+    "Your Level: " +
+    level
+  );
+
+}
+
+
+/* =========================================================
+   VIP
+========================================================= */
+
+function showVIP(){
+
+  const level =
+    Number(
+      currentUser.level || 1
+    );
+
+
+  let vip = 0;
+
+
+  if(level >= 100){
+    vip = 10;
+  }else if(level >= 95){
+    vip = 9;
+  }else if(level >= 85){
+    vip = 8;
+  }else if(level >= 75){
+    vip = 7;
+  }else if(level >= 65){
+    vip = 6;
+  }else if(level >= 55){
+    vip = 5;
+  }else if(level >= 45){
+    vip = 4;
+  }else if(level >= 35){
+    vip = 3;
+  }else if(level >= 25){
+    vip = 2;
+  }else if(level >= 1){
+    vip = 1;
+  }
+
+
+  showToast(
+    "VIP " + vip
+  );
+
+}
+
+
+/* =========================================================
+   CP
+========================================================= */
+
+function showCP(){
+
+  showToast(
+    "CP Space"
+  );
+
+}
+
+
+/* =========================================================
+   STORE
+========================================================= */
+
+function showStore(){
+
+  showToast(
+    "Store"
+  );
+
+}
+
+
+/* =========================================================
+   INVITE
+========================================================= */
+
+function showInvite(){
+
+  const code =
+    getUserId();
+
+
+  showToast(
+    "Invite Code: " +
+    code
+  );
+
+}
 
 
 /* =========================================================
    TOAST
-   ========================================================= */
+========================================================= */
 
 let toastTimer = null;
+
 
 function showToast(message){
 
@@ -2970,181 +2690,125 @@ function showToast(message){
 
 
   toastTimer =
-    setTimeout(
-      () => {
+    setTimeout(() => {
 
-        toast.classList.remove(
-          "show"
-        );
+      toast.classList.remove(
+        "show"
+      );
 
-      },
-      2200
-    );
+    },2200);
 
 }
 
 
 /* =========================================================
-   ESCAPE HELPERS
-   ========================================================= */
+   HTML ESCAPING
+========================================================= */
 
 function escapeHTML(value){
 
-  return String(
-    value ?? ""
-  )
-  .replace(
-    /&/g,
-    "&amp;"
-  )
-  .replace(
-    /</g,
-    "&lt;"
-  )
-  .replace(
-    />/g,
-    "&gt;"
-  )
-  .replace(
-    /"/g,
-    "&quot;"
-  )
-  .replace(
-    /'/g,
-    "&#039;"
-  );
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 
 }
 
 
-function escapeAttr(value){
+function escapeAttribute(value){
 
-  return escapeHTML(
-    value
-  );
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;");
 
 }
 
 
 function escapeJS(value){
 
-  return String(
-    value ?? ""
-  )
-  .replace(
-    /\\/g,
-    "\\\\"
-  )
-  .replace(
-    /'/g,
-    "\\'"
-  )
-  .replace(
-    /\n/g,
-    "\\n"
-  )
-  .replace(
-    /\r/g,
-    "\\r"
-  );
+  return String(value)
+    .replaceAll("\\","\\\\")
+    .replaceAll("'","\\'")
+    .replaceAll("\n","\\n")
+    .replaceAll("\r","\\r");
 
 }
 
 
 /* =========================================================
-   CLOSE MODAL WHEN CLICKING BACKGROUND
-   ========================================================= */
+   AUTO REFRESH
+========================================================= */
 
-document
-  .querySelectorAll(
-    ".modal-bg"
-  )
-  .forEach(
-    modal => {
+let roomRefreshTimer =
+  null;
 
-      modal.addEventListener(
-        "click",
-        function(event){
 
-          if(
-            event.target ===
-            modal
-          ){
+function startRoomRefresh(){
 
-            modal.classList.remove(
-              "show"
-            );
-
-          }
-
-        }
-      );
-
-    }
+  clearInterval(
+    roomRefreshTimer
   );
 
 
-/* =========================================================
-   REFRESH ALL ROOMS
-   ========================================================= */
+  roomRefreshTimer =
+    setInterval(
+      () => {
 
-async function refreshRooms(){
+        loadRooms(false);
 
-  await Promise.allSettled([
-
-    loadFirebaseRooms(),
-
-    loadServerRooms()
-
-  ]);
+      },
+      5000
+    );
 
 }
 
 
 /* =========================================================
    INITIALIZE
-   ========================================================= */
+========================================================= */
 
 async function init(){
 
+  loadLocalUser();
+
+  renderUser();
+
   await loadUser();
 
-  connectSocket();
+  await loadRooms(false);
 
-  await refreshRooms();
-
-  renderRooms();
-
-
-  /*
-   * Keep rooms updated.
-   */
-
-  setInterval(
-    refreshRooms,
-    5000
-  );
-
-
-  /*
-   * Keep profile data updated.
-   */
-
-  setInterval(
-    async () => {
-
-      await loadUser();
-
-    },
-    10000
-  );
+  startRoomRefresh();
 
 }
 
 
-init();
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  init
+);
 
 </script>
 
+
+<!-- =========================================================
+     OPTIONAL OLD USER.JS
+     If your project has user.js, it can still be loaded.
+     This file is intentionally optional.
+========================================================= -->
+
+<script
+  src="user.js"
+  onerror="console.log('user.js not found - optional')">
+</script>
+
 </body>
-  </html>
+</html>
