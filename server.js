@@ -1,623 +1,39 @@
+// ============================================================
+// PawanVoice - Complete Realtime Voice Room Server
+// ============================================================
+
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
-const { Server } = require("socket.io");
+const crypto = require("crypto");
 const path = require("path");
+const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
 
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({ origin: "*", methods: ["GET", "POST", "PUT", "PATCH", "DELETE"] }));
-app.use(express.json({ limit: "2mb" }));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname, { extensions: ["html"] }));
-
-/* =========================================================
-   DATABASE - MEMORY
-========================================================= */
-
-const rooms = {};
-const users = {};
-const userSockets = {};
-const socketUsers = {};
-
-const dailyData = {};
-const inventories = {};
-const games = {};
-
-/* =========================================================
-   200 GIFTS
-========================================================= */
-
-const giftNames = [
-  "Rose","Heart","Kiss","Coffee","Cake","Love","Star","Flower","Crown","Diamond",
-  "Ring","Teddy","Rabbit","Bear","Panda","Fox","Cat","Dog","Dolphin","Butterfly",
-  "Rainbow","Cloud","Moon","Sun","Fire","Ice","Music","Guitar","Drum","Microphone",
-  "Rocket","Car","Bike","Plane","Ship","Castle","House","Gold","Money","Treasure",
-  "Gem","Crystal","Pearl","Ruby","Emerald","Sapphire","Topaz","Amethyst","Crown Gold","Crown Diamond",
-  "Magic Wand","Magic Book","Magic Ball","Magic Heart","Magic Star","Angel","Devil","Phoenix","Dragon","Unicorn",
-  "Lion","Tiger","Wolf","Eagle","Peacock","Horse","Deer","Elephant","Giraffe","Monkey",
-  "Koala","Penguin","Owl","Parrot","Swan","Bee","Ladybug","Butterfly Gold","Butterfly Diamond","Butterfly Rainbow",
-  "Firework","Confetti","Balloon","Gift Box","Golden Box","Diamond Box","Lucky Box","Mystery Box","Treasure Box","Royal Box",
-  "VIP Box","King Box","Queen Box","Love Box","Party Box","Music Box","Game Box","Winner Box","Champion Box","Legend Box",
-  "Sports Car","Super Car","Golden Car","Diamond Car","Royal Car","Private Jet","Golden Jet","Luxury Yacht","Helicopter","Rocket Ship",
-  "Golden Crown","Diamond Crown","Royal Crown","King Crown","Queen Crown","Emperor Crown","Empress Crown","Legend Crown","God Crown","Universe Crown",
-  "Small Palace","Big Palace","Royal Palace","Golden Palace","Diamond Palace","Dream Castle","Magic Castle","Sky Castle","Moon Castle","Star Castle",
-  "Golden Dragon","Diamond Dragon","Fire Dragon","Ice Dragon","Rainbow Dragon","Royal Dragon","Baby Dragon","King Dragon","Queen Dragon","Universe Dragon",
-  "Golden Phoenix","Diamond Phoenix","Fire Phoenix","Ice Phoenix","Rainbow Phoenix","Royal Phoenix","Legend Phoenix","Super Phoenix","Galaxy Phoenix","Universe Phoenix",
-  "Golden Unicorn","Diamond Unicorn","Rainbow Unicorn","Royal Unicorn","Magic Unicorn","Legend Unicorn","Galaxy Unicorn","Dream Unicorn","Super Unicorn","Universe Unicorn",
-  "Love Rocket","Heart Rocket","Golden Rocket","Diamond Rocket","Royal Rocket","Galaxy Rocket","Universe Rocket","Dream Rocket","Legend Rocket","Super Rocket",
-  "Golden Mansion","Diamond Mansion","Royal Mansion","Dream Mansion","Sky Mansion","Ocean Mansion","Galaxy Mansion","Legend Mansion","Universe Mansion","Emperor Mansion",
-  "Kingdom","Royal Kingdom","Golden Kingdom","Diamond Kingdom","Dream Kingdom","Magic Kingdom","Galaxy Kingdom","Universe Kingdom","Legend Kingdom","PawanVoice Kingdom"
-];
-
-const giftPrices = [
-  10,20,30,50,80,100,120,150,200,250,
-  300,350,400,450,500,550,600,650,700,750,
-  800,850,900,950,1000,1100,1200,1300,1400,1500,
-  1600,1700,1800,1900,2000,2200,2400,2600,2800,3000,
-  3200,3400,3600,3800,4000,4500,5000,5500,6000,6500,
-  7000,7500,8000,8500,9000,9500,10000,11000,12000,13000,
-  14000,15000,16000,17000,18000,19000,20000,22000,24000,26000,
-  28000,30000,32000,34000,36000,38000,40000,42000,44000,46000,
-  48000,50000,55000,60000,65000,70000,75000,80000,85000,90000,
-  95000,100000,110000,120000,130000,140000,150000,160000,170000,180000,
-  190000,200000,220000,240000,260000,280000,300000,320000,340000,360000,
-  380000,400000,450000,500000,550000,600000,650000,700000,750000,800000,
-  850000,900000,950000,1000000,1100000,1200000,1300000,1400000,1500000,1600000,
-  1700000,1800000,1900000,2000000,2200000,2400000,2600000,2800000,3000000,3200000,
-  3400000,3600000,3800000,4000000,4200000,4400000,4600000,4800000,5000000,5500000,
-  6000000,6500000,7000000,7500000,8000000,8500000,9000000,9500000,10000000,11000000,
-  12000000,13000000,14000000,15000000,16000000,17000000,18000000,19000000,20000000,25000000,
-  30000000,35000000,40000000,45000000,50000000,60000000,70000000,80000000,90000000,100000000
-];
-
-const GIFTS = giftNames.map((name, i) => ({
-  id: `gift_${String(i + 1).padStart(3, "0")}`,
-  name,
-  price: giftPrices[i] || 100,
-  category:
-    i < 50 ? "Small" :
-    i < 100 ? "Medium" :
-    i < 150 ? "Large" :
-    "Luxury",
-  image: `https://dummyimage.com/100x100/222/fff&text=${encodeURIComponent(name.slice(0, 8))}`
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 }));
 
-/* =========================================================
-   COLLECTIONS
-========================================================= */
-
-function makeItems(prefix, names, count) {
-  const result = [];
-
-  for (let i = 1; i <= count; i++) {
-    result.push({
-      id: `${prefix}_${i}`,
-      name: names[(i - 1) % names.length] + ` ${i}`,
-      price: i * 1000,
-      level: Math.ceil(i / 5)
-    });
-  }
-
-  return result;
-}
-
-const VEHICLES = makeItems(
-  "vehicle",
-  ["Car","Sports Car","Bike","Motorbike","Jet","Yacht","Helicopter","Rocket","Royal Car","Golden Car"],
-  50
-);
-
-const AVATAR_FRAMES = makeItems(
-  "frame",
-  ["Gold","Diamond","Rainbow","Fire","Ice","Royal","VIP","Galaxy","Star","Legend"],
-  50
-);
-
-const CHAT_BUBBLES = makeItems(
-  "bubble",
-  ["Love","Star","Fire","Rainbow","Diamond","Gold","Royal","VIP","Galaxy","Magic"],
-  50
-);
-
-const PROFILE_CARDS = makeItems(
-  "card",
-  ["Gold","Diamond","Royal","VIP","Galaxy","Love","Legend","King","Queen","Universe"],
-  50
-);
-
-const RGB_NAMES = makeItems(
-  "rgb",
-  ["Rainbow","Fire","Ice","Neon","Galaxy","Gold","Diamond","Royal","Magic","Legend"],
-  50
-);
-
-const THEMES = makeItems(
-  "theme",
-  ["Dark","Ocean","Galaxy","Royal","Gold","Diamond","Fire","Ice","Rainbow","Magic"],
-  50
-);
-
-const VISITOR_ITEMS = makeItems(
-  "visitor",
-  ["Star Visitor","VIP Visitor","Royal Visitor","Diamond Visitor","Galaxy Visitor"],
-  50
-);
-
-/* =========================================================
-   DAILY TASKS - 10 TYPES
-========================================================= */
-
-const DAILY_TASKS = [
-  {
-    id: "task_login",
-    title: "Daily Login",
-    description: "Open PawanVoice today",
-    reward: 5000
-  },
-  {
-    id: "task_room",
-    title: "Enter Room",
-    description: "Stay active in a room",
-    reward: 10000
-  },
-  {
-    id: "task_chat",
-    title: "Send Chat",
-    description: "Send 10 messages",
-    reward: 10000
-  },
-  {
-    id: "task_gift",
-    title: "Send Gift",
-    description: "Send at least 1 gift",
-    reward: 15000
-  },
-  {
-    id: "task_game",
-    title: "Play Game",
-    description: "Play any room game",
-    reward: 15000
-  },
-  {
-    id: "task_follow",
-    title: "Follow",
-    description: "Follow another user",
-    reward: 5000
-  },
-  {
-    id: "task_voice",
-    title: "Voice Time",
-    description: "Use voice in a room",
-    reward: 20000
-  },
-  {
-    id: "task_visit",
-    title: "Visit Rooms",
-    description: "Visit 3 rooms",
-    reward: 10000
-  },
-  {
-    id: "task_collect",
-    title: "Collect Reward",
-    description: "Collect a daily reward",
-    reward: 5000
-  },
-  {
-    id: "task_active",
-    title: "Daily Activity",
-    description: "Complete daily activity",
-    reward: 25000
-  }
-];
-
-/* =========================================================
-   7 DAY LOGIN REWARD
-========================================================= */
-
-const WEEKLY_REWARDS = [
-  {
-    day: 1,
-    coins: 100000,
-    frame: null,
-    vip: 0
-  },
-  {
-    day: 2,
-    coins: 200000,
-    frame: null,
-    vip: 0
-  },
-  {
-    day: 3,
-    coins: 300000,
-    frame: "frame_3",
-    vip: 0
-  },
-  {
-    day: 4,
-    coins: 400000,
-    frame: null,
-    vip: 0
-  },
-  {
-    day: 5,
-    coins: 500000,
-    frame: "frame_5",
-    vip: 0
-  },
-  {
-    day: 6,
-    coins: 600000,
-    frame: null,
-    vip: 0
-  },
-  {
-    day: 7,
-    coins: 1000000,
-    frame: "frame_7",
-    vip: 1
-  }
-];
-
-/* =========================================================
-   20 ROOM GAMES
-========================================================= */
-
-const ROOM_GAMES = [
-  { id: "game_01", name: "Baby", type: "casual" },
-  { id: "game_02", name: "Gareebi", type: "casual" },
-  { id: "game_03", name: "Lucky Wheel", type: "luck" },
-  { id: "game_04", name: "Dice", type: "luck" },
-  { id: "game_05", name: "Guess Number", type: "casual" },
-  { id: "game_06", name: "Rock Paper Scissors", type: "casual" },
-  { id: "game_07", name: "Treasure Box", type: "luck" },
-  { id: "game_08", name: "Bomb Game", type: "luck" },
-  { id: "game_09", name: "Lucky Card", type: "luck" },
-  { id: "game_10", name: "Number King", type: "competition" },
-  { id: "game_11", name: "Fast Tap", type: "competition" },
-  { id: "game_12", name: "Emoji Battle", type: "competition" },
-  { id: "game_13", name: "Guess Emoji", type: "casual" },
-  { id: "game_14", name: "Memory Card", type: "casual" },
-  { id: "game_15", name: "Color Battle", type: "competition" },
-  { id: "game_16", name: "Lucky Egg", type: "luck" },
-  { id: "game_17", name: "Gift Battle", type: "competition" },
-  { id: "game_18", name: "King Queen", type: "competition" },
-  { id: "game_19", name: "Treasure Hunt", type: "luck" },
-  { id: "game_20", name: "Pawan Challenge", type: "competition" }
-];
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function clean(value) {
-  return String(value ?? "").trim();
-}
-
-function safe(value, fallback = "") {
-  const x = clean(value);
-  return x ? x.slice(0, 500) : fallback;
-}
-
-function time() {
-  return Date.now();
-}
-
-function today() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function getUser(userId, data = {}) {
-  userId = clean(userId);
-
-  if (!userId) return null;
-
-  if (!users[userId]) {
-    users[userId] = {
-      userId,
-      name: safe(data.name, "Pawan User"),
-      dp: safe(data.dp, "https://i.pravatar.cc/150?img=12"),
-      gender: safe(data.gender, "Male"),
-      level: Number(data.level) || 1,
-      exp: Number(data.exp) || 0,
-      coins: Number(data.coins) || 0,
-      diamonds: Number(data.diamonds) || 0,
-      vipLevel: Number(data.vipLevel) || 0,
-      following: Number(data.following) || 0,
-      followers: Number(data.followers) || 0,
-      visitors: Number(data.visitors) || 0,
-      createdAt: time(),
-      updatedAt: time()
-    };
-  } else {
-    if (data.name) users[userId].name = safe(data.name, users[userId].name);
-    if (data.dp) users[userId].dp = safe(data.dp, users[userId].dp);
-    if (data.gender) users[userId].gender = safe(data.gender, users[userId].gender);
-  }
-
-  return users[userId];
-}
-
-function publicUser(user) {
-  if (!user) return null;
-
-  return {
-    ...user,
-    updatedAt: user.updatedAt
-  };
-}
-
-function getRoom(roomId, data = {}) {
-  roomId = clean(roomId);
-
-  if (!roomId) return null;
-
-  if (!rooms[roomId]) {
-    rooms[roomId] = {
-      id: roomId,
-      name: safe(data.roomName || data.name, "PawanVoice Room"),
-      roomName: safe(data.roomName || data.name, "PawanVoice Room"),
-      dp: safe(data.roomDp || data.dp, "https://i.pravatar.cc/300?img=12"),
-      category: safe(data.category, "General"),
-      ownerId: clean(data.ownerId || data.userId),
-      owner: safe(data.owner || data.name, "Room Owner"),
-      ownerDp: safe(data.ownerDp || data.dp, "https://i.pravatar.cc/150?img=12"),
-      seats: Array(9).fill(null),
-      users: {},
-      messages: [],
-      gifts: [],
-      games: [],
-      createdAt: time(),
-      updatedAt: time()
-    };
-  }
-
-  return rooms[roomId];
-}
-
-function roomState(room) {
-  const seatList = Array(9).fill(null);
-
-  for (let i = 0; i < 9; i++) {
-    const seat = room.seats[i];
-
-    if (!seat) continue;
-
-    const uid =
-      typeof seat === "string"
-        ? seat
-        : clean(seat.userId || seat.id);
-
-    if (room.users[uid]) {
-      seatList[i] = {
-        ...publicUser(room.users[uid]),
-        seatIndex: i
-      };
-    }
-  }
-
-  return {
-    id: room.id,
-    name: room.name,
-    roomName: room.roomName,
-    dp: room.dp,
-    category: room.category,
-    ownerId: room.ownerId,
-    owner: room.owner,
-    ownerDp: room.ownerDp,
-    seats: seatList,
-    users: Object.fromEntries(
-      Object.entries(room.users).map(([id, u]) => [id, publicUser(u)])
-    ),
-    members: Object.fromEntries(
-      Object.entries(room.users).map(([id, u]) => [id, publicUser(u)])
-    ),
-    userCount: Object.keys(room.users).length,
-    gifts: room.gifts.slice(-100),
-    messages: room.messages.slice(-100),
-    createdAt: room.createdAt,
-    updatedAt: room.updatedAt
-  };
-}
-
-function broadcastRoom(roomId) {
-  const room = rooms[roomId];
-  if (!room) return;
-
-  room.updatedAt = time();
-
-  const state = roomState(room);
-
-  io.to(roomId).emit("room-state", state);
-  io.to(roomId).emit("roomState", state);
-  io.to(roomId).emit("room-updated", state);
-}
-
-function emitUserUpdate(userId) {
-  const socketId = userSockets[userId];
-
-  if (!socketId) return;
-
-  const socket = io.sockets.sockets.get(socketId);
-
-  if (socket) {
-    socket.emit("profile-updated", publicUser(users[userId]));
-  }
-}
-
-function addCoins(userId, amount) {
-  const user = getUser(userId);
-
-  if (!user) return false;
-
-  user.coins = Math.max(
-    0,
-    Number(user.coins || 0) + Number(amount || 0)
-  );
-
-  user.updatedAt = time();
-
-  emitUserUpdate(userId);
-
-  return true;
-}
-
-function addExp(userId, amount) {
-  const user = getUser(userId);
-
-  if (!user) return false;
-
-  user.exp = Number(user.exp || 0) + Number(amount || 0);
-
-  while (user.exp >= 100000) {
-    user.exp -= 100000;
-    user.level += 1;
-  }
-
-  user.updatedAt = time();
-
-  emitUserUpdate(userId);
-
-  return true;
-}
-
-/* =========================================================
-   DAILY DATA
-========================================================= */
-
-function getDaily(userId) {
-  const date = today();
-
-  if (!dailyData[userId]) {
-    dailyData[userId] = {
-      date,
-      loginClaimed: false,
-      weeklyDay: 1,
-      tasks: {},
-      roomEntered: false,
-      gamePlayed: false,
-      voiceUsed: false,
-      chatCount: 0,
-      giftsSent: 0,
-      roomsVisited: 0,
-      levelExpAdded: false
-    };
-  }
-
-  if (dailyData[userId].date !== date) {
-    dailyData[userId] = {
-      date,
-      loginClaimed: false,
-      weeklyDay: Math.min(
-        7,
-        Number(dailyData[userId].weeklyDay || 1) + 1
-      ),
-      tasks: {},
-      roomEntered: false,
-      gamePlayed: false,
-      voiceUsed: false,
-      chatCount: 0,
-      giftsSent: 0,
-      roomsVisited: 0,
-      levelExpAdded: false
-    };
-  }
-
-  return dailyData[userId];
-}
-
-function claimDailyLogin(userId) {
-  const user = getUser(userId);
-  const daily = getDaily(userId);
-
-  if (!user) {
-    return {
-      ok: false,
-      error: "User not found"
-    };
-  }
-
-  if (daily.loginClaimed) {
-    return {
-      ok: false,
-      error: "Today's reward already claimed",
-      daily
-    };
-  }
-
-  const day = Math.min(
-    7,
-    Number(daily.weeklyDay || 1)
-  );
-
-  const reward =
-    WEEKLY_REWARDS[day - 1];
-
-  addCoins(userId, reward.coins);
-
-  if (reward.vip) {
-    user.vipLevel = Math.max(
-      Number(user.vipLevel || 0),
-      reward.vip
-    );
-  }
-
-  if (reward.frame) {
-    inventories[userId] =
-      inventories[userId] || {
-        frames: [],
-        vehicles: [],
-        bubbles: [],
-        cards: [],
-        rgb: [],
-        themes: []
-      };
-
-    if (!inventories[userId].frames.includes(reward.frame)) {
-      inventories[userId].frames.push(reward.frame);
-    }
-  }
-
-  daily.loginClaimed = true;
-
-  emitUserUpdate(userId);
-
-  return {
-    ok: true,
-    day,
-    reward,
-    user: publicUser(user)
-  };
-}
-
-function addDailyExp(userId) {
-  const daily = getDaily(userId);
-
-  if (daily.levelExpAdded) {
-    return {
-      ok: false,
-      alreadyAdded: true
-    };
-  }
-
-  daily.levelExpAdded = true;
-
-  addExp(userId, 50000);
-
-  return {
-    ok: true,
-    exp: 50000,
-    user: publicUser(users[userId])
-  };
-}
-
-/* =========================================================
-   SOCKET.IO
-========================================================= */
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true }));
+
+// ------------------------------------------------------------
+// Static files
+// ------------------------------------------------------------
+
+app.use(express.static(__dirname, {
+  extensions: ["html"],
+  index: "index.html"
+}));
+
+// ------------------------------------------------------------
+// Socket.IO
+// ------------------------------------------------------------
 
 const io = new Server(server, {
   cors: {
@@ -627,1236 +43,1469 @@ const io = new Server(server, {
   transports: ["websocket", "polling"]
 });
 
-io.on("connection", socket => {
-  console.log("Connected:", socket.id);
-
-  /* ---------------------------------------------
-     REGISTER USER
-  --------------------------------------------- */
-
-  socket.on("register-user", data => {
-    const userId =
-      clean(data?.userId || data?.id) ||
-      clean(socket.id);
-
-    const user = getUser(userId, data || {});
-
-    userSockets[userId] = socket.id;
-    socketUsers[socket.id] = userId;
-
-    socket.data.userId = userId;
-
-    socket.emit("profile-updated", publicUser(user));
-
-    // Daily login activity
-    getDaily(userId);
-  });
-
-  /* ---------------------------------------------
-     PROFILE UPDATE
-  --------------------------------------------- */
-
-  socket.on("profile-updated", data => {
-    const userId =
-      clean(data?.userId) ||
-      socketUsers[socket.id];
-
-    if (!userId) return;
-
-    const user = getUser(userId, data);
-
-    if (data.name !== undefined) {
-      user.name = safe(data.name, user.name);
-    }
-
-    if (data.dp !== undefined) {
-      user.dp = safe(data.dp, user.dp);
-    }
-
-    if (data.gender !== undefined) {
-      user.gender = safe(data.gender, user.gender);
-    }
-
-    user.updatedAt = time();
-
-    // Update user in every room
-    Object.values(rooms).forEach(room => {
-      if (!room.users[userId]) return;
-
-      room.users[userId].name = user.name;
-      room.users[userId].dp = user.dp;
-      room.users[userId].gender = user.gender;
-
-      if (room.ownerId === userId) {
-        room.owner = user.name;
-        room.ownerDp = user.dp;
-      }
-
-      broadcastRoom(room.id);
-    });
-
-    socket.emit("profile-updated", publicUser(user));
-  });
-
-  socket.on("update-profile", data => {
-    socket.emit("profile-updated", data);
-  });
-
-  /* ---------------------------------------------
-     CREATE ROOM
-  --------------------------------------------- */
-
-  socket.on("create-room", (data, callback) => {
-    const userId =
-      clean(data?.ownerId || data?.userId) ||
-      socketUsers[socket.id];
-
-    if (!userId) {
-      callback?.({
-        ok: false,
-        error: "User not registered"
-      });
-      return;
-    }
-
-    const roomId =
-      clean(data?.roomId || data?.id) ||
-      userId;
-
-    const room = getRoom(roomId, {
-      ...data,
-      ownerId: userId,
-      userId
-    });
-
-    room.name =
-      safe(data?.roomName || data?.name, room.name);
-
-    room.roomName = room.name;
-
-    room.dp =
-      safe(data?.roomDp || data?.dp, room.dp);
-
-    room.category =
-      safe(data?.category, room.category);
-
-    room.ownerId = userId;
-
-    const user = getUser(userId, data || {});
-
-    room.owner = user.name;
-    room.ownerDp = user.dp;
-
-    socket.join(roomId);
-
-    socket.emit("room-created", roomState(room));
-
-    callback?.({
-      ok: true,
-      room: roomState(room)
-    });
-  });
-
-  /* ---------------------------------------------
-     JOIN ROOM
-  --------------------------------------------- */
-
-  socket.on("join-room", (data, callback) => {
-    const roomId =
-      clean(data?.roomId || data?.room || data?.id);
-
-    if (!roomId) {
-      callback?.({
-        ok: false,
-        error: "Room ID missing"
-      });
-      return;
-    }
-
-    const userId =
-      clean(data?.userId) ||
-      socketUsers[socket.id] ||
-      clean(socket.id);
-
-    const user = getUser(userId, data || {});
-    const room = getRoom(roomId, data || {});
-
-    userSockets[userId] = socket.id;
-    socketUsers[socket.id] = userId;
-
-    room.users[userId] = {
-      ...user,
-      socketId: socket.id,
-      seatIndex:
-        room.users[userId]?.seatIndex ?? null,
-      muted:
-        room.users[userId]?.muted || false,
-      micOn:
-        room.users[userId]?.micOn || false
-    };
-
-    if (!room.ownerId) {
-      room.ownerId = userId;
-      room.owner = user.name;
-      room.ownerDp = user.dp;
-    }
-
-    // Owner automatically gets first seat
-    if (
-      room.ownerId === userId &&
-      room.seats[0] === null
-    ) {
-      room.seats[0] = userId;
-      room.users[userId].seatIndex = 0;
-    }
-
-    socket.join(roomId);
-
-    const daily = getDaily(userId);
-
-    daily.roomEntered = true;
-    daily.roomsVisited += 1;
-
-    addDailyExp(userId);
-
-    socket.emit("room-joined", roomState(room));
-    socket.emit("room-state", roomState(room));
-    socket.emit("roomState", roomState(room));
-
-    socket.to(roomId).emit("user-joined", publicUser(room.users[userId]));
-
-    broadcastRoom(roomId);
-
-    callback?.({
-      ok: true,
-      room: roomState(room)
-    });
-  });
-
-  /* ---------------------------------------------
-     TAKE SEAT
-  --------------------------------------------- */
-
-  socket.on("take-seat", (data, callback) => {
-    const roomId = clean(data?.roomId || data?.room);
-    const userId =
-      clean(data?.userId) ||
-      socketUsers[socket.id];
-
-    const seatIndex = Number(
-      data?.seatIndex ??
-      data?.seat ??
-      data?.index
-    );
-
-    const room = rooms[roomId];
-
-    if (!room) {
-      callback?.({
-        ok: false,
-        error: "Room not found"
-      });
-      return;
-    }
-
-    if (!room.users[userId]) {
-      callback?.({
-        ok: false,
-        error: "Join room first"
-      });
-      return;
-    }
-
-    if (
-      !Number.isInteger(seatIndex) ||
-      seatIndex < 0 ||
-      seatIndex > 8
-    ) {
-      callback?.({
-        ok: false,
-        error: "Invalid seat"
-      });
-      return;
-    }
-
-    if (room.seats[seatIndex]) {
-      callback?.({
-        ok: false,
-        error: "Seat already taken"
-      });
-
-      socket.emit("seat-taken", {
-        seatIndex
-      });
-
-      return;
-    }
-
-    // Remove previous seat
-    const oldSeat = room.seats.findIndex(seat => {
-      const id =
-        typeof seat === "string"
-          ? seat
-          : clean(seat?.userId);
-
-      return id === userId;
-    });
-
-    if (oldSeat >= 0) {
-      room.seats[oldSeat] = null;
-    }
-
-    room.seats[seatIndex] = userId;
-    room.users[userId].seatIndex = seatIndex;
-
-    io.to(roomId).emit("seat-update", {
-      seatIndex,
-      user: publicUser(room.users[userId])
-    });
-
-    broadcastRoom(roomId);
-
-    callback?.({
-      ok: true,
-      seatIndex
-    });
-  });
-
-  /* ---------------------------------------------
-     LEAVE SEAT
-  --------------------------------------------- */
-
-  socket.on("leave-seat", data => {
-    const roomId = clean(data?.roomId || data?.room);
-    const userId =
-      clean(data?.userId) ||
-      socketUsers[socket.id];
-
-    const room = rooms[roomId];
-
-    if (!room || !room.users[userId]) return;
-
-    const oldSeat = room.seats.findIndex(seat => {
-      const id =
-        typeof seat === "string"
-          ? seat
-          : clean(seat?.userId);
-
-      return id === userId;
-    });
-
-    if (oldSeat >= 0) {
-      room.seats[oldSeat] = null;
-    }
-
-    room.users[userId].seatIndex = null;
-    room.users[userId].micOn = false;
-
-    broadcastRoom(roomId);
-  });
-
-  /* ---------------------------------------------
-     MIC
-  --------------------------------------------- */
-
-  socket.on("mic-status", data => {
-    const roomId = clean(data?.roomId || data?.room);
-    const userId =
-      clean(data?.userId) ||
-      socketUsers[socket.id];
-
-    const room = rooms[roomId];
-
-    if (!room || !room.users[userId]) return;
-
-    const user = room.users[userId];
-
-    if (user.muted) {
-      user.micOn = false;
-    } else {
-      user.micOn = !!(
-        data?.micOn ??
-        data?.enabled ??
-        data?.on
-      );
-
-      if (user.micOn) {
-        getDaily(userId).voiceUsed = true;
-        addDailyExp(userId);
-      }
-    }
-
-    io.to(roomId).emit("mic-status", {
-      roomId,
-      userId,
-      micOn: user.micOn,
-      muted: user.muted
-    });
-
-    broadcastRoom(roomId);
-  });
-
-  /* ---------------------------------------------
-     CHAT
-  --------------------------------------------- */
-
-  function handleChat(data) {
-    const roomId = clean(data?.roomId || data?.room);
-    const userId =
-      clean(data?.userId) ||
-      socketUsers[socket.id];
-
-    const room = rooms[roomId];
-
-    if (!room || !room.users[userId]) return;
-
-    const user = room.users[userId];
-
-    if (user.muted) return;
-
-    const text = safe(
-      data?.message ||
-      data?.text ||
-      data?.content
-    );
-
-    if (!text) return;
-
-    const message = {
-      id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
-      userId,
-      name: user.name,
-      dp: user.dp,
-      message: text,
-      text,
-      time: time()
-    };
-
-    room.messages.push(message);
-
-    if (room.messages.length > 100) {
-      room.messages = room.messages.slice(-100);
-    }
-
-    const daily = getDaily(userId);
-
-    daily.chatCount += 1;
-
-    addDailyExp(userId);
-
-    io.to(roomId).emit("chat", message);
-    io.to(roomId).emit("room-chat", message);
+// ============================================================
+// MEMORY DATABASE
+// ============================================================
+
+const rooms = {};
+const users = {};
+const userSockets = {};
+const socketUsers = {};
+
+const dailyData = {};
+const inventories = {};
+const games = {};
+const giftHistory = [];
+
+const giftLocks = new Set();
+
+const MAX_GIFT_HISTORY = 10000;
+
+// ============================================================
+// HELPERS
+// ============================================================
+
+function now() {
+  return Date.now();
+}
+
+function makeId(prefix = "") {
+  return prefix + crypto.randomBytes(5).toString("hex");
+}
+
+function cleanText(value, fallback = "") {
+  if (value === undefined || value === null) return fallback;
+
+  return String(value)
+    .replace(/[<>]/g, "")
+    .trim()
+    .slice(0, 200);
+}
+
+function cleanUserId(value) {
+  return cleanText(value, "")
+    .replace(/[^a-zA-Z0-9_-]/g, "")
+    .slice(0, 80);
+}
+
+function numberValue(value, fallback = 0) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function positiveInt(value, fallback = 1) {
+  const n = Math.floor(Number(value));
+  if (!Number.isFinite(n) || n < 1) return fallback;
+  return n;
+}
+
+function todayKey() {
+  const d = new Date();
+
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, "0"),
+    String(d.getDate()).padStart(2, "0")
+  ].join("-");
+}
+
+function randomRoomId() {
+  return "PV" + Math.floor(100000 + Math.random() * 900000);
+}
+
+// ============================================================
+// 200 GIFTS
+// ============================================================
+
+const giftCategories = [
+  "Small",
+  "Medium",
+  "Large",
+  "Luxury"
+];
+
+const giftNames = [
+  "Heart",
+  "Rose",
+  "Kiss",
+  "Star",
+  "Like",
+  "Love",
+  "Tulip",
+  "Sunflower",
+  "Cherry",
+  "Apple",
+  "Orange",
+  "Mango",
+  "Watermelon",
+  "Strawberry",
+  "Lollipop",
+  "Candy",
+  "Cupcake",
+  "Cake",
+  "Donut",
+  "Ice Cream",
+  "Coffee",
+  "Tea",
+  "Burger",
+  "Pizza",
+  "Fries",
+  "Hot Dog",
+  "Popcorn",
+  "Chocolate",
+  "Diamond",
+  "Ruby",
+  "Emerald",
+  "Sapphire",
+  "Pearl",
+  "Crown",
+  "King Crown",
+  "Queen Crown",
+  "Ring",
+  "Necklace",
+  "Bracelet",
+  "Watch",
+  "Gift Box",
+  "Present",
+  "Balloon",
+  "Party",
+  "Firework",
+  "Rocket",
+  "Car",
+  "Sports Car",
+  "Bike",
+  "Motorcycle",
+  "Scooter",
+  "Jet",
+  "Helicopter",
+  "Yacht",
+  "Ship",
+  "Airplane",
+  "Rainbow",
+  "Cloud",
+  "Moon",
+  "Sun",
+  "Galaxy",
+  "Planet",
+  "Earth",
+  "Moon Star",
+  "Magic Wand",
+  "Fairy",
+  "Angel",
+  "Butterfly",
+  "Phoenix",
+  "Dragon",
+  "Unicorn",
+  "Tiger",
+  "Lion",
+  "Panda",
+  "Rabbit",
+  "Cat",
+  "Dog",
+  "Fox",
+  "Bear",
+  "Monkey",
+  "Koala",
+  "Penguin",
+  "Owl",
+  "Eagle",
+  "Dolphin",
+  "Whale",
+  "Fish",
+  "Golden Fish",
+  "Treasure",
+  "Treasure Chest",
+  "Money Bag",
+  "Gold Coin",
+  "Money Rain",
+  "Cash",
+  "Golden Crown",
+  "Golden Heart",
+  "Golden Rose",
+  "Golden Ring",
+  "Golden Car",
+  "Golden Jet",
+  "Golden Yacht",
+  "Luxury Car",
+  "Super Car",
+  "Lamborghini",
+  "Ferrari",
+  "Rolls Royce",
+  "Private Jet",
+  "Royal Yacht",
+  "Royal Palace",
+  "Castle",
+  "Diamond Castle",
+  "Crystal Palace",
+  "Magic Castle",
+  "Love Castle",
+  "Royal Horse",
+  "Pegasus",
+  "Dragon King",
+  "Phoenix King",
+  "Galaxy King",
+  "Universe",
+  "Galaxy Heart",
+  "Planet Heart",
+  "Meteor",
+  "Comet",
+  "Solar System",
+  "Moon Palace",
+  "Star Palace",
+  "Space Ship",
+  "Time Machine",
+  "Magic Portal",
+  "Magic Book",
+  "Magic Sword",
+  "Royal Sword",
+  "Legend Sword",
+  "Hero",
+  "Super Hero",
+  "Super Girl",
+  "Princess",
+  "Prince",
+  "King",
+  "Queen",
+  "Emperor",
+  "Empress",
+  "Royal Couple",
+  "Love Couple",
+  "Wedding",
+  "Wedding Ring",
+  "Wedding Cake",
+  "Wedding Car",
+  "Love Boat",
+  "Love Plane",
+  "Love Rocket",
+  "Cupid",
+  "Cupid Arrow",
+  "Love Bomb",
+  "Love Firework",
+  "Romantic Night",
+  "Red Heart",
+  "Pink Heart",
+  "Blue Heart",
+  "Purple Heart",
+  "Rainbow Heart",
+  "Crystal Heart",
+  "Diamond Heart",
+  "Royal Heart",
+  "Super Heart",
+  "Mega Heart",
+  "Ultra Heart",
+  "Legend Heart",
+  "My Love",
+  "Forever Love",
+  "True Love",
+  "Infinite Love",
+  "Pawan Love",
+  "Pawan Crown",
+  "Pawan Rocket",
+  "Pawan Galaxy",
+  "Pawan King",
+  "Pawan VIP",
+  "Pawan Legend",
+  "Pawan Royal",
+  "Pawan Universe",
+  "Pawan Grand Gift"
+];
+
+const giftEmojis = [
+  "❤️",
+  "🌹",
+  "💋",
+  "⭐",
+  "👍",
+  "💖",
+  "🌷",
+  "🌻",
+  "🍒",
+  "🍎",
+  "🍊",
+  "🥭",
+  "🍉",
+  "🍓",
+  "🍭",
+  "🍬",
+  "🧁",
+  "🎂",
+  "🍩",
+  "🍦",
+  "☕",
+  "🍵",
+  "🍔",
+  "🍕",
+  "🍟",
+  "🌭",
+  "🍿",
+  "🍫",
+  "💎",
+  "♦️",
+  "💚",
+  "💙",
+  "🤍",
+  "👑",
+  "👑",
+  "👸",
+  "💍",
+  "📿",
+  "💎",
+  "⌚",
+  "🎁",
+  "🎁",
+  "🎈",
+  "🎉",
+  "🎆",
+  "🚀",
+  "🚗",
+  "🏎️",
+  "🏍️",
+  "🛵",
+  "🚲",
+  "🚁",
+  "🛥️",
+  "🚢",
+  "✈️",
+  "🌈",
+  "☁️",
+  "🌙",
+  "☀️",
+  "🌌",
+  "🪐",
+  "🌍",
+  "🌙",
+  "🪄",
+  "🧚",
+  "👼",
+  "🦋",
+  "🔥",
+  "🐉",
+  "🦄",
+  "🐯",
+  "🦁",
+  "🐼",
+  "🐰",
+  "🐱",
+  "🐶",
+  "🦊",
+  "🐻",
+  "🐒",
+  "🐨",
+  "🐧",
+  "🦉",
+  "🦅",
+  "🐬",
+  "🐋",
+  "🐟",
+  "🐠",
+  "🐠",
+  "💰",
+  "🧰",
+  "💰",
+  "🪙",
+  "💸",
+  "💵",
+  "👑",
+  "💛",
+  "🌹",
+  "💍",
+  "🚗",
+  "✈️",
+  "🚘",
+  "🏎️",
+  "🏎️",
+  "🏎️",
+  "🚗",
+  "✈️",
+  "🛥️",
+  "🏰",
+  "🏯",
+  "🏛️",
+  "🏰",
+  "🏰",
+  "🐎",
+  "🪽",
+  "🐉",
+  "🔥",
+  "🌌",
+  "🌎",
+  "💫",
+  "🪐",
+  "☄️",
+  "☄️",
+  "🌞",
+  "🌙",
+  "⭐",
+  "🚀",
+  "⏳",
+  "🌀",
+  "📖",
+  "⚔️",
+  "⚔️",
+  "🗡️",
+  "🦸",
+  "🦸‍♀️",
+  "👸",
+  "🤴",
+  "👑",
+  "👑",
+  "👑",
+  "👸",
+  "💑",
+  "💞",
+  "💒",
+  "💍",
+  "🎂",
+  "🚘",
+  "🚢",
+  "✈️",
+  "🚀",
+  "🏹",
+  "💘",
+  "💣",
+  "🎆",
+  "🌃",
+  "❤️",
+  "💗",
+  "💙",
+  "💜",
+  "💓",
+  "💎",
+  "💎",
+  "❤️",
+  "💖",
+  "💗",
+  "💝",
+  "💘",
+  "❤️",
+  "💞",
+  "💕",
+  "♾️",
+  "❤️",
+  "👑",
+  "🚀",
+  "🌌",
+  "👑",
+  "💎",
+  "🔥",
+  "🏰",
+  "🌌",
+  "🎁"
+];
+
+const gifts = {};
+
+function getGiftPrice(index) {
+  if (index < 50) {
+    return (index + 1) * 100;
   }
 
-  socket.on("chat", handleChat);
-  socket.on("room-chat", handleChat);
+  if (index < 100) {
+    return (index - 49) * 1000;
+  }
 
-  /* ---------------------------------------------
-     EMOJI
-  --------------------------------------------- */
+  if (index < 150) {
+    return (index - 99) * 10000;
+  }
 
-  socket.on("emoji", data => {
-    const roomId = clean(data?.roomId || data?.room);
-    const userId =
-      clean(data?.userId) ||
-      socketUsers[socket.id];
+  return (index - 149) * 50000;
+}
 
-    const room = rooms[roomId];
+for (let i = 0; i < 200; i++) {
+  const id = `gift_${String(i + 1).padStart(3, "0")}`;
 
-    if (!room || !room.users[userId]) return;
+  let category = "Small";
 
-    io.to(roomId).emit("emoji", {
-      userId,
-      name: room.users[userId].name,
-      emoji: safe(data?.emoji || data?.value, "❤️"),
-      time: time()
-    });
+  if (i >= 50 && i < 100) category = "Medium";
+  if (i >= 100 && i < 150) category = "Large";
+  if (i >= 150) category = "Luxury";
+
+  gifts[id] = {
+    id,
+    name: giftNames[i] || `Pawan Gift ${i + 1}`,
+    emoji: giftEmojis[i] || "🎁",
+    image: "",
+    category,
+    price: getGiftPrice(i),
+    sort: i + 1
+  };
+}
+
+// ============================================================
+// STORE ITEMS
+// ============================================================
+
+const store = {
+  vehicles: [],
+  avatarFrames: [],
+  chatBubbles: [],
+  profileCards: [],
+  rgbNames: [],
+  themes: [],
+  visitors: []
+};
+
+for (let i = 1; i <= 50; i++) {
+  store.vehicles.push({
+    id: `vehicle_${String(i).padStart(2, "0")}`,
+    name: `Vehicle ${i}`,
+    price: i * 50000,
+    type: "vehicle"
   });
 
-  /* ---------------------------------------------
-     200 GIFTS
-  --------------------------------------------- */
+  store.avatarFrames.push({
+    id: `avatar_frame_${String(i).padStart(2, "0")}`,
+    name: `Avatar Frame ${i}`,
+    price: i * 10000,
+    type: "avatarFrame"
+  });
 
-  socket.on("gift", data => {
-    const roomId = clean(data?.roomId || data?.room);
-    const fromUserId =
-      clean(data?.fromUserId || data?.senderId || data?.userId) ||
-      socketUsers[socket.id];
+  store.chatBubbles.push({
+    id: `chat_bubble_${String(i).padStart(2, "0")}`,
+    name: `Chat Bubble ${i}`,
+    price: i * 5000,
+    type: "chatBubble"
+  });
 
-    const room = rooms[roomId];
+  store.profileCards.push({
+    id: `profile_card_${String(i).padStart(2, "0")}`,
+    name: `Profile Card ${i}`,
+    price: i * 8000,
+    type: "profileCard"
+  });
 
-    if (!room || !room.users[fromUserId]) return;
+  store.rgbNames.push({
+    id: `rgb_name_${String(i).padStart(2, "0")}`,
+    name: `RGB Name ${i}`,
+    price: i * 12000,
+    type: "rgbName"
+  });
 
-    const giftId =
-      clean(data?.giftId || data?.id) ||
-      "gift_001";
+  store.themes.push({
+    id: `theme_${String(i).padStart(2, "0")}`,
+    name: `Theme ${i}`,
+    price: i * 15000,
+    type: "theme"
+  });
 
-    const gift =
-      GIFTS.find(x => x.id === giftId) ||
-      GIFTS[0];
+  store.visitors.push({
+    id: `visitor_${String(i).padStart(2, "0")}`,
+    name: `Visitor Effect ${i}`,
+    price: i * 7000,
+    type: "visitor"
+  });
+}
 
-    const quantity =
-      Math.max(1, Math.min(99, Number(data?.quantity) || 1));
+// ============================================================
+// DAILY TASKS
+// ============================================================
 
-    const total =
-      gift.price * quantity;
+const dailyTasks = [
+  {
+    id: "task_01",
+    name: "Login Today",
+    description: "Open PawanVoice today",
+    rewardCoins: 5000,
+    rewardExp: 5000
+  },
+  {
+    id: "task_02",
+    name: "Enter a Room",
+    description: "Join any voice room",
+    rewardCoins: 5000,
+    rewardExp: 5000
+  },
+  {
+    id: "task_03",
+    name: "Send a Gift",
+    description: "Send at least one gift",
+    rewardCoins: 10000,
+    rewardExp: 5000
+  },
+  {
+    id: "task_04",
+    name: "Chat With Friends",
+    description: "Send 5 chat messages",
+    rewardCoins: 5000,
+    rewardExp: 5000
+  },
+  {
+    id: "task_05",
+    name: "Use Voice Room",
+    description: "Stay in a room",
+    rewardCoins: 10000,
+    rewardExp: 5000
+  },
+  {
+    id: "task_06",
+    name: "Follow Someone",
+    description: "Follow a user",
+    rewardCoins: 5000,
+    rewardExp: 5000
+  },
+  {
+    id: "task_07",
+    name: "Play a Game",
+    description: "Play one room game",
+    rewardCoins: 5000,
+    rewardExp: 5000
+  },
+  {
+    id: "task_08",
+    name: "Send Emoji",
+    description: "Send 10 emojis",
+    rewardCoins: 5000,
+    rewardExp: 5000
+  },
+  {
+    id: "task_09",
+    name: "Visit Profile",
+    description: "Visit another profile",
+    rewardCoins: 5000,
+    rewardExp: 5000
+  },
+  {
+    id: "task_10",
+    name: "Daily Mission",
+    description: "Complete all available daily activity",
+    rewardCoins: 25000,
+    rewardExp: 10000
+  }
+];
 
-    const sender = getUser(fromUserId);
+// ============================================================
+// 7 DAY LOGIN REWARDS
+// ============================================================
 
-    if (Number(sender.coins || 0) < total) {
-      socket.emit("gift-error", {
-        message: "Not enough coins",
-        required: total,
-        coins: sender.coins
-      });
+const weeklyRewards = [
+  {
+    day: 1,
+    coins: 100000,
+    exp: 5000,
+    item: null,
+    vip: 0
+  },
+  {
+    day: 2,
+    coins: 200000,
+    exp: 10000,
+    item: null,
+    vip: 0
+  },
+  {
+    day: 3,
+    coins: 300000,
+    exp: 15000,
+    item: {
+      type: "avatarFrame",
+      id: "weekly_frame_03",
+      name: "Day 3 Special Frame"
+    },
+    vip: 0
+  },
+  {
+    day: 4,
+    coins: 400000,
+    exp: 20000,
+    item: null,
+    vip: 0
+  },
+  {
+    day: 5,
+    coins: 500000,
+    exp: 25000,
+    item: {
+      type: "avatarFrame",
+      id: "weekly_frame_05",
+      name: "Day 5 Special Frame"
+    },
+    vip: 0
+  },
+  {
+    day: 6,
+    coins: 600000,
+    exp: 30000,
+    item: null,
+    vip: 0
+  },
+  {
+    day: 7,
+    coins: 1000000,
+    exp: 50000,
+    item: {
+      type: "avatarFrame",
+      id: "weekly_frame_07",
+      name: "Day 7 VIP Frame"
+    },
+    vip: 1
+  }
+];
 
-      return;
+// ============================================================
+// 20 ROOM GAMES
+// ============================================================
+
+const gameNames = [
+  "Baby",
+  "Gareebi",
+  "Lucky Wheel",
+  "Dice",
+  "Guess Number",
+  "Rock Paper Scissors",
+  "Treasure Box",
+  "Bomb Game",
+  "Lucky Card",
+  "Number King",
+  "Fast Tap",
+  "Emoji Battle",
+  "Guess Emoji",
+  "Memory Card",
+  "Color Battle",
+  "Lucky Egg",
+  "Gift Battle",
+  "King Queen",
+  "Treasure Hunt",
+  "Pawan Challenge"
+];
+
+gameNames.forEach((name, index) => {
+  const id = `game_${String(index + 1).padStart(2, "0")}`;
+
+  games[id] = {
+    id,
+    name,
+    enabled: true,
+    minPlayers: 1,
+    maxPlayers: 50
+  };
+});
+
+// ============================================================
+// USER FUNCTIONS
+// ============================================================
+
+function ensureUser(userId, data = {}) {
+  userId = cleanUserId(userId) || "guest";
+
+  if (!users[userId]) {
+    users[userId] = {
+      id: userId,
+      name: cleanText(data.name, "Guest"),
+      dp: cleanText(
+        data.dp,
+        `https://i.pravatar.cc/150?u=${encodeURIComponent(userId)}`
+      ),
+      gender: cleanText(data.gender, "Male"),
+      level: numberValue(data.level, 1),
+      exp: numberValue(data.exp, 0),
+      coins: numberValue(data.coins, 100000),
+      diamonds: numberValue(data.diamonds, 0),
+      following: numberValue(data.following, 0),
+      followers: numberValue(data.followers, 0),
+      visitors: numberValue(data.visitors, 0),
+      vipLevel: numberValue(data.vipLevel, 0),
+      createdAt: now(),
+      updatedAt: now()
+    };
+  }
+
+  return users[userId];
+}
+
+function publicUser(user) {
+  if (!user) return null;
+
+  return {
+    id: user.id,
+    name: user.name,
+    dp: user.dp,
+    gender: user.gender,
+    level: user.level,
+    exp: user.exp,
+    coins: user.coins,
+    diamonds: user.diamonds,
+    following: user.following,
+    followers: user.followers,
+    visitors: user.visitors,
+    vipLevel: user.vipLevel
+  };
+}
+
+function saveUser(user) {
+  if (!user) return;
+
+  user.updatedAt = now();
+}
+
+function addCoins(userId, amount) {
+  const user = ensureUser(userId);
+
+  user.coins = Math.max(
+    0,
+    Math.floor(numberValue(user.coins, 0) + numberValue(amount, 0))
+  );
+
+  saveUser(user);
+
+  return user.coins;
+}
+
+function addExp(userId, amount) {
+  const user = ensureUser(userId);
+
+  user.exp = Math.max(
+    0,
+    Math.floor(numberValue(user.exp, 0) + numberValue(amount, 0))
+  );
+
+  while (user.exp >= getExpForNextLevel(user.level)) {
+    user.exp -= getExpForNextLevel(user.level);
+    user.level += 1;
+  }
+
+  saveUser(user);
+
+  return {
+    level: user.level,
+    exp: user.exp
+  };
+}
+
+function getExpForNextLevel(level) {
+  return Math.max(10000, Number(level || 1) * 10000);
+}
+
+// ============================================================
+// DAILY DATA
+// ============================================================
+
+function ensureDailyData(userId) {
+  if (!dailyData[userId]) {
+    dailyData[userId] = {
+      loginDay: 0,
+      lastLoginDate: "",
+      streak: 0,
+      lastExpDate: "",
+      tasks: {},
+      weeklyClaimed: {}
+    };
+  }
+
+  return dailyData[userId];
+}
+
+function applyDailyLogin(userId) {
+  const data = ensureDailyData(userId);
+  const today = todayKey();
+
+  if (data.lastLoginDate === today) {
+    return {
+      alreadyClaimed: true,
+      day: data.loginDay,
+      reward: null
+    };
+  }
+
+  data.loginDay += 1;
+
+  if (data.loginDay > 7) {
+    data.loginDay = 1;
+    data.weeklyClaimed = {};
+  }
+
+  data.streak += 1;
+  data.lastLoginDate = today;
+
+  const reward = weeklyRewards[data.loginDay - 1];
+
+  const user = ensureUser(userId);
+
+  user.coins += reward.coins;
+  user.exp += reward.exp;
+
+  if (reward.vip) {
+    user.vipLevel = Math.max(user.vipLevel, reward.vip);
+  }
+
+  if (reward.item) {
+    ensureInventory(userId);
+
+    inventories[userId].avatarFrames.push({
+      id: reward.item.id,
+      name: reward.item.name,
+      obtainedAt: now()
+    });
+  }
+
+  saveUser(user);
+
+  return {
+    alreadyClaimed: false,
+    day: data.loginDay,
+    streak: data.streak,
+    reward
+  };
+}
+
+// ============================================================
+// INVENTORY
+// ============================================================
+
+function ensureInventory(userId) {
+  if (!inventories[userId]) {
+    inventories[userId] = {
+      vehicles: [],
+      avatarFrames: [],
+      chatBubbles: [],
+      profileCards: [],
+      rgbNames: [],
+      themes: [],
+      visitors: []
+    };
+  }
+
+  return inventories[userId];
+}
+
+// ============================================================
+// ROOMS
+// ============================================================
+
+function createRoom(roomId, ownerId, data = {}) {
+  roomId = cleanText(roomId, randomRoomId());
+  ownerId = cleanUserId(ownerId) || "guest";
+
+  const owner = ensureUser(ownerId, data);
+
+  if (!rooms[roomId]) {
+    rooms[roomId] = {
+      id: roomId,
+      name: cleanText(data.name || data.roomName, `${owner.name}'s Room`),
+      roomName: cleanText(
+        data.name || data.roomName,
+        `${owner.name}'s Room`
+      ),
+      dp: cleanText(data.dp, owner.dp),
+      owner: owner.name,
+      ownerId: owner.id,
+      ownerDp: owner.dp,
+      category: cleanText(data.category, "General"),
+      users: 0,
+      seats: Array(9).fill(null),
+      members: {},
+      mutedUsers: {},
+      messages: [],
+      gifts: [],
+      roomExp: 0,
+      topUsers: [],
+      createdAt: numberValue(data.createdAt, now()),
+      updatedAt: now()
+    };
+  }
+
+  return rooms[roomId];
+}
+
+function ensureRoom(roomId, ownerId = "guest", data = {}) {
+  if (!rooms[roomId]) {
+    return createRoom(roomId, ownerId, data);
+  }
+
+  return rooms[roomId];
+}
+
+function getRoomUserCount(room) {
+  if (!room) return 0;
+
+  return Object.keys(room.members || {}).length;
+}
+
+function roomData(room) {
+  if (!room) return null;
+
+  const members = {};
+
+  Object.keys(room.members || {}).forEach(id => {
+    const member = room.members[id];
+
+    members[id] = {
+      userId: member.userId,
+      name: member.name,
+      dp: member.dp,
+      seatIndex: member.seatIndex,
+      mic: member.mic,
+      speaker: member.speaker,
+      muted: member.muted
+    };
+  });
+
+  return {
+    id: room.id,
+    name: room.name,
+    roomName: room.roomName,
+    dp: room.dp,
+    owner: room.owner,
+    ownerId: room.ownerId,
+    ownerDp: room.ownerDp,
+    category: room.category,
+    users: getRoomUserCount(room),
+    seats: room.seats,
+    members,
+    gifts: room.gifts.slice(-100),
+    roomExp: room.roomExp,
+    topUsers: room.topUsers,
+    createdAt: room.createdAt,
+    updatedAt: room.updatedAt
+  };
+}
+
+function broadcastRoom(roomId) {
+  const room = rooms[roomId];
+
+  if (!room) return;
+
+  room.users = getRoomUserCount(room);
+  room.updatedAt = now();
+
+  io.to(roomId).emit("room-state", roomData(room));
+  io.to(roomId).emit("room-updated", roomData(room));
+}
+
+function removeUserFromRoom(socket, roomId) {
+  const room = rooms[roomId];
+
+  if (!room) return;
+
+  const userId = socketUsers[socket.id];
+
+  if (!userId) return;
+
+  if (room.members[userId]) {
+    const seatIndex = room.members[userId].seatIndex;
+
+    if (
+      seatIndex !== null &&
+      seatIndex !== undefined &&
+      room.seats[seatIndex]
+    ) {
+      room.seats[seatIndex] = null;
     }
 
-    const toUserId =
-      clean(data?.toUserId || data?.receiverId);
+    delete room.members[userId];
+  }
 
-    const receiver =
-      toUserId && room.users[toUserId]
-        ? getUser(toUserId)
-        : null;
+  room.users = getRoomUserCount(room);
+  room.updatedAt = now();
 
+  socket.leave(roomId);
+
+  socket.currentRoom = null;
+
+  io.to(roomId).emit("user-left", {
+    userId,
+    roomId
+  });
+
+  broadcastRoom(roomId);
+}
+
+// ============================================================
+// DAILY EXP
+// ============================================================
+
+function applyDailyExp(userId) {
+  const data = ensureDailyData(userId);
+  const today = todayKey();
+
+  if (data.lastExpDate === today) {
+    return {
+      applied: false,
+      amount: 0
+    };
+  }
+
+  data.lastExpDate = today;
+
+  const result = addExp(userId, 50000);
+
+  return {
+    applied: true,
+    amount: 50000,
+    level: result.level,
+    exp: result.exp
+  };
+}
+
+// ============================================================
+// GIFT PROCESSING
+// ============================================================
+
+function processGift({
+  senderId,
+  receiverId,
+  giftId,
+  quantity,
+  roomId
+}) {
+  senderId = cleanUserId(senderId);
+  receiverId = cleanUserId(receiverId);
+  giftId = cleanText(giftId);
+
+  const qty = Math.min(100, Math.max(1, positiveInt(quantity, 1)));
+
+  if (!senderId) {
+    return {
+      ok: false,
+      error: "Sender not found"
+    };
+  }
+
+  if (!receiverId) {
+    return {
+      ok: false,
+      error: "Receiver not found"
+    };
+  }
+
+  if (senderId === receiverId) {
+    return {
+      ok: false,
+      error: "You cannot send a gift to yourself"
+    };
+  }
+
+  const gift = gifts[giftId];
+
+  // IMPORTANT:
+  // Price is ALWAYS taken from server-side gift database.
+  // Browser price is ignored.
+  if (!gift) {
+    return {
+      ok: false,
+      error: "Invalid gift"
+    };
+  }
+
+  const sender = ensureUser(senderId);
+  const receiver = ensureUser(receiverId);
+
+  const total = gift.price * qty;
+
+  if (sender.coins < total) {
+    return {
+      ok: false,
+      error: "Insufficient coins",
+      required: total,
+      balance: sender.coins
+    };
+  }
+
+  const lockKey = `${senderId}:${receiverId}:${giftId}`;
+
+  if (giftLocks.has(lockKey)) {
+    return {
+      ok: false,
+      error: "Please wait and try again"
+    };
+  }
+
+  giftLocks.add(lockKey);
+
+  try {
+    // Secure server-side deduction.
     sender.coins -= total;
 
-    if (receiver) {
-      // Receiver gets 50% virtual earning
-      receiver.coins += Math.floor(total * 0.5);
-      receiver.updatedAt = time();
-    }
+    // Receiver gets a record/reward.
+    // Receiver coins are not automatically increased here.
+    // The gift is recorded as received.
+    ensureInventory(receiverId);
 
-    sender.updatedAt = time();
-
-    const giftEvent = {
-      id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
+    const transaction = {
+      id: makeId("gift_tx_"),
+      roomId: cleanText(roomId, ""),
+      senderId,
+      senderName: sender.name,
+      senderDp: sender.dp,
+      receiverId,
+      receiverName: receiver.name,
+      receiverDp: receiver.dp,
       giftId: gift.id,
       giftName: gift.name,
-      giftImage: gift.image,
-      price: gift.price,
-      quantity,
-      total,
-      fromUserId,
+      giftEmoji: gift.emoji,
+      category: gift.category,
+      unitPrice: gift.price,
+      quantity: qty,
+      totalCoins: total,
+      senderBalance: sender.coins,
+      createdAt: now()
+    };
+
+    giftHistory.push(transaction);
+
+    while (giftHistory.length > MAX_GIFT_HISTORY) {
+      giftHistory.shift();
+    }
+
+    // Add receiver-side inventory history.
+    inventories[receiverId].gifts =
+      inventories[receiverId].gifts || [];
+
+    inventories[receiverId].gifts.push({
+      transactionId: transaction.id,
+      giftId: gift.id,
+      giftName: gift.name,
+      giftEmoji: gift.emoji,
+      fromUserId: senderId,
       fromName: sender.name,
-      fromDp: sender.dp,
-      toUserId,
-      toName: receiver?.name || safe(data?.toName, ""),
-      time: time()
-    };
-
-    room.gifts.push(giftEvent);
-
-    if (room.gifts.length > 100) {
-      room.gifts = room.gifts.slice(-100);
-    }
-
-    getDaily(fromUserId).giftsSent += quantity;
-
-    addDailyExp(fromUserId);
-
-    emitUserUpdate(fromUserId);
-
-    if (receiver) {
-      emitUserUpdate(toUserId);
-    }
-
-    io.to(roomId).emit("gift", giftEvent);
-  });
-
-  /* ---------------------------------------------
-     FOLLOW
-  --------------------------------------------- */
-
-  socket.on("follow-user", data => {
-    const from =
-      clean(data?.fromUserId) ||
-      socketUsers[socket.id];
-
-    const to =
-      clean(data?.toUserId || data?.targetUserId);
-
-    if (!from || !to || from === to) return;
-
-    const target = getUser(to);
-
-    if (!target) return;
-
-    const user = getUser(from);
-
-    user.following += 1;
-    target.followers += 1;
-
-    getDaily(from);
-
-    socket.emit("follow-success", {
-      fromUserId: from,
-      toUserId: to
+      quantity: qty,
+      totalCoins: total,
+      receivedAt: transaction.createdAt
     });
 
-    const targetSocket =
-      userSockets[to] &&
-      io.sockets.sockets.get(userSockets[to]);
-
-    targetSocket?.emit("follow-received", {
-      fromUserId: from,
-      toUserId: to
-    });
-  });
-
-  /* ---------------------------------------------
-     CP REQUEST
-  --------------------------------------------- */
-
-  socket.on("cp-request", data => {
-    const from =
-      clean(data?.fromUserId) ||
-      socketUsers[socket.id];
-
-    const to =
-      clean(data?.toUserId || data?.targetUserId);
-
-    const targetSocket =
-      userSockets[to] &&
-      io.sockets.sockets.get(userSockets[to]);
-
-    targetSocket?.emit("cp-request", {
-      fromUserId: from,
-      toUserId: to,
-      time: time()
-    });
-  });
-
-  /* ---------------------------------------------
-     KICK
-  --------------------------------------------- */
-
-  socket.on("kick-user", (data, callback) => {
-    const roomId = clean(data?.roomId || data?.room);
-    const targetId =
-      clean(data?.targetUserId || data?.userId);
-
-    const ownerId = socketUsers[socket.id];
-
-    const room = rooms[roomId];
-
-    if (!room) return;
-
-    if (room.ownerId !== ownerId) {
-      callback?.({
-        ok: false,
-        error: "Only owner can kick"
-      });
-      return;
+    if (inventories[receiverId].gifts.length > 1000) {
+      inventories[receiverId].gifts.shift();
     }
 
-    if (targetId === room.ownerId) {
-      callback?.({
-        ok: false,
-        error: "Owner cannot be kicked"
-      });
-      return;
-    }
-
-    if (!room.users[targetId]) {
-      callback?.({
-        ok: false,
-        error: "User not found"
-      });
-      return;
-    }
-
-    const seat = room.seats.findIndex(s => {
-      const id =
-        typeof s === "string"
-          ? s
-          : clean(s?.userId);
-
-      return id === targetId;
-    });
-
-    if (seat >= 0) {
-      room.seats[seat] = null;
-    }
-
-    delete room.users[targetId];
-
-    const targetSocket =
-      userSockets[targetId] &&
-      io.sockets.sockets.get(userSockets[targetId]);
-
-    if (targetSocket) {
-      targetSocket.leave(roomId);
-
-      targetSocket.emit("user-kicked", {
-        roomId,
-        userId: targetId
-      });
-
-      targetSocket.emit("kicked", {
-        roomId,
-        userId: targetId
-      });
-    }
-
-    io.to(roomId).emit("user-left", {
-      userId: targetId,
-      reason: "kick"
-    });
-
-    broadcastRoom(roomId);
-
-    callback?.({ ok: true });
-  });
-
-  /* ---------------------------------------------
-     MUTE
-  --------------------------------------------- */
-
-  socket.on("mute-user", (data, callback) => {
-    const roomId = clean(data?.roomId || data?.room);
-    const targetId =
-      clean(data?.targetUserId || data?.userId);
-
-    const ownerId = socketUsers[socket.id];
-    const room = rooms[roomId];
-
-    if (!room) return;
-
-    if (room.ownerId !== ownerId) {
-      callback?.({
-        ok: false,
-        error: "Only owner can mute"
-      });
-      return;
-    }
-
-    const target = room.users[targetId];
-
-    if (!target) return;
-
-    target.muted =
-      data?.muted !== undefined
-        ? !!data.muted
-        : !target.muted;
-
-    if (target.muted) {
-      target.micOn = false;
-    }
-
-    const targetSocket =
-      userSockets[targetId] &&
-      io.sockets.sockets.get(userSockets[targetId]);
-
-    targetSocket?.emit("force-mute", {
-      roomId,
-      userId: targetId,
-      muted: target.muted
-    });
-
-    broadcastRoom(roomId);
-
-    callback?.({
-      ok: true,
-      muted: target.muted
-    });
-  });
-
-  /* ---------------------------------------------
-     WEBRTC
-  --------------------------------------------- */
-
-  function relayRTC(eventName, data) {
-    const targetId =
-      clean(
-        data?.targetUserId ||
-        data?.toUserId ||
-        data?.remoteUserId ||
-        data?.to
-      );
-
-    if (!targetId) return;
-
-    const targetSocket =
-      userSockets[targetId] &&
-      io.sockets.sockets.get(userSockets[targetId]);
-
-    if (!targetSocket) return;
-
-    const fromId =
-      socketUsers[socket.id];
-
-    targetSocket.emit(eventName, {
-      ...data,
-      fromUserId: fromId,
-      senderId: fromId
-    });
-  }
-
-  socket.on("webrtc-offer", data => {
-    relayRTC("webrtc-offer", data);
-  });
-
-  socket.on("webrtc-answer", data => {
-    relayRTC("webrtc-answer", data);
-  });
-
-  socket.on("webrtc-ice", data => {
-    relayRTC("webrtc-ice", data);
-  });
-
-  /* ---------------------------------------------
-     DAILY REWARD
-  --------------------------------------------- */
-
-  socket.on("claim-daily-reward", (data, callback) => {
-    const userId =
-      clean(data?.userId) ||
-      socketUsers[socket.id];
-
-    const result =
-      claimDailyLogin(userId);
-
-    callback?.(result);
-
-    if (result.ok) {
-      socket.emit("daily-reward-claimed", result);
-    }
-  });
-
-  /* ---------------------------------------------
-     DAILY TASKS
-  --------------------------------------------- */
-
-  socket.on("daily-data", (data, callback) => {
-    const userId =
-      clean(data?.userId) ||
-      socketUsers[socket.id];
-
-    const daily = getDaily(userId);
-
-    const tasks = DAILY_TASKS.map(task => ({
-      ...task,
-      completed:
-        !!daily.tasks[task.id],
-      claimed:
-        !!daily.tasks[`${task.id}_claimed`]
-    }));
-
-    callback?.({
-      ok: true,
-      tasks,
-      daily
-    });
-  });
-
-  socket.on("claim-task", (data, callback) => {
-    const userId =
-      clean(data?.userId) ||
-      socketUsers[socket.id];
-
-    const taskId =
-      clean(data?.taskId);
-
-    const task =
-      DAILY_TASKS.find(x => x.id === taskId);
-
-    const daily = getDaily(userId);
-
-    if (!task) {
-      callback?.({
-        ok: false,
-        error: "Task not found"
-      });
-      return;
-    }
-
-    if (!daily.tasks[taskId]) {
-      callback?.({
-        ok: false,
-        error: "Task not completed"
-      });
-      return;
-    }
-
-    if (daily.tasks[`${taskId}_claimed`]) {
-      callback?.({
-        ok: false,
-        error: "Already claimed"
-      });
-      return;
-    }
-
-    daily.tasks[`${taskId}_claimed`] = true;
-
-    addCoins(userId, task.reward);
-
-    callback?.({
-      ok: true,
-      reward: task.reward,
-      user: publicUser(users[userId])
-    });
-  });
-
-  /* ---------------------------------------------
-     COMPLETE TASK HELPER
-  --------------------------------------------- */
-
-  socket.on("complete-task", data => {
-    const userId =
-      clean(data?.userId) ||
-      socketUsers[socket.id];
-
-    const taskId =
-      clean(data?.taskId);
-
-    const daily = getDaily(userId);
-
-    if (DAILY_TASKS.some(x => x.id === taskId)) {
-      daily.tasks[taskId] = true;
-    }
-  });
-
-  /* ---------------------------------------------
-     DAILY +50,000 EXP
-  --------------------------------------------- */
-
-  socket.on("claim-daily-exp", (data, callback) => {
-    const userId =
-      clean(data?.userId) ||
-      socketUsers[socket.id];
-
-    const result =
-      addDailyExp(userId);
-
-    callback?.(result);
-
-    if (result.ok) {
-      socket.emit("daily-exp-added", result);
-    }
-  });
-
-  /* ---------------------------------------------
-     GAME START
-  --------------------------------------------- */
-
-  socket.on("game-start", (data, callback) => {
-    const roomId =
-      clean(data?.roomId || data?.room);
-
-    const gameId =
-      clean(data?.gameId);
-
-    const room = rooms[roomId];
-
-    const game =
-      ROOM_GAMES.find(x => x.id === gameId);
-
-    if (!room || !game) {
-      callback?.({
-        ok: false,
-        error: "Game not found"
-      });
-      return;
-    }
-
-    const gameIdUnique =
-      `${roomId}_${gameId}_${Date.now()}`;
-
-    games[gameIdUnique] = {
-      id: gameIdUnique,
-      roomId,
-      gameId,
-      game,
-      players: {},
-      startedAt: time(),
-      status: "running"
-    };
-
-    room.games.push(games[gameIdUnique]);
-
-    io.to(roomId).emit("game-started", games[gameIdUnique]);
-
-    callback?.({
-      ok: true,
-      game: games[gameIdUnique]
-    });
-  });
-
-  /* ---------------------------------------------
-     GAME JOIN
-  --------------------------------------------- */
-
-  socket.on("game-join", (data, callback) => {
-    const gameKey =
-      clean(data?.gameKey || data?.gameId);
-
-    const userId =
-      clean(data?.userId) ||
-      socketUsers[socket.id];
-
-    const game =
-      games[gameKey];
-
-    if (!game) {
-      callback?.({
-        ok: false,
-        error: "Game not found"
-      });
-      return;
-    }
-
-    game.players[userId] = {
-      userId,
-      name: getUser(userId)?.name || "Guest",
-      joinedAt: time()
-    };
-
-    getDaily(userId).gamePlayed = true;
-
-    addDailyExp(userId);
-
-    io.to(game.roomId).emit("game-player-joined", {
-      gameKey,
-      player: game.players[userId]
-    });
-
-    callback?.({
-      ok: true,
-      game
-    });
-  });
-
-  /* ---------------------------------------------
-     GAME ACTION
-  --------------------------------------------- */
-
-  socket.on("game-action", (data, callback) => {
-    const gameKey =
-      clean(data?.gameKey || data?.gameId);
-
-    const userId =
-      clean(data?.userId) ||
-      socketUsers[socket.id];
-
-    const game =
-      games[gameKey];
-
-    if (!game) {
-      callback?.({
-        ok: false,
-        error: "Game not found"
-      });
-      return;
-    }
-
-    io.to(game.roomId).emit("game-action", {
-      gameKey,
-      userId,
-      action: data?.action || null,
-      value: data?.value ?? null,
-      time: time()
-    });
-
-    callback?.({
-      ok: true
-    });
-  });
-
-  /* ---------------------------------------------
-     DISCONNECT
-  --------------------------------------------- */
-
-  socket.on("disconnect", () => {
-    const userId =
-      socketUsers[socket.id];
-
-    Object.values(rooms).forEach(room => {
-      if (!room.users[userId]) return;
-
-      const user =
-        room.users[userId];
-
-      const seat =
-        room.seats.findIndex(s => {
-          const id =
-            typeof s === "string"
-              ? s
-              : clean(s?.userId);
-
-          return id === userId;
-        });
-
-      if (seat >= 0) {
-        room.seats[seat] = null;
+    // Room gift display.
+    if (roomId && rooms[roomId]) {
+      rooms[roomId].gifts.push(transaction);
+
+      if (rooms[roomId].gifts.length > 100) {
+        rooms[roomId].gifts.shift();
       }
 
-      delete room.users[userId];
-
-      io.to(room.id).emit("user-left", {
-        userId,
-        name: user.name,
-        seatIndex: seat >= 0 ? seat : null
-      });
-
-      broadcastRoom(room.id);
-    });
-
-    if (
-      userId &&
-      userSockets[userId] === socket.id
-    ) {
-      delete userSockets[userId];
+      rooms[roomId].roomExp += Math.floor(total / 100);
+      rooms[roomId].updatedAt = now();
     }
 
-    delete socketUsers[socket.id];
+    saveUser(sender);
+    saveUser(receiver);
 
-    console.log("Disconnected:", socket.id);
+    return {
+      ok: true,
+      transaction,
+      sender: publicUser(sender),
+      receiver: publicUser(receiver),
+      gift
+    };
+  } finally {
+    giftLocks.delete(lockKey);
+  }
+}
+
+// ============================================================
+// API - BASIC
+// ============================================================
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
+app.get("/room.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "room.html"));
+});
+
+app.get("/health", (req, res) => {
+  res.json({
+    ok: true,
+    app: "PawanVoice",
+    status: "running",
+    time: now()
   });
 });
 
-/* =========================================================
-   API - GIFTS
-========================================================= */
+app.get("/api/status", (req, res) => {
+  res.json({
+    app: "PawanVoice Room Server",
+    status: "running",
+    socketIO: true,
+    seats: 9,
+    rooms: Object.keys(rooms).length,
+    users: Object.keys(users).length,
+    gifts: Object.keys(gifts).length,
+    giftHistory: giftHistory.length,
+    games: Object.keys(games).length
+  });
+});
+
+// ============================================================
+// API - GIFTS
+// ============================================================
 
 app.get("/api/gifts", (req, res) => {
   res.json({
     ok: true,
-    total: GIFTS.length,
-    gifts: GIFTS
+    count: Object.keys(gifts).length,
+    gifts: Object.values(gifts)
   });
 });
 
-/* =========================================================
-   API - COLLECTIONS
-========================================================= */
+// ============================================================
+// API - STORE
+// ============================================================
 
 app.get("/api/store", (req, res) => {
   res.json({
     ok: true,
-    vehicles: VEHICLES,
-    avatarFrames: AVATAR_FRAMES,
-    chatBubbles: CHAT_BUBBLES,
-    profileCards: PROFILE_CARDS,
-    rgbNames: RGB_NAMES,
-    themes: THEMES,
-    visitors: VISITOR_ITEMS
+    store
   });
 });
 
-/* =========================================================
-   API - EVENTS
-========================================================= */
+// ============================================================
+// API - EVENTS
+// ============================================================
 
 app.get("/api/events", (req, res) => {
   res.json({
     ok: true,
-
     events: [
       {
-        id: "event_01",
-        title: "7 Day Login",
-        type: "daily",
-        rewards: WEEKLY_REWARDS
+        id: "event_family",
+        name: "Family Ranking",
+        active: true
       },
       {
-        id: "event_02",
-        title: "Gift Festival",
-        type: "gift"
+        id: "event_cp",
+        name: "CP Ranking",
+        active: true
       },
       {
-        id: "event_03",
-        title: "Room King",
-        type: "ranking"
+        id: "event_rich",
+        name: "Rich King",
+        active: true
       },
       {
-        id: "event_04",
-        title: "Rich King",
-        type: "ranking"
+        id: "event_daily",
+        name: "Daily Login Event",
+        active: true
       },
       {
-        id: "event_05",
-        title: "CP Ranking",
-        type: "ranking"
+        id: "event_gift",
+        name: "Gift Festival",
+        active: true
       },
       {
-        id: "event_06",
-        title: "Family Ranking",
-        type: "family"
+        id: "event_game",
+        name: "Room Game Event",
+        active: true
       },
       {
-        id: "event_07",
-        title: "Game Festival",
-        type: "game"
+        id: "event_vehicle",
+        name: "Vehicle Event",
+        active: true
       },
       {
-        id: "event_08",
-        title: "VIP Event",
-        type: "vip"
+        id: "event_frame",
+        name: "Avatar Frame Event",
+        active: true
       },
       {
-        id: "event_09",
-        title: "New User Event",
-        type: "newuser"
+        id: "event_vip",
+        name: "VIP Event",
+        active: true
       },
       {
-        id: "event_10",
-        title: "Level Rush",
-        type: "level"
+        id: "event_pawan",
+        name: "PawanVoice Exclusive",
+        active: true
       }
     ]
   });
 });
 
-/* =========================================================
-   API - TASKS
-========================================================= */
+// ============================================================
+// API - TASKS
+// ============================================================
 
 app.get("/api/tasks", (req, res) => {
+  const userId = cleanUserId(req.query.userId);
+
+  if (!userId) {
+    return res.json({
+      ok: true,
+      tasks: dailyTasks
+    });
+  }
+
+  const data = ensureDailyData(userId);
+  const today = todayKey();
+
+  if (data.taskDate !== today) {
+    data.taskDate = today;
+    data.tasks = {};
+  }
+
   res.json({
     ok: true,
-    tasks: DAILY_TASKS
+    date: today,
+    tasks: dailyTasks.map(task => ({
+      ...task,
+      completed: !!data.tasks[task.id]
+    }))
   });
 });
 
-/* =========================================================
-   API - WEEKLY REWARDS
-========================================================= */
+// ============================================================
+// API - WEEKLY REWARDS
+// ============================================================
 
 app.get("/api/weekly-rewards", (req, res) => {
   res.json({
     ok: true,
-    rewards: WEEKLY_REWARDS
+    rewards: weeklyRewards
   });
 });
 
-/* =========================================================
-   API - GAMES
-========================================================= */
+app.post("/api/weekly-rewards/claim", (req, res) => {
+  const userId = cleanUserId(req.body.userId);
+
+  if (!userId) {
+    return res.status(400).json({
+      ok: false,
+      error: "userId required"
+    });
+  }
+
+  const data = ensureDailyData(userId);
+  const today = todayKey();
+
+  if (data.lastLoginDate !== today) {
+    const result = applyDailyLogin(userId);
+
+    return res.json({
+      ok: true,
+      result,
+      user: publicUser(ensureUser(userId))
+    });
+  }
+
+  return res.json({
+    ok: false,
+    error: "Today's reward already claimed",
+    user: publicUser(ensureUser(userId))
+  });
+});
+
+// ============================================================
+// API - GAMES
+// ============================================================
 
 app.get("/api/games", (req, res) => {
   res.json({
     ok: true,
-    total: ROOM_GAMES.length,
-    games: ROOM_GAMES
+    count: Object.keys(games).length,
+    games: Object.values(games)
   });
 });
 
-/* =========================================================
-   API - USER
-========================================================= */
+// ============================================================
+// API - USER
+// ============================================================
 
 app.get("/api/user/:id", (req, res) => {
-  const user = getUser(req.params.id);
+  const userId = cleanUserId(req.params.id);
 
-  if (!user) {
-    return res.status(404).json({
-      ok: false,
-      error: "User not found"
-    });
-  }
+  const user = ensureUser(userId);
 
   res.json({
     ok: true,
@@ -1864,12 +1513,194 @@ app.get("/api/user/:id", (req, res) => {
   });
 });
 
-/* =========================================================
-   API - ROOM
-========================================================= */
+app.post("/api/user", (req, res) => {
+  const userId = cleanUserId(req.body.userId || req.body.id);
+
+  if (!userId) {
+    return res.status(400).json({
+      ok: false,
+      error: "userId required"
+    });
+  }
+
+  const user = ensureUser(userId, req.body);
+
+  if (req.body.name !== undefined) {
+    user.name = cleanText(req.body.name, user.name);
+  }
+
+  if (req.body.dp !== undefined) {
+    user.dp = cleanText(req.body.dp, user.dp);
+  }
+
+  if (req.body.gender !== undefined) {
+    user.gender = cleanText(req.body.gender, user.gender);
+  }
+
+  saveUser(user);
+
+  res.json({
+    ok: true,
+    user: publicUser(user)
+  });
+});
+
+app.patch("/api/user/:id", (req, res) => {
+  const userId = cleanUserId(req.params.id);
+
+  const user = ensureUser(userId);
+
+  if (req.body.name !== undefined) {
+    user.name = cleanText(req.body.name, user.name);
+  }
+
+  if (req.body.dp !== undefined) {
+    user.dp = cleanText(req.body.dp, user.dp);
+  }
+
+  if (req.body.gender !== undefined) {
+    user.gender = cleanText(req.body.gender, user.gender);
+  }
+
+  saveUser(user);
+
+  // Update all rooms owned by this user.
+  Object.values(rooms).forEach(room => {
+    if (room.ownerId === userId) {
+      room.owner = user.name;
+      room.ownerDp = user.dp;
+      room.dp = user.dp;
+      room.name = room.name;
+      room.updatedAt = now();
+
+      broadcastRoom(room.id);
+    }
+
+    if (room.members[userId]) {
+      room.members[userId].name = user.name;
+      room.members[userId].dp = user.dp;
+    }
+  });
+
+  res.json({
+    ok: true,
+    user: publicUser(user)
+  });
+});
+
+// ============================================================
+// API - WALLET
+// ============================================================
+
+app.get("/api/user/:userId/wallet", (req, res) => {
+  const userId = cleanUserId(req.params.userId);
+
+  const user = ensureUser(userId);
+
+  res.json({
+    ok: true,
+    userId,
+    coins: user.coins,
+    diamonds: user.diamonds,
+    level: user.level,
+    exp: user.exp,
+    vipLevel: user.vipLevel
+  });
+});
+
+// ============================================================
+// API - GIFT SEND
+// ============================================================
+
+app.post("/api/gifts/send", (req, res) => {
+  const senderId = cleanUserId(
+    req.body.senderId ||
+    req.body.userId ||
+    req.body.fromUserId
+  );
+
+  const receiverId = cleanUserId(
+    req.body.receiverId ||
+    req.body.targetUserId ||
+    req.body.toUserId
+  );
+
+  const giftId = cleanText(req.body.giftId);
+  const quantity = positiveInt(req.body.quantity, 1);
+  const roomId = cleanText(req.body.roomId);
+
+  const result = processGift({
+    senderId,
+    receiverId,
+    giftId,
+    quantity,
+    roomId
+  });
+
+  if (!result.ok) {
+    return res.status(400).json(result);
+  }
+
+  res.json(result);
+});
+
+// ============================================================
+// API - GIFT HISTORY
+// ============================================================
+
+app.get("/api/gift-history", (req, res) => {
+  const userId = cleanUserId(req.query.userId);
+
+  let list = giftHistory;
+
+  if (userId) {
+    list = giftHistory.filter(
+      x =>
+        x.senderId === userId ||
+        x.receiverId === userId
+    );
+  }
+
+  const limit = Math.min(
+    500,
+    Math.max(1, numberValue(req.query.limit, 100))
+  );
+
+  res.json({
+    ok: true,
+    count: list.length,
+    history: list.slice(-limit).reverse()
+  });
+});
+
+app.get("/api/user/:userId/gift-history", (req, res) => {
+  const userId = cleanUserId(req.params.userId);
+
+  const list = giftHistory
+    .filter(
+      x =>
+        x.senderId === userId ||
+        x.receiverId === userId
+    )
+    .slice(-500)
+    .reverse();
+
+  res.json({
+    ok: true,
+    userId,
+    count: list.length,
+    history: list
+  });
+});
+
+// ============================================================
+// API - ROOM
+// ============================================================
 
 app.get("/api/room/:id", (req, res) => {
-  const room = rooms[clean(req.params.id)];
+  const roomId = cleanText(req.params.id);
+
+  const room = rooms[roomId];
 
   if (!room) {
     return res.status(404).json({
@@ -1880,81 +1711,1186 @@ app.get("/api/room/:id", (req, res) => {
 
   res.json({
     ok: true,
-    room: roomState(room)
+    room: roomData(room)
   });
 });
 
-/* =========================================================
-   STATUS
-========================================================= */
+app.post("/api/room", (req, res) => {
+  const ownerId = cleanUserId(
+    req.body.ownerId ||
+    req.body.userId
+  );
 
-app.get("/health", (req, res) => {
-  res.json({
-    app: "PawanVoice",
-    status: "running",
-    socketIO: true,
-    seats: 9,
-    gifts: GIFTS.length,
-    vehicles: VEHICLES.length,
-    avatarFrames: AVATAR_FRAMES.length,
-    chatBubbles: CHAT_BUBBLES.length,
-    profileCards: PROFILE_CARDS.length,
-    rgbNames: RGB_NAMES.length,
-    themes: THEMES.length,
-    visitors: VISITOR_ITEMS.length,
-    games: ROOM_GAMES.length,
-    rooms: Object.keys(rooms).length,
-    users: Object.keys(users).length,
-    onlineUsers: Object.keys(userSockets).length,
-    time: new Date().toISOString()
-  });
-});
+  if (!ownerId) {
+    return res.status(400).json({
+      ok: false,
+      error: "ownerId required"
+    });
+  }
 
-app.get("/api/status", (req, res) => {
+  const roomId =
+    cleanText(req.body.roomId) ||
+    randomRoomId();
+
+  const room = createRoom(roomId, ownerId, req.body);
+
   res.json({
     ok: true,
-    app: "PawanVoice",
-    rooms: Object.keys(rooms).length,
-    users: Object.keys(users).length,
-    gifts: GIFTS.length,
-    games: ROOM_GAMES.length
+    room: roomData(room)
   });
 });
 
-/* =========================================================
-   START
-========================================================= */
+app.patch("/api/room/:id", (req, res) => {
+  const roomId = cleanText(req.params.id);
+
+  const room = rooms[roomId];
+
+  if (!room) {
+    return res.status(404).json({
+      ok: false,
+      error: "Room not found"
+    });
+  }
+
+  if (req.body.name !== undefined) {
+    room.name = cleanText(req.body.name, room.name);
+    room.roomName = room.name;
+  }
+
+  if (req.body.roomName !== undefined) {
+    room.name = cleanText(req.body.roomName, room.name);
+    room.roomName = room.name;
+  }
+
+  if (req.body.dp !== undefined) {
+    room.dp = cleanText(req.body.dp, room.dp);
+  }
+
+  if (req.body.category !== undefined) {
+    room.category = cleanText(
+      req.body.category,
+      room.category
+    );
+  }
+
+  if (req.body.ownerId) {
+    const ownerId = cleanUserId(req.body.ownerId);
+
+    if (ownerId === room.ownerId) {
+      const owner = ensureUser(ownerId);
+
+      room.owner = owner.name;
+      room.ownerDp = owner.dp;
+    }
+  }
+
+  room.updatedAt = now();
+
+  broadcastRoom(roomId);
+
+  res.json({
+    ok: true,
+    room: roomData(room)
+  });
+});
+
+// ============================================================
+// SOCKET.IO
+// ============================================================
+
+io.on("connection", socket => {
+
+  console.log("Socket connected:", socket.id);
+
+  // ----------------------------------------------------------
+  // REGISTER USER
+  // ----------------------------------------------------------
+
+  socket.on("register-user", payload => {
+    payload = payload || {};
+
+    const userId = cleanUserId(
+      payload.userId ||
+      payload.id ||
+      socket.id
+    );
+
+    const user = ensureUser(userId, payload);
+
+    socketUsers[socket.id] = userId;
+
+    if (!userSockets[userId]) {
+      userSockets[userId] = new Set();
+    }
+
+    userSockets[userId].add(socket.id);
+
+    socket.userId = userId;
+
+    // Daily login.
+    const loginResult = applyDailyLogin(userId);
+
+    // Daily 50,000 EXP once per day.
+    const dailyExp = applyDailyExp(userId);
+
+    socket.emit("user-registered", {
+      ok: true,
+      user: publicUser(user),
+      loginReward: loginResult,
+      dailyExp
+    });
+
+    socket.emit("wallet-updated", {
+      userId,
+      coins: user.coins,
+      diamonds: user.diamonds,
+      level: user.level,
+      exp: user.exp,
+      vipLevel: user.vipLevel
+    });
+  });
+
+  // ----------------------------------------------------------
+  // JOIN ROOM
+  // ----------------------------------------------------------
+
+  socket.on("join-room", payload => {
+    payload = payload || {};
+
+    const roomId = cleanText(
+      payload.roomId ||
+      payload.id ||
+      "main"
+    );
+
+    const userId =
+      socketUsers[socket.id] ||
+      cleanUserId(payload.userId) ||
+      socket.id;
+
+    const user = ensureUser(userId, payload);
+
+    socketUsers[socket.id] = userId;
+    socket.userId = userId;
+
+    if (!userSockets[userId]) {
+      userSockets[userId] = new Set();
+    }
+
+    userSockets[userId].add(socket.id);
+
+    const room = ensureRoom(
+      roomId,
+      userId,
+      payload
+    );
+
+    // If socket is already in another room, leave it first.
+    if (
+      socket.currentRoom &&
+      socket.currentRoom !== roomId
+    ) {
+      removeUserFromRoom(
+        socket,
+        socket.currentRoom
+      );
+    }
+
+    socket.join(roomId);
+    socket.currentRoom = roomId;
+
+    if (!room.members[userId]) {
+      room.members[userId] = {
+        userId,
+        name: user.name,
+        dp: user.dp,
+        seatIndex: null,
+        mic: false,
+        speaker: true,
+        muted: false,
+        joinedAt: now()
+      };
+    } else {
+      room.members[userId].name = user.name;
+      room.members[userId].dp = user.dp;
+    }
+
+    room.users = getRoomUserCount(room);
+    room.updatedAt = now();
+
+    // Daily task.
+    const daily = ensureDailyData(userId);
+    daily.taskDate = todayKey();
+    daily.tasks = daily.tasks || {};
+    daily.tasks.task_02 = true;
+
+    socket.emit("room-state", roomData(room));
+
+    socket.to(roomId).emit("user-entry", {
+      userId,
+      name: user.name,
+      dp: user.dp,
+      roomId
+    });
+
+    broadcastRoom(roomId);
+  });
+
+  // ----------------------------------------------------------
+  // LEAVE ROOM
+  // ----------------------------------------------------------
+
+  socket.on("leave-room", payload => {
+    const roomId =
+      cleanText(payload && payload.roomId) ||
+      socket.currentRoom;
+
+    if (roomId) {
+      removeUserFromRoom(socket, roomId);
+    }
+  });
+
+  // ----------------------------------------------------------
+  // TAKE SEAT
+  // ----------------------------------------------------------
+
+  socket.on("take-seat", payload => {
+    payload = payload || {};
+
+    const roomId =
+      cleanText(payload.roomId) ||
+      socket.currentRoom;
+
+    const seatIndex = Number(payload.seatIndex);
+
+    const userId =
+      socketUsers[socket.id] ||
+      socket.userId;
+
+    if (!roomId || !userId) return;
+
+    const room = rooms[roomId];
+
+    if (!room) {
+      return socket.emit("error-message", {
+        message: "Room not found"
+      });
+    }
+
+    if (
+      !Number.isInteger(seatIndex) ||
+      seatIndex < 0 ||
+      seatIndex >= 9
+    ) {
+      return socket.emit("error-message", {
+        message: "Invalid seat"
+      });
+    }
+
+    const member = room.members[userId];
+
+    if (!member) {
+      return socket.emit("error-message", {
+        message: "Join the room first"
+      });
+    }
+
+    // Remove user's previous seat.
+    room.seats.forEach((seat, index) => {
+      if (seat && seat.userId === userId) {
+        room.seats[index] = null;
+      }
+    });
+
+    // Seat already occupied.
+    if (
+      room.seats[seatIndex] &&
+      room.seats[seatIndex].userId !== userId
+    ) {
+      return socket.emit("error-message", {
+        message: "This seat is occupied"
+      });
+    }
+
+    member.seatIndex = seatIndex;
+
+    room.seats[seatIndex] = {
+      userId,
+      name: member.name,
+      dp: member.dp,
+      mic: member.mic,
+      speaker: member.speaker
+    };
+
+    room.updatedAt = now();
+
+    io.to(roomId).emit("seat-update", {
+      seatIndex,
+      userId,
+      name: member.name,
+      dp: member.dp,
+      mic: member.mic,
+      speaker: member.speaker
+    });
+
+    broadcastRoom(roomId);
+  });
+
+  // ----------------------------------------------------------
+  // LEAVE SEAT
+  // ----------------------------------------------------------
+
+  socket.on("leave-seat", payload => {
+    payload = payload || {};
+
+    const roomId =
+      cleanText(payload.roomId) ||
+      socket.currentRoom;
+
+    const userId =
+      socketUsers[socket.id] ||
+      socket.userId;
+
+    const room = rooms[roomId];
+
+    if (!room || !userId) return;
+
+    const member = room.members[userId];
+
+    if (!member) return;
+
+    const oldSeat = member.seatIndex;
+
+    if (
+      oldSeat !== null &&
+      oldSeat !== undefined
+    ) {
+      room.seats[oldSeat] = null;
+    }
+
+    member.seatIndex = null;
+
+    io.to(roomId).emit("seat-update", {
+      seatIndex: oldSeat,
+      userId,
+      name: member.name,
+      dp: member.dp,
+      mic: false,
+      speaker: member.speaker
+    });
+
+    broadcastRoom(roomId);
+  });
+
+  // ----------------------------------------------------------
+  // MIC
+  // ----------------------------------------------------------
+
+  socket.on("mic", payload => {
+    payload = payload || {};
+
+    const roomId =
+      cleanText(payload.roomId) ||
+      socket.currentRoom;
+
+    const userId =
+      socketUsers[socket.id] ||
+      socket.userId;
+
+    const room = rooms[roomId];
+
+    if (!room || !userId) return;
+
+    const member = room.members[userId];
+
+    if (!member) return;
+
+    member.mic = Boolean(payload.enabled);
+
+    if (
+      member.seatIndex !== null &&
+      member.seatIndex !== undefined
+    ) {
+      room.seats[member.seatIndex] = {
+        ...room.seats[member.seatIndex],
+        mic: member.mic
+      };
+    }
+
+    io.to(roomId).emit("mic", {
+      userId,
+      enabled: member.mic
+    });
+
+    broadcastRoom(roomId);
+  });
+
+  // ----------------------------------------------------------
+  // SPEAKER
+  // ----------------------------------------------------------
+
+  socket.on("speaker", payload => {
+    payload = payload || {};
+
+    const roomId =
+      cleanText(payload.roomId) ||
+      socket.currentRoom;
+
+    const userId =
+      socketUsers[socket.id] ||
+      socket.userId;
+
+    const room = rooms[roomId];
+
+    if (!room || !userId) return;
+
+    const member = room.members[userId];
+
+    if (!member) return;
+
+    member.speaker = Boolean(payload.enabled);
+
+    if (
+      member.seatIndex !== null &&
+      member.seatIndex !== undefined
+    ) {
+      room.seats[member.seatIndex] = {
+        ...room.seats[member.seatIndex],
+        speaker: member.speaker
+      };
+    }
+
+    io.to(roomId).emit("speaker", {
+      userId,
+      enabled: member.speaker
+    });
+
+    broadcastRoom(roomId);
+  });
+
+  // ----------------------------------------------------------
+  // CHAT
+  // ----------------------------------------------------------
+
+  function handleChat(payload) {
+    payload = payload || {};
+
+    const roomId =
+      cleanText(payload.roomId) ||
+      socket.currentRoom;
+
+    const userId =
+      socketUsers[socket.id] ||
+      socket.userId;
+
+    const room = rooms[roomId];
+
+    if (!room || !userId) return;
+
+    const user = ensureUser(userId);
+
+    const textMessage = cleanText(
+      payload.message ||
+      payload.text,
+      ""
+    );
+
+    if (!textMessage) return;
+
+    const message = {
+      id: makeId("msg_"),
+      roomId,
+      userId,
+      name: user.name,
+      dp: user.dp,
+      text: textMessage,
+      createdAt: now()
+    };
+
+    room.messages.push(message);
+
+    if (room.messages.length > 300) {
+      room.messages.shift();
+    }
+
+    const daily = ensureDailyData(userId);
+
+    daily.taskDate = todayKey();
+    daily.tasks = daily.tasks || {};
+
+    daily.chatCount =
+      numberValue(daily.chatCount, 0) + 1;
+
+    if (daily.chatCount >= 5) {
+      daily.tasks.task_04 = true;
+    }
+
+    io.to(roomId).emit("chat", message);
+    io.to(roomId).emit("room-chat", message);
+  }
+
+  socket.on("chat", handleChat);
+  socket.on("room-chat", handleChat);
+
+  // ----------------------------------------------------------
+  // EMOJI
+  // ----------------------------------------------------------
+
+  socket.on("emoji", payload => {
+    payload = payload || {};
+
+    const roomId =
+      cleanText(payload.roomId) ||
+      socket.currentRoom;
+
+    const userId =
+      socketUsers[socket.id] ||
+      socket.userId;
+
+    const user = ensureUser(userId);
+
+    if (!roomId) return;
+
+    const daily = ensureDailyData(userId);
+
+    daily.emojiCount =
+      numberValue(daily.emojiCount, 0) + 1;
+
+    if (daily.emojiCount >= 10) {
+      daily.taskDate = todayKey();
+      daily.tasks = daily.tasks || {};
+      daily.tasks.task_08 = true;
+    }
+
+    io.to(roomId).emit("emoji", {
+      userId,
+      name: user.name,
+      emoji: cleanText(
+        payload.emoji,
+        "❤️"
+      ),
+      createdAt: now()
+    });
+  });
+
+  // ----------------------------------------------------------
+  // GIFT
+  // ----------------------------------------------------------
+
+  socket.on("gift", payload => {
+    payload = payload || {};
+
+    const senderId =
+      socketUsers[socket.id] ||
+      socket.userId;
+
+    const roomId =
+      cleanText(payload.roomId) ||
+      socket.currentRoom;
+
+    const receiverId = cleanUserId(
+      payload.targetUserId ||
+      payload.receiverId ||
+      payload.toUserId
+    );
+
+    const giftId = cleanText(
+      payload.giftId
+    );
+
+    const quantity = positiveInt(
+      payload.quantity,
+      1
+    );
+
+    // Browser supplied price/name/emoji are intentionally NOT trusted.
+    const result = processGift({
+      senderId,
+      receiverId,
+      giftId,
+      quantity,
+      roomId
+    });
+
+    if (!result.ok) {
+      socket.emit("gift-error", result);
+      return;
+    }
+
+    const daily = ensureDailyData(senderId);
+
+    daily.taskDate = todayKey();
+    daily.tasks = daily.tasks || {};
+    daily.tasks.task_03 = true;
+
+    const event = {
+      ...result.transaction,
+      sender: result.sender,
+      receiver: result.receiver,
+      gift: result.gift
+    };
+
+    if (roomId) {
+      io.to(roomId).emit("gift-sent", event);
+    }
+
+    // Direct receiver notification.
+    const receiverSocketSet =
+      userSockets[receiverId];
+
+    if (receiverSocketSet) {
+      receiverSocketSet.forEach(socketId => {
+        io.to(socketId).emit(
+          "gift-received",
+          event
+        );
+
+        io.to(socketId).emit(
+          "wallet-updated",
+          {
+            userId: receiverId,
+            coins: result.receiver.coins,
+            diamonds: result.receiver.diamonds,
+            level: result.receiver.level,
+            exp: result.receiver.exp,
+            vipLevel: result.receiver.vipLevel
+          }
+        );
+      });
+    }
+
+    // Sender wallet.
+    socket.emit("wallet-updated", {
+      userId: senderId,
+      coins: result.sender.coins,
+      diamonds: result.sender.diamonds,
+      level: result.sender.level,
+      exp: result.sender.exp,
+      vipLevel: result.sender.vipLevel
+    });
+
+    if (roomId) {
+      broadcastRoom(roomId);
+    }
+  });
+
+  // ----------------------------------------------------------
+  // FOLLOW
+  // ----------------------------------------------------------
+
+  socket.on("follow", payload => {
+    payload = payload || {};
+
+    const fromUserId =
+      socketUsers[socket.id] ||
+      socket.userId;
+
+    const targetUserId =
+      cleanUserId(
+        payload.targetUserId ||
+        payload.userId
+      );
+
+    if (
+      !fromUserId ||
+      !targetUserId ||
+      fromUserId === targetUserId
+    ) {
+      return;
+    }
+
+    const fromUser = ensureUser(fromUserId);
+    const targetUser = ensureUser(targetUserId);
+
+    fromUser.following += 1;
+    targetUser.followers += 1;
+
+    saveUser(fromUser);
+    saveUser(targetUser);
+
+    socket.emit("follow-updated", {
+      targetUserId,
+      following: fromUser.following
+    });
+
+    const targetSockets =
+      userSockets[targetUserId];
+
+    if (targetSockets) {
+      targetSockets.forEach(socketId => {
+        io.to(socketId).emit(
+          "followers-updated",
+          {
+            followers: targetUser.followers
+          }
+        );
+      });
+    }
+  });
+
+  // ----------------------------------------------------------
+  // CP REQUEST
+  // ----------------------------------------------------------
+
+  socket.on("cp-request", payload => {
+    payload = payload || {};
+
+    const fromUserId =
+      socketUsers[socket.id] ||
+      socket.userId;
+
+    const targetUserId =
+      cleanUserId(
+        payload.targetUserId ||
+        payload.userId
+      );
+
+    if (!targetUserId) return;
+
+    const sender = ensureUser(fromUserId);
+    const receiver = ensureUser(targetUserId);
+
+    const request = {
+      id: makeId("cp_"),
+      fromUserId,
+      fromName: sender.name,
+      fromDp: sender.dp,
+      targetUserId,
+      targetName: receiver.name,
+      targetDp: receiver.dp,
+      status: "pending",
+      createdAt: now()
+    };
+
+    const targetSockets =
+      userSockets[targetUserId];
+
+    if (targetSockets) {
+      targetSockets.forEach(socketId => {
+        io.to(socketId).emit(
+          "cp-request",
+          request
+        );
+      });
+    }
+
+    socket.emit("cp-request-sent", request);
+  });
+
+  // ----------------------------------------------------------
+  // KICK
+  // ----------------------------------------------------------
+
+  socket.on("kick", payload => {
+    payload = payload || {};
+
+    const roomId =
+      cleanText(payload.roomId) ||
+      socket.currentRoom;
+
+    const targetUserId =
+      cleanUserId(
+        payload.targetUserId ||
+        payload.userId
+      );
+
+    const room = rooms[roomId];
+
+    if (!room || !targetUserId) return;
+
+    const requesterId =
+      socketUsers[socket.id] ||
+      socket.userId;
+
+    // Only room owner can kick in this basic server.
+    if (room.ownerId !== requesterId) {
+      return socket.emit("error-message", {
+        message: "Only room owner can kick users"
+      });
+    }
+
+    const targetSockets =
+      userSockets[targetUserId];
+
+    if (!targetSockets) return;
+
+    targetSockets.forEach(socketId => {
+      const targetSocket =
+        io.sockets.sockets.get(socketId);
+
+      if (!targetSocket) return;
+
+      if (targetSocket.currentRoom === roomId) {
+        targetSocket.emit("kicked", {
+          roomId,
+          userId: targetUserId
+        });
+
+        removeUserFromRoom(
+          targetSocket,
+          roomId
+        );
+      }
+    });
+  });
+
+  // ----------------------------------------------------------
+  // MUTE
+  // ----------------------------------------------------------
+
+  socket.on("mute", payload => {
+    payload = payload || {};
+
+    const roomId =
+      cleanText(payload.roomId) ||
+      socket.currentRoom;
+
+    const targetUserId =
+      cleanUserId(
+        payload.targetUserId ||
+        payload.userId
+      );
+
+    const room = rooms[roomId];
+
+    if (!room || !targetUserId) return;
+
+    const requesterId =
+      socketUsers[socket.id] ||
+      socket.userId;
+
+    if (room.ownerId !== requesterId) {
+      return socket.emit("error-message", {
+        message: "Only room owner can mute users"
+      });
+    }
+
+    const member =
+      room.members[targetUserId];
+
+    if (!member) return;
+
+    member.muted =
+      payload.muted === undefined
+        ? true
+        : Boolean(payload.muted);
+
+    room.mutedUsers[targetUserId] =
+      member.muted;
+
+    io.to(roomId).emit("mute", {
+      userId: targetUserId,
+      muted: member.muted
+    });
+
+    broadcastRoom(roomId);
+  });
+
+  // ----------------------------------------------------------
+  // ROOM SETTINGS
+  // ----------------------------------------------------------
+
+  socket.on("room-update", payload => {
+    payload = payload || {};
+
+    const roomId =
+      cleanText(payload.roomId) ||
+      socket.currentRoom;
+
+    const room = rooms[roomId];
+
+    if (!room) return;
+
+    const requesterId =
+      socketUsers[socket.id] ||
+      socket.userId;
+
+    if (room.ownerId !== requesterId) {
+      return socket.emit("error-message", {
+        message: "Only room owner can update room"
+      });
+    }
+
+    if (payload.name !== undefined) {
+      room.name = cleanText(
+        payload.name,
+        room.name
+      );
+
+      room.roomName = room.name;
+    }
+
+    if (payload.roomName !== undefined) {
+      room.name = cleanText(
+        payload.roomName,
+        room.name
+      );
+
+      room.roomName = room.name;
+    }
+
+    if (payload.dp !== undefined) {
+      room.dp = cleanText(
+        payload.dp,
+        room.dp
+      );
+    }
+
+    if (payload.category !== undefined) {
+      room.category = cleanText(
+        payload.category,
+        room.category
+      );
+    }
+
+    room.updatedAt = now();
+
+    broadcastRoom(roomId);
+  });
+
+  // ----------------------------------------------------------
+  // ROOM GAME
+  // ----------------------------------------------------------
+
+  socket.on("game-start", payload => {
+    payload = payload || {};
+
+    const roomId =
+      cleanText(payload.roomId) ||
+      socket.currentRoom;
+
+    const gameId =
+      cleanText(payload.gameId);
+
+    const room = rooms[roomId];
+
+    if (!room || !games[gameId]) return;
+
+    const userId =
+      socketUsers[socket.id] ||
+      socket.userId;
+
+    const gameSession = {
+      id: makeId("game_"),
+      gameId,
+      gameName: games[gameId].name,
+      roomId,
+      startedBy: userId,
+      startedAt: now(),
+      status: "running"
+    };
+
+    games[gameId].lastSession =
+      gameSession;
+
+    io.to(roomId).emit(
+      "game-started",
+      gameSession
+    );
+  });
+
+  // ----------------------------------------------------------
+  // GAME ACTION
+  // ----------------------------------------------------------
+
+  socket.on("game-action", payload => {
+    payload = payload || {};
+
+    const roomId =
+      cleanText(payload.roomId) ||
+      socket.currentRoom;
+
+    if (!roomId) return;
+
+    const userId =
+      socketUsers[socket.id] ||
+      socket.userId;
+
+    io.to(roomId).emit(
+      "game-action",
+      {
+        ...payload,
+        userId,
+        createdAt: now()
+      }
+    );
+  });
+
+  // ----------------------------------------------------------
+  // ROOM EXP
+  // ----------------------------------------------------------
+
+  socket.on("room-exp", payload => {
+    payload = payload || {};
+
+    const roomId =
+      cleanText(payload.roomId) ||
+      socket.currentRoom;
+
+    const room = rooms[roomId];
+
+    if (!room) return;
+
+    const amount = Math.min(
+      1000000,
+      Math.max(
+        0,
+        Math.floor(
+          numberValue(payload.amount, 0)
+        )
+      )
+    );
+
+    room.roomExp += amount;
+
+    broadcastRoom(roomId);
+  });
+
+  // ----------------------------------------------------------
+  // WEBRTC OFFER
+  // ----------------------------------------------------------
+
+  function sendToPeer(eventName, payload) {
+    payload = payload || {};
+
+    const targetUserId =
+      cleanUserId(
+        payload.targetUserId ||
+        payload.toUserId ||
+        payload.peerId
+      );
+
+    if (!targetUserId) return;
+
+    const targetSockets =
+      userSockets[targetUserId];
+
+    if (!targetSockets) return;
+
+    targetSockets.forEach(socketId => {
+      io.to(socketId).emit(
+        eventName,
+        {
+          ...payload,
+          fromUserId:
+            socketUsers[socket.id] ||
+            socket.userId
+        }
+      );
+    });
+  }
+
+  socket.on("webrtc-offer", payload => {
+    sendToPeer(
+      "webrtc-offer",
+      payload
+    );
+  });
+
+  socket.on("webrtc-answer", payload => {
+    sendToPeer(
+      "webrtc-answer",
+      payload
+    );
+  });
+
+  socket.on("webrtc-ice", payload => {
+    sendToPeer(
+      "webrtc-ice",
+      payload
+    );
+  });
+
+  socket.on("webrtc-ice-candidate", payload => {
+    sendToPeer(
+      "webrtc-ice-candidate",
+      payload
+    );
+  });
+
+  // ----------------------------------------------------------
+  // OLD WEBRTC ALIASES
+  // ----------------------------------------------------------
+
+  socket.on("offer", payload => {
+    sendToPeer("webrtc-offer", payload);
+  });
+
+  socket.on("answer", payload => {
+    sendToPeer("webrtc-answer", payload);
+  });
+
+  socket.on("ice-candidate", payload => {
+    sendToPeer(
+      "webrtc-ice-candidate",
+      payload
+    );
+  });
+
+  // ----------------------------------------------------------
+  // DISCONNECT
+  // ----------------------------------------------------------
+
+  socket.on("disconnect", () => {
+    console.log(
+      "Socket disconnected:",
+      socket.id
+    );
+
+    const userId =
+      socketUsers[socket.id];
+
+    const roomId =
+      socket.currentRoom;
+
+    if (roomId) {
+      removeUserFromRoom(
+        socket,
+        roomId
+      );
+    }
+
+    if (userId && userSockets[userId]) {
+      userSockets[userId].delete(
+        socket.id
+      );
+
+      if (
+        userSockets[userId].size === 0
+      ) {
+        delete userSockets[userId];
+      }
+    }
+
+    delete socketUsers[socket.id];
+  });
+});
+
+// ============================================================
+// ERROR HANDLER
+// ============================================================
+
+app.use((err, req, res, next) => {
+  console.error(err);
+
+  res.status(500).json({
+    ok: false,
+    error: "Server error"
+  });
+});
+
+// ============================================================
+// START SERVER
+// ============================================================
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log("====================================");
-  console.log("       PAWANVOICE SERVER");
-  console.log("====================================");
-  console.log(`PORT: ${PORT}`);
-  console.log("Socket.IO: ON");
-  console.log("9 Seats: ON");
-  console.log(`Gifts: ${GIFTS.length}`);
-  console.log(`Vehicles: ${VEHICLES.length}`);
-  console.log(`Avatar Frames: ${AVATAR_FRAMES.length}`);
-  console.log(`Chat Bubbles: ${CHAT_BUBBLES.length}`);
-  console.log(`Profile Cards: ${PROFILE_CARDS.length}`);
-  console.log(`RGB Names: ${RGB_NAMES.length}`);
-  console.log(`Themes: ${THEMES.length}`);
-  console.log(`Visitors: ${VISITOR_ITEMS.length}`);
-  console.log(`Games: ${ROOM_GAMES.length}`);
-  console.log("Daily Reward: ON");
-  console.log("Daily Tasks: ON");
-  console.log("Daily +50,000 EXP: ON");
-  console.log("====================================");
-});
-
-/* =========================================================
-   ERROR HANDLING
-========================================================= */
-
-process.on("uncaughtException", error => {
-  console.error("Uncaught Exception:", error);
-});
-
-process.on("unhandledRejection", error => {
-  console.error("Unhandled Rejection:", error);
+  console.log("======================================");
+  console.log(" PawanVoice Server Started");
+  console.log("======================================");
+  console.log("Port:", PORT);
+  console.log("Static folder:", __dirname);
+  console.log("Rooms:", Object.keys(rooms).length);
+  console.log("Gifts:", Object.keys(gifts).length);
+  console.log("Games:", Object.keys(games).length);
+  console.log("======================================");
 });
