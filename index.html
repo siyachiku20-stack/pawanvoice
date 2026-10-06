@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,1274 +5,654 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>PawanVoice</title>
 
-<!-- Same Socket.IO server used by room.html -->
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
-html,body{
-  margin:0;
-  padding:0;
-  background:#090b12;
-  color:#fff;
-  font-family:Arial,Helvetica,sans-serif;
-}
-
-body{
-  padding-bottom:76px;
-}
-
-button,
-input,
-select{
-  font:inherit;
-}
-
-button{
-  border:0;
-  cursor:pointer;
-}
-
-.app{
-  width:100%;
-  max-width:760px;
-  margin:auto;
-}
-
-/* HEADER */
-
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#090b12;color:#fff;font-family:Arial,sans-serif}
+body{max-width:520px;margin:auto;min-height:100vh;background:#0b0e16}
+button,input,select{font:inherit}
+button{border:0;cursor:pointer}
+.hidden{display:none!important}
+.page{min-height:100vh;padding-bottom:76px}
 .header{
-  position:sticky;
-  top:0;
-  z-index:20;
-  background:#0d1019;
-  border-bottom:1px solid #202532;
-  padding:12px;
+ position:sticky;top:0;z-index:20;
+ display:flex;align-items:center;justify-content:space-between;
+ padding:12px;background:#111522;border-bottom:1px solid #242a3a
 }
-
-.header-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
+.brand{font-size:21px;font-weight:800}
+.user-mini{display:flex;align-items:center;gap:8px}
+.avatar{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid #444}
+.small-avatar{width:32px;height:32px;border-radius:50%;object-fit:cover}
+.coins{background:#1a2030;padding:7px 10px;border-radius:18px;font-size:12px}
+.container{padding:12px}
+.card{
+ background:#121725;border:1px solid #242b3c;border-radius:15px;
+ padding:12px;margin-bottom:12px
 }
-
-.dp{
-  width:48px;
-  height:48px;
-  border-radius:50%;
-  object-fit:cover;
-  border:2px solid #ffca28;
-  background:#222;
-}
-
-.user-info{
-  min-width:0;
-  flex:1;
-}
-
-.user-name{
-  font-size:16px;
-  font-weight:700;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.user-id{
-  color:#8991a5;
-  font-size:12px;
-  margin-top:3px;
-}
-
-.wallet{
-  display:flex;
-  gap:7px;
-}
-
-.wallet-box{
-  background:#171b27;
-  border:1px solid #292f3d;
-  border-radius:14px;
-  padding:7px 10px;
-  font-size:12px;
-  white-space:nowrap;
-}
-
-.wallet-box b{
-  color:#ffd54f;
-}
-
-/* SEARCH */
-
-.search-wrap{
-  padding:12px;
-}
-
 .search{
-  width:100%;
-  background:#151925;
-  border:1px solid #292f3d;
-  border-radius:15px;
-  color:white;
-  padding:13px 15px;
-  outline:none;
+ width:100%;background:#171d2b;border:1px solid #2b3347;
+ border-radius:24px;padding:12px 16px;color:white;outline:none
 }
-
-.search:focus{
-  border-color:#ffca28;
-}
-
-/* BANNERS */
-
-.banner-scroll{
-  display:flex;
-  gap:10px;
-  overflow-x:auto;
-  padding:0 12px 12px;
-  scrollbar-width:none;
-}
-
-.banner-scroll::-webkit-scrollbar{
-  display:none;
-}
-
-.banner{
-  flex:0 0 220px;
-  min-height:92px;
-  border-radius:18px;
-  padding:13px;
-  border:1px solid #303746;
-  background:linear-gradient(135deg,#171b2a,#22283a);
-}
-
-.banner-title{
-  font-size:16px;
-  font-weight:800;
-}
-
-.banner-text{
-  font-size:12px;
-  color:#aab1c1;
-  margin-top:7px;
-}
-
-.banner-button{
-  margin-top:9px;
-  background:#ffca28;
-  color:#151515;
-  border-radius:10px;
-  padding:6px 10px;
-  font-size:11px;
-  font-weight:700;
-}
-
-/* TABS */
-
-.tabs{
-  display:flex;
-  gap:8px;
-  padding:0 12px 12px;
-  overflow-x:auto;
-}
-
+.tabs{display:flex;gap:7px;overflow:auto;margin:10px 0}
 .tab{
-  flex:0 0 auto;
-  background:#151925;
-  color:#aab1c1;
-  border:1px solid #292f3d;
-  padding:9px 15px;
-  border-radius:20px;
+ flex:1;min-width:80px;padding:10px 7px;border-radius:10px;
+ background:#171d2b;color:#aaa
 }
-
-.tab.active{
-  background:#ffca28;
-  color:#171717;
-  border-color:#ffca28;
-  font-weight:700;
+.tab.active{background:#5141d9;color:#fff}
+.banner-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.banner{
+ min-height:85px;border-radius:14px;padding:11px;
+ background:linear-gradient(135deg,#252b56,#151a2d);
+ display:flex;flex-direction:column;justify-content:space-between
 }
-
-/* SECTION */
-
-.section{
-  padding:0 12px 14px;
-}
-
-.section-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:10px;
-}
-
-.section-title{
-  font-size:18px;
-  font-weight:800;
-}
-
-.section-link{
-  color:#ffca28;
-  font-size:12px;
-  background:transparent;
-}
-
-/* ROOM CARDS */
-
-.rooms{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
+.banner b{font-size:13px}
+.banner span{font-size:10px;color:#bbb}
 .room{
-  background:#11141e;
-  border:1px solid #252b38;
-  border-radius:18px;
-  padding:10px;
-  overflow:hidden;
-  transition:.15s;
+ display:flex;align-items:center;gap:10px;padding:11px 0;
+ border-bottom:1px solid #202637
 }
-
-.room:active{
-  transform:scale(.98);
+.room:last-child{border-bottom:0}
+.room-img{width:56px;height:56px;border-radius:13px;object-fit:cover}
+.room-info{flex:1;min-width:0}
+.room-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.muted{color:#8f97aa;font-size:11px;margin-top:4px}
+.join{
+ background:#5748ed;color:white;border-radius:18px;
+ padding:8px 15px;font-weight:bold
 }
-
-.room-top{
-  display:flex;
-  gap:9px;
-  align-items:center;
-}
-
-.room-dp{
-  width:55px;
-  height:55px;
-  border-radius:15px;
-  object-fit:cover;
-  background:#222;
-}
-
-.room-main{
-  min-width:0;
-  flex:1;
-}
-
-.room-name{
-  font-weight:800;
-  font-size:14px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.room-id{
-  font-size:10px;
-  color:#7f879a;
-  margin-top:4px;
-}
-
-.room-category{
-  display:inline-block;
-  font-size:10px;
-  background:#202635;
-  color:#b7bfd0;
-  padding:4px 7px;
-  border-radius:7px;
-  margin-top:5px;
-}
-
-.room-owner{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  margin-top:10px;
-}
-
-.owner-dp{
-  width:25px;
-  height:25px;
-  border-radius:50%;
-  object-fit:cover;
-}
-
-.owner-name{
-  font-size:11px;
-  color:#c5cad6;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
-
-.room-bottom{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-top:10px;
-}
-
-.room-users{
-  font-size:11px;
-  color:#9da5b7;
-}
-
-.join-btn{
-  background:#ffca28;
-  color:#171717;
-  padding:7px 12px;
-  border-radius:10px;
-  font-size:11px;
-  font-weight:800;
-}
-
-/* QUICK */
-
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:16px 2px 9px}
+.section-title h3{margin:0;font-size:16px}
+.section-title span{font-size:11px;color:#8f97aa}
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .quick{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
+ background:#151b29;border-radius:13px;padding:13px 4px;text-align:center;
+ font-size:11px
 }
-
-.quick-btn{
-  background:#141824;
-  border:1px solid #282e3b;
-  border-radius:14px;
-  padding:12px 5px;
-  color:#fff;
-  text-align:center;
+.quick .ico{font-size:24px;margin-bottom:5px}
+.bottom{
+ position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+ width:100%;max-width:520px;height:68px;background:#111522;
+ border-top:1px solid #252c3c;display:grid;grid-template-columns:repeat(3,1fr);
+ z-index:50
 }
-
-.quick-icon{
-  font-size:23px;
-}
-
-.quick-label{
-  display:block;
-  font-size:10px;
-  color:#aeb5c5;
-  margin-top:5px;
-}
-
-/* EMPTY */
-
-.empty{
-  background:#11141e;
-  border:1px dashed #303646;
-  border-radius:16px;
-  padding:25px 15px;
-  text-align:center;
-  color:#8e96a8;
-}
-
-/* CREATE ROOM */
-
-.create-card{
-  background:#11141e;
-  border:1px solid #282e3b;
-  border-radius:18px;
-  padding:14px;
-}
-
-.form-label{
-  display:block;
-  color:#aeb5c5;
-  font-size:12px;
-  margin-bottom:6px;
-}
-
-.form-input,
-.form-select{
-  width:100%;
-  background:#181c28;
-  color:white;
-  border:1px solid #303646;
-  border-radius:12px;
-  padding:12px;
-  outline:none;
-  margin-bottom:12px;
-}
-
-.create-btn{
-  width:100%;
-  background:#ffca28;
-  color:#171717;
-  padding:13px;
-  border-radius:12px;
-  font-weight:800;
-}
-
-/* PROFILE MODAL */
-
+.bottom button{background:none;color:#858da1}
+.bottom button.active{color:#fff}
+.bottom b{display:block;font-size:11px;margin-top:3px}
 .modal{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  display:none;
-  align-items:flex-end;
-  background:rgba(0,0,0,.72);
+ position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:100;
+ display:flex;align-items:flex-end
 }
-
-.modal.show{
-  display:flex;
-}
-
 .sheet{
-  width:100%;
-  max-width:760px;
-  margin:auto;
-  background:#11141e;
-  border-radius:24px 24px 0 0;
-  padding:18px;
-  max-height:85vh;
-  overflow:auto;
+ width:100%;max-width:520px;margin:auto 0 0;background:#111522;
+ border-radius:22px 22px 0 0;padding:17px;max-height:90vh;overflow:auto
 }
-
-.sheet-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:15px;
+.close{float:right;background:#252b3a;color:#fff;border-radius:50%;width:32px;height:32px}
+.form input,.form select{
+ width:100%;background:#181e2c;color:white;border:1px solid #30384b;
+ border-radius:10px;padding:11px;margin:5px 0 9px
 }
-
-.close{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:#202533;
-  color:#fff;
-  font-size:20px;
+.primary{
+ width:100%;padding:12px;background:#5748ed;color:#fff;
+ border-radius:11px;font-weight:bold
 }
-
-.profile-big{
-  text-align:center;
+.secondary{
+ width:100%;padding:11px;background:#202638;color:#fff;
+ border-radius:11px;margin-top:8px
 }
-
-.profile-big .dp{
-  width:90px;
-  height:90px;
+.profile-head{text-align:center}
+.profile-head .avatar{width:88px;height:88px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}
+.stat{background:#181e2c;border-radius:10px;padding:10px 3px;text-align:center}
+.stat b{display:block;font-size:15px}
+.stat span{font-size:9px;color:#8f97aa}
+.menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.menu{
+ background:#181e2c;border-radius:11px;padding:12px 4px;
+ text-align:center;font-size:10px
 }
-
-.profile-big-name{
-  font-size:20px;
-  font-weight:800;
-  margin-top:9px;
+.menu div{font-size:22px;margin-bottom:4px}
+.reward{
+ display:flex;align-items:center;gap:10px;background:#181e2c;
+ padding:10px;border-radius:12px;margin:7px 0
 }
-
-.profile-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:9px;
-  margin-top:16px;
+.reward-day{
+ width:40px;height:40px;border-radius:10px;background:#5141d9;
+ display:flex;align-items:center;justify-content:center;font-weight:bold
 }
-
-.profile-stat{
-  background:#191d29;
-  border:1px solid #2a3040;
-  border-radius:14px;
-  padding:12px;
+.reward-info{flex:1}
+.reward-info b{font-size:13px}
+.reward-info span{display:block;color:#929bad;font-size:10px;margin-top:3px}
+.reward button{background:#5141d9;color:#fff;padding:7px 10px;border-radius:10px;font-size:11px}
+.task{
+ display:flex;gap:10px;align-items:center;background:#181e2c;
+ padding:10px;border-radius:11px;margin:7px 0
 }
-
-.profile-stat span{
-  display:block;
-  color:#858da0;
-  font-size:11px;
+.task-icon{font-size:25px}
+.task-info{flex:1}
+.task-info b{font-size:12px}
+.task-info span{display:block;color:#8e96a9;font-size:10px;margin-top:3px}
+.task button{background:#5141d9;color:#fff;padding:7px 9px;border-radius:9px;font-size:10px}
+.store-tabs{display:flex;gap:6px;overflow:auto;margin-bottom:10px}
+.store-tabs button{white-space:nowrap;background:#1a2030;color:#aaa;padding:9px 12px;border-radius:18px}
+.store-tabs button.active{background:#5141d9;color:white}
+.items{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.item{
+ background:#181e2c;border-radius:12px;padding:9px;text-align:center
 }
-
-.profile-stat b{
-  display:block;
-  margin-top:5px;
-  font-size:15px;
+.item img{width:65px;height:65px;border-radius:12px;object-fit:cover}
+.item b{display:block;font-size:11px;margin-top:5px}
+.item span{font-size:9px;color:#ffca4a}
+.event{
+ background:linear-gradient(135deg,#241e53,#15182a);
+ border-radius:15px;padding:14px;margin-bottom:9px
 }
-
-.menu-list{
-  margin-top:15px;
-  display:grid;
-  gap:8px;
+.event b{font-size:15px}
+.event p{font-size:11px;color:#a7aec0;margin:5px 0 10px}
+.game{
+ display:flex;align-items:center;gap:10px;background:#181e2c;
+ padding:11px;border-radius:12px;margin:7px 0
 }
-
-.menu-btn{
-  width:100%;
-  text-align:left;
-  background:#191d29;
-  color:white;
-  border:1px solid #2a3040;
-  padding:13px;
-  border-radius:12px;
-}
-
-/* CONNECTION STATUS */
-
-.connection-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#777;
-  display:inline-block;
-  margin-right:4px;
-}
-
-.connection-dot.online{
-  background:#43e06f;
-}
-
-.connection-dot.offline{
-  background:#ff5252;
-}
-
-/* BOTTOM NAV */
-
-.bottom-nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  z-index:50;
-  height:68px;
-  background:#0e1119;
-  border-top:1px solid #272d3a;
-  display:flex;
-  justify-content:center;
-}
-
-.bottom-inner{
-  width:100%;
-  max-width:760px;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-}
-
-.nav-btn{
-  background:transparent;
-  color:#80899d;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:3px;
-}
-
-.nav-btn.active{
-  color:#ffca28;
-}
-
-.nav-icon{
-  font-size:21px;
-}
-
-.nav-label{
-  font-size:10px;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:480px){
-  .rooms{
-    grid-template-columns:1fr;
-  }
-
-  .wallet-box{
-    padding:6px 8px;
-  }
-
-  .wallet-box:nth-child(2){
-    display:none;
-  }
-}
-
-@media(min-width:650px){
-  .rooms{
-    grid-template-columns:repeat(3,1fr);
-  }
+.game-icon{width:44px;height:44px;border-radius:11px;background:#272e48;display:flex;align-items:center;justify-content:center;font-size:23px}
+.game-info{flex:1}
+.game-info b{font-size:12px}
+.game-info span{display:block;font-size:9px;color:#8e96a9;margin-top:3px}
+.game button{background:#5141d9;color:white;padding:8px 11px;border-radius:10px;font-size:10px}
+.toast{
+ position:fixed;left:50%;bottom:85px;transform:translateX(-50%);
+ background:#252b3b;padding:11px 16px;border-radius:20px;z-index:300;
+ font-size:12px;display:none
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<div id="app"></div>
 
-  <!-- HEADER -->
+<!-- =====================================================
+     HOME
+===================================================== -->
 
-  <header class="header">
-    <div class="header-row">
+<section id="homePage" class="page">
 
-      <img
-        id="headerDp"
-        class="dp"
-        src="https://i.pravatar.cc/200?img=12"
-        alt="Profile"
-      >
-
-      <div class="user-info">
-
-        <div
-          id="headerName"
-          class="user-name"
-        >
-          Pawan User
-        </div>
-
-        <div
-          id="headerId"
-          class="user-id"
-        >
-          ID: pawan
-        </div>
-
-      </div>
-
-      <div class="wallet">
-
-        <div class="wallet-box">
-          🪙 <b id="coinText">0</b>
-        </div>
-
-        <div class="wallet-box">
-          💎 <b id="diamondText">0</b>
-        </div>
-
-      </div>
-
+<header class="header">
+  <div class="user-mini" onclick="openProfile()">
+    <img id="homeDp" class="avatar" src="">
+    <div>
+      <div id="homeName" class="brand">Pawan User</div>
+      <div id="homeId" class="muted">ID: 100052</div>
     </div>
-  </header>
-
-
-  <!-- SEARCH -->
-
-  <div class="search-wrap">
-
-    <input
-      id="searchInput"
-      class="search"
-      type="search"
-      placeholder="🔎 Search rooms..."
-      autocomplete="off"
-    >
-
   </div>
 
-
-  <!-- TOP BANNERS -->
-
-  <div class="banner-scroll">
-
-    <div class="banner">
-
-      <div class="banner-title">
-        👨‍👩‍👧 Family Ranking
-      </div>
-
-      <div class="banner-text">
-        See top families and their activity.
-      </div>
-
-      <button
-        class="banner-button"
-        type="button"
-        onclick="openPage('family.html')"
-      >
-        Open
-      </button>
-
-    </div>
-
-
-    <div class="banner">
-
-      <div class="banner-title">
-        💞 CP Ranking
-      </div>
-
-      <div class="banner-text">
-        Top CP couples are shown here.
-      </div>
-
-      <button
-        class="banner-button"
-        type="button"
-        onclick="openPage('ranking.html?type=cp')"
-      >
-        View
-      </button>
-
-    </div>
-
-
-    <div class="banner">
-
-      <div class="banner-title">
-        👑 Rich King
-      </div>
-
-      <div class="banner-text">
-        Top wealth ranking and rewards.
-      </div>
-
-      <button
-        class="banner-button"
-        type="button"
-        onclick="openPage('ranking.html?type=wealth')"
-      >
-        View
-      </button>
-
-    </div>
-
+  <div class="coins">
+    🪙 <span id="homeCoins">0</span>
+    &nbsp; 💎 <span id="homeDiamonds">0</span>
   </div>
+</header>
 
+<div class="container">
 
-  <!-- TABS -->
+<input
+ id="roomSearch"
+ class="search"
+ placeholder="🔎 Search rooms, users..."
+ oninput="renderRooms()">
 
-  <div class="tabs">
-
-    <button
-      class="tab active"
-      type="button"
-      data-tab="Popular"
-    >
-      🔥 Popular
-    </button>
-
-    <button
-      class="tab"
-      type="button"
-      data-tab="New"
-    >
-      ✨ New
-    </button>
-
-    <button
-      class="tab"
-      type="button"
-      data-tab="All"
-    >
-      🌎 All Rooms
-    </button>
-
-  </div>
-
-
-  <!-- QUICK ACCESS -->
-
-  <section class="section">
-
-    <div class="section-head">
-
-      <div class="section-title">
-        Quick Access
-      </div>
-
-    </div>
-
-    <div class="quick">
-
-      <button
-        class="quick-btn"
-        type="button"
-        onclick="openPage('profile.html')"
-      >
-        <span class="quick-icon">👤</span>
-        <span class="quick-label">Profile</span>
-      </button>
-
-
-      <button
-        class="quick-btn"
-        type="button"
-        onclick="openPage('inbox.html')"
-      >
-        <span class="quick-icon">📩</span>
-        <span class="quick-label">Inbox</span>
-      </button>
-
-
-      <button
-        class="quick-btn"
-        type="button"
-        onclick="openPage('ranking.html')"
-      >
-        <span class="quick-icon">🏆</span>
-        <span class="quick-label">Ranking</span>
-      </button>
-
-
-      <button
-        class="quick-btn"
-        type="button"
-        onclick="showCreate()"
-      >
-        <span class="quick-icon">➕</span>
-        <span class="quick-label">Create Room</span>
-      </button>
-
-    </div>
-
-  </section>
-
-
-  <!-- ROOM LIST -->
-
-  <section class="section">
-
-    <div class="section-head">
-
-      <div class="section-title">
-        🎙️ Live Voice Rooms
-      </div>
-
-      <button
-        id="refreshBtn"
-        class="section-link"
-        type="button"
-      >
-        Refresh
-      </button>
-
-    </div>
-
-
-    <div
-      id="roomStatus"
-      style="font-size:11px;color:#7f879a;margin-bottom:9px;"
-    >
-      <span class="connection-dot" id="connectionDot"></span>
-      Loading rooms...
-    </div>
-
-
-    <div
-      id="roomList"
-      class="rooms"
-    ></div>
-
-  </section>
-
-
-  <!-- CREATE ROOM -->
-
-  <section
-    id="createSection"
-    class="section"
-    style="display:none;"
-  >
-
-    <div class="section-head">
-
-      <div class="section-title">
-        ➕ Create Voice Room
-      </div>
-
-      <button
-        type="button"
-        class="section-link"
-        onclick="hideCreate()"
-      >
-        Close
-      </button>
-
-    </div>
-
-
-    <div class="create-card">
-
-      <label class="form-label">
-        Room Name
-      </label>
-
-      <input
-        id="roomNameInput"
-        class="form-input"
-        maxlength="40"
-        placeholder="Enter room name"
-      >
-
-
-      <label class="form-label">
-        Category
-      </label>
-
-      <select
-        id="roomCategoryInput"
-        class="form-select"
-      >
-        <option>General</option>
-        <option>Music</option>
-        <option>Friends</option>
-        <option>Gaming</option>
-        <option>Chat</option>
-      </select>
-
-
-      <button
-        id="createRoomBtn"
-        class="create-btn"
-        type="button"
-      >
-        🎙️ Create Room
-      </button>
-
-    </div>
-
-  </section>
-
+<div class="section-title">
+  <h3>🔥 Events</h3>
+  <span onclick="openEvents()">View All</span>
 </div>
 
-
-<!-- PROFILE MODAL -->
-
-<div
-  id="profileModal"
-  class="modal"
->
-
-  <div class="sheet">
-
-    <div class="sheet-head">
-
-      <strong>
-        My Profile
-      </strong>
-
-      <button
-        id="closeProfile"
-        class="close"
-        type="button"
-      >
-        ×
-      </button>
-
-    </div>
-
-
-    <div class="profile-big">
-
-      <img
-        id="modalDp"
-        class="dp"
-        src="https://i.pravatar.cc/200?img=12"
-        alt="Profile"
-      >
-
-
-      <div
-        id="modalName"
-        class="profile-big-name"
-      >
-        Pawan User
-      </div>
-
-
-      <div
-        id="modalId"
-        class="user-id"
-      >
-        ID: pawan
-      </div>
-
-    </div>
-
-
-    <div class="profile-grid">
-
-      <div class="profile-stat">
-        <span>Level</span>
-        <b id="modalLevel">1</b>
-      </div>
-
-
-      <div class="profile-stat">
-        <span>VIP</span>
-        <b id="modalVip">VIP 0</b>
-      </div>
-
-
-      <div class="profile-stat">
-        <span>Coins</span>
-        <b id="modalCoins">0</b>
-      </div>
-
-
-      <div class="profile-stat">
-        <span>Diamonds</span>
-        <b id="modalDiamonds">0</b>
-      </div>
-
-
-      <div class="profile-stat">
-        <span>Following</span>
-        <b id="modalFollowing">0</b>
-      </div>
-
-
-      <div class="profile-stat">
-        <span>Followers</span>
-        <b id="modalFollowers">0</b>
-      </div>
-
-    </div>
-
-
-    <div class="menu-list">
-
-      <button
-        class="menu-btn"
-        type="button"
-        onclick="openPage('profile.html')"
-      >
-        👤 Full Profile
-      </button>
-
-
-      <button
-        class="menu-btn"
-        type="button"
-        onclick="openPage('level.html')"
-      >
-        ⭐ Level & EXP
-      </button>
-
-
-      <button
-        class="menu-btn"
-        type="button"
-        onclick="openPage('vip.html')"
-      >
-        👑 VIP Center
-      </button>
-
-
-      <button
-        class="menu-btn"
-        type="button"
-        onclick="openPage('store.html')"
-      >
-        🛍️ Store
-      </button>
-
-
-      <button
-        class="menu-btn"
-        type="button"
-        onclick="openPage('inbox.html')"
-      >
-        📩 Inbox
-      </button>
-
-    </div>
-
+<div class="banner-grid">
+  <div class="banner" onclick="openEvents()">
+    <b>🎁 7 Day Reward</b>
+    <span>Up to 10 Lakh Coins</span>
   </div>
-
+  <div class="banner" onclick="openStore()">
+    <b>🎀 Gift Festival</b>
+    <span>200 Gifts</span>
+  </div>
+  <div class="banner" onclick="openGames()">
+    <b>🎮 Game Festival</b>
+    <span>20 Games</span>
+  </div>
 </div>
 
+<div class="section-title">
+  <h3>🏆 Rankings</h3>
+</div>
 
-<!-- BOTTOM NAV -->
+<div class="banner-grid">
+  <div class="banner">
+    <b>👨‍👩‍👧 Family</b>
+    <span>Family Ranking</span>
+  </div>
+  <div class="banner">
+    <b>💞 CP</b>
+    <span>CP Ranking</span>
+  </div>
+  <div class="banner">
+    <b>👑 Rich King</b>
+    <span>Wealth Ranking</span>
+  </div>
+</div>
 
-<nav class="bottom-nav">
+<div class="section-title">
+  <h3>⚡ Quick Access</h3>
+</div>
 
-  <div class="bottom-inner">
+<div class="quick-grid">
+  <div class="quick" onclick="openProfile()">
+    <div class="ico">👤</div>Profile
+  </div>
+  <div class="quick" onclick="openInbox()">
+    <div class="ico">💌</div>Inbox
+  </div>
+  <div class="quick" onclick="openDaily()">
+    <div class="ico">🎁</div>Rewards
+  </div>
+  <div class="quick" onclick="openStore()">
+    <div class="ico">🛍️</div>Store
+  </div>
+</div>
 
-    <button
-      class="nav-btn active"
-      type="button"
-      onclick="goHome()"
-    >
-      <span class="nav-icon">🏠</span>
-      <span class="nav-label">Home</span>
-    </button>
+<div class="section-title">
+  <h3>🎙️ Live Voice Rooms</h3>
+  <span onclick="openCreateRoom()">＋ Create</span>
+</div>
 
+<div class="tabs">
+  <button class="tab active" onclick="setTab('Popular',this)">Popular</button>
+  <button class="tab" onclick="setTab('New',this)">New</button>
+  <button class="tab" onclick="setTab('All',this)">All Rooms</button>
+</div>
 
-    <button
-      class="nav-btn"
-      type="button"
-      onclick="openPage('inbox.html')"
-    >
-      <span class="nav-icon">📩</span>
-      <span class="nav-label">Inbox</span>
-    </button>
+<div id="roomList"></div>
 
+</div>
+</section>
 
-    <button
-      class="nav-btn"
-      type="button"
-      onclick="openProfile()"
-    >
-      <span class="nav-icon">👤</span>
-      <span class="nav-label">Profile</span>
-    </button>
+<!-- =====================================================
+     PROFILE
+===================================================== -->
 
+<section id="profilePage" class="page hidden">
+
+<header class="header">
+  <div class="brand">My Profile</div>
+  <button onclick="openSettings()" style="background:none;color:white;font-size:20px">⚙️</button>
+</header>
+
+<div class="container">
+
+<div class="card profile-head">
+  <img id="profileDp" class="avatar" src="">
+  <h2 id="profileName">Pawan User</h2>
+  <div class="muted">ID: <span id="profileId">100052</span></div>
+
+  <div style="margin-top:10px">
+    <button class="primary" onclick="editProfile()">✏️ Edit Profile</button>
   </div>
 
+  <div class="stats">
+    <div class="stat">
+      <b id="profileLevel">1</b>
+      <span>Level</span>
+    </div>
+    <div class="stat">
+      <b id="profileVip">0</b>
+      <span>VIP</span>
+    </div>
+    <div class="stat">
+      <b id="profileFollowers">0</b>
+      <span>Followers</span>
+    </div>
+    <div class="stat">
+      <b id="profileVisitors">0</b>
+      <span>Visitors</span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">
+    <h3>📈 Level & EXP</h3>
+  </div>
+
+  <div style="height:10px;background:#202638;border-radius:20px;overflow:hidden">
+    <div id="expBar" style="height:100%;width:0%;background:#5748ed"></div>
+  </div>
+
+  <div class="muted" style="margin-top:7px">
+    Level <b id="levelText">1</b> ·
+    EXP <b id="expText">0</b>/100000
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">
+    <h3>💰 Wallet</h3>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <b id="walletCoins">0</b>
+      <span>Coins</span>
+    </div>
+    <div class="stat">
+      <b id="walletDiamonds">0</b>
+      <span>Diamonds</span>
+    </div>
+    <div class="stat">
+      <b id="walletFollowing">0</b>
+      <span>Following</span>
+    </div>
+    <div class="stat">
+      <b id="walletFollowers">0</b>
+      <span>Followers</span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">
+    <h3>🎒 My Collection</h3>
+  </div>
+
+  <div class="menu-grid">
+
+    <div class="menu" onclick="openStore('frames')">
+      <div>🖼️</div>Avatar Frame
+    </div>
+
+    <div class="menu" onclick="openStore('vehicles')">
+      <div>🚗</div>Vehicle
+    </div>
+
+    <div class="menu" onclick="openStore('bubbles')">
+      <div>💬</div>Chat Bubble
+    </div>
+
+    <div class="menu" onclick="openStore('cards')">
+      <div>🪪</div>Profile Card
+    </div>
+
+    <div class="menu" onclick="openStore('rgb')">
+      <div>🌈</div>RGB Name
+    </div>
+
+    <div class="menu" onclick="openStore('themes')">
+      <div>🎨</div>Theme
+    </div>
+
+    <div class="menu" onclick="openStore('visitors')">
+      <div>👀</div>Visitor
+    </div>
+
+    <div class="menu" onclick="openStore('gifts')">
+      <div>🎁</div>Gifts
+    </div>
+
+    <div class="menu">
+      <div>💞</div>CP Space
+    </div>
+
+    <div class="menu">
+      <div>🏅</div>Medal
+    </div>
+
+    <div class="menu">
+      <div>👑</div>VIP
+    </div>
+
+    <div class="menu">
+      <div>🎟️</div>CD-Key
+    </div>
+
+  </div>
+</div>
+
+<div class="card">
+  <div class="menu-grid">
+
+    <div class="menu" onclick="openInvite()">
+      <div>📨</div>Invite Friend
+    </div>
+
+    <div class="menu" onclick="openEvents()">
+      <div>🎉</div>Events
+    </div>
+
+    <div class="menu" onclick="openDaily()">
+      <div>📅</div>Daily Task
+    </div>
+
+    <div class="menu" onclick="openGames()">
+      <div>🎮</div>Games
+    </div>
+
+    <div class="menu">
+      <div>🌐</div>Language
+    </div>
+
+    <div class="menu">
+      <div>🎧</div>Customer
+    </div>
+
+    <div class="menu">
+      <div>❓</div>Help
+    </div>
+
+    <div class="menu" onclick="openSettings()">
+      <div>⚙️</div>Settings
+    </div>
+
+  </div>
+</div>
+
+</div>
+</section>
+
+<!-- =====================================================
+     INBOX
+===================================================== -->
+
+<section id="inboxPage" class="page hidden">
+
+<header class="header">
+  <div class="brand">Inbox</div>
+</header>
+
+<div class="container">
+
+<div class="card">
+  <div style="font-size:28px">💌</div>
+  <h3>Private Messages</h3>
+  <p class="muted">
+    Your private chats, system messages and room notifications will appear here.
+  </p>
+  <button class="primary" onclick="toast('Inbox system ready')">
+    Open Messages
+  </button>
+</div>
+
+<div class="card">
+  <h3>🔔 Notifications</h3>
+  <div class="task">
+    <div class="task-icon">🎁</div>
+    <div class="task-info">
+      <b>Daily rewards</b>
+      <span>Check today's reward.</span>
+    </div>
+  </div>
+</div>
+
+</div>
+</section>
+
+<!-- =====================================================
+     BOTTOM NAV
+===================================================== -->
+
+<nav class="bottom">
+  <button id="navHome" class="active" onclick="showPage('home')">
+    🏠
+    <b>Home</b>
+  </button>
+
+  <button id="navInbox" onclick="showPage('inbox')">
+    💌
+    <b>Inbox</b>
+  </button>
+
+  <button id="navProfile" onclick="showPage('profile')">
+    👤
+    <b>Profile</b>
+  </button>
 </nav>
 
+<!-- =====================================================
+     MODAL
+===================================================== -->
+
+<div id="modal" class="modal hidden">
+  <div id="sheet" class="sheet"></div>
+</div>
+
+<div id="toast" class="toast"></div>
 
 <script>
 
-/* ==================================================
-   PAWANVOICE CONFIG
-================================================== */
-
-const FIREBASE_DB =
-  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
+/* =====================================================
+   CONFIG
+===================================================== */
 
 const RENDER_SERVER =
   location.hostname.includes("onrender.com")
     ? location.origin
     : "https://pawanvoice-1.onrender.com";
 
-const DEFAULT_DP =
-  "https://i.pravatar.cc/200?img=12";
+const FIREBASE_DB =
+  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
 
+let socket = null;
+let currentTab = "Popular";
+let rooms = [];
+let storeData = {};
+let currentUser = null;
 
-/* ==================================================
+/* =====================================================
    USER
-================================================== */
+===================================================== */
 
-let currentUser = {
-
-  userId:
-    localStorage.getItem("pv_userId") ||
-    "100052",
-
-  name:
-    localStorage.getItem("pv_name") ||
-    "Pawan User",
-
-  dp:
-    localStorage.getItem("pv_dp") ||
-    DEFAULT_DP,
-
-  level:
-    Number(
-      localStorage.getItem("pv_level") ||
-      1
-    ),
-
-  exp:
-    Number(
-      localStorage.getItem("pv_exp") ||
-      0
-    ),
-
-  coins:
-    Number(
-      localStorage.getItem("pv_coins") ||
-      0
-    ),
-
-  diamonds:
-    Number(
-      localStorage.getItem("pv_diamonds") ||
-      0
-    ),
-
-  following:
-    Number(
-      localStorage.getItem("pv_following") ||
-      0
-    ),
-
-  followers:
-    Number(
-      localStorage.getItem("pv_followers") ||
-      0
-    ),
-
-  vipLevel:
-    Number(
-      localStorage.getItem("pv_vipLevel") ||
-      0
-    )
+const defaultUser = {
+  userId: "100052",
+  name: "Pawan User",
+  gender: "Male",
+  dp: "https://i.pravatar.cc/150?img=12",
+  level: 1,
+  exp: 0,
+  coins: 0,
+  diamonds: 0,
+  following: 0,
+  followers: 0,
+  visitors: 0,
+  vipLevel: 0
 };
 
+function loadLocalUser() {
+  try {
+    const a = JSON.parse(
+      localStorage.getItem("pawanvoiceUser") || "null"
+    );
 
-/* ==================================================
-   SAVE LOCAL USER
-================================================== */
+    const b = JSON.parse(
+      localStorage.getItem("currentUser") || "null"
+    );
 
-function saveLocalUser(){
+    currentUser = {
+      ...defaultUser,
+      ...(a || {}),
+      ...(b || {})
+    };
+  } catch {
+    currentUser = {...defaultUser};
+  }
 
+  saveLocalUser();
+}
+
+function saveLocalUser() {
   localStorage.setItem(
-    "pv_userId",
-    currentUser.userId
+    "pawanvoiceUser",
+    JSON.stringify(currentUser)
   );
 
   localStorage.setItem(
-    "pv_name",
-    currentUser.name
-  );
-
-  localStorage.setItem(
-    "pv_dp",
-    currentUser.dp
-  );
-
-  localStorage.setItem(
-    "pv_level",
-    String(currentUser.level)
-  );
-
-  localStorage.setItem(
-    "pv_exp",
-    String(currentUser.exp)
-  );
-
-  localStorage.setItem(
-    "pv_coins",
-    String(currentUser.coins)
-  );
-
-  localStorage.setItem(
-    "pv_diamonds",
-    String(currentUser.diamonds)
-  );
-
-  localStorage.setItem(
-    "pv_following",
-    String(currentUser.following)
-  );
-
-  localStorage.setItem(
-    "pv_followers",
-    String(currentUser.followers)
-  );
-
-  localStorage.setItem(
-    "pv_vipLevel",
-    String(currentUser.vipLevel)
+    "currentUser",
+    JSON.stringify(currentUser)
   );
 }
 
+/* =====================================================
+   FIREBASE USER
+===================================================== */
 
-/* ==================================================
-   FIREBASE USER LOAD
-================================================== */
+async function loadFirebaseUser() {
 
-async function loadUser(){
+  try {
 
-  saveLocalUser();
+    const response = await fetch(
+      `${FIREBASE_DB}/users/${encodeURIComponent(currentUser.userId)}.json?x=${Date.now()}`
+    );
 
-  try{
+    if (!response.ok) return;
 
-    const response =
-      await fetch(
-        FIREBASE_DB +
-        "/users/" +
-        encodeURIComponent(
-          currentUser.userId
-        ) +
-        ".json"
-      );
+    const data = await response.json();
 
-    if(!response.ok){
+    if (data && typeof data === "object") {
+
+      currentUser = {
+        ...currentUser,
+        ...data,
+        userId: currentUser.userId
+      };
+
+      saveLocalUser();
       renderUser();
-      return;
     }
 
-    const data =
-      await response.json();
+  } catch(error) {
+    console.log("Firebase user:", error);
+  }
+}
 
-    if(data){
+/* =====================================================
+   SOCKET
+===================================================== */
+
+function connectSocket() {
+
+  try {
+
+    socket = io(RENDER_SERVER, {
+      transports: ["websocket", "polling"],
+      reconnection: true
+    });
+
+    socket.on("connect", () => {
+
+      socket.emit(
+        "register-user",
+        currentUser
+      );
+
+    });
+
+    socket.on("profile-updated", data => {
+
+      if (!data) return;
 
       currentUser = {
         ...currentUser,
@@ -1281,1418 +660,1334 @@ async function loadUser(){
       };
 
       saveLocalUser();
-    }
+      renderUser();
 
-  }catch(error){
+    });
 
-    console.log(
-      "Firebase user load:",
-      error
-    );
+    socket.on("room-updated", data => {
+
+      if (!data || !data.id) return;
+
+      loadRooms();
+
+    });
+
+  } catch(error) {
+    console.log(error);
   }
-
-  renderUser();
 }
 
-
-/* ==================================================
+/* =====================================================
    RENDER USER
-================================================== */
+===================================================== */
 
-function renderUser(){
+function renderUser() {
 
-  document.getElementById(
-    "headerDp"
-  ).src =
+  const dp =
     currentUser.dp ||
-    DEFAULT_DP;
+    defaultUser.dp;
 
-  document.getElementById(
-    "headerName"
-  ).textContent =
+  const name =
     currentUser.name ||
     "Pawan User";
 
-  document.getElementById(
-    "headerId"
-  ).textContent =
-    "ID: " +
-    (
-      currentUser.userId ||
-      "100052"
-    );
+  document.querySelectorAll("#homeDp,#profileDp")
+    .forEach(x => x.src = dp);
 
-  document.getElementById(
-    "coinText"
-  ).textContent =
-    Number(
-      currentUser.coins || 0
-    ).toLocaleString();
+  document.getElementById("homeName").textContent = name;
 
-  document.getElementById(
-    "diamondText"
-  ).textContent =
-    Number(
-      currentUser.diamonds || 0
-    ).toLocaleString();
+  document.getElementById("homeId").textContent =
+    "ID: " + currentUser.userId;
 
+  document.getElementById("homeCoins").textContent =
+    formatNumber(currentUser.coins);
 
-  document.getElementById(
-    "modalDp"
-  ).src =
-    currentUser.dp ||
-    DEFAULT_DP;
+  document.getElementById("homeDiamonds").textContent =
+    formatNumber(currentUser.diamonds);
 
-  document.getElementById(
-    "modalName"
-  ).textContent =
-    currentUser.name ||
-    "Pawan User";
+  document.getElementById("profileName").textContent =
+    name;
 
-  document.getElementById(
-    "modalId"
-  ).textContent =
-    "ID: " +
-    (
-      currentUser.userId ||
-      "100052"
-    );
+  document.getElementById("profileId").textContent =
+    currentUser.userId;
 
-  document.getElementById(
-    "modalLevel"
-  ).textContent =
+  document.getElementById("profileLevel").textContent =
     currentUser.level || 1;
 
-  document.getElementById(
-    "modalVip"
-  ).textContent =
-    "VIP " +
-    (
-      currentUser.vipLevel || 0
-    );
+  document.getElementById("profileVip").textContent =
+    currentUser.vipLevel || 0;
 
-  document.getElementById(
-    "modalCoins"
-  ).textContent =
-    Number(
-      currentUser.coins || 0
-    ).toLocaleString();
+  document.getElementById("profileFollowers").textContent =
+    currentUser.followers || 0;
 
-  document.getElementById(
-    "modalDiamonds"
-  ).textContent =
-    Number(
-      currentUser.diamonds || 0
-    ).toLocaleString();
+  document.getElementById("profileVisitors").textContent =
+    currentUser.visitors || 0;
 
-  document.getElementById(
-    "modalFollowing"
-  ).textContent =
-    Number(
-      currentUser.following || 0
-    ).toLocaleString();
+  document.getElementById("walletCoins").textContent =
+    formatNumber(currentUser.coins);
 
-  document.getElementById(
-    "modalFollowers"
-  ).textContent =
-    Number(
-      currentUser.followers || 0
-    ).toLocaleString();
+  document.getElementById("walletDiamonds").textContent =
+    formatNumber(currentUser.diamonds);
+
+  document.getElementById("walletFollowing").textContent =
+    currentUser.following || 0;
+
+  document.getElementById("walletFollowers").textContent =
+    currentUser.followers || 0;
+
+  document.getElementById("levelText").textContent =
+    currentUser.level || 1;
+
+  document.getElementById("expText").textContent =
+    currentUser.exp || 0;
+
+  const exp =
+    Number(currentUser.exp || 0);
+
+  document.getElementById("expBar").style.width =
+    Math.min(100, (exp / 100000) * 100) + "%";
 }
 
-
-/* ==================================================
-   SOCKET.IO CONNECTION
-================================================== */
-
-let roomSocket = null;
-
-let socketConnected =
-  false;
-
-
-function connectRoomServer(){
-
-  if(
-    typeof io ===
-    "undefined"
-  ){
-
-    console.warn(
-      "Socket.IO client not loaded"
-    );
-
-    return;
-  }
-
-  try{
-
-    roomSocket =
-      io(
-        RENDER_SERVER,
-        {
-          transports:[
-            "websocket",
-            "polling"
-          ],
-          reconnection:true,
-          reconnectionAttempts:Infinity,
-          reconnectionDelay:1000,
-          timeout:10000
-        }
-      );
-
-
-    roomSocket.on(
-      "connect",
-      () => {
-
-        socketConnected =
-          true;
-
-        updateConnectionStatus();
-
-        /*
-          Register this user with the same
-          server used by room.html.
-
-          This does NOT enter a room.
-          It only identifies the user.
-        */
-        roomSocket.emit(
-          "register-user",
-          {
-            userId:
-              String(
-                currentUser.userId
-              ),
-
-            name:
-              currentUser.name,
-
-            dp:
-              currentUser.dp
-          }
-        );
-
-        /*
-          Some server versions don't have
-          register-user. That is okay.
-        */
-      }
-    );
-
-
-    roomSocket.on(
-      "disconnect",
-      () => {
-
-        socketConnected =
-          false;
-
-        updateConnectionStatus();
-      }
-    );
-
-
-    roomSocket.on(
-      "connect_error",
-      error => {
-
-        console.log(
-          "Render Socket.IO:",
-          error.message
-        );
-
-        socketConnected =
-          false;
-
-        updateConnectionStatus();
-      }
-    );
-
-
-    /*
-      If server broadcasts room-created,
-      refresh the Home room list.
-    */
-    roomSocket.on(
-      "room-created",
-      () => {
-
-        loadRooms();
-      }
-    );
-
-
-    /*
-      If server sends room updates,
-      refresh Home list.
-    */
-    roomSocket.on(
-      "room-updated",
-      () => {
-
-        loadRooms();
-      }
-    );
-
-  }catch(error){
-
-    console.error(
-      "Socket connection:",
-      error
-    );
-  }
-}
-
-
-/* ==================================================
-   CONNECTION STATUS
-================================================== */
-
-function updateConnectionStatus(){
-
-  const dot =
-    document.getElementById(
-      "connectionDot"
-    );
-
-  if(!dot){
-    return;
-  }
-
-  if(socketConnected){
-
-    dot.classList.add(
-      "online"
-    );
-
-  }else{
-
-    dot.classList.remove(
-      "online"
-    );
-  }
-}
-
-
-/* ==================================================
+/* =====================================================
    ROOMS
-================================================== */
+===================================================== */
 
-let allRooms = [];
+async function loadRooms() {
 
-let currentTab =
-  "Popular";
+  try {
 
-
-/* ==================================================
-   ROOM USER COUNT NORMALIZER
-================================================== */
-
-function getRoomUserCount(room){
-
-  /*
-    Firebase room may store users as:
-      users: 1
-    OR
-      users: {...}
-    OR
-      members: {...}
-  */
-
-  if(
-    typeof room.users ===
-    "number"
-  ){
-
-    return room.users;
-  }
-
-  if(
-    typeof room.users ===
-    "string"
-  ){
-
-    const number =
-      Number(room.users);
-
-    if(
-      Number.isFinite(number)
-    ){
-      return number;
-    }
-  }
-
-  if(
-    room.users &&
-    typeof room.users ===
-    "object"
-  ){
-
-    return Object.keys(
-      room.users
-    ).length;
-  }
-
-  if(
-    room.members &&
-    typeof room.members ===
-    "object"
-  ){
-
-    return Object.keys(
-      room.members
-    ).length;
-  }
-
-  /*
-    A room owner means at least
-    one member.
-  */
-  if(
-    room.ownerId ||
-    room.owner
-  ){
-
-    return 1;
-  }
-
-  return 0;
-}
-
-
-/* ==================================================
-   LOAD ROOMS FROM FIREBASE
-================================================== */
-
-async function loadRooms(){
-
-  const status =
-    document.getElementById(
-      "roomStatus"
+    const response = await fetch(
+      `${FIREBASE_DB}/rooms.json?x=${Date.now()}`,
+      {cache:"no-store"}
     );
-
-  if(!status){
-    return;
-  }
-
-  status.innerHTML =
-    '<span class="connection-dot ' +
-    (
-      socketConnected
-        ? "online"
-        : ""
-    ) +
-    '" id="connectionDot"></span>' +
-    " Loading rooms...";
-
-
-  try{
-
-    const response =
-      await fetch(
-        FIREBASE_DB +
-        "/rooms.json",
-        {
-          cache:"no-store"
-        }
-      );
-
-    if(!response.ok){
-
-      throw new Error(
-        "Firebase HTTP " +
-        response.status
-      );
-    }
-
 
     const data =
       await response.json();
 
-    allRooms = [];
+    rooms = [];
 
+    if (data && typeof data === "object") {
 
-    if(
-      data &&
-      typeof data ===
-      "object"
-    ){
+      Object.entries(data).forEach(([id, room]) => {
 
-      Object.keys(data).forEach(
-        key => {
+        if (!room) return;
 
-          const room =
-            data[key];
+        rooms.push({
+          id,
+          name:
+            room.name ||
+            room.roomName ||
+            "PawanVoice Room",
 
-          if(
-            !room ||
-            typeof room !==
-            "object"
-          ){
-            return;
-          }
+          dp:
+            room.dp ||
+            room.roomDp ||
+            room.ownerDp ||
+            defaultUser.dp,
 
+          owner:
+            room.owner ||
+            room.ownerName ||
+            "Host",
 
-          /*
-            Room ID priority:
-            room.id -> Firebase key
-          */
-          const roomId =
-            String(
-              room.id ||
-              key
-            );
+          ownerId:
+            room.ownerId ||
+            "",
 
+          ownerDp:
+            room.ownerDp ||
+            room.dp ||
+            defaultUser.dp,
 
-          const userCount =
-            getRoomUserCount(
-              room
-            );
+          category:
+            room.category ||
+            "General",
 
+          users:
+            getUserCount(room),
 
-          /*
-            Support both old and new
-            room formats.
-          */
-          allRooms.push({
+          createdAt:
+            Number(room.createdAt || 0),
 
-            id:
-              roomId,
+          updatedAt:
+            Number(room.updatedAt || 0)
+        });
 
-            name:
-              room.name ||
-              room.roomName ||
-              "PawanVoice Room",
+      });
 
-            dp:
-              room.dp ||
-              room.ownerDp ||
-              DEFAULT_DP,
-
-            owner:
-              room.owner ||
-              room.ownerName ||
-              "Host",
-
-            ownerId:
-              room.ownerId ||
-              "",
-
-            ownerDp:
-              room.ownerDp ||
-              room.dp ||
-              DEFAULT_DP,
-
-            category:
-              room.category ||
-              "General",
-
-            users:
-              userCount,
-
-            seats:
-              Number(
-                room.seats ||
-                9
-              ),
-
-            createdAt:
-              Number(
-                room.createdAt ||
-                0
-              ),
-
-            updatedAt:
-              Number(
-                room.updatedAt ||
-                0
-              )
-
-          });
-
-        }
-      );
     }
 
+    renderRooms();
 
-    /*
-      New rooms first.
-    */
-    allRooms.sort(
-      (a,b) =>
-        (
-          Number(
-            b.createdAt
-          ) || 0
-        ) -
-        (
-          Number(
-            a.createdAt
-          ) || 0
-        )
-    );
+  } catch(error) {
 
-
-    status.innerHTML =
-      '<span class="connection-dot ' +
-      (
-        socketConnected
-          ? "online"
-          : ""
-      ) +
-      '" id="connectionDot"></span>' +
-
-      allRooms.length +
-      " room" +
-      (
-        allRooms.length === 1
-          ? ""
-          : "s"
-      ) +
-
-      " available";
-
+    console.log("Rooms:", error);
 
     renderRooms();
 
-  }catch(error){
-
-    console.error(
-      "Room load error:",
-      error
-    );
-
-
-    status.innerHTML =
-      '<span class="connection-dot offline"></span>' +
-      " Unable to load rooms";
-
-
-    renderRooms();
   }
 }
 
+function getUserCount(room) {
 
-/* ==================================================
-   FILTER
-================================================== */
-
-function getVisibleRooms(){
-
-  const input =
-    document.getElementById(
-      "searchInput"
-    );
-
-  const search =
-    input
-      ? input.value
-          .trim()
-          .toLowerCase()
-      : "";
-
-
-  let rooms =
-    [...allRooms];
-
-
-  if(
-    currentTab ===
-    "Popular"
-  ){
-
-    rooms.sort(
-      (a,b) =>
-        (
-          Number(
-            b.users
-          ) || 0
-        ) -
-        (
-          Number(
-            a.users
-          ) || 0
-        )
-    );
-
-
-  }else if(
-    currentTab ===
-    "New"
-  ){
-
-    rooms.sort(
-      (a,b) =>
-        (
-          Number(
-            b.createdAt
-          ) || 0
-        ) -
-        (
-          Number(
-            a.createdAt
-          ) || 0
-        )
-    );
+  if (typeof room.users === "number") {
+    return room.users;
   }
 
-
-  if(search){
-
-    rooms =
-      rooms.filter(
-        room => {
-
-          const text =
-            (
-              room.name +
-              " " +
-              room.id +
-              " " +
-              room.owner +
-              " " +
-              room.ownerId +
-              " " +
-              room.category
-            ).toLowerCase();
-
-          return text.includes(
-            search
-          );
-        }
-      );
+  if (typeof room.users === "string") {
+    const n = Number(room.users);
+    if (!isNaN(n)) return n;
   }
 
+  if (room.users && typeof room.users === "object") {
+    return Object.keys(room.users).length;
+  }
 
-  return rooms;
+  if (room.members && typeof room.members === "object") {
+    return Object.keys(room.members).length;
+  }
+
+  return Number(room.userCount || 0);
 }
 
-
-/* ==================================================
-   ESCAPE HTML
-================================================== */
-
-function escapeHtml(value){
-
-  return String(
-    value ?? ""
-  )
-  .replaceAll(
-    "&",
-    "&amp;"
-  )
-  .replaceAll(
-    "<",
-    "&lt;"
-  )
-  .replaceAll(
-    ">",
-    "&gt;"
-  )
-  .replaceAll(
-    '"',
-    "&quot;"
-  )
-  .replaceAll(
-    "'",
-    "&#039;"
-  );
-}
-
-
-/* ==================================================
-   RENDER ROOMS
-================================================== */
-
-function renderRooms(){
+function renderRooms() {
 
   const list =
-    document.getElementById(
-      "roomList"
-    );
+    document.getElementById("roomList");
 
-  if(!list){
-    return;
+  const search =
+    document.getElementById("roomSearch")
+      .value
+      .trim()
+      .toLowerCase();
+
+  let data =
+    rooms.filter(room => {
+
+      if (!search) return true;
+
+      return (
+        room.name.toLowerCase().includes(search) ||
+        room.owner.toLowerCase().includes(search) ||
+        room.id.toLowerCase().includes(search)
+      );
+
+    });
+
+  if (currentTab === "Popular") {
+    data.sort((a,b) => b.users - a.users);
   }
 
+  if (currentTab === "New") {
+    data.sort((a,b) => b.createdAt - a.createdAt);
+  }
 
-  const rooms =
-    getVisibleRooms();
-
-
-  if(!rooms.length){
+  if (!data.length) {
 
     list.innerHTML = `
-
-      <div
-        class="empty"
-        style="grid-column:1/-1;"
-      >
-        🎙️<br><br>
-
-        No rooms found.<br>
-
-        Create your first
-        PawanVoice room.
-
+      <div class="card" style="text-align:center">
+        <div style="font-size:35px">🎙️</div>
+        <b>No rooms found</b>
+        <div class="muted">Create the first room.</div>
       </div>
-
     `;
 
     return;
   }
 
-
   list.innerHTML =
-    rooms.map(
-      room => {
+    data.map(room => `
 
-        const roomId =
-          String(
-            room.id
-          );
+      <div class="room">
 
-        /*
-          We use encodeURIComponent
-          because room IDs can contain
-          special characters.
-        */
-        const safeId =
-          encodeURIComponent(
-            roomId
-          );
+        <img
+          class="room-img"
+          src="${escapeAttr(room.dp)}"
+          onerror="this.src='${defaultUser.dp}'"
+        >
 
+        <div class="room-info">
 
-        return `
+          <div class="room-name">
+            ${escapeHtml(room.name)}
+          </div>
 
-          <article
-            class="room"
-            onclick="openRoom('${safeId}')"
-          >
+          <div class="muted">
+            👤 ${escapeHtml(room.owner)}
+            · ID ${escapeHtml(room.id)}
+          </div>
 
-            <div class="room-top">
+          <div class="muted">
+            🎙️ ${room.users}/9
+            · ${escapeHtml(room.category)}
+          </div>
 
-              <img
-                class="room-dp"
-                src="${escapeHtml(
-                  room.dp
-                )}"
-                alt="Room"
-                onerror="this.src='${DEFAULT_DP}'"
-              >
+        </div>
 
-              <div class="room-main">
+        <button
+          class="join"
+          onclick="openRoom('${encodeURIComponent(room.id)}')"
+        >
+          JOIN
+        </button>
 
-                <div class="room-name">
-                  ${escapeHtml(
-                    room.name
-                  )}
-                </div>
+      </div>
 
-                <div class="room-id">
-                  ID:
-                  ${escapeHtml(
-                    roomId
-                  )}
-                </div>
+    `).join("");
 
-                <span class="room-category">
-                  ${escapeHtml(
-                    room.category
-                  )}
-                </span>
-
-              </div>
-
-            </div>
-
-
-            <div class="room-owner">
-
-              <img
-                class="owner-dp"
-                src="${escapeHtml(
-                  room.ownerDp
-                )}"
-                alt="Host"
-                onerror="this.src='${DEFAULT_DP}'"
-              >
-
-              <div class="owner-name">
-                Host:
-                ${escapeHtml(
-                  room.owner
-                )}
-              </div>
-
-            </div>
-
-
-            <div class="room-bottom">
-
-              <div class="room-users">
-                👥
-                ${Number(
-                  room.users || 0
-                )}/${Number(
-                  room.seats || 9
-                )}
-              </div>
-
-
-              <button
-                class="join-btn"
-                type="button"
-                onclick="event.stopPropagation();openRoom('${safeId}')"
-              >
-                JOIN
-              </button>
-
-            </div>
-
-          </article>
-
-        `;
-
-      }
-    ).join("");
 }
 
+function setTab(tab, element) {
 
-/* ==================================================
-   OPEN SAME ROOM.HTML
-================================================== */
+  currentTab = tab;
 
-function openRoom(encodedId){
+  document.querySelectorAll(".tab")
+    .forEach(x => x.classList.remove("active"));
 
-  const roomId =
-    decodeURIComponent(
-      encodedId
-    );
+  element.classList.add("active");
 
-
-  if(!roomId){
-
-    alert(
-      "Room ID missing."
-    );
-
-    return;
-  }
-
-
-  /*
-    IMPORTANT:
-    This is the same room URL format
-    used by the repaired room.html.
-  */
-  location.href =
-    "room.html?room=" +
-    encodeURIComponent(
-      roomId
-    );
+  renderRooms();
 }
 
-
-/*
-  Keep old function name working too.
-*/
-function joinRoom(encodedId){
-
-  openRoom(
-    encodedId
-  );
-}
-
-
-/* ==================================================
-   CREATE ROOM UI
-================================================== */
-
-function showCreate(){
-
-  const section =
-    document.getElementById(
-      "createSection"
-    );
-
-
-  section.style.display =
-    "block";
-
-
-  section.scrollIntoView({
-    behavior:"smooth",
-    block:"start"
-  });
-}
-
-
-function hideCreate(){
-
-  document.getElementById(
-    "createSection"
-  ).style.display =
-    "none";
-}
-
-
-/* ==================================================
+/* =====================================================
    CREATE ROOM
-   SAME ROOM ID = USER ID
-================================================== */
+===================================================== */
 
-async function createRoom(){
+function openCreateRoom() {
 
-  const nameInput =
-    document.getElementById(
-      "roomNameInput"
-    );
+  openModal(`
 
-  const categoryInput =
-    document.getElementById(
-      "roomCategoryInput"
-    );
+    <button class="close" onclick="closeModal()">×</button>
 
-  const button =
-    document.getElementById(
-      "createRoomBtn"
-    );
+    <h2>🎙️ Create Voice Room</h2>
 
+    <div class="form">
+
+      <label>Room Name</label>
+
+      <input
+        id="newRoomName"
+        placeholder="Enter room name"
+        value="${escapeAttr(currentUser.name + "'s Room")}"
+      >
+
+      <label>Room DP</label>
+
+      <input
+        id="newRoomDp"
+        placeholder="Room DP URL"
+        value="${escapeAttr(currentUser.dp)}"
+      >
+
+      <label>Category</label>
+
+      <select id="newRoomCategory">
+
+        <option>General</option>
+        <option>Music</option>
+        <option>Friends</option>
+        <option>Gaming</option>
+        <option>Chat</option>
+
+      </select>
+
+      <button
+        class="primary"
+        onclick="createRoom()"
+      >
+        Create Room
+      </button>
+
+    </div>
+  `);
+
+}
+
+async function createRoom() {
 
   const name =
-    nameInput.value.trim();
+    document.getElementById("newRoomName").value.trim();
+
+  const dp =
+    document.getElementById("newRoomDp").value.trim();
 
   const category =
-    categoryInput.value;
+    document.getElementById("newRoomCategory").value;
 
-
-  if(!name){
-
-    alert(
-      "Room name enter करें."
-    );
-
-    nameInput.focus();
-
+  if (!name) {
+    toast("Room name required");
     return;
   }
 
-
-  /*
-    IMPORTANT CHANGE:
-
-    Old system:
-      PV + random number
-
-    New same room system:
-      User ID = Room ID
-
-    Example:
-      User ID 100052
-      Room ID 100052
-  */
+  // Existing system uses user ID as room ID
   const roomId =
-    String(
-      currentUser.userId ||
-      "100052"
-    ).trim();
+    currentUser.userId;
 
-
-  if(!roomId){
-
-    alert(
-      "User ID missing."
-    );
-
-    return;
-  }
-
-
-  /*
-    Room data is compatible with
-    room.html and Firebase.
-  */
   const room = {
 
-    id:
-      roomId,
+    id: roomId,
 
-    name:
-      name,
+    name,
 
-    roomName:
-      name,
+    roomName: name,
 
     dp:
-      currentUser.dp ||
-      DEFAULT_DP,
+      dp ||
+      currentUser.dp,
 
     owner:
-      currentUser.name ||
-      "Pawan User",
-
-    ownerName:
-      currentUser.name ||
-      "Pawan User",
+      currentUser.name,
 
     ownerId:
-      currentUser.userId ||
-      roomId,
+      currentUser.userId,
 
     ownerDp:
-      currentUser.dp ||
-      DEFAULT_DP,
+      currentUser.dp,
 
-    category:
-      category ||
-      "General",
+    category,
 
-    users:
-      1,
+    users: 1,
 
-    seats:
-      9,
+    seats: 9,
 
-    createdAt:
-      Date.now(),
+    createdAt: Date.now(),
 
-    updatedAt:
-      Date.now()
+    updatedAt: Date.now()
 
   };
 
-
-  button.disabled =
-    true;
-
-  button.textContent =
-    "Creating...";
-
-
-  try{
-
-    /*
-      Save the room in Firebase first.
-      room.html will connect to the same
-      room ID on Render Socket.IO.
-    */
-    const response =
-      await fetch(
-
-        FIREBASE_DB +
-        "/rooms/" +
-        encodeURIComponent(
-          roomId
-        ) +
-        ".json",
-
-        {
-
-          method:
-            "PUT",
-
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-
-          body:
-            JSON.stringify(
-              room
-            )
-
-        }
-
-      );
-
-
-    if(!response.ok){
-
-      throw new Error(
-        "Firebase HTTP " +
-        response.status
-      );
-    }
-
-
-    /*
-      Update local room owner/profile
-      information.
-    */
-    saveLocalUser();
-
-
-    nameInput.value =
-      "";
-
-
-    hideCreate();
-
-
-    /*
-      Refresh list before opening.
-    */
-    await loadRooms();
-
-
-    /*
-      OPEN THE SAME ROOM SYSTEM.
-
-      room.html reads:
-        ?room=100052
-
-      Then room.html connects to:
-        https://pawanvoice-1.onrender.com
-
-      using Socket.IO.
-    */
-    location.href =
-      "room.html?room=" +
-      encodeURIComponent(
-        roomId
-      );
-
-
-  }catch(error){
-
-    console.error(
-      "Create room:",
-      error
-    );
-
-
-    alert(
-      "Room create नहीं हुआ. Firebase connection/rules check करें."
-    );
-
-
-  }finally{
-
-    button.disabled =
-      false;
-
-    button.textContent =
-      "🎙️ Create Room";
-  }
-}
-
-
-/* ==================================================
-   PROFILE
-================================================== */
-
-function openProfile(){
-
-  renderUser();
-
-
-  document.getElementById(
-    "profileModal"
-  ).classList.add(
-    "show"
-  );
-}
-
-
-function closeProfile(){
-
-  document.getElementById(
-    "profileModal"
-  ).classList.remove(
-    "show"
-  );
-}
-
-
-/* ==================================================
-   PAGE NAVIGATION
-================================================== */
-
-function openPage(page){
-
-  location.href =
-    page;
-}
-
-
-function goHome(){
-
-  location.href =
-    "index.html";
-}
-
-
-/* ==================================================
-   TABS
-================================================== */
-
-document.querySelectorAll(
-  ".tab"
-).forEach(
-  button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        document.querySelectorAll(
-          ".tab"
-        ).forEach(
-          b =>
-            b.classList.remove(
-              "active"
-            )
-        );
-
-
-        button.classList.add(
-          "active"
-        );
-
-
-        currentTab =
-          button.dataset.tab ||
-          "Popular";
-
-
-        renderRooms();
+  try {
+
+    await fetch(
+      `${FIREBASE_DB}/rooms/${encodeURIComponent(roomId)}.json`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(room)
       }
     );
 
-  }
-);
+    if (socket?.connected) {
 
+      socket.emit(
+        "create-room",
+        room
+      );
 
-/* ==================================================
-   SEARCH
-================================================== */
-
-document.getElementById(
-  "searchInput"
-).addEventListener(
-  "input",
-  renderRooms
-);
-
-
-/* ==================================================
-   REFRESH
-================================================== */
-
-document.getElementById(
-  "refreshBtn"
-).addEventListener(
-  "click",
-  loadRooms
-);
-
-
-/* ==================================================
-   CREATE BUTTON
-================================================== */
-
-document.getElementById(
-  "createRoomBtn"
-).addEventListener(
-  "click",
-  createRoom
-);
-
-
-/* ==================================================
-   CLOSE PROFILE
-================================================== */
-
-document.getElementById(
-  "closeProfile"
-).addEventListener(
-  "click",
-  closeProfile
-);
-
-
-/* ==================================================
-   CLOSE MODAL OUTSIDE
-================================================== */
-
-document.getElementById(
-  "profileModal"
-).addEventListener(
-  "click",
-  event => {
-
-    if(
-      event.target.id ===
-      "profileModal"
-    ){
-
-      closeProfile();
     }
 
-  }
-);
+    closeModal();
 
+    toast("Room created");
 
-/* ==================================================
-   PAGE VISIBILITY
-================================================== */
+    setTimeout(() => {
+      openRoom(encodeURIComponent(roomId));
+    }, 500);
 
-document.addEventListener(
-  "visibilitychange",
-  () => {
+  } catch(error) {
 
-    if(
-      !document.hidden
-    ){
-
-      loadRooms();
-    }
+    console.error(error);
+    toast("Room create failed");
 
   }
-);
 
+}
 
-/* ==================================================
-   INITIAL LOAD
-================================================== */
+/* =====================================================
+   OPEN ROOM
+===================================================== */
 
-(async function(){
+function openRoom(roomId) {
 
+  roomId =
+    decodeURIComponent(roomId);
+
+  window.location.href =
+    `room.html?room=${encodeURIComponent(roomId)}`;
+
+}
+
+/* =====================================================
+   PROFILE EDIT
+===================================================== */
+
+function editProfile() {
+
+  openModal(`
+
+    <button class="close" onclick="closeModal()">×</button>
+
+    <h2>✏️ Edit Profile</h2>
+
+    <div class="form">
+
+      <label>User Name</label>
+
+      <input
+        id="editName"
+        value="${escapeAttr(currentUser.name)}"
+      >
+
+      <label>DP URL</label>
+
+      <input
+        id="editDp"
+        value="${escapeAttr(currentUser.dp)}"
+      >
+
+      <label>Gender</label>
+
+      <select id="editGender">
+
+        <option ${currentUser.gender === "Male" ? "selected" : ""}>
+          Male
+        </option>
+
+        <option ${currentUser.gender === "Female" ? "selected" : ""}>
+          Female
+        </option>
+
+        <option ${currentUser.gender === "Other" ? "selected" : ""}>
+          Other
+        </option>
+
+      </select>
+
+      <button
+        class="primary"
+        onclick="saveProfile()"
+      >
+        Save Profile
+      </button>
+
+    </div>
+  `);
+
+}
+
+async function saveProfile() {
+
+  const name =
+    document.getElementById("editName").value.trim();
+
+  const dp =
+    document.getElementById("editDp").value.trim();
+
+  const gender =
+    document.getElementById("editGender").value;
+
+  if (!name) {
+    toast("Name required");
+    return;
+  }
+
+  currentUser.name = name;
+  currentUser.dp = dp || currentUser.dp;
+  currentUser.gender = gender;
+
+  saveLocalUser();
   renderUser();
 
-  /*
-    Connect to the same Render server.
-  */
-  connectRoomServer();
+  try {
 
-  /*
-    Load current Firebase user.
-  */
-  await loadUser();
+    await fetch(
+      `${FIREBASE_DB}/users/${encodeURIComponent(currentUser.userId)}.json`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type":"application/json"
+        },
+        body: JSON.stringify({
+          name,
+          dp: currentUser.dp,
+          gender
+        })
+      }
+    );
 
-  /*
-    Load all available rooms.
-  */
-  await loadRooms();
+  } catch(error) {
+    console.log(error);
+  }
 
-})();
+  if (socket?.connected) {
 
+    socket.emit(
+      "profile-updated",
+      currentUser
+    );
 
-/* ==================================================
-   AUTO REFRESH
-================================================== */
+  }
 
-setInterval(
-  loadRooms,
-  10000
-);
+  closeModal();
+
+  toast("Profile updated");
+}
+
+/* =====================================================
+   DAILY
+===================================================== */
+
+async function openDaily() {
+
+  let rewards = [];
+
+  try {
+
+    const r =
+      await fetch(`${RENDER_SERVER}/api/weekly-rewards`);
+
+    const d =
+      await r.json();
+
+    rewards =
+      d.rewards || [];
+
+  } catch(error) {
+
+    rewards = [];
+
+  }
+
+  openModal(`
+
+    <button class="close" onclick="closeModal()">×</button>
+
+    <h2>🎁 7 Day Reward</h2>
+
+    <p class="muted">
+      Login every day and collect your reward.
+    </p>
+
+    <div id="weeklyRewards">
+
+      ${rewards.map(r => `
+
+        <div class="reward">
+
+          <div class="reward-day">
+            ${r.day}
+          </div>
+
+          <div class="reward-info">
+
+            <b>Day ${r.day}</b>
+
+            <span>
+              🪙 ${formatNumber(r.coins)}
+              ${r.frame ? " · 🖼️ Frame" : ""}
+              ${r.vip ? " · 👑 VIP " + r.vip : ""}
+            </span>
+
+          </div>
+
+          <button
+            onclick="claimDailyReward()"
+          >
+            Claim
+          </button>
+
+        </div>
+
+      `).join("")}
+
+    </div>
+
+    <h2>✅ Daily Tasks</h2>
+
+    <div id="dailyTasks">
+      Loading...
+    </div>
+
+  `);
+
+  loadDailyTasks();
+
+}
+
+async function loadDailyTasks() {
+
+  const box =
+    document.getElementById("dailyTasks");
+
+  if (!box) return;
+
+  try {
+
+    const response =
+      await fetch(`${RENDER_SERVER}/api/tasks`);
+
+    const data =
+      await response.json();
+
+    box.innerHTML =
+      (data.tasks || []).map((task, index) => `
+
+        <div class="task">
+
+          <div class="task-icon">
+            ${["🎯","🎙️","💬","🎁","🎮","❤️","🎤","🚪","🎁","⚡"][index]}
+          </div>
+
+          <div class="task-info">
+
+            <b>${escapeHtml(task.title)}</b>
+
+            <span>
+              ${escapeHtml(task.description)}
+              · +${formatNumber(task.reward)} Coins
+            </span>
+
+          </div>
+
+          <button
+            onclick="claimTask('${task.id}')"
+          >
+            Claim
+          </button>
+
+        </div>
+
+      `).join("");
+
+  } catch(error) {
+
+    box.innerHTML =
+      `<div class="muted">Unable to load tasks.</div>`;
+
+  }
+
+}
+
+function claimDailyReward() {
+
+  if (!socket?.connected) {
+
+    toast("Connecting to server...");
+    return;
+
+  }
+
+  socket.emit(
+    "claim-daily-reward",
+    {
+      userId: currentUser.userId
+    },
+    result => {
+
+      if (!result?.ok) {
+
+        toast(result?.error || "Already claimed");
+        return;
+
+      }
+
+      currentUser =
+        result.user || currentUser;
+
+      saveLocalUser();
+      renderUser();
+
+      toast(
+        `Day ${result.day} reward claimed 🎁`
+      );
+
+    }
+  );
+
+}
+
+function claimTask(taskId) {
+
+  if (!socket?.connected) {
+
+    toast("Connecting to server...");
+    return;
+
+  }
+
+  socket.emit(
+    "claim-task",
+    {
+      userId: currentUser.userId,
+      taskId
+    },
+    result => {
+
+      if (!result?.ok) {
+
+        toast(
+          result?.error ||
+          "Complete the task first"
+        );
+
+        return;
+      }
+
+      currentUser =
+        result.user || currentUser;
+
+      saveLocalUser();
+      renderUser();
+
+      toast(
+        `+${formatNumber(result.reward)} Coins 🎉`
+      );
+
+    }
+  );
+
+}
+
+/* =====================================================
+   STORE
+===================================================== */
+
+async function openStore(category = "gifts") {
+
+  openModal(`
+
+    <button class="close" onclick="closeModal()">×</button>
+
+    <h2>🛍️ PawanVoice Store</h2>
+
+    <div class="store-tabs">
+
+      <button onclick="showStore('gifts',this)">
+        🎁 Gifts
+      </button>
+
+      <button onclick="showStore('vehicles',this)">
+        🚗 Vehicles
+      </button>
+
+      <button onclick="showStore('frames',this)">
+        🖼️ Frames
+      </button>
+
+      <button onclick="showStore('bubbles',this)">
+        💬 Bubbles
+      </button>
+
+      <button onclick="showStore('cards',this)">
+        🪪 Cards
+      </button>
+
+      <button onclick="showStore('rgb',this)">
+        🌈 RGB
+      </button>
+
+      <button onclick="showStore('themes',this)">
+        🎨 Themes
+      </button>
+
+      <button onclick="showStore('visitors',this)">
+        👀 Visitors
+      </button>
+
+    </div>
+
+    <div id="storeItems">
+      Loading...
+    </div>
+
+  `);
+
+  try {
+
+    const response =
+      await fetch(`${RENDER_SERVER}/api/store`);
+
+    storeData =
+      await response.json();
+
+    let gifts = [];
+
+    try {
+
+      const giftResponse =
+        await fetch(`${RENDER_SERVER}/api/gifts`);
+
+      const giftData =
+        await giftResponse.json();
+
+      storeData.gifts =
+        giftData.gifts || [];
+
+    } catch {}
+
+    showStore(category);
+
+  } catch(error) {
+
+    document.getElementById("storeItems").innerHTML =
+      `<div class="muted">Store loading failed.</div>`;
+
+  }
+
+}
+
+function showStore(category, button) {
+
+  if (button) {
+
+    document.querySelectorAll(".store-tabs button")
+      .forEach(x => x.classList.remove("active"));
+
+    button.classList.add("active");
+
+  }
+
+  const box =
+    document.getElementById("storeItems");
+
+  if (!box) return;
+
+  const items =
+    storeData[category] || [];
+
+  if (!items.length) {
+
+    box.innerHTML =
+      `<div class="muted">No items found.</div>`;
+
+    return;
+
+  }
+
+  box.innerHTML = `
+
+    <div class="items">
+
+      ${items.slice(0, 200).map(item => `
+
+        <div class="item">
+
+          <img
+            src="${escapeAttr(
+              item.image ||
+              `https://dummyimage.com/100x100/252b3b/fff&text=${encodeURIComponent(
+                String(item.name || "").slice(0,8)
+              )}`
+            )}"
+          >
+
+          <b>
+            ${escapeHtml(item.name || "Item")}
+          </b>
+
+          <span>
+            🪙 ${formatNumber(item.price || 0)}
+          </span>
+
+        </div>
+
+      `).join("")}
+
+    </div>
+
+  `;
+
+}
+
+/* =====================================================
+   EVENTS
+===================================================== */
+
+async function openEvents() {
+
+  openModal(`
+
+    <button class="close" onclick="closeModal()">×</button>
+
+    <h2>🎉 Events</h2>
+
+    <div id="eventList">
+      Loading...
+    </div>
+
+  `);
+
+  try {
+
+    const response =
+      await fetch(`${RENDER_SERVER}/api/events`);
+
+    const data =
+      await response.json();
+
+    document.getElementById("eventList").innerHTML =
+      (data.events || []).map(event => `
+
+        <div class="event">
+
+          <b>
+            🎉 ${escapeHtml(event.title)}
+          </b>
+
+          <p>
+            Complete this event and earn rewards.
+          </p>
+
+          <button
+            class="primary"
+            onclick="toast('Event opened')"
+          >
+            Open Event
+          </button>
+
+        </div>
+
+      `).join("");
+
+  } catch {
+
+    document.getElementById("eventList").innerHTML =
+      `<div class="muted">Events unavailable.</div>`;
+
+  }
+
+}
+
+/* =====================================================
+   GAMES
+===================================================== */
+
+async function openGames() {
+
+  openModal(`
+
+    <button class="close" onclick="closeModal()">×</button>
+
+    <h2>🎮 Room Games</h2>
+
+    <p class="muted">
+      Games can be opened while users are inside a room.
+    </p>
+
+    <div id="gameList">
+      Loading...
+    </div>
+
+  `);
+
+  try {
+
+    const response =
+      await fetch(`${RENDER_SERVER}/api/games`);
+
+    const data =
+      await response.json();
+
+    document.getElementById("gameList").innerHTML =
+      (data.games || []).map((game, index) => `
+
+        <div class="game">
+
+          <div class="game-icon">
+            ${["👶","💰","🎡","🎲","🔢","✊","📦","💣","🃏","👑"][index % 10]}
+          </div>
+
+          <div class="game-info">
+
+            <b>${escapeHtml(game.name)}</b>
+
+            <span>
+              ${escapeHtml(game.type)}
+            </span>
+
+          </div>
+
+          <button
+            onclick="toast('Open this game inside a room')"
+          >
+            PLAY
+          </button>
+
+        </div>
+
+      `).join("");
+
+  } catch {
+
+    document.getElementById("gameList").innerHTML =
+      `<div class="muted">Games unavailable.</div>`;
+
+  }
+
+}
+
+/* =====================================================
+   INVITE
+===================================================== */
+
+function openInvite() {
+
+  const code =
+    "PV" +
+    String(currentUser.userId);
+
+  openModal(`
+
+    <button class="close" onclick="closeModal()">×</button>
+
+    <h2>📨 Invite Friend</h2>
+
+    <div class="card" style="text-align:center">
+
+      <div class="muted">Your Invite Code</div>
+
+      <h1>${escapeHtml(code)}</h1>
+
+      <button
+        class="primary"
+        onclick="copyText('${escapeAttr(code)}')"
+      >
+        Copy Code
+      </button>
+
+    </div>
+
+  `);
+
+}
+
+/* =====================================================
+   PROFILE MODAL
+===================================================== */
+
+function openProfile() {
+
+  showPage("profile");
+
+}
+
+/* =====================================================
+   INBOX
+===================================================== */
+
+function openInbox() {
+
+  showPage("inbox");
+
+}
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+function openSettings() {
+
+  openModal(`
+
+    <button class="close" onclick="closeModal()">×</button>
+
+    <h2>⚙️ Settings</h2>
+
+    <div class="menu-grid">
+
+      <div class="menu">
+        <div>🔔</div>Notifications
+      </div>
+
+      <div class="menu">
+        <div>🔒</div>Privacy
+      </div>
+
+      <div class="menu">
+        <div>🌐</div>Language
+      </div>
+
+      <div class="menu">
+        <div>🎧</div>Customer Service
+      </div>
+
+      <div class="menu">
+        <div>❓</div>Help
+      </div>
+
+      <div class="menu">
+        <div>ℹ️</div>About
+      </div>
+
+    </div>
+
+  `);
+
+}
+
+/* =====================================================
+   PAGE NAVIGATION
+===================================================== */
+
+function showPage(page) {
+
+  document.getElementById("homePage")
+    .classList.toggle("hidden", page !== "home");
+
+  document.getElementById("inboxPage")
+    .classList.toggle("hidden", page !== "inbox");
+
+  document.getElementById("profilePage")
+    .classList.toggle("hidden", page !== "profile");
+
+  document.getElementById("navHome")
+    .classList.toggle("active", page === "home");
+
+  document.getElementById("navInbox")
+    .classList.toggle("active", page === "inbox");
+
+  document.getElementById("navProfile")
+    .classList.toggle("active", page === "profile");
+
+  window.scrollTo(0,0);
+
+}
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+function openModal(html) {
+
+  document.getElementById("sheet").innerHTML =
+    html;
+
+  document.getElementById("modal")
+    .classList.remove("hidden");
+
+}
+
+function closeModal() {
+
+  document.getElementById("modal")
+    .classList.add("hidden");
+
+}
+
+document.getElementById("modal")
+  .addEventListener("click", event => {
+
+    if (event.target.id === "modal") {
+      closeModal();
+    }
+
+  });
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+let toastTimer;
+
+function toast(message) {
+
+  const box =
+    document.getElementById("toast");
+
+  box.textContent =
+    message;
+
+  box.style.display =
+    "block";
+
+  clearTimeout(toastTimer);
+
+  toastTimer =
+    setTimeout(() => {
+      box.style.display = "none";
+    }, 2500);
+
+}
+
+/* =====================================================
+   UTILITIES
+===================================================== */
+
+function formatNumber(value) {
+
+  const n =
+    Number(value || 0);
+
+  if (n >= 10000000) {
+    return (n / 10000000).toFixed(1) + "Cr";
+  }
+
+  if (n >= 100000) {
+    return (n / 100000).toFixed(1) + "L";
+  }
+
+  if (n >= 1000) {
+    return (n / 1000).toFixed(1) + "K";
+  }
+
+  return n.toLocaleString("en-IN");
+
+}
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value);
+}
+
+async function copyText(text) {
+
+  try {
+
+    await navigator.clipboard.writeText(text);
+
+    toast("Copied");
+
+  } catch {
+
+    toast(text);
+
+  }
+
+}
+
+/* =====================================================
+   START
+===================================================== */
+
+loadLocalUser();
+
+renderUser();
+
+connectSocket();
+
+loadFirebaseUser();
+
+loadRooms();
+
+setInterval(() => {
+
+  loadRooms();
+
+}, 10000);
+
+/* =====================================================
+   FIREBASE REALTIME USER REFRESH
+===================================================== */
+
+setInterval(() => {
+
+  loadFirebaseUser();
+
+}, 15000);
 
 </script>
 
 </body>
-</html>
-```
+  </html> 
