@@ -1,9 +1,13 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>PawanVoice</title>
+
+<!-- Same Socket.IO server used by room.html -->
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
 <style>
 *{
@@ -24,7 +28,8 @@ body{
 }
 
 button,
-input{
+input,
+select{
   font:inherit;
 }
 
@@ -212,6 +217,7 @@ button{
 .section-link{
   color:#ffca28;
   font-size:12px;
+  background:transparent;
 }
 
 /* ROOM CARDS */
@@ -496,6 +502,25 @@ button{
   border-radius:12px;
 }
 
+/* CONNECTION STATUS */
+
+.connection-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#777;
+  display:inline-block;
+  margin-right:4px;
+}
+
+.connection-dot.online{
+  background:#43e06f;
+}
+
+.connection-dot.offline{
+  background:#ff5252;
+}
+
 /* BOTTOM NAV */
 
 .bottom-nav{
@@ -581,6 +606,7 @@ button{
       >
 
       <div class="user-info">
+
         <div
           id="headerName"
           class="user-name"
@@ -594,6 +620,7 @@ button{
         >
           ID: pawan
         </div>
+
       </div>
 
       <div class="wallet">
@@ -632,6 +659,7 @@ button{
   <div class="banner-scroll">
 
     <div class="banner">
+
       <div class="banner-title">
         👨‍👩‍👧 Family Ranking
       </div>
@@ -647,10 +675,12 @@ button{
       >
         Open
       </button>
+
     </div>
 
 
     <div class="banner">
+
       <div class="banner-title">
         💞 CP Ranking
       </div>
@@ -666,10 +696,12 @@ button{
       >
         View
       </button>
+
     </div>
 
 
     <div class="banner">
+
       <div class="banner-title">
         👑 Rich King
       </div>
@@ -685,6 +717,7 @@ button{
       >
         View
       </button>
+
     </div>
 
   </div>
@@ -726,9 +759,11 @@ button{
   <section class="section">
 
     <div class="section-head">
+
       <div class="section-title">
         Quick Access
       </div>
+
     </div>
 
     <div class="quick">
@@ -742,6 +777,7 @@ button{
         <span class="quick-label">Profile</span>
       </button>
 
+
       <button
         class="quick-btn"
         type="button"
@@ -751,6 +787,7 @@ button{
         <span class="quick-label">Inbox</span>
       </button>
 
+
       <button
         class="quick-btn"
         type="button"
@@ -759,6 +796,7 @@ button{
         <span class="quick-icon">🏆</span>
         <span class="quick-label">Ranking</span>
       </button>
+
 
       <button
         class="quick-btn"
@@ -794,12 +832,15 @@ button{
 
     </div>
 
+
     <div
       id="roomStatus"
       style="font-size:11px;color:#7f879a;margin-bottom:9px;"
     >
+      <span class="connection-dot" id="connectionDot"></span>
       Loading rooms...
     </div>
+
 
     <div
       id="roomList"
@@ -833,6 +874,7 @@ button{
 
     </div>
 
+
     <div class="create-card">
 
       <label class="form-label">
@@ -845,6 +887,7 @@ button{
         maxlength="40"
         placeholder="Enter room name"
       >
+
 
       <label class="form-label">
         Category
@@ -860,6 +903,7 @@ button{
         <option>Gaming</option>
         <option>Chat</option>
       </select>
+
 
       <button
         id="createRoomBtn"
@@ -901,6 +945,7 @@ button{
 
     </div>
 
+
     <div class="profile-big">
 
       <img
@@ -910,12 +955,14 @@ button{
         alt="Profile"
       >
 
+
       <div
         id="modalName"
         class="profile-big-name"
       >
         Pawan User
       </div>
+
 
       <div
         id="modalId"
@@ -926,6 +973,7 @@ button{
 
     </div>
 
+
     <div class="profile-grid">
 
       <div class="profile-stat">
@@ -933,25 +981,30 @@ button{
         <b id="modalLevel">1</b>
       </div>
 
+
       <div class="profile-stat">
         <span>VIP</span>
         <b id="modalVip">VIP 0</b>
       </div>
+
 
       <div class="profile-stat">
         <span>Coins</span>
         <b id="modalCoins">0</b>
       </div>
 
+
       <div class="profile-stat">
         <span>Diamonds</span>
         <b id="modalDiamonds">0</b>
       </div>
 
+
       <div class="profile-stat">
         <span>Following</span>
         <b id="modalFollowing">0</b>
       </div>
+
 
       <div class="profile-stat">
         <span>Followers</span>
@@ -959,6 +1012,7 @@ button{
       </div>
 
     </div>
+
 
     <div class="menu-list">
 
@@ -970,6 +1024,7 @@ button{
         👤 Full Profile
       </button>
 
+
       <button
         class="menu-btn"
         type="button"
@@ -977,6 +1032,7 @@ button{
       >
         ⭐ Level & EXP
       </button>
+
 
       <button
         class="menu-btn"
@@ -986,6 +1042,7 @@ button{
         👑 VIP Center
       </button>
 
+
       <button
         class="menu-btn"
         type="button"
@@ -993,6 +1050,7 @@ button{
       >
         🛍️ Store
       </button>
+
 
       <button
         class="menu-btn"
@@ -1024,6 +1082,7 @@ button{
       <span class="nav-label">Home</span>
     </button>
 
+
     <button
       class="nav-btn"
       type="button"
@@ -1032,6 +1091,7 @@ button{
       <span class="nav-icon">📩</span>
       <span class="nav-label">Inbox</span>
     </button>
+
 
     <button
       class="nav-btn"
@@ -1049,26 +1109,31 @@ button{
 
 <script>
 
-/* --------------------------------------------------
-   PAWANVOICE FIREBASE
--------------------------------------------------- */
+/* ==================================================
+   PAWANVOICE CONFIG
+================================================== */
 
 const FIREBASE_DB =
   "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
 
-
-/* --------------------------------------------------
-   DEFAULT USER
--------------------------------------------------- */
+const RENDER_SERVER =
+  location.hostname.includes("onrender.com")
+    ? location.origin
+    : "https://pawanvoice-1.onrender.com";
 
 const DEFAULT_DP =
   "https://i.pravatar.cc/200?img=12";
 
 
+/* ==================================================
+   USER
+================================================== */
+
 let currentUser = {
+
   userId:
     localStorage.getItem("pv_userId") ||
-    "pawan",
+    "100052",
 
   name:
     localStorage.getItem("pv_name") ||
@@ -1122,9 +1187,9 @@ let currentUser = {
 };
 
 
-/* --------------------------------------------------
+/* ==================================================
    SAVE LOCAL USER
--------------------------------------------------- */
+================================================== */
 
 function saveLocalUser(){
 
@@ -1180,9 +1245,9 @@ function saveLocalUser(){
 }
 
 
-/* --------------------------------------------------
-   LOAD USER FROM FIREBASE
--------------------------------------------------- */
+/* ==================================================
+   FIREBASE USER LOAD
+================================================== */
 
 async function loadUser(){
 
@@ -1201,6 +1266,7 @@ async function loadUser(){
       );
 
     if(!response.ok){
+      renderUser();
       return;
     }
 
@@ -1229,9 +1295,9 @@ async function loadUser(){
 }
 
 
-/* --------------------------------------------------
+/* ==================================================
    RENDER USER
--------------------------------------------------- */
+================================================== */
 
 function renderUser(){
 
@@ -1253,7 +1319,7 @@ function renderUser(){
     "ID: " +
     (
       currentUser.userId ||
-      "pawan"
+      "100052"
     );
 
   document.getElementById(
@@ -1269,6 +1335,7 @@ function renderUser(){
     Number(
       currentUser.diamonds || 0
     ).toLocaleString();
+
 
   document.getElementById(
     "modalDp"
@@ -1288,7 +1355,7 @@ function renderUser(){
     "ID: " +
     (
       currentUser.userId ||
-      "pawan"
+      "100052"
     );
 
   document.getElementById(
@@ -1334,9 +1401,185 @@ function renderUser(){
 }
 
 
-/* --------------------------------------------------
-   ROOM DATA
--------------------------------------------------- */
+/* ==================================================
+   SOCKET.IO CONNECTION
+================================================== */
+
+let roomSocket = null;
+
+let socketConnected =
+  false;
+
+
+function connectRoomServer(){
+
+  if(
+    typeof io ===
+    "undefined"
+  ){
+
+    console.warn(
+      "Socket.IO client not loaded"
+    );
+
+    return;
+  }
+
+  try{
+
+    roomSocket =
+      io(
+        RENDER_SERVER,
+        {
+          transports:[
+            "websocket",
+            "polling"
+          ],
+          reconnection:true,
+          reconnectionAttempts:Infinity,
+          reconnectionDelay:1000,
+          timeout:10000
+        }
+      );
+
+
+    roomSocket.on(
+      "connect",
+      () => {
+
+        socketConnected =
+          true;
+
+        updateConnectionStatus();
+
+        /*
+          Register this user with the same
+          server used by room.html.
+
+          This does NOT enter a room.
+          It only identifies the user.
+        */
+        roomSocket.emit(
+          "register-user",
+          {
+            userId:
+              String(
+                currentUser.userId
+              ),
+
+            name:
+              currentUser.name,
+
+            dp:
+              currentUser.dp
+          }
+        );
+
+        /*
+          Some server versions don't have
+          register-user. That is okay.
+        */
+      }
+    );
+
+
+    roomSocket.on(
+      "disconnect",
+      () => {
+
+        socketConnected =
+          false;
+
+        updateConnectionStatus();
+      }
+    );
+
+
+    roomSocket.on(
+      "connect_error",
+      error => {
+
+        console.log(
+          "Render Socket.IO:",
+          error.message
+        );
+
+        socketConnected =
+          false;
+
+        updateConnectionStatus();
+      }
+    );
+
+
+    /*
+      If server broadcasts room-created,
+      refresh the Home room list.
+    */
+    roomSocket.on(
+      "room-created",
+      () => {
+
+        loadRooms();
+      }
+    );
+
+
+    /*
+      If server sends room updates,
+      refresh Home list.
+    */
+    roomSocket.on(
+      "room-updated",
+      () => {
+
+        loadRooms();
+      }
+    );
+
+  }catch(error){
+
+    console.error(
+      "Socket connection:",
+      error
+    );
+  }
+}
+
+
+/* ==================================================
+   CONNECTION STATUS
+================================================== */
+
+function updateConnectionStatus(){
+
+  const dot =
+    document.getElementById(
+      "connectionDot"
+    );
+
+  if(!dot){
+    return;
+  }
+
+  if(socketConnected){
+
+    dot.classList.add(
+      "online"
+    );
+
+  }else{
+
+    dot.classList.remove(
+      "online"
+    );
+  }
+}
+
+
+/* ==================================================
+   ROOMS
+================================================== */
 
 let allRooms = [];
 
@@ -1344,9 +1587,85 @@ let currentTab =
   "Popular";
 
 
-/* --------------------------------------------------
-   LOAD ROOMS
--------------------------------------------------- */
+/* ==================================================
+   ROOM USER COUNT NORMALIZER
+================================================== */
+
+function getRoomUserCount(room){
+
+  /*
+    Firebase room may store users as:
+      users: 1
+    OR
+      users: {...}
+    OR
+      members: {...}
+  */
+
+  if(
+    typeof room.users ===
+    "number"
+  ){
+
+    return room.users;
+  }
+
+  if(
+    typeof room.users ===
+    "string"
+  ){
+
+    const number =
+      Number(room.users);
+
+    if(
+      Number.isFinite(number)
+    ){
+      return number;
+    }
+  }
+
+  if(
+    room.users &&
+    typeof room.users ===
+    "object"
+  ){
+
+    return Object.keys(
+      room.users
+    ).length;
+  }
+
+  if(
+    room.members &&
+    typeof room.members ===
+    "object"
+  ){
+
+    return Object.keys(
+      room.members
+    ).length;
+  }
+
+  /*
+    A room owner means at least
+    one member.
+  */
+  if(
+    room.ownerId ||
+    room.owner
+  ){
+
+    return 1;
+  }
+
+  return 0;
+}
+
+
+/* ==================================================
+   LOAD ROOMS FROM FIREBASE
+================================================== */
 
 async function loadRooms(){
 
@@ -1355,15 +1674,30 @@ async function loadRooms(){
       "roomStatus"
     );
 
-  status.textContent =
-    "Loading rooms...";
+  if(!status){
+    return;
+  }
+
+  status.innerHTML =
+    '<span class="connection-dot ' +
+    (
+      socketConnected
+        ? "online"
+        : ""
+    ) +
+    '" id="connectionDot"></span>' +
+    " Loading rooms...";
+
 
   try{
 
     const response =
       await fetch(
         FIREBASE_DB +
-        "/rooms.json"
+        "/rooms.json",
+        {
+          cache:"no-store"
+        }
       );
 
     if(!response.ok){
@@ -1374,12 +1708,18 @@ async function loadRooms(){
       );
     }
 
+
     const data =
       await response.json();
 
     allRooms = [];
 
-    if(data){
+
+    if(
+      data &&
+      typeof data ===
+      "object"
+    ){
 
       Object.keys(data).forEach(
         key => {
@@ -1388,73 +1728,123 @@ async function loadRooms(){
             data[key];
 
           if(
-            room &&
-            typeof room === "object"
+            !room ||
+            typeof room !==
+            "object"
           ){
-
-            allRooms.push({
-              id:
-                room.id ||
-                key,
-
-              name:
-                room.name ||
-                "PawanVoice Room",
-
-              dp:
-                room.dp ||
-                room.ownerDp ||
-                DEFAULT_DP,
-
-              owner:
-                room.owner ||
-                "Host",
-
-              ownerId:
-                room.ownerId ||
-                "",
-
-              ownerDp:
-                room.ownerDp ||
-                room.dp ||
-                DEFAULT_DP,
-
-              category:
-                room.category ||
-                "General",
-
-              users:
-                Number(
-                  room.users || 1
-                ),
-
-              seats:
-                Number(
-                  room.seats || 9
-                ),
-
-              createdAt:
-                Number(
-                  room.createdAt ||
-                  0
-                )
-            });
+            return;
           }
+
+
+          /*
+            Room ID priority:
+            room.id -> Firebase key
+          */
+          const roomId =
+            String(
+              room.id ||
+              key
+            );
+
+
+          const userCount =
+            getRoomUserCount(
+              room
+            );
+
+
+          /*
+            Support both old and new
+            room formats.
+          */
+          allRooms.push({
+
+            id:
+              roomId,
+
+            name:
+              room.name ||
+              room.roomName ||
+              "PawanVoice Room",
+
+            dp:
+              room.dp ||
+              room.ownerDp ||
+              DEFAULT_DP,
+
+            owner:
+              room.owner ||
+              room.ownerName ||
+              "Host",
+
+            ownerId:
+              room.ownerId ||
+              "",
+
+            ownerDp:
+              room.ownerDp ||
+              room.dp ||
+              DEFAULT_DP,
+
+            category:
+              room.category ||
+              "General",
+
+            users:
+              userCount,
+
+            seats:
+              Number(
+                room.seats ||
+                9
+              ),
+
+            createdAt:
+              Number(
+                room.createdAt ||
+                0
+              ),
+
+            updatedAt:
+              Number(
+                room.updatedAt ||
+                0
+              )
+
+          });
 
         }
       );
     }
+
 
     /*
       New rooms first.
     */
     allRooms.sort(
       (a,b) =>
-        b.createdAt -
-        a.createdAt
+        (
+          Number(
+            b.createdAt
+          ) || 0
+        ) -
+        (
+          Number(
+            a.createdAt
+          ) || 0
+        )
     );
 
-    status.textContent =
+
+    status.innerHTML =
+      '<span class="connection-dot ' +
+      (
+        socketConnected
+          ? "online"
+          : ""
+      ) +
+      '" id="connectionDot"></span>' +
+
       allRooms.length +
       " room" +
       (
@@ -1462,7 +1852,9 @@ async function loadRooms(){
           ? ""
           : "s"
       ) +
+
       " available";
+
 
     renderRooms();
 
@@ -1473,54 +1865,80 @@ async function loadRooms(){
       error
     );
 
-    status.textContent =
-      "Unable to load Firebase rooms.";
+
+    status.innerHTML =
+      '<span class="connection-dot offline"></span>' +
+      " Unable to load rooms";
+
 
     renderRooms();
   }
 }
 
 
-/* --------------------------------------------------
-   FILTER ROOMS
--------------------------------------------------- */
+/* ==================================================
+   FILTER
+================================================== */
 
 function getVisibleRooms(){
 
-  const search =
+  const input =
     document.getElementById(
       "searchInput"
-    ).value
-      .trim()
-      .toLowerCase();
+    );
+
+  const search =
+    input
+      ? input.value
+          .trim()
+          .toLowerCase()
+      : "";
+
 
   let rooms =
     [...allRooms];
 
-  if(currentTab === "Popular"){
+
+  if(
+    currentTab ===
+    "Popular"
+  ){
 
     rooms.sort(
       (a,b) =>
         (
-          Number(b.users) || 0
+          Number(
+            b.users
+          ) || 0
         ) -
         (
-          Number(a.users) || 0
+          Number(
+            a.users
+          ) || 0
         )
     );
 
-  }else if(currentTab === "New"){
+
+  }else if(
+    currentTab ===
+    "New"
+  ){
 
     rooms.sort(
       (a,b) =>
         (
-          Number(b.createdAt) || 0
+          Number(
+            b.createdAt
+          ) || 0
         ) -
         (
-          Number(a.createdAt) || 0
+          Number(
+            a.createdAt
+          ) || 0
         )
     );
   }
+
 
   if(search){
 
@@ -1536,6 +1954,8 @@ function getVisibleRooms(){
               " " +
               room.owner +
               " " +
+              room.ownerId +
+              " " +
               room.category
             ).toLowerCase();
 
@@ -1546,13 +1966,46 @@ function getVisibleRooms(){
       );
   }
 
+
   return rooms;
 }
 
 
-/* --------------------------------------------------
+/* ==================================================
+   ESCAPE HTML
+================================================== */
+
+function escapeHtml(value){
+
+  return String(
+    value ?? ""
+  )
+  .replaceAll(
+    "&",
+    "&amp;"
+  )
+  .replaceAll(
+    "<",
+    "&lt;"
+  )
+  .replaceAll(
+    ">",
+    "&gt;"
+  )
+  .replaceAll(
+    '"',
+    "&quot;"
+  )
+  .replaceAll(
+    "'",
+    "&#039;"
+  );
+}
+
+
+/* ==================================================
    RENDER ROOMS
--------------------------------------------------- */
+================================================== */
 
 function renderRooms(){
 
@@ -1561,39 +2014,72 @@ function renderRooms(){
       "roomList"
     );
 
+  if(!list){
+    return;
+  }
+
+
   const rooms =
     getVisibleRooms();
+
 
   if(!rooms.length){
 
     list.innerHTML = `
-      <div class="empty" style="grid-column:1/-1;">
+
+      <div
+        class="empty"
+        style="grid-column:1/-1;"
+      >
         🎙️<br><br>
+
         No rooms found.<br>
-        Create your first PawanVoice room.
+
+        Create your first
+        PawanVoice room.
+
       </div>
+
     `;
 
     return;
   }
 
+
   list.innerHTML =
     rooms.map(
       room => {
 
-        const safeId =
-          encodeURIComponent(
+        const roomId =
+          String(
             room.id
           );
 
+        /*
+          We use encodeURIComponent
+          because room IDs can contain
+          special characters.
+        */
+        const safeId =
+          encodeURIComponent(
+            roomId
+          );
+
+
         return `
-          <article class="room">
+
+          <article
+            class="room"
+            onclick="openRoom('${safeId}')"
+          >
 
             <div class="room-top">
 
               <img
                 class="room-dp"
-                src="${escapeHtml(room.dp)}"
+                src="${escapeHtml(
+                  room.dp
+                )}"
                 alt="Room"
                 onerror="this.src='${DEFAULT_DP}'"
               >
@@ -1601,46 +2087,66 @@ function renderRooms(){
               <div class="room-main">
 
                 <div class="room-name">
-                  ${escapeHtml(room.name)}
+                  ${escapeHtml(
+                    room.name
+                  )}
                 </div>
 
                 <div class="room-id">
-                  ID: ${escapeHtml(room.id)}
+                  ID:
+                  ${escapeHtml(
+                    roomId
+                  )}
                 </div>
 
                 <span class="room-category">
-                  ${escapeHtml(room.category)}
+                  ${escapeHtml(
+                    room.category
+                  )}
                 </span>
 
               </div>
 
             </div>
 
+
             <div class="room-owner">
 
               <img
                 class="owner-dp"
-                src="${escapeHtml(room.ownerDp)}"
+                src="${escapeHtml(
+                  room.ownerDp
+                )}"
                 alt="Host"
                 onerror="this.src='${DEFAULT_DP}'"
               >
 
               <div class="owner-name">
-                Host: ${escapeHtml(room.owner)}
+                Host:
+                ${escapeHtml(
+                  room.owner
+                )}
               </div>
 
             </div>
 
+
             <div class="room-bottom">
 
               <div class="room-users">
-                👥 ${Number(room.users || 0)}/${Number(room.seats || 9)}
+                👥
+                ${Number(
+                  room.users || 0
+                )}/${Number(
+                  room.seats || 9
+                )}
               </div>
+
 
               <button
                 class="join-btn"
                 type="button"
-                onclick="joinRoom('${safeId}')"
+                onclick="event.stopPropagation();openRoom('${safeId}')"
               >
                 JOIN
               </button>
@@ -1648,40 +2154,41 @@ function renderRooms(){
             </div>
 
           </article>
+
         `;
+
       }
     ).join("");
 }
 
 
-/* --------------------------------------------------
-   ESCAPE HTML
--------------------------------------------------- */
+/* ==================================================
+   OPEN SAME ROOM.HTML
+================================================== */
 
-function escapeHtml(value){
-
-  return String(
-    value ?? ""
-  )
-  .replaceAll("&","&amp;")
-  .replaceAll("<","&lt;")
-  .replaceAll(">","&gt;")
-  .replaceAll('"',"&quot;")
-  .replaceAll("'","&#039;");
-}
-
-
-/* --------------------------------------------------
-   JOIN ROOM
--------------------------------------------------- */
-
-function joinRoom(encodedId){
+function openRoom(encodedId){
 
   const roomId =
     decodeURIComponent(
       encodedId
     );
 
+
+  if(!roomId){
+
+    alert(
+      "Room ID missing."
+    );
+
+    return;
+  }
+
+
+  /*
+    IMPORTANT:
+    This is the same room URL format
+    used by the repaired room.html.
+  */
   location.href =
     "room.html?room=" +
     encodeURIComponent(
@@ -1690,9 +2197,20 @@ function joinRoom(encodedId){
 }
 
 
-/* --------------------------------------------------
-   CREATE ROOM
--------------------------------------------------- */
+/*
+  Keep old function name working too.
+*/
+function joinRoom(encodedId){
+
+  openRoom(
+    encodedId
+  );
+}
+
+
+/* ==================================================
+   CREATE ROOM UI
+================================================== */
 
 function showCreate(){
 
@@ -1701,8 +2219,10 @@ function showCreate(){
       "createSection"
     );
 
+
   section.style.display =
     "block";
+
 
   section.scrollIntoView({
     behavior:"smooth",
@@ -1720,9 +2240,10 @@ function hideCreate(){
 }
 
 
-/* --------------------------------------------------
-   CREATE ROOM FIREBASE
--------------------------------------------------- */
+/* ==================================================
+   CREATE ROOM
+   SAME ROOM ID = USER ID
+================================================== */
 
 async function createRoom(){
 
@@ -1736,11 +2257,18 @@ async function createRoom(){
       "roomCategoryInput"
     );
 
+  const button =
+    document.getElementById(
+      "createRoomBtn"
+    );
+
+
   const name =
     nameInput.value.trim();
 
   const category =
     categoryInput.value;
+
 
   if(!name){
 
@@ -1753,20 +2281,50 @@ async function createRoom(){
     return;
   }
 
+
+  /*
+    IMPORTANT CHANGE:
+
+    Old system:
+      PV + random number
+
+    New same room system:
+      User ID = Room ID
+
+    Example:
+      User ID 100052
+      Room ID 100052
+  */
   const roomId =
-    "PV" +
-    Math.floor(
-      100000 +
-      Math.random() *
-      900000
+    String(
+      currentUser.userId ||
+      "100052"
+    ).trim();
+
+
+  if(!roomId){
+
+    alert(
+      "User ID missing."
     );
 
+    return;
+  }
+
+
+  /*
+    Room data is compatible with
+    room.html and Firebase.
+  */
   const room = {
 
     id:
       roomId,
 
     name:
+      name,
+
+    roomName:
       name,
 
     dp:
@@ -1777,16 +2335,21 @@ async function createRoom(){
       currentUser.name ||
       "Pawan User",
 
+    ownerName:
+      currentUser.name ||
+      "Pawan User",
+
     ownerId:
       currentUser.userId ||
-      "pawan",
+      roomId,
 
     ownerDp:
       currentUser.dp ||
       DEFAULT_DP,
 
     category:
-      category,
+      category ||
+      "General",
 
     users:
       1,
@@ -1795,14 +2358,13 @@ async function createRoom(){
       9,
 
     createdAt:
+      Date.now(),
+
+    updatedAt:
       Date.now()
+
   };
 
-
-  const button =
-    document.getElementById(
-      "createRoomBtn"
-    );
 
   button.disabled =
     true;
@@ -1813,16 +2375,25 @@ async function createRoom(){
 
   try{
 
+    /*
+      Save the room in Firebase first.
+      room.html will connect to the same
+      room ID on Render Socket.IO.
+    */
     const response =
       await fetch(
+
         FIREBASE_DB +
         "/rooms/" +
         encodeURIComponent(
           roomId
         ) +
         ".json",
+
         {
-          method:"PUT",
+
+          method:
+            "PUT",
 
           headers:{
             "Content-Type":
@@ -1830,9 +2401,14 @@ async function createRoom(){
           },
 
           body:
-            JSON.stringify(room)
+            JSON.stringify(
+              room
+            )
+
         }
+
       );
+
 
     if(!response.ok){
 
@@ -1842,20 +2418,44 @@ async function createRoom(){
       );
     }
 
-    nameInput.value = "";
+
+    /*
+      Update local room owner/profile
+      information.
+    */
+    saveLocalUser();
+
+
+    nameInput.value =
+      "";
+
 
     hideCreate();
 
-    await loadRooms();
 
     /*
-      Open room after successful creation.
+      Refresh list before opening.
+    */
+    await loadRooms();
+
+
+    /*
+      OPEN THE SAME ROOM SYSTEM.
+
+      room.html reads:
+        ?room=100052
+
+      Then room.html connects to:
+        https://pawanvoice-1.onrender.com
+
+      using Socket.IO.
     */
     location.href =
       "room.html?room=" +
       encodeURIComponent(
         roomId
       );
+
 
   }catch(error){
 
@@ -1864,9 +2464,11 @@ async function createRoom(){
       error
     );
 
+
     alert(
       "Room create नहीं हुआ. Firebase connection/rules check करें."
     );
+
 
   }finally{
 
@@ -1879,13 +2481,14 @@ async function createRoom(){
 }
 
 
-/* --------------------------------------------------
+/* ==================================================
    PROFILE
--------------------------------------------------- */
+================================================== */
 
 function openProfile(){
 
   renderUser();
+
 
   document.getElementById(
     "profileModal"
@@ -1905,9 +2508,9 @@ function closeProfile(){
 }
 
 
-/* --------------------------------------------------
+/* ==================================================
    PAGE NAVIGATION
--------------------------------------------------- */
+================================================== */
 
 function openPage(page){
 
@@ -1923,9 +2526,9 @@ function goHome(){
 }
 
 
-/* --------------------------------------------------
+/* ==================================================
    TABS
--------------------------------------------------- */
+================================================== */
 
 document.querySelectorAll(
   ".tab"
@@ -1945,24 +2548,28 @@ document.querySelectorAll(
             )
         );
 
+
         button.classList.add(
           "active"
         );
+
 
         currentTab =
           button.dataset.tab ||
           "Popular";
 
+
         renderRooms();
       }
     );
+
   }
 );
 
 
-/* --------------------------------------------------
+/* ==================================================
    SEARCH
--------------------------------------------------- */
+================================================== */
 
 document.getElementById(
   "searchInput"
@@ -1972,9 +2579,9 @@ document.getElementById(
 );
 
 
-/* --------------------------------------------------
+/* ==================================================
    REFRESH
--------------------------------------------------- */
+================================================== */
 
 document.getElementById(
   "refreshBtn"
@@ -1984,9 +2591,9 @@ document.getElementById(
 );
 
 
-/* --------------------------------------------------
+/* ==================================================
    CREATE BUTTON
--------------------------------------------------- */
+================================================== */
 
 document.getElementById(
   "createRoomBtn"
@@ -1996,9 +2603,9 @@ document.getElementById(
 );
 
 
-/* --------------------------------------------------
+/* ==================================================
    CLOSE PROFILE
--------------------------------------------------- */
+================================================== */
 
 document.getElementById(
   "closeProfile"
@@ -2008,9 +2615,9 @@ document.getElementById(
 );
 
 
-/* --------------------------------------------------
+/* ==================================================
    CLOSE MODAL OUTSIDE
--------------------------------------------------- */
+================================================== */
 
 document.getElementById(
   "profileModal"
@@ -2022,6 +2629,7 @@ document.getElementById(
       event.target.id ===
       "profileModal"
     ){
+
       closeProfile();
     }
 
@@ -2029,24 +2637,54 @@ document.getElementById(
 );
 
 
-/* --------------------------------------------------
+/* ==================================================
+   PAGE VISIBILITY
+================================================== */
+
+document.addEventListener(
+  "visibilitychange",
+  () => {
+
+    if(
+      !document.hidden
+    ){
+
+      loadRooms();
+    }
+
+  }
+);
+
+
+/* ==================================================
    INITIAL LOAD
--------------------------------------------------- */
+================================================== */
 
 (async function(){
 
   renderUser();
 
+  /*
+    Connect to the same Render server.
+  */
+  connectRoomServer();
+
+  /*
+    Load current Firebase user.
+  */
   await loadUser();
 
+  /*
+    Load all available rooms.
+  */
   await loadRooms();
 
 })();
 
 
-/* --------------------------------------------------
-   AUTO REFRESH ROOM LIST
--------------------------------------------------- */
+/* ==================================================
+   AUTO REFRESH
+================================================== */
 
 setInterval(
   loadRooms,
@@ -2057,3 +2695,4 @@ setInterval(
 
 </body>
 </html>
+```
