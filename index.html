@@ -1,1044 +1,243 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>PawanVoice</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  -webkit-tap-highlight-color:transparent;
-}
-
-:root{
-  --pink:#ff3d81;
-  --pink2:#ff6aa5;
-  --purple:#7b4dff;
-  --purple2:#a66cff;
-  --dark:#211b35;
-  --muted:#77728b;
-  --bg:#f7f5fb;
-  --card:#ffffff;
-  --line:#eeeaf5;
-  --gold:#ffb300;
-  --green:#19b875;
-  --red:#ff4757;
-}
-
+*{box-sizing:border-box}
 body{
-  font-family:Arial,Helvetica,sans-serif;
-  background:var(--bg);
-  color:var(--dark);
+  margin:0;background:#09090f;color:#fff;
+  font-family:Arial,sans-serif;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:78px}
+
+header{
+  height:58px;position:sticky;top:0;z-index:20;
+  background:#12121b;border-bottom:1px solid #292936;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 13px
+}
+.logo{font-size:20px;font-weight:800}
+.icon{
+  background:#272733;color:#fff;border:0;
+  border-radius:11px;padding:9px 12px
 }
 
-button,input{
-  font-family:inherit;
-}
+.page{display:none;padding:10px}
+.page.active{display:block}
 
-button{
-  border:0;
-  cursor:pointer;
+.card{
+  background:#171720;border:1px solid #292936;
+  border-radius:16px;padding:12px;margin-bottom:11px
 }
-
-.app{
-  width:100%;
-  max-width:520px;
-  min-height:100vh;
-  margin:auto;
-  background:var(--bg);
-  position:relative;
-  padding-bottom:78px;
-}
-
-/* HEADER */
-.topbar{
-  height:62px;
-  background:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 15px;
-  position:sticky;
-  top:0;
-  z-index:30;
-  border-bottom:1px solid var(--line);
-}
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap:9px;
-}
-
-.brand-logo{
-  width:40px;
-  height:40px;
-  border-radius:13px;
-  background:linear-gradient(135deg,var(--pink),var(--purple));
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#fff;
-  font-size:20px;
-  font-weight:900;
-}
-
-.brand-title{
-  font-size:19px;
-  font-weight:900;
-}
-
-.brand-sub{
-  font-size:10px;
-  color:#999;
-  margin-top:2px;
-}
-
-.top-actions{
-  display:flex;
-  gap:8px;
-}
-
-.icon-btn{
-  width:38px;
-  height:38px;
-  border-radius:12px;
-  background:#f5f2fa;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;
-}
-
-/* PAGES */
-.page{
-  display:none;
-}
-
-.page.active{
-  display:block;
-}
-
-/* HOME */
-.home{
-  padding:12px;
-}
+.title{font-size:16px;font-weight:800;margin-bottom:10px}
 
 .banner{
-  min-height:175px;
-  border-radius:20px;
-  padding:18px;
-  color:#fff;
-  background:
-    radial-gradient(circle at 90% 15%,rgba(255,255,255,.28),transparent 25%),
-    radial-gradient(circle at 10% 100%,rgba(255,255,255,.16),transparent 30%),
-    linear-gradient(135deg,#ff3d81,#7b4dff);
-  position:relative;
-  overflow:hidden;
-  box-shadow:0 8px 25px rgba(123,77,255,.22);
+  border-radius:18px;padding:16px;
+  background:linear-gradient(135deg,#6d28d9,#db2777);
+  margin-bottom:11px
+}
+.banner h2{margin:0 0 5px}
+.banner .sub{font-size:12px;opacity:.92}
+.bannerBtns{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:7px;margin-top:13px
+}
+.bannerBtns button{
+  background:#ffffff22;color:#fff;
+  border:1px solid #ffffff35;
+  padding:10px 3px;border-radius:11px
 }
 
-.banner:after{
-  content:"";
-  position:absolute;
-  width:150px;
-  height:150px;
-  border-radius:50%;
-  right:-55px;
-  bottom:-60px;
-  background:rgba(255,255,255,.12);
+.eventGrid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:8px
+}
+.event{
+  min-height:105px;border-radius:14px;
+  padding:12px;background:#22222d;
+  border:1px solid #30303b
+}
+.event .big{font-size:28px}
+.event b{display:block;margin-top:5px}
+.event small{color:#aaa}
+
+.tabs{
+  display:flex;gap:7px;overflow:auto;padding-bottom:2px
+}
+.tab{
+  white-space:nowrap;background:#242431;color:#ccc;
+  border:0;border-radius:20px;padding:9px 13px
+}
+.tab.active{background:#7c3aed;color:#fff}
+
+.search{
+  width:100%;background:#101017;color:#fff;
+  border:1px solid #343442;border-radius:12px;
+  padding:12px;outline:none
 }
 
-.banner-small{
-  font-size:12px;
-  opacity:.9;
+.room{
+  display:flex;align-items:center;gap:10px;
+  background:#20202a;border-radius:13px;
+  padding:9px;margin:7px 0
+}
+.room img{
+  width:56px;height:56px;border-radius:14px;
+  object-fit:cover;background:#30303b
+}
+.roomInfo{flex:1;min-width:0}
+.roomInfo strong{
+  display:block;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis
+}
+.muted{font-size:12px;color:#a8a8b5}
+.join{
+  background:#7c3aed;color:#fff;border:0;
+  border-radius:10px;padding:9px 12px;font-weight:700
 }
 
-.banner h1{
-  font-size:28px;
-  margin-top:8px;
+.btn{
+  background:#7c3aed;color:#fff;border:0;
+  border-radius:11px;padding:11px 14px;font-weight:700
 }
+.green{background:#16a34a}
+.danger{background:#dc2626}
+.dark{background:#292936}
+.full{width:100%}
 
-.banner p{
-  font-size:13px;
-  margin-top:7px;
-  max-width:270px;
-  line-height:1.5;
+.profileTop{
+  display:flex;gap:12px;align-items:center
 }
-
-.banner-btn{
-  margin-top:15px;
-  background:#fff;
-  color:#7b4dff;
-  padding:10px 17px;
-  border-radius:12px;
-  font-weight:800;
+.profileTop img{
+  width:78px;height:78px;border-radius:21px;
+  object-fit:cover;background:#333
 }
+.profileTop h2{margin:0 0 4px}
 
-/* USER CARD */
-.user-card{
-  background:#fff;
-  border-radius:18px;
-  padding:13px;
-  margin-top:12px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  border:1px solid var(--line);
+.stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:7px
 }
-
-.avatar{
-  width:55px;
-  height:55px;
-  border-radius:50%;
-  object-fit:cover;
-  background:#eee;
+.stat{
+  background:#23232d;border-radius:11px;
+  text-align:center;padding:10px
 }
+.stat b{font-size:16px}
 
-.user-main{
-  flex:1;
-  min-width:0;
+.wallet{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px
 }
-
-.user-name{
-  font-weight:900;
-  font-size:16px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+.walletBox{
+  background:#23232d;border-radius:12px;
+  padding:13px;text-align:center
 }
+.walletBox b{display:block;margin-top:5px}
 
-.user-id{
-  color:#999;
-  font-size:11px;
-  margin-top:3px;
+.grid3{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:7px
 }
-
-.level-line{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  margin-top:6px;
+.feature{
+  background:#23232d;color:#fff;border:0;
+  border-radius:12px;padding:11px 5px;min-height:72px
 }
+.feature .ico{font-size:23px}
+.feature b{display:block;font-size:11px;margin-top:5px}
 
-.level-badge{
-  background:linear-gradient(135deg,#ffb300,#ff7b00);
-  color:#fff;
-  border-radius:8px;
-  padding:3px 7px;
-  font-size:10px;
-  font-weight:900;
+.reward{
+  display:flex;justify-content:space-between;
+  align-items:center;gap:8px;
+  background:#22222d;padding:10px;
+  border-radius:10px;margin:6px 0
 }
+.reward.lock{opacity:.45}
 
-.exp-bar{
-  flex:1;
-  height:5px;
-  background:#eee;
-  border-radius:20px;
-  overflow:hidden;
-}
-
-.exp-fill{
-  height:100%;
-  background:linear-gradient(90deg,var(--pink),var(--purple));
-}
-
-.edit-mini{
-  background:#f5f0ff;
-  color:var(--purple);
-  padding:9px 11px;
-  border-radius:11px;
-  font-size:12px;
-  font-weight:800;
-}
-
-/* QUICK MENU */
-.section{
-  margin-top:15px;
-}
-
-.section-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:9px;
-}
-
-.section-title{
-  font-size:17px;
-  font-weight:900;
-}
-
-.section-more{
-  color:var(--purple);
-  font-size:12px;
-  font-weight:800;
-}
-
-.quick-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
-}
-
-.quick-item{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:15px;
-  min-height:76px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:5px;
-}
-
-.quick-icon{
-  font-size:25px;
-}
-
-.quick-name{
-  font-size:10px;
-  font-weight:800;
-}
-
-/* EVENTS */
-.event-scroll{
-  display:flex;
-  gap:9px;
-  overflow-x:auto;
-  scrollbar-width:none;
-}
-
-.event-scroll::-webkit-scrollbar{
-  display:none;
-}
-
-.event-card{
-  min-width:205px;
-  border-radius:16px;
-  padding:13px;
-  color:#fff;
-  background:linear-gradient(135deg,#ff3d81,#ff8c69);
-}
-
-.event-card:nth-child(2){
-  background:linear-gradient(135deg,#694cff,#a36bff);
-}
-
-.event-card:nth-child(3){
-  background:linear-gradient(135deg,#ff9f00,#ffcf33);
-}
-
-.event-card h3{
-  font-size:15px;
-}
-
-.event-card p{
-  font-size:11px;
-  margin-top:5px;
-  opacity:.92;
-}
-
-.event-card button{
-  margin-top:9px;
-  padding:7px 11px;
-  border-radius:9px;
-  background:#fff;
-  color:#333;
-  font-size:11px;
-  font-weight:800;
-}
-
-/* ROOMS */
-.create-room{
-  width:100%;
-  padding:13px;
-  border-radius:14px;
-  color:#fff;
-  background:linear-gradient(135deg,var(--pink),var(--purple));
-  font-weight:900;
-  margin-bottom:10px;
-}
-
-.rooms-list{
-  display:flex;
-  flex-direction:column;
-  gap:9px;
-}
-
-.room-card{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:11px;
-  display:flex;
-  align-items:center;
-  gap:11px;
-}
-
-.room-dp{
-  width:56px;
-  height:56px;
-  border-radius:15px;
-  object-fit:cover;
-}
-
-.room-info{
-  flex:1;
-  min-width:0;
-}
-
-.room-name{
-  font-size:15px;
-  font-weight:900;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.room-meta{
-  color:#888;
-  font-size:11px;
-  margin-top:4px;
-}
-
-.online{
-  color:var(--green);
-  font-weight:800;
-}
-
-.join-btn{
-  background:#f3efff;
-  color:var(--purple);
-  padding:9px 12px;
-  border-radius:11px;
-  font-weight:900;
-  font-size:11px;
-}
-
-/* RANKING */
-.rank-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:9px;
-}
-
-.rank-card{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:16px;
-  text-align:center;
-  padding:14px 7px;
-}
-
-.rank-icon{
-  font-size:29px;
-}
-
-.rank-card h4{
-  margin-top:5px;
-  font-size:12px;
-}
-
-.rank-card p{
-  color:#888;
-  font-size:10px;
-  margin-top:3px;
-}
-
-/* TASKS */
-.task-list{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+.input{
+  width:100%;padding:11px;
+  background:#101017;color:#fff;
+  border:1px solid #363643;
+  border-radius:11px;margin-bottom:8px
 }
 
 .task{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:11px;
-  display:flex;
-  align-items:center;
-  gap:10px;
+  background:#22222d;border-radius:12px;
+  padding:11px;margin:7px 0
+}
+.taskTop{
+  display:flex;justify-content:space-between;
+  align-items:center
+}
+.progress{
+  height:7px;background:#33333e;
+  border-radius:10px;overflow:hidden;margin-top:8px
+}
+.progress i{
+  display:block;height:100%;background:#8b5cf6
 }
 
-.task-icon{
-  width:40px;
-  height:40px;
-  border-radius:12px;
-  background:#f5f0ff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:20px;
-}
-
-.task-info{
-  flex:1;
-}
-
-.task-info strong{
-  display:block;
-  font-size:13px;
-}
-
-.task-info span{
-  color:#999;
-  font-size:10px;
-  display:block;
-  margin-top:3px;
-}
-
-.task button{
-  background:#ffedf4;
-  color:var(--pink);
-  border-radius:9px;
-  padding:7px 9px;
-  font-size:10px;
-  font-weight:900;
-}
-
-/* PROFILE */
-.profile-page{
-  padding:12px;
-}
-
-.profile-cover{
-  background:linear-gradient(135deg,#ff3d81,#7b4dff);
-  color:#fff;
-  border-radius:20px;
-  padding:20px 15px;
-}
-
-.profile-top{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.profile-top .avatar{
-  width:78px;
-  height:78px;
-  border:3px solid #fff;
-}
-
-.profile-details{
-  flex:1;
-}
-
-.profile-details h2{
-  font-size:21px;
-}
-
-.profile-details p{
-  font-size:11px;
-  opacity:.9;
-  margin-top:4px;
-}
-
-.profile-edit{
-  margin-top:13px;
-  background:#fff;
-  color:#7b4dff;
-  padding:9px 13px;
-  border-radius:11px;
-  font-weight:900;
-}
-
-.stats{
-  margin-top:13px;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  background:#fff;
-  color:#222;
-  border-radius:15px;
-  padding:13px 4px;
-}
-
-.stat{
-  text-align:center;
-  border-right:1px solid #eee;
-}
-
-.stat:last-child{
-  border-right:0;
-}
-
-.stat strong{
-  display:block;
-  font-size:15px;
-}
-
-.stat span{
-  display:block;
-  font-size:9px;
-  color:#999;
-  margin-top:3px;
-}
-
-.wallet-card{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:17px;
-  margin-top:12px;
-  padding:14px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:9px;
-}
-
-.wallet-box{
-  background:#faf8ff;
-  border-radius:13px;
-  padding:12px;
-}
-
-.wallet-box small{
-  color:#999;
-  font-size:10px;
-}
-
-.wallet-box strong{
-  display:block;
-  margin-top:5px;
-  font-size:17px;
-}
-
-.menu-list{
-  background:#fff;
-  border-radius:17px;
-  margin-top:12px;
-  overflow:hidden;
-  border:1px solid var(--line);
-}
-
-.menu-item{
-  width:100%;
-  padding:14px;
-  background:#fff;
-  display:flex;
-  align-items:center;
-  gap:11px;
-  border-bottom:1px solid var(--line);
-  text-align:left;
-}
-
-.menu-item:last-child{
-  border-bottom:0;
-}
-
-.menu-icon{
-  width:34px;
-  height:34px;
-  border-radius:10px;
-  background:#f6f1ff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;
-}
-
-.menu-text{
-  flex:1;
-}
-
-.menu-text strong{
-  display:block;
-  font-size:13px;
-}
-
-.menu-text span{
-  color:#999;
-  font-size:10px;
-  display:block;
-  margin-top:3px;
-}
-
-.arrow{
-  color:#aaa;
-}
-
-/* BOTTOM NAV */
-.bottom-nav{
-  position:fixed;
-  left:50%;
+.bottom{
+  position:fixed;z-index:30;bottom:0;left:50%;
   transform:translateX(-50%);
-  bottom:0;
-  width:100%;
-  max-width:520px;
-  height:72px;
-  background:rgba(255,255,255,.97);
-  border-top:1px solid var(--line);
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  z-index:50;
-  backdrop-filter:blur(12px);
+  width:min(520px,100%);height:65px;
+  background:#15151e;border-top:1px solid #292936;
+  display:grid;grid-template-columns:repeat(4,1fr)
 }
-
-.nav-btn{
-  background:transparent;
-  color:#999;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:3px;
+.bottom button{
+  background:none;color:#999;border:0;font-size:12px
 }
-
-.nav-btn.active{
-  color:var(--pink);
-}
-
-.nav-icon{
-  font-size:21px;
-}
-
-.nav-name{
-  font-size:10px;
-  font-weight:800;
-}
-
-/* MODAL */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(20,15,30,.58);
-  z-index:100;
-  display:none;
-  align-items:flex-end;
-  justify-content:center;
-}
-
-.modal.show{
-  display:flex;
-}
-
-.modal-box{
-  width:100%;
-  max-width:520px;
-  max-height:90vh;
-  overflow:auto;
-  background:#fff;
-  border-radius:23px 23px 0 0;
-  padding:17px;
-  animation:up .2s ease;
-}
-
-@keyframes up{
-  from{transform:translateY(100%)}
-  to{transform:translateY(0)}
-}
-
-.modal-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:13px;
-}
-
-.modal-head h2{
-  font-size:19px;
-}
-
-.close{
-  width:34px;
-  height:34px;
-  border-radius:10px;
-  background:#f5f2fa;
-  font-size:18px;
-}
-
-.form-group{
-  margin-bottom:12px;
-}
-
-.form-group label{
-  display:block;
-  font-size:11px;
-  font-weight:800;
-  margin-bottom:5px;
-}
-
-.form-group input,
-.form-group select{
-  width:100%;
-  border:1px solid #e4dfed;
-  border-radius:12px;
-  padding:12px;
-  outline:none;
-  background:#fff;
-}
-
-.save-btn{
-  width:100%;
-  padding:13px;
-  border-radius:13px;
-  color:#fff;
-  background:linear-gradient(135deg,var(--pink),var(--purple));
-  font-weight:900;
-}
-
-.cancel-btn{
-  width:100%;
-  padding:12px;
-  border-radius:13px;
-  margin-top:8px;
-  background:#f4f1f8;
-  color:#555;
-  font-weight:800;
-}
-
-.dp-upload{
-  text-align:center;
-  margin-bottom:13px;
-}
-
-.dp-upload img{
-  width:90px;
-  height:90px;
-  object-fit:cover;
-  border-radius:50%;
-  display:block;
-  margin:auto;
-  border:4px solid #f0eaff;
-}
-
-.dp-upload button{
-  margin-top:8px;
-  background:#f3efff;
-  color:var(--purple);
-  padding:8px 13px;
-  border-radius:10px;
-  font-weight:800;
-}
-
-/* INFO */
-.info-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:9px;
-}
-
-.info-box{
-  background:#faf8ff;
-  border-radius:13px;
-  padding:13px;
-}
-
-.info-box strong{
-  display:block;
-  font-size:13px;
-}
-
-.info-box span{
-  display:block;
-  margin-top:5px;
-  color:#777;
-  font-size:11px;
-}
-
-/* REWARD */
-.reward-list{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
-.reward{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:#faf8ff;
-  border-radius:13px;
-  padding:11px;
-}
-
-.reward-day{
-  width:45px;
-  height:45px;
-  border-radius:13px;
-  background:linear-gradient(135deg,#ffb300,#ff6b00);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-  font-size:11px;
-}
-
-.reward-info{
-  flex:1;
-}
-
-.reward-info strong{
-  font-size:12px;
-}
-
-.reward-info span{
-  display:block;
-  color:#777;
-  font-size:10px;
-  margin-top:3px;
-}
-
-.claim{
-  background:#ffedf4;
-  color:var(--pink);
-  padding:7px 9px;
-  border-radius:9px;
-  font-weight:900;
-  font-size:10px;
-}
-
-/* GIFTS */
-.gift-tabs{
-  display:flex;
-  gap:7px;
-  overflow:auto;
-  margin-bottom:10px;
-}
-
-.gift-tab{
-  white-space:nowrap;
-  background:#f5f2fa;
-  padding:8px 11px;
-  border-radius:10px;
-  font-size:10px;
-  font-weight:800;
-}
-
-.gift-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
-}
-
-.gift-item{
-  background:#faf8ff;
-  border-radius:13px;
-  padding:9px 4px;
-  text-align:center;
-}
-
-.gift-emoji{
-  font-size:28px;
-}
-
-.gift-item strong{
-  display:block;
-  font-size:10px;
-  margin-top:4px;
-}
-
-.gift-item span{
-  display:block;
-  color:#ff9800;
-  font-size:9px;
-  margin-top:3px;
-}
-
-/* LEVEL */
-.level-big{
-  text-align:center;
-  padding:15px;
-  background:linear-gradient(135deg,#ff3d81,#7b4dff);
-  color:#fff;
-  border-radius:17px;
-}
-
-.level-number{
-  font-size:45px;
-  font-weight:900;
-}
-
-.level-exp{
-  font-size:11px;
-  margin-top:4px;
-}
-
-.level-list{
-  margin-top:12px;
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:8px;
-}
-
-.level-box{
-  background:#faf8ff;
-  border-radius:12px;
-  padding:11px;
-}
-
-.level-box strong{
-  font-size:13px;
-}
-
-.level-box span{
-  display:block;
-  font-size:10px;
-  color:#888;
-  margin-top:3px;
-}
-
-/* LOADING */
-.loading{
-  padding:35px 10px;
-  text-align:center;
-  color:#999;
-  font-size:13px;
-}
+.bottom button.active{color:#fff}
 
 .empty{
-  padding:25px 10px;
-  text-align:center;
-  background:#fff;
-  border-radius:15px;
-  color:#999;
-  border:1px solid var(--line);
+  text-align:center;color:#999;padding:20px
 }
 
-/* TOAST */
+.modal{
+  display:none;position:fixed;z-index:100;
+  inset:0;background:#000b;
+  align-items:flex-end
+}
+.modal.show{display:flex}
+.sheet{
+  width:100%;max-width:520px;margin:auto;
+  background:#171720;border-radius:22px 22px 0 0;
+  padding:16px;max-height:90vh;overflow:auto
+}
+.sheet h2{margin-top:0}
+.close{
+  float:right;background:#292936;color:#fff;
+  border:0;border-radius:9px;padding:7px 10px
+}
+
 .toast{
-  position:fixed;
-  left:50%;
-  bottom:88px;
-  transform:translateX(-50%) translateY(20px);
-  background:#222;
-  color:#fff;
-  padding:11px 15px;
-  border-radius:11px;
-  font-size:12px;
-  opacity:0;
-  pointer-events:none;
-  transition:.25s;
-  z-index:200;
-  max-width:90%;
-  text-align:center;
+  position:fixed;left:50%;bottom:82px;
+  transform:translateX(-50%);
+  background:#fff;color:#111;
+  padding:10px 15px;border-radius:12px;
+  z-index:300;display:none;font-size:13px
 }
+.toast.show{display:block}
 
-.toast.show{
-  opacity:1;
-  transform:translateX(-50%) translateY(0);
+.rankRow{
+  display:flex;align-items:center;gap:10px;
+  background:#22222d;border-radius:12px;
+  padding:9px;margin:6px 0
 }
+.rankNo{
+  width:30px;text-align:center;font-weight:800
+}
+.rankRow img{
+  width:45px;height:45px;border-radius:50%;
+  object-fit:cover
+}
+.rankInfo{flex:1}
+.rankValue{font-weight:800}
 
-/* RESPONSIVE */
-@media(max-width:360px){
-  .quick-grid{
-    grid-template-columns:repeat(4,1fr);
-  }
-
-  .quick-name{
-    font-size:9px;
-  }
-
-  .banner h1{
-    font-size:24px;
-  }
+.notice{
+  background:#211a35;border:1px solid #51349a;
+  padding:10px;border-radius:12px;
+  font-size:12px;color:#ddd;margin-bottom:10px
 }
 </style>
 </head>
@@ -1047,881 +246,973 @@ button{
 
 <div class="app">
 
-  <!-- TOP BAR -->
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-logo">PV</div>
-      <div>
-        <div class="brand-title">PawanVoice</div>
-        <div class="brand-sub">Voice • Friends • Fun</div>
+<header>
+  <div class="logo">🎙️ PawanVoice</div>
+  <button class="icon" onclick="showPage('inbox')">
+    📥 <span id="inboxDot"></span>
+  </button>
+</header>
+
+<!-- ================= HOME ================= -->
+
+<section id="home" class="page active">
+
+  <div class="banner">
+    <h2>🎉 PawanVoice Events</h2>
+    <div class="sub">
+      Family • CP Ranking • Rich King Ranking
+    </div>
+
+    <div class="bannerBtns">
+      <button onclick="openRanking('Family')">👨‍👩‍👧 Family</button>
+      <button onclick="openRanking('CP')">💎 CP</button>
+      <button onclick="openRanking('Rich King')">👑 Wealth</button>
+    </div>
+  </div>
+
+  <!-- USER MINI CARD -->
+
+  <div class="card">
+    <div class="profileTop">
+      <img id="homeDP" src="">
+      <div style="flex:1">
+        <h2 id="homeName">Guest</h2>
+        <div class="muted">
+          ID: <span id="homeID"></span>
+        </div>
+        <div>
+          ⭐ Level <b id="homeLevel">1</b>
+          • 👑 VIP <b id="homeVIP">1</b>
+        </div>
       </div>
+      <button class="btn" onclick="showPage('profile')">Profile</button>
     </div>
+  </div>
 
-    <div class="top-actions">
-      <button class="icon-btn" onclick="openInbox()">💌</button>
-      <button class="icon-btn" onclick="openSettings()">⚙️</button>
-    </div>
-  </header>
+  <!-- QUICK MENU -->
 
-  <!-- HOME PAGE -->
-  <main id="homePage" class="page active">
+  <div class="card">
+    <div class="title">✨ Explore</div>
 
-    <div class="home">
+    <div class="grid3">
 
-      <!-- BANNER -->
-      <section class="banner">
-        <div class="banner-small">WELCOME TO PAWANVOICE</div>
-        <h1>Talk. Meet. Enjoy. 🎙️</h1>
-        <p>
-          Join live voice rooms, make friends, send gifts,
-          play games and grow your level.
-        </p>
-        <button class="banner-btn" onclick="createRoom()">＋ Create Room</button>
-      </section>
+      <button class="feature" onclick="showPage('profile')">
+        <span class="ico">👤</span>
+        <b>Profile</b>
+      </button>
 
-      <!-- USER CARD -->
-      <section class="user-card">
-        <img id="homeUserDp" class="avatar" src="" alt="DP">
+      <button class="feature" onclick="openFamily()">
+        <span class="ico">👨‍👩‍👧</span>
+        <b>Family</b>
+      </button>
 
-        <div class="user-main">
-          <div id="homeUserName" class="user-name">Pawan User</div>
-          <div id="homeUserId" class="user-id">ID: PV000000</div>
+      <button class="feature" onclick="openCP()">
+        <span class="ico">💎</span>
+        <b>CP Space</b>
+      </button>
 
-          <div class="level-line">
-            <span id="homeLevel" class="level-badge">LV 1</span>
-            <div class="exp-bar">
-              <div id="homeExpFill" class="exp-fill" style="width:0%"></div>
-            </div>
-          </div>
-        </div>
+      <button class="feature" onclick="openRanking('Rich King')">
+        <span class="ico">👑</span>
+        <b>Rich King</b>
+      </button>
 
-        <button class="edit-mini" onclick="openEditProfile()">Edit</button>
-      </section>
+      <button class="feature" onclick="openVIP()">
+        <span class="ico">👑</span>
+        <b>VIP</b>
+      </button>
 
-      <!-- QUICK -->
-      <section class="section">
-        <div class="section-head">
-          <div class="section-title">Explore</div>
-          <div class="section-more" onclick="openMoreFeatures()">More</div>
-        </div>
+      <button class="feature" onclick="openLevel()">
+        <span class="ico">🆙</span>
+        <b>Level</b>
+      </button>
 
-        <div class="quick-grid">
+      <button class="feature" onclick="openStore()">
+        <span class="ico">🛍️</span>
+        <b>Store</b>
+      </button>
 
-          <button class="quick-item" onclick="switchPage('profile')">
-            <div class="quick-icon">👤</div>
-            <div class="quick-name">Profile</div>
-          </button>
+      <button class="feature" onclick="openRewards()">
+        <span class="ico">🎁</span>
+        <b>Rewards</b>
+      </button>
 
-          <button class="quick-item" onclick="openFamily()">
-            <div class="quick-icon">👨‍👩‍👧‍👦</div>
-            <div class="quick-name">Family</div>
-          </button>
-
-          <button class="quick-item" onclick="openCP()">
-            <div class="quick-icon">💞</div>
-            <div class="quick-name">CP Space</div>
-          </button>
-
-          <button class="quick-item" onclick="openRichKing()">
-            <div class="quick-icon">👑</div>
-            <div class="quick-name">Rich King</div>
-          </button>
-
-          <button class="quick-item" onclick="openVIP()">
-            <div class="quick-icon">💎</div>
-            <div class="quick-name">VIP</div>
-          </button>
-
-          <button class="quick-item" onclick="openLevel()">
-            <div class="quick-icon">🏅</div>
-            <div class="quick-name">Level</div>
-          </button>
-
-          <button class="quick-item" onclick="openStore()">
-            <div class="quick-icon">🛍️</div>
-            <div class="quick-name">Store</div>
-          </button>
-
-          <button class="quick-item" onclick="openRewards()">
-            <div class="quick-icon">🎁</div>
-            <div class="quick-name">Rewards</div>
-          </button>
-
-        </div>
-      </section>
-
-      <!-- EVENTS -->
-      <section class="section">
-        <div class="section-head">
-          <div class="section-title">Events</div>
-          <div class="section-more">Live</div>
-        </div>
-
-        <div class="event-scroll">
-
-          <div class="event-card">
-            <h3>🎁 7 Day Reward</h3>
-            <p>Login every day and collect huge rewards.</p>
-            <button onclick="openRewards()">View Rewards</button>
-          </div>
-
-          <div class="event-card">
-            <h3>🔥 New User Event</h3>
-            <p>Complete missions and receive bonus coins.</p>
-            <button onclick="openTasks()">Tasks</button>
-          </div>
-
-          <div class="event-card">
-            <h3>🚀 Room EXP Event</h3>
-            <p>Send gifts and increase your room EXP.</p>
-            <button onclick="openStore()">Send Gifts</button>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ROOMS -->
-      <section class="section">
-        <div class="section-head">
-          <div class="section-title">Live Rooms</div>
-          <div id="roomCount" class="section-more">0 Rooms</div>
-        </div>
-
-        <button class="create-room" onclick="createRoom()">
-          🎙️ Create Your Voice Room
-        </button>
-
-        <div id="roomsList" class="rooms-list">
-          <div class="loading">Loading rooms...</div>
-        </div>
-      </section>
-
-      <!-- RANKINGS -->
-      <section class="section">
-        <div class="section-head">
-          <div class="section-title">Rankings</div>
-          <div class="section-more">View All</div>
-        </div>
-
-        <div class="rank-grid">
-
-          <button class="rank-card" onclick="openFamily()">
-            <div class="rank-icon">👨‍👩‍👧</div>
-            <h4>Family</h4>
-            <p>Family Ranking</p>
-          </button>
-
-          <button class="rank-card" onclick="openCP()">
-            <div class="rank-icon">💞</div>
-            <h4>CP</h4>
-            <p>CP Ranking</p>
-          </button>
-
-          <button class="rank-card" onclick="openRichKing()">
-            <div class="rank-icon">👑</div>
-            <h4>Rich King</h4>
-            <p>Wealth Ranking</p>
-          </button>
-
-        </div>
-      </section>
-
-      <!-- TASKS -->
-      <section class="section" id="tasksSection">
-        <div class="section-head">
-          <div class="section-title">Daily Tasks</div>
-          <div class="section-more" onclick="openTasks()">All 10</div>
-        </div>
-
-        <div id="tasksList" class="task-list"></div>
-      </section>
+      <button class="feature" onclick="openTasks()">
+        <span class="ico">📋</span>
+        <b>Daily Tasks</b>
+      </button>
 
     </div>
-  </main>
+  </div>
 
+  <!-- EVENTS -->
 
-  <!-- PROFILE PAGE -->
-  <main id="profilePage" class="page">
+  <div class="card">
+    <div class="title">🎊 Events</div>
 
-    <div class="profile-page">
+    <div id="eventList" class="eventGrid">
 
-      <section class="profile-cover">
+      <div class="event" onclick="openEvent('Daily Login')">
+        <div class="big">🎁</div>
+        <b>Daily Login</b>
+        <small>Login & collect reward</small>
+      </div>
 
-        <div class="profile-top">
-          <img id="profileDp" class="avatar" src="" alt="DP">
+      <div class="event" onclick="openEvent('Lucky Wheel')">
+        <div class="big">🎡</div>
+        <b>Lucky Wheel</b>
+        <small>Try your luck</small>
+      </div>
 
-          <div class="profile-details">
-            <h2 id="profileName">Pawan User</h2>
-            <p id="profileId">ID: PV000000</p>
-            <p id="profileGender">Male</p>
-          </div>
+      <div class="event" onclick="openEvent('Family Event')">
+        <div class="big">👨‍👩‍👧</div>
+        <b>Family Event</b>
+        <small>Family activity</small>
+      </div>
 
-          <button class="profile-edit" onclick="openEditProfile()">Edit</button>
-        </div>
-
-        <div class="stats">
-
-          <div class="stat">
-            <strong id="followingCount">0</strong>
-            <span>Following</span>
-          </div>
-
-          <div class="stat">
-            <strong id="followersCount">0</strong>
-            <span>Followers</span>
-          </div>
-
-          <div class="stat">
-            <strong id="visitorsCount">0</strong>
-            <span>Visitors</span>
-          </div>
-
-          <div class="stat">
-            <strong id="vipSmall">VIP 0</strong>
-            <span>VIP</span>
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <section class="wallet-card">
-
-        <div class="wallet-box">
-          <small>🪙 Coins</small>
-          <strong id="profileCoins">100,000</strong>
-        </div>
-
-        <div class="wallet-box">
-          <small>💎 Diamonds</small>
-          <strong id="profileDiamonds">0</strong>
-        </div>
-
-      </section>
-
-
-      <section class="menu-list">
-
-        <button class="menu-item" onclick="openDress()">
-          <div class="menu-icon">👗</div>
-          <div class="menu-text">
-            <strong>My Dress</strong>
-            <span>Manage your outfits</span>
-          </div>
-          <div class="arrow">›</div>
-        </button>
-
-        <button class="menu-item" onclick="openFrame()">
-          <div class="menu-icon">🖼️</div>
-          <div class="menu-text">
-            <strong>Avatar Frame</strong>
-            <span>Choose your profile frame</span>
-          </div>
-          <div class="arrow">›</div>
-        </button>
-
-        <button class="menu-item" onclick="openMedal()">
-          <div class="menu-icon">🏅</div>
-          <div class="menu-text">
-            <strong>Medal</strong>
-            <span>Level medals</span>
-          </div>
-          <div class="arrow">›</div>
-        </button>
-
-        <button class="menu-item" onclick="openBadge()">
-          <div class="menu-icon">🎖️</div>
-          <div class="menu-text">
-            <strong>Personal Badge</strong>
-            <span>Your profile badge</span>
-          </div>
-          <div class="arrow">›</div>
-        </button>
-
-        <button class="menu-item" onclick="openVIP()">
-          <div class="menu-icon">💎</div>
-          <div class="menu-text">
-            <strong>VIP</strong>
-            <span>VIP levels and benefits</span>
-          </div>
-          <div class="arrow">›</div>
-        </button>
-
-        <button class="menu-item" onclick="openFamily()">
-          <div class="menu-icon">👨‍👩‍👧‍👦</div>
-          <div class="menu-text">
-            <strong>Family</strong>
-            <span>Join and manage family</span>
-          </div>
-          <div class="arrow">›</div>
-        </button>
-
-        <button class="menu-item" onclick="openCP()">
-          <div class="menu-icon">💞</div>
-          <div class="menu-text">
-            <strong>CP Space</strong>
-            <span>Couple relationship</span>
-          </div>
-          <div class="arrow">›</div>
-        </button>
-
-        <button class="menu-item" onclick="openRanking()">
-          <div class="menu-icon">🏆</div>
-          <div class="menu-text">
-            <strong>Ranking</strong>
-            <span>Family, CP and Rich King</span>
-          </div>
-          <div class="arrow">›</div>
-        </button>
-
-        <button class="menu-item" onclick="openWallet()">
-          <div class="menu-icon">💰</div>
-          <div class="menu-text">
-            <strong>Wallet</strong>
-            <span>Coins and diamonds</span>
-          </div>
-          <div class="arrow">›</div>
-        </button>
-
-        <button class="menu-item" onclick="openLevel()">
-          <div class="menu-icon">📈</div>
-          <div class="menu-text">
-            <strong>Level / EXP</strong>
-            <span>View level progress</span>
-          </div>
-          <div class="arrow">›</div>
-        </button>
-
-        <button class="menu-item" onclick="openInvite()">
-          <div class="menu-icon">📨</div>
-          <div class="menu-text">
-            <strong>Invite</strong>
-            <span>Invite friends and earn rewards</span>
-          </div>
-          <div class="arrow">›</div>
-        </button>
-
-        <button class="menu-item" onclick="logoutUser()">
-          <div class="menu-icon">🚪</div>
-          <div class="menu-text">
-            <strong>Logout</strong>
-            <span>Sign out from this device</span>
-          </div>
-          <div class="arrow">›</div>
-        </button>
-
-      </section>
+      <div class="event" onclick="openEvent('Rich King')">
+        <div class="big">👑</div>
+        <b>Rich King</b>
+        <small>Top wealth users</small>
+      </div>
 
     </div>
-  </main>
+  </div>
+
+  <!-- ROOMS -->
+
+  <div class="card">
+    <div class="title">🎙️ Voice Rooms</div>
+
+    <div class="tabs">
+
+      <button class="tab active"
+              data-tab="popular"
+              onclick="setTab('popular')">
+        🔥 Popular
+      </button>
+
+      <button class="tab"
+              data-tab="new"
+              onclick="setTab('new')">
+        ✨ New
+      </button>
+
+      <button class="tab"
+              data-tab="my"
+              onclick="setTab('my')">
+        🏠 My Room
+      </button>
+
+      <button class="tab"
+              onclick="openRanking('Room Ranking')">
+        🏆 Room Ranking
+      </button>
+
+    </div>
+  </div>
+
+  <div class="card">
+    <input id="roomSearch"
+           class="search"
+           placeholder="🔎 Search room..."
+           oninput="renderRooms()">
+  </div>
+
+  <div class="card">
+    <div class="title">🌍 Live Rooms</div>
+    <div id="roomList">
+      <div class="empty">Loading rooms...</div>
+    </div>
+  </div>
+
+  <!-- CREATE ROOM -->
+
+  <div class="card">
+    <div class="title">➕ Create Voice Room</div>
+
+    <input id="newRoomName"
+           class="input"
+           placeholder="Room Name">
+
+    <input id="newRoomDP"
+           class="input"
+           placeholder="Room DP image URL (optional)">
+
+    <select id="newRoomCategory" class="input">
+      <option>General</option>
+      <option>Music</option>
+      <option>Friends</option>
+      <option>Gaming</option>
+      <option>Event</option>
+      <option>Chat</option>
+    </select>
+
+    <button class="btn green full"
+            onclick="createRoom()">
+      Create Voice Room
+    </button>
+  </div>
+
+</section>
 
 
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
+<!-- ================= INBOX ================= -->
 
-    <button id="navHome" class="nav-btn active" onclick="switchPage('home')">
-      <div class="nav-icon">🏠</div>
-      <div class="nav-name">Home</div>
+<section id="inbox" class="page">
+
+  <div class="card">
+    <div class="title">📥 Inbox</div>
+
+    <div id="inboxList">
+      <div class="empty">No messages</div>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- ================= PROFILE ================= -->
+
+<section id="profile" class="page">
+
+  <div class="card">
+
+    <div class="profileTop">
+
+      <img id="myDP" src="">
+
+      <div style="flex:1">
+
+        <h2 id="myName">Guest</h2>
+
+        <div class="muted">
+          ID: <span id="myID"></span>
+        </div>
+
+        <div>
+          ⭐ Level <b id="myLevel">1</b>
+          • 👑 VIP <b id="myVIP">1</b>
+        </div>
+
+      </div>
+
+      <button class="btn"
+              onclick="editProfile()">
+        Edit
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="stats">
+
+      <div class="stat">
+        <b id="following">0</b><br>
+        <span class="muted">Following</span>
+      </div>
+
+      <div class="stat">
+        <b id="followers">0</b><br>
+        <span class="muted">Followers</span>
+      </div>
+
+      <div class="stat">
+        <b id="visitors">0</b><br>
+        <span class="muted">Visitors</span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="title">💰 Wallet</div>
+
+    <div class="wallet">
+
+      <div class="walletBox">
+        🪙
+        <b id="coins">0 Coins</b>
+      </div>
+
+      <div class="walletBox">
+        💎
+        <b id="diamonds">0 Diamond</b>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="title">🎁 Invite Friend</div>
+
+    <div style="display:flex;gap:7px">
+
+      <input id="inviteCode"
+             class="input"
+             readonly>
+
+      <button class="btn"
+              onclick="copyInvite()">
+        Copy
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- LEVEL -->
+
+  <div class="card">
+
+    <div class="title">🆙 Level & EXP</div>
+
+    <div class="reward">
+      <span>Current Level</span>
+      <b id="levelBig">1</b>
+    </div>
+
+    <div class="reward">
+      <span>EXP</span>
+      <b id="expBig">0</b>
+    </div>
+
+    <div id="levelRewards"></div>
+
+  </div>
+
+
+  <!-- VIP -->
+
+  <div class="card">
+
+    <div class="title">👑 VIP</div>
+
+    <div id="vipRewards"></div>
+
+    <button class="btn full"
+            onclick="buyNextVip()">
+      Buy Next VIP
     </button>
 
-    <button class="nav-btn" onclick="openRooms()">
-      <div class="nav-icon">🎙️</div>
-      <div class="nav-name">Rooms</div>
-    </button>
+  </div>
 
-    <button class="nav-btn" onclick="createRoom()">
-      <div class="nav-icon">➕</div>
-      <div class="nav-name">Create</div>
-    </button>
 
-    <button class="nav-btn" onclick="openInbox()">
-      <div class="nav-icon">💌</div>
-      <div class="nav-name">Inbox</div>
-    </button>
+  <!-- PROFILE FEATURES -->
 
-    <button id="navProfile" class="nav-btn" onclick="switchPage('profile')">
-      <div class="nav-icon">👤</div>
-      <div class="nav-name">Profile</div>
-    </button>
+  <div class="card">
 
-  </nav>
+    <div class="title">🧰 Profile</div>
+
+    <div class="grid3">
+
+      <button class="feature" onclick="showMedals()">
+        <span class="ico">🏅</span>
+        <b>Medal</b>
+      </button>
+
+      <button class="feature" onclick="showCP()">
+        <span class="ico">💎</span>
+        <b>CP Space</b>
+      </button>
+
+      <button class="feature" onclick="showFamilyProfile()">
+        <span class="ico">👨‍👩‍👧</span>
+        <b>Family</b>
+      </button>
+
+      <button class="feature" onclick="showBag()">
+        <span class="ico">🎒</span>
+        <b>Bag</b>
+      </button>
+
+      <button class="feature" onclick="showDress()">
+        <span class="ico">👗</span>
+        <b>My Dress</b>
+      </button>
+
+      <button class="feature" onclick="openVIP()">
+        <span class="ico">👑</span>
+        <b>VIP</b>
+      </button>
+
+      <button class="feature" onclick="showReward('🎖️ Personal Badge',BADGE_LEVELS)">
+        <span class="ico">🎖️</span>
+        <b>Badge</b>
+      </button>
+
+      <button class="feature" onclick="showReward('🖼️ Avatar Frame',FRAME_LEVELS)">
+        <span class="ico">🖼️</span>
+        <b>Frame</b>
+      </button>
+
+      <button class="feature" onclick="showReward('🚗 Vehicle',VEHICLE_LEVELS)">
+        <span class="ico">🚗</span>
+        <b>Vehicle</b>
+      </button>
+
+      <button class="feature" onclick="showReward('🆔 Custom ID',CUSTOM_ID_LEVELS)">
+        <span class="ico">🆔</span>
+        <b>Custom ID</b>
+      </button>
+
+      <button class="feature" onclick="openRanking('Ranking')">
+        <span class="ico">🏆</span>
+        <b>Ranking</b>
+      </button>
+
+      <button class="feature" onclick="openStore()">
+        <span class="ico">🛍️</span>
+        <b>Store</b>
+      </button>
+
+      <button class="feature" onclick="showSettings()">
+        <span class="ico">⚙️</span>
+        <b>Settings</b>
+      </button>
+
+      <button class="feature" onclick="showHelp()">
+        <span class="ico">🆘</span>
+        <b>Help</b>
+      </button>
+
+      <button class="feature" onclick="showLanguage()">
+        <span class="ico">🌐</span>
+        <b>Language</b>
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= BOTTOM NAV ================= -->
+
+<nav class="bottom">
+
+  <button id="navHome"
+          class="active"
+          onclick="showPage('home')">
+    🏠<br>Home
+  </button>
+
+  <button id="navInbox"
+          onclick="showPage('inbox')">
+    📥<br>Inbox
+  </button>
+
+  <button onclick="createRoomPrompt()">
+    🎙️<br>Room
+  </button>
+
+  <button id="navProfile"
+          onclick="showPage('profile')">
+    👤<br>Profile
+  </button>
+
+</nav>
 
 </div>
 
 
-<!-- MODAL -->
-<div id="modal" class="modal" onclick="closeModalOutside(event)">
-  <div id="modalBox" class="modal-box"></div>
+<!-- ================= MODAL ================= -->
+
+<div id="modal"
+     class="modal"
+     onclick="if(event.target===this)closeModal()">
+
+  <div class="sheet" id="sheet"></div>
+
 </div>
 
 <div id="toast" class="toast"></div>
 
 
-<script type="module">
+<!-- ================= FIREBASE ================= -->
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+
+<script>
 
 /* =========================================================
-   FIREBASE
+   PAWANVOICE FIREBASE
 ========================================================= */
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-  getDatabase,
-  ref,
-  get,
-  set,
-  update,
-  onValue,
-  remove
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-import {
-  getStorage,
-  ref as storageRef,
-  uploadBytes,
-  getDownloadURL
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
-
-const PV_FIREBASE_DB =
-  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
-
-
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "pawanvoice-68c5e.firebaseapp.com",
-  databaseURL: PV_FIREBASE_DB,
-  projectId: "pawanvoice-68c5e",
-  storageBucket: "pawanvoice-68c5e.firebasestorage.app",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+
+  apiKey:
+  "AIzaSyDnlTdeq5GaPHrUIV6kTYnM521GtbrrE",
+
+  authDomain:
+  "pawanvoice-68c5e.firebaseapp.com",
+
+  databaseURL:
+  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com",
+
+  projectId:
+  "pawanvoice-68c5e",
+
+  storageBucket:
+  "pawanvoice-68c5e.firebasestorage.app",
+
+  messagingSenderId:
+  "148446327241",
+
+  appId:
+  "1:148446327241:web:6bac9cb9ad0fb530cbb818"
+
 };
 
 
-let app;
-let db;
-let storage;
-
-try{
-  app = initializeApp(firebaseConfig);
-  db = getDatabase(app);
-  storage = getStorage(app);
-}catch(error){
-  console.error("Firebase init error:",error);
-}
-
-
 /* =========================================================
-   DEFAULTS + USER
+   DEFAULT
 ========================================================= */
 
 const DEFAULT_DP =
-  "https://i.pravatar.cc/200?img=12";
-
-const DEFAULT_FRAME = {
-  id:"default",
-  name:"Default Frame",
-  image:"",
-  active:true
-};
-
-const DEFAULT_BADGE = {
-  id:"default",
-  name:"New User",
-  image:"",
-  active:true
-};
-
-const DEFAULT_ENTRY = {
-  id:"default",
-  name:"Default Entry",
-  image:"",
-  active:true
-};
-
-
-function safeNumber(value,fallback=0){
-  const n = Number(value);
-  return Number.isFinite(n) ? n : fallback;
-}
-
-
-function getParam(name){
-  return new URLSearchParams(location.search).get(name);
-}
-
-
-function makeUserId(){
-  return "PV" + Date.now().toString().slice(-8);
-}
-
-
-function getStoredUser(){
-
-  let oldUser = null;
-
-  try{
-    oldUser =
-      JSON.parse(localStorage.getItem("pawanvoiceUser") || "null");
-  }catch(e){}
-
-  const urlId = getParam("userid");
-  const urlName = getParam("name");
-  const urlDp = getParam("dp");
-
-  const id =
-    urlId ||
-    localStorage.getItem("pawanvoice_userid") ||
-    oldUser?.userId ||
-    oldUser?.id ||
-    makeUserId();
-
-  const name =
-    urlName ||
-    localStorage.getItem("pawanvoice_name") ||
-    oldUser?.name ||
-    "Pawan User";
-
-  const dp =
-    urlDp ||
-    localStorage.getItem("pawanvoice_dp") ||
-    oldUser?.dp ||
-    DEFAULT_DP;
-
-  return {
-
-    userId:String(id),
-
-    id:String(id),
-
-    name:String(name),
-
-    dp:String(dp),
-
-    gender:
-      localStorage.getItem("pawanvoice_gender") ||
-      oldUser?.gender ||
-      "Male",
-
-    coins:
-      safeNumber(
-        localStorage.getItem("pawanvoice_coins"),
-        safeNumber(oldUser?.coins,100000)
-      ),
-
-    diamonds:
-      safeNumber(
-        localStorage.getItem("pawanvoice_diamonds"),
-        safeNumber(
-          oldUser?.diamonds,
-          safeNumber(
-            localStorage.getItem("pawanvoice_diamond"),
-            safeNumber(oldUser?.diamond,0)
-          )
-        )
-      ),
-
-    level:
-      safeNumber(
-        localStorage.getItem("pawanvoice_level"),
-        safeNumber(oldUser?.level,1)
-      ),
-
-    exp:
-      safeNumber(oldUser?.exp,0),
-
-    following:
-      safeNumber(oldUser?.following,0),
-
-    followers:
-      safeNumber(oldUser?.followers,0),
-
-    visitors:
-      safeNumber(oldUser?.visitors,0),
-
-    vipLevel:
-      safeNumber(oldUser?.vipLevel,0),
-
-    vipExp:
-      safeNumber(oldUser?.vipExp,0),
-
-    avatarFrame:
-      oldUser?.avatarFrame || DEFAULT_FRAME,
-
-    badge:
-      oldUser?.badge || DEFAULT_BADGE,
-
-    entryEffect:
-      oldUser?.entryEffect || DEFAULT_ENTRY
-
-  };
-}
-
-
-let currentUser = getStoredUser();
+"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect width='100%25' height='100%25' fill='%2330303b'/%3E%3Ctext x='50%25' y='60%25' text-anchor='middle' font-size='80' fill='white'%3EP%3C/text%3E%3C/svg%3E";
 
 
 /* =========================================================
-   LOCAL STORAGE SAVE
+   USER ID
 ========================================================= */
 
-function saveLocalUser(){
+let USER_ID =
+localStorage.getItem("pv_user_id") ||
+localStorage.getItem("pv_userId") ||
+localStorage.getItem("pawanUserId") ||
+localStorage.getItem("pawanId");
 
-  localStorage.setItem(
-    "pawanvoice_userid",
-    currentUser.userId
+
+if(!USER_ID){
+
+  USER_ID =
+  "PV" +
+  Math.floor(
+    10000000 +
+    Math.random()*90000000
   );
 
   localStorage.setItem(
-    "pawanvoice_name",
-    currentUser.name
-  );
-
-  localStorage.setItem(
-    "pawanvoice_dp",
-    currentUser.dp
-  );
-
-  localStorage.setItem(
-    "pawanvoice_gender",
-    currentUser.gender
-  );
-
-  localStorage.setItem(
-    "pawanvoice_coins",
-    String(currentUser.coins)
-  );
-
-  localStorage.setItem(
-    "pawanvoice_diamond",
-    String(currentUser.diamonds)
-  );
-
-  localStorage.setItem(
-    "pawanvoice_diamonds",
-    String(currentUser.diamonds)
-  );
-
-  localStorage.setItem(
-    "pawanvoice_level",
-    String(currentUser.level)
-  );
-
-  localStorage.setItem(
-    "pawanvoiceUser",
-    JSON.stringify(currentUser)
+    "pv_user_id",
+    USER_ID
   );
 
 }
 
 
 /* =========================================================
-   FIREBASE USER LOAD
+   DATABASE
 ========================================================= */
 
-async function loadUserFirebase(){
+let db = null;
 
-  saveLocalUser();
+let rooms = {};
 
-  if(!db){
-    renderAll();
-    return;
-  }
+let roomTab = "popular";
 
-  try{
 
-    const snapshot =
-      await get(ref(db,"users/"+currentUser.userId));
+/* =========================================================
+   USER
+========================================================= */
 
-    if(snapshot.exists()){
+let user =
+JSON.parse(
+  localStorage.getItem("pv_user") || "null"
+) || {
 
-      const firebaseUser = snapshot.val();
+  name:"Guest",
 
-      currentUser = {
+  gender:"Male",
 
-        ...currentUser,
+  dp:DEFAULT_DP,
 
-        ...firebaseUser,
+  level:1,
 
-        userId:
-          firebaseUser.userId ||
-          firebaseUser.id ||
-          currentUser.userId,
+  exp:0,
 
-        id:
-          firebaseUser.id ||
-          firebaseUser.userId ||
-          currentUser.userId,
+  coins:0,
 
-        diamonds:
-          safeNumber(
-            firebaseUser.diamonds,
-            safeNumber(firebaseUser.diamond,currentUser.diamonds)
-          )
+  diamonds:0,
 
-      };
+  following:0,
 
-    }else{
+  followers:0,
 
-      await saveUserFirebase();
+  visitors:0,
 
+  vip:1,
+
+  cpPoints:0,
+
+  friendshipPoints:0,
+
+  familyId:"",
+
+  familyName:"",
+
+  avatarFrame:"",
+
+  badge:"",
+
+  medal:"",
+
+  inviteCode:
+  "PV"+USER_ID.slice(-8)
+
+};
+
+
+/* =========================================================
+   LEVEL / VIP
+========================================================= */
+
+const BADGE_LEVELS =
+[10,20,30,40,50,60,70,80,90,100];
+
+const FRAME_LEVELS =
+[1,10,20,30,40,50,60,70,80,90,100];
+
+const VEHICLE_LEVELS =
+[2,15,25,35,45,55,65,75,85,95,105];
+
+const CUSTOM_ID_LEVELS =
+[3,6,9,12,15,19,28,37,47,57,67,77,87,97,107];
+
+const VIP_LEVELS = {
+
+  1:1,
+  5:1,
+  10:1,
+  15:1,
+  20:1,
+
+  25:2,
+  30:2,
+
+  35:3,
+  40:3,
+
+  45:4,
+  50:4,
+
+  55:5,
+  60:5,
+
+  65:6,
+  70:6,
+
+  75:7,
+  80:7,
+
+  85:8,
+  90:8,
+
+  95:9,
+
+  100:10
+
+};
+
+
+function maxVIP(level){
+
+  let v = 1;
+
+  Object.keys(VIP_LEVELS)
+  .forEach(x=>{
+
+    if(level >= Number(x)){
+      v = VIP_LEVELS[x];
     }
 
-    saveLocalUser();
+  });
 
-    renderAll();
-
-  }catch(error){
-
-    console.error("Firebase user load:",error);
-
-    renderAll();
-
-  }
+  return v;
 }
 
 
 /* =========================================================
-   FIREBASE USER SAVE
+   7 DAY REWARD
 ========================================================= */
 
-async function saveUserFirebase(){
+const WEEKLY_REWARDS = [
 
-  saveLocalUser();
+  {
+    day:1,
+    icon:"🪙",
+    title:"1 Lakh Coins",
+    coins:100000
+  },
 
-  if(!db) return false;
+  {
+    day:2,
+    icon:"🪙",
+    title:"2 Lakh Coins",
+    coins:200000
+  },
 
-  try{
+  {
+    day:3,
+    icon:"🖼️",
+    title:"Frame + 3 Lakh Coins",
+    coins:300000,
+    frame:true
+  },
 
-    await update(
-      ref(db,"users/"+currentUser.userId),
-      {
+  {
+    day:4,
+    icon:"🪙",
+    title:"4 Lakh Coins",
+    coins:400000
+  },
 
-        userId:currentUser.userId,
+  {
+    day:5,
+    icon:"🎁",
+    title:"Special Gift + 5 Lakh Coins",
+    coins:500000
+  },
 
-        id:currentUser.userId,
+  {
+    day:6,
+    icon:"💎",
+    title:"Diamonds + 6 Lakh Coins",
+    coins:600000,
+    diamonds:1000
+  },
 
-        name:currentUser.name,
-
-        dp:currentUser.dp,
-
-        gender:currentUser.gender,
-
-        coins:safeNumber(currentUser.coins,0),
-
-        diamonds:safeNumber(currentUser.diamonds,0),
-
-        diamond:safeNumber(currentUser.diamonds,0),
-
-        level:safeNumber(currentUser.level,1),
-
-        exp:safeNumber(currentUser.exp,0),
-
-        following:safeNumber(currentUser.following,0),
-
-        followers:safeNumber(currentUser.followers,0),
-
-        visitors:safeNumber(currentUser.visitors,0),
-
-        vipLevel:safeNumber(currentUser.vipLevel,0),
-
-        vipExp:safeNumber(currentUser.vipExp,0),
-
-        avatarFrame:
-          currentUser.avatarFrame || DEFAULT_FRAME,
-
-        badge:
-          currentUser.badge || DEFAULT_BADGE,
-
-        entryEffect:
-          currentUser.entryEffect || DEFAULT_ENTRY,
-
-        updatedAt:Date.now()
-
-      }
-    );
-
-    return true;
-
-  }catch(error){
-
-    console.error("Firebase save:",error);
-
-    return false;
-
+  {
+    day:7,
+    icon:"👑",
+    title:"VIP Reward + 7 Lakh Coins",
+    coins:700000,
+    vip:true
   }
+
+];
+
+
+/* =========================================================
+   10 DAILY TASKS
+========================================================= */
+
+const DAILY_TASKS = [
+
+  {
+    id:"login",
+    title:"Daily Login",
+    icon:"📅",
+    target:1,
+    reward:10000
+  },
+
+  {
+    id:"room",
+    title:"Join Voice Room",
+    icon:"🎙️",
+    target:1,
+    reward:15000
+  },
+
+  {
+    id:"chat",
+    title:"Send Chat Message",
+    icon:"💬",
+    target:5,
+    reward:20000
+  },
+
+  {
+    id:"gift",
+    title:"Send Gift",
+    icon:"🎁",
+    target:1,
+    reward:30000
+  },
+
+  {
+    id:"follow",
+    title:"Follow User",
+    icon:"❤️",
+    target:1,
+    reward:10000
+  },
+
+  {
+    id:"visitor",
+    title:"Visit Profiles",
+    icon:"👀",
+    target:3,
+    reward:15000
+  },
+
+  {
+    id:"mic",
+    title:"Use Voice Mic",
+    icon:"🎤",
+    target:10,
+    reward:25000
+  },
+
+  {
+    id:"family",
+    title:"Family Activity",
+    icon:"👨‍👩‍👧",
+    target:1,
+    reward:30000
+  },
+
+  {
+    id:"cp",
+    title:"CP Interaction",
+    icon:"💎",
+    target:1,
+    reward:30000
+  },
+
+  {
+    id:"share",
+    title:"Share Room",
+    icon:"📤",
+    target:1,
+    reward:15000
+  }
+
+];
+
+
+/* =========================================================
+   200 GIFTS
+========================================================= */
+
+const GIFTS = [];
+
+for(let i=1;i<=200;i++){
+
+  let price;
+
+  if(i<=20)
+    price=i*100;
+  else if(i<=50)
+    price=i*500;
+  else if(i<=100)
+    price=i*1000;
+  else if(i<=150)
+    price=i*5000;
+  else
+    price=i*10000;
+
+  GIFTS.push({
+
+    id:i,
+
+    name:
+    "Gift "+i,
+
+    icon:
+    i%10===0 ? "🚀" :
+    i%9===0 ? "👑" :
+    i%8===0 ? "💎" :
+    i%7===0 ? "🌹" :
+    i%6===0 ? "🎂" :
+    i%5===0 ? "🎁" :
+    "❤️",
+
+    price:price
+
+  });
+
 }
 
 
 /* =========================================================
-   SYNC USER INTO ROOMS
+   HELPERS
 ========================================================= */
 
-async function syncUserIntoRooms(){
+function money(n){
 
-  if(!db) return;
+  return Number(n||0)
+  .toLocaleString("en-IN");
 
-  try{
+}
 
-    const snapshot =
-      await get(ref(db,"rooms"));
 
-    if(!snapshot.exists()) return;
+function esc(v){
 
-    const rooms = snapshot.val() || {};
+  return String(v ?? "")
+  .replace(/[&<>"']/g,m=>({
 
-    const changes = {};
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
 
-    Object.entries(rooms).forEach(([roomId,room])=>{
+  }[m]));
 
-      if(!room) return;
+}
 
-      const users = room.users || {};
-      const members = room.members || {};
 
-      if(users[currentUser.userId]){
+function toast(message){
 
-        changes[
-          "rooms/"+roomId+
-          "/users/"+currentUser.userId+"/name"
-        ] = currentUser.name;
+  const t =
+  document.getElementById("toast");
 
-        changes[
-          "rooms/"+roomId+
-          "/users/"+currentUser.userId+"/dp"
-        ] = currentUser.dp;
+  t.textContent = message;
 
-      }
+  t.classList.add("show");
 
-      if(members[currentUser.userId]){
+  setTimeout(
+    ()=>t.classList.remove("show"),
+    2200
+  );
 
-        changes[
-          "rooms/"+roomId+
-          "/members/"+currentUser.userId+"/name"
-        ] = currentUser.name;
+}
 
-        changes[
-          "rooms/"+roomId+
-          "/members/"+currentUser.userId+"/dp"
-        ] = currentUser.dp;
 
-      }
+/* =========================================================
+   SAVE USER
+========================================================= */
+
+function saveUser(){
+
+  localStorage.setItem(
+    "pv_user",
+    JSON.stringify(user)
+  );
+
+  if(db){
+
+    db.ref(
+      "users/"+USER_ID
+    ).update({
+
+      ...user,
+
+      userId:USER_ID,
+
+      id:USER_ID,
+
+      updatedAt:Date.now()
 
     });
 
-    if(Object.keys(changes).length){
-      await update(ref(db),changes);
-    }
-
-  }catch(error){
-
-    console.error("Room user sync:",error);
-
   }
+
 }
 
 
@@ -1932,277 +1223,469 @@ async function syncUserIntoRooms(){
 function renderUser(){
 
   const dp =
-    currentUser.dp || DEFAULT_DP;
+  user.dp || DEFAULT_DP;
 
-  const name =
-    currentUser.name || "Pawan User";
+  homeDP.src = dp;
 
-  const level =
-    safeNumber(currentUser.level,1);
+  myDP.src = dp;
 
-  const exp =
-    safeNumber(currentUser.exp,0);
+  homeName.textContent =
+  user.name || "Guest";
 
-  const need =
-    Math.max(10000,level*10000);
+  myName.textContent =
+  user.name || "Guest";
 
-  const percent =
-    Math.min(100,(exp/need)*100);
+  homeID.textContent =
+  USER_ID;
 
+  myID.textContent =
+  USER_ID;
 
-  const homeDp =
-    document.getElementById("homeUserDp");
+  homeLevel.textContent =
+  user.level || 1;
 
-  if(homeDp)
-    homeDp.src = dp;
+  myLevel.textContent =
+  user.level || 1;
 
+  homeVIP.textContent =
+  maxVIP(user.level || 1);
 
-  const homeName =
-    document.getElementById("homeUserName");
+  myVIP.textContent =
+  maxVIP(user.level || 1);
 
-  if(homeName)
-    homeName.textContent = name;
+  following.textContent =
+  user.following || 0;
 
+  followers.textContent =
+  user.followers || 0;
 
-  const homeId =
-    document.getElementById("homeUserId");
+  visitors.textContent =
+  user.visitors || 0;
 
-  if(homeId)
-    homeId.textContent =
-      "ID: "+currentUser.userId;
+  coins.textContent =
+  money(user.coins)+" Coins";
 
+  diamonds.textContent =
+  money(user.diamonds)+" Diamond";
 
-  const homeLevel =
-    document.getElementById("homeLevel");
+  levelBig.textContent =
+  user.level || 1;
 
-  if(homeLevel)
-    homeLevel.textContent =
-      "LV "+level;
+  expBig.textContent =
+  money(user.exp || 0);
 
+  inviteCode.value =
+  user.inviteCode ||
+  "PV"+USER_ID.slice(-8);
 
-  const homeExp =
-    document.getElementById("homeExpFill");
+  renderLevelRewards();
 
-  if(homeExp)
-    homeExp.style.width =
-      percent+"%";
-
-
-  const profileDp =
-    document.getElementById("profileDp");
-
-  if(profileDp)
-    profileDp.src = dp;
-
-
-  const profileName =
-    document.getElementById("profileName");
-
-  if(profileName)
-    profileName.textContent = name;
-
-
-  const profileId =
-    document.getElementById("profileId");
-
-  if(profileId)
-    profileId.textContent =
-      "ID: "+currentUser.userId;
-
-
-  const gender =
-    document.getElementById("profileGender");
-
-  if(gender)
-    gender.textContent =
-      currentUser.gender || "Male";
-
-
-  document.getElementById("followingCount").textContent =
-    safeNumber(currentUser.following,0);
-
-
-  document.getElementById("followersCount").textContent =
-    safeNumber(currentUser.followers,0);
-
-
-  document.getElementById("visitorsCount").textContent =
-    safeNumber(currentUser.visitors,0);
-
-
-  document.getElementById("vipSmall").textContent =
-    "VIP "+safeNumber(currentUser.vipLevel,0);
-
-
-  document.getElementById("profileCoins").textContent =
-    formatNumber(currentUser.coins);
-
-
-  document.getElementById("profileDiamonds").textContent =
-    formatNumber(currentUser.diamonds);
-
-}
-
-
-function renderAll(){
-
-  renderUser();
-
-  renderTasks();
+  renderVIP();
 
 }
 
 
 /* =========================================================
-   ROOMS REALTIME
+   FIREBASE START
 ========================================================= */
 
-function listenRooms(){
+function startFirebase(){
 
-  if(!db){
+  try{
 
-    document.getElementById("roomsList").innerHTML =
-      `<div class="empty">
-        Firebase is not connected.<br>
-        Please add your Firebase configuration.
-      </div>`;
+    if(!firebase.apps.length){
 
-    return;
-  }
-
-
-  onValue(
-    ref(db,"rooms"),
-    snapshot => {
-
-      const data =
-        snapshot.val() || {};
-
-      renderRooms(data);
-
-    },
-    error => {
-
-      console.error("Room listener:",error);
-
-      document.getElementById("roomsList").innerHTML =
-        `<div class="empty">
-          Unable to load rooms.
-        </div>`;
+      firebase.initializeApp(
+        firebaseConfig
+      );
 
     }
-  );
+
+    db =
+    firebase.database();
+
+
+    /* USER LISTENER */
+
+    db.ref(
+      "users/"+USER_ID
+    ).on(
+      "value",
+      snap=>{
+
+        if(snap.exists()){
+
+          user = {
+
+            ...user,
+
+            ...snap.val()
+
+          };
+
+          localStorage.setItem(
+            "pv_user",
+            JSON.stringify(user)
+          );
+
+        }
+        else{
+
+          saveUser();
+
+        }
+
+        renderUser();
+
+      }
+    );
+
+
+    /* ROOMS LISTENER */
+
+    db.ref("rooms").on(
+      "value",
+      snap=>{
+
+        rooms =
+        snap.val() || {};
+
+        renderRooms();
+
+      }
+    );
+
+
+    /* EVENTS */
+
+    db.ref("events").on(
+      "value",
+      snap=>{
+
+        if(
+          snap.exists()
+        ){
+
+          renderFirebaseEvents(
+            snap.val()
+          );
+
+        }
+
+      }
+    );
+
+
+    /* INBOX */
+
+    db.ref(
+      "users/"+USER_ID+"/inbox"
+    ).on(
+      "value",
+      snap=>{
+
+        let list=[];
+
+        snap.forEach(
+          x=>list.unshift(
+            x.val()
+          )
+        );
+
+        renderInbox(list);
+
+      }
+    );
+
+
+    console.log(
+      "PawanVoice Firebase Connected"
+    );
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    toast(
+      "Firebase connection error"
+    );
+
+    rooms =
+    JSON.parse(
+      localStorage.getItem(
+        "pv_rooms"
+      ) || "{}"
+    );
+
+    renderRooms();
+
+  }
 
 }
 
 
 /* =========================================================
-   RENDER ROOMS
+   EVENTS FROM FIREBASE
 ========================================================= */
 
-function renderRooms(data){
+function renderFirebaseEvents(data){
 
   const list =
-    document.getElementById("roomsList");
+  Object.values(data || {});
 
-  const entries =
-    Object.entries(data || {});
-
-  document.getElementById("roomCount").textContent =
-    entries.length+" Rooms";
-
-
-  if(!entries.length){
-
-    list.innerHTML =
-      `<div class="empty">
-        🎙️ No live rooms yet.<br>
-        Create the first room!
-      </div>`;
-
+  if(!list.length)
     return;
+
+  eventList.innerHTML =
+  list.slice(0,8)
+  .map(e=>`
+
+    <div class="event"
+         onclick="openEvent('${esc(e.title||"Event")}')">
+
+      <div class="big">
+        ${esc(e.icon||"🎉")}
+      </div>
+
+      <b>${esc(e.title||"Event")}</b>
+
+      <small>
+        ${esc(e.description||"Join now")}
+      </small>
+
+    </div>
+
+  `).join("");
+
+}
+
+
+/* =========================================================
+   ROOMS
+========================================================= */
+
+function normalizeRoom(id,r){
+
+  r = r || {};
+
+  let count =
+  Number(
+    r.usersCount ||
+    r.onlineCount ||
+    0
+  );
+
+  if(r.users){
+
+    count =
+    Object.keys(
+      r.users
+    ).length;
 
   }
 
+  if(r.members){
 
-  entries.sort((a,b)=>{
+    count =
+    Math.max(
+      count,
+      Object.keys(
+        r.members
+      ).length
+    );
 
-    const at =
-      safeNumber(a[1]?.updatedAt,a[1]?.createdAt||0);
+  }
 
-    const bt =
-      safeNumber(b[1]?.updatedAt,b[1]?.createdAt||0);
+  return {
 
-    return bt-at;
+    id:id,
+
+    name:
+    r.name ||
+    r.roomName ||
+    "Voice Room",
+
+    dp:
+    r.dp ||
+    r.roomDp ||
+    r.roomDP ||
+    DEFAULT_DP,
+
+    category:
+    r.category ||
+    "General",
+
+    hostId:
+    r.hostId ||
+    r.ownerId ||
+    r.owner ||
+    "",
+
+    hostName:
+    r.hostName ||
+    r.ownerName ||
+    "Guest",
+
+    usersCount:
+    Math.min(
+      9,
+      count
+    ),
+
+    createdAt:
+    r.createdAt ||
+    0,
+
+    users:
+    r.users ||
+    r.members ||
+    {}
+
+  };
+
+}
+
+
+function renderRooms(){
+
+  let arr =
+  Object.entries(
+    rooms || {}
+  ).map(
+    ([id,r])=>
+    normalizeRoom(id,r)
+  );
+
+
+  const q =
+  (
+    document.getElementById(
+      "roomSearch"
+    )?.value || ""
+  )
+  .trim()
+  .toLowerCase();
+
+
+  arr =
+  arr.filter(r=>{
+
+    return !q ||
+    r.name.toLowerCase()
+      .includes(q) ||
+    r.id.toLowerCase()
+      .includes(q);
 
   });
 
 
-  list.innerHTML =
-    entries.map(([id,room])=>{
+  if(roomTab==="my"){
 
-      const users =
-        room?.users ||
-        room?.members ||
-        {};
+    arr =
+    arr.filter(
+      r=>r.hostId===USER_ID
+    );
 
-      const online =
-        Object.keys(users).length;
+  }
 
-      const name =
-        room?.name ||
-        room?.roomName ||
-        "PawanVoice Room";
 
-      const dp =
-        room?.dp ||
-        room?.ownerDp ||
-        DEFAULT_DP;
+  if(roomTab==="popular"){
 
-      const owner =
-        room?.ownerName ||
-        "Host";
+    arr.sort(
+      (a,b)=>
+      b.usersCount-a.usersCount
+    );
 
-      return `
+  }
+  else{
 
-        <div class="room-card">
+    arr.sort(
+      (a,b)=>
+      b.createdAt-a.createdAt
+    );
 
-          <img
-            class="room-dp"
-            src="${escapeHtml(dp)}"
-            onerror="this.src='${DEFAULT_DP}'"
-          >
+  }
 
-          <div class="room-info">
 
-            <div class="room-name">
-              ${escapeHtml(name)}
-            </div>
+  if(!arr.length){
 
-            <div class="room-meta">
-              ID: ${escapeHtml(id)}
-            </div>
+    roomList.innerHTML =
+    `
+      <div class="empty">
+        🎙️ अभी कोई live room नहीं है
+      </div>
+    `;
 
-            <div class="room-meta">
-              👤 ${online}/9
-              &nbsp; • &nbsp;
-              <span class="online">● Live</span>
-            </div>
+    return;
 
-          </div>
+  }
 
-          <button
-            class="join-btn"
-            onclick="joinRoom('${escapeJs(id)}')"
-          >
-            JOIN
-          </button>
 
-        </div>
+  roomList.innerHTML =
+  arr.map(r=>`
 
-      `;
+    <div class="room">
 
-    }).join("");
+      <img
+        src="${esc(r.dp)}"
+        onerror="this.src='${DEFAULT_DP}'">
+
+      <div class="roomInfo">
+
+        <strong>
+          ${esc(r.name)}
+        </strong>
+
+        <span class="muted">
+
+          👤 ${r.usersCount}/9
+
+          • ${esc(r.category)}
+
+          <br>
+
+          ID: ${esc(r.id)}
+
+          <br>
+
+          Host:
+          ${esc(r.hostName)}
+
+        </span>
+
+      </div>
+
+      <button
+        class="join"
+        onclick="joinRoom('${esc(r.id)}')">
+
+        Join
+
+      </button>
+
+    </div>
+
+  `).join("");
+
+}
+
+
+function setTab(tab){
+
+  roomTab=tab;
+
+  document
+  .querySelectorAll(".tab")
+  .forEach(
+    x=>
+    x.classList.toggle(
+      "active",
+      x.dataset.tab===tab
+    )
+  );
+
+  renderRooms();
 
 }
 
@@ -2211,84 +1694,37 @@ function renderRooms(data){
    CREATE ROOM
 ========================================================= */
 
-window.createRoom = function(){
-
-  openModal(`
-
-    <div class="modal-head">
-      <h2>🎙️ Create Voice Room</h2>
-      <button class="close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="form-group">
-      <label>Room Name</label>
-      <input
-        id="createRoomName"
-        value="${escapeAttr(currentUser.name+"'s Room")}"
-        maxlength="50"
-        placeholder="Enter room name"
-      >
-    </div>
-
-    <div class="form-group">
-      <label>Room Category</label>
-
-      <select id="createRoomCategory">
-        <option>General</option>
-        <option>Music</option>
-        <option>Friends</option>
-        <option>Games</option>
-        <option>Chat</option>
-        <option>Entertainment</option>
-      </select>
-
-    </div>
-
-    <div class="info-box">
-      <strong>🎙️ 9 Seats</strong>
-      <span>1 host seat + 8 guest seats</span>
-    </div>
-
-    <br>
-
-    <button class="save-btn" onclick="saveNewRoom()">
-      Create Room
-    </button>
-
-    <button class="cancel-btn" onclick="closeModal()">
-      Cancel
-    </button>
-
-  `);
-
-};
-
-
-window.saveNewRoom = async function(){
+function createRoom(){
 
   const name =
-    document.getElementById("createRoomName")
-      ?.value.trim() ||
-    currentUser.name+" 's Room";
+  newRoomName.value.trim();
 
-  const category =
-    document.getElementById("createRoomCategory")
-      ?.value ||
-    "General";
+  if(!name){
+
+    toast(
+      "Room Name डालें"
+    );
+
+    return;
+
+  }
 
 
   const roomId =
-    "PV"+Math.floor(
-      100000+
-      Math.random()*900000
-    );
+  "PV"+
+  Math.floor(
+    100000 +
+    Math.random()*900000
+  );
 
 
-  const now =
-    Date.now();
+  const roomDP =
+  newRoomDP.value.trim() ||
+  user.dp ||
+  DEFAULT_DP;
 
 
-  const room = {
+  const roomData = {
 
     id:roomId,
 
@@ -2296,775 +1732,467 @@ window.saveNewRoom = async function(){
 
     roomName:name,
 
-    dp:currentUser.dp,
+    dp:roomDP,
 
-    owner:currentUser.userId,
+    roomDp:roomDP,
 
-    ownerId:currentUser.userId,
+    category:
+    newRoomCategory.value,
 
-    ownerName:currentUser.name,
+    hostId:
+    USER_ID,
 
-    ownerDp:currentUser.dp,
+    ownerId:
+    USER_ID,
 
-    category:category,
+    hostName:
+    user.name || "Guest",
+
+    ownerName:
+    user.name || "Guest",
+
+    createdAt:
+    Date.now(),
+
+    usersCount:1,
 
     maxSeats:9,
-
-    maxViewers:100,
-
-    createdAt:now,
-
-    updatedAt:now,
 
     roomExp:0,
 
     users:{
 
-      [currentUser.userId]:{
+      [USER_ID]:{
 
-        id:currentUser.userId,
+        id:USER_ID,
 
-        userId:currentUser.userId,
+        userId:USER_ID,
 
-        name:currentUser.name,
+        name:
+        user.name || "Guest",
 
-        dp:currentUser.dp,
+        dp:
+        user.dp || DEFAULT_DP,
 
-        seat:0,
+        level:
+        user.level || 1,
 
-        mic:false,
+        vip:
+        maxVIP(
+          user.level || 1
+        ),
 
-        speaker:true,
+        seat:1,
 
-        joinedAt:now
+        isHost:true,
 
-      }
+        isAdmin:true,
 
-    },
-
-    members:{
-
-      [currentUser.userId]:{
-
-        id:currentUser.userId,
-
-        userId:currentUser.userId,
-
-        name:currentUser.name,
-
-        dp:currentUser.dp,
-
-        seat:0,
-
-        joinedAt:now
+        micOn:true
 
       }
 
     },
 
-    seats:[
+    seats:{
 
-      {
+      1:{
 
-        seat:0,
+        userId:USER_ID,
 
-        userId:currentUser.userId,
+        name:
+        user.name || "Guest",
 
-        name:currentUser.name,
+        dp:
+        user.dp || DEFAULT_DP,
 
-        dp:currentUser.dp,
+        isHost:true
 
-        mic:false
+      }
 
-      },
-
-      null,null,null,null,
-      null,null,null,null
-
-    ],
-
-    gifts:[],
-
-    messages:[]
+    }
 
   };
 
 
-  if(!db){
+  if(db){
 
-    showToast(
-      "Firebase connected नहीं है"
+    db.ref(
+      "rooms/"+roomId
+    )
+    .set(roomData)
+    .then(()=>{
+
+      toast(
+        "Room created"
+      );
+
+      setTimeout(()=>{
+
+        location.href =
+        "room.html?room="+
+        encodeURIComponent(
+          roomId
+        )+
+        "&userid="+
+        encodeURIComponent(
+          USER_ID
+        )+
+        "&name="+
+        encodeURIComponent(
+          user.name || "Guest"
+        )+
+        "&dp="+
+        encodeURIComponent(
+          user.dp || DEFAULT_DP
+        );
+
+      },500);
+
+    })
+    .catch(error=>{
+
+      console.error(error);
+
+      toast(
+        "Room create नहीं हुआ"
+      );
+
+    });
+
+  }
+  else{
+
+    rooms[roomId]=roomData;
+
+    localStorage.setItem(
+      "pv_rooms",
+      JSON.stringify(rooms)
     );
 
-    return;
+    location.href =
+    "room.html?room="+
+    encodeURIComponent(
+      roomId
+    );
 
   }
 
-
-  try{
-
-    await set(
-      ref(db,"rooms/"+roomId),
-      room
-    );
+}
 
 
-    currentUser.exp =
-      safeNumber(currentUser.exp,0)+3000;
+function createRoomPrompt(){
 
-    levelUpIfNeeded();
+  showPage("home");
 
-    await saveUserFirebase();
+  setTimeout(()=>{
 
+    newRoomName.focus();
 
-    closeModal();
+    window.scrollTo({
+      top:
+      document.body.scrollHeight,
+      behavior:"smooth"
+    });
 
-    showToast("Room created successfully 🎙️");
+  },100);
 
-
-    setTimeout(()=>{
-
-      joinRoom(roomId);
-
-    },400);
-
-
-  }catch(error){
-
-    console.error(error);
-
-    showToast(
-      "Room create failed: "+error.message
-    );
-
-  }
-
-};
+}
 
 
 /* =========================================================
    JOIN ROOM
 ========================================================= */
 
-window.joinRoom = function(roomId){
+function joinRoom(id){
 
-  saveLocalUser();
+  location.href =
+  "room.html?room="+
+  encodeURIComponent(id)+
+  "&userid="+
+  encodeURIComponent(USER_ID)+
+  "&name="+
+  encodeURIComponent(
+    user.name || "Guest"
+  )+
+  "&dp="+
+  encodeURIComponent(
+    user.dp || DEFAULT_DP
+  );
 
-  const url =
-    "room.html"+
-    "?room="+encodeURIComponent(roomId)+
-    "&userid="+encodeURIComponent(currentUser.userId)+
-    "&name="+encodeURIComponent(currentUser.name)+
-    "&dp="+encodeURIComponent(currentUser.dp);
-
-  location.href = url;
-
-};
+}
 
 
 /* =========================================================
-   PROFILE EDIT
+   PAGE
 ========================================================= */
 
-window.openEditProfile = function(){
+function showPage(page){
 
-  openModal(`
-
-    <div class="modal-head">
-      <h2>✏️ Edit Profile</h2>
-      <button class="close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="dp-upload">
-
-      <img
-        id="editDpPreview"
-        src="${escapeAttr(currentUser.dp)}"
-        onerror="this.src='${DEFAULT_DP}'"
-      >
-
-      <button onclick="document.getElementById('dpFile').click()">
-        Change DP
-      </button>
-
-      <input
-        id="dpFile"
-        type="file"
-        accept="image/*"
-        style="display:none"
-        onchange="uploadProfileDp(event)"
-      >
-
-    </div>
+  document
+  .querySelectorAll(".page")
+  .forEach(
+    x=>x.classList.remove(
+      "active"
+    )
+  );
 
 
-    <div class="form-group">
-      <label>Name</label>
+  document
+  .getElementById(page)
+  .classList.add("active");
+
+
+  navHome.classList.toggle(
+    "active",
+    page==="home"
+  );
+
+  navInbox.classList.toggle(
+    "active",
+    page==="inbox"
+  );
+
+  navProfile.classList.toggle(
+    "active",
+    page==="profile"
+  );
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+function openModal(title,body){
+
+  sheet.innerHTML = `
+
+    <button
+      class="close"
+      onclick="closeModal()">
+      ✕
+    </button>
+
+    <h2>${title}</h2>
+
+    ${body}
+
+  `;
+
+  modal.classList.add("show");
+
+}
+
+
+function closeModal(){
+
+  modal.classList.remove(
+    "show"
+  );
+
+}
+
+
+/* =========================================================
+   EDIT PROFILE
+========================================================= */
+
+function editProfile(){
+
+  openModal(
+    "👤 Edit Profile",
+    `
+
+      <div class="notice">
+        Name और DP बदलने पर
+        Firebase में save होगा और
+        Home/Room/Profile में sync होगा।
+      </div>
 
       <input
         id="editName"
-        maxlength="30"
-        value="${escapeAttr(currentUser.name)}"
-      >
+        class="input"
+        value="${esc(user.name)}"
+        placeholder="Your Name">
 
-    </div>
+      <select
+        id="editGender"
+        class="input">
 
-
-    <div class="form-group">
-      <label>Gender</label>
-
-      <select id="editGender">
-
-        <option value="Male"
-          ${currentUser.gender==="Male"?"selected":""}>
+        <option
+          ${user.gender==="Male"?"selected":""}>
           Male
         </option>
 
-        <option value="Female"
-          ${currentUser.gender==="Female"?"selected":""}>
+        <option
+          ${user.gender==="Female"?"selected":""}>
           Female
         </option>
 
-        <option value="Other"
-          ${currentUser.gender==="Other"?"selected":""}>
+        <option
+          ${user.gender==="Other"?"selected":""}>
           Other
         </option>
 
       </select>
 
-    </div>
+      <input
+        id="editDP"
+        class="input"
+        placeholder="DP image URL">
+
+      <button
+        class="btn full"
+        onclick="saveProfile()">
+
+        Save Profile
+
+      </button>
+
+    `
+  );
+
+}
 
 
-    <button class="save-btn" onclick="saveProfileChanges()">
-      Save Profile
-    </button>
+function saveProfile(){
 
-    <button class="cancel-btn" onclick="closeModal()">
-      Cancel
-    </button>
+  user.name =
+  editName.value.trim() ||
+  "Guest";
 
-  `);
-
-};
+  user.gender =
+  editGender.value;
 
 
-window.saveProfileChanges = async function(){
+  if(
+    editDP.value.trim()
+  ){
 
-  const name =
-    document.getElementById("editName")
-      ?.value.trim();
-
-  const gender =
-    document.getElementById("editGender")
-      ?.value ||
-    currentUser.gender;
-
-
-  if(!name){
-
-    showToast("Name required");
-
-    return;
-
-  }
-
-
-  currentUser.name =
-    name.substring(0,30);
-
-  currentUser.gender =
-    gender;
-
-
-  saveLocalUser();
-
-  renderAll();
-
-
-  const ok =
-    await saveUserFirebase();
-
-  if(ok){
-
-    await syncUserIntoRooms();
-
-    showToast("Profile saved successfully ✅");
-
-  }else{
-
-    showToast(
-      "Saved on this device. Firebase save failed."
-    );
+    user.dp =
+    editDP.value.trim();
 
   }
 
+
+  saveUser();
+
+  renderUser();
 
   closeModal();
 
-};
-
-
-/* =========================================================
-   DP UPLOAD
-========================================================= */
-
-window.uploadProfileDp = async function(event){
-
-  const file =
-    event.target.files?.[0];
-
-  if(!file) return;
-
-
-  if(file.size > 10*1024*1024){
-
-    showToast("Maximum DP size is 10 MB");
-
-    return;
-
-  }
-
-
-  const preview =
-    document.getElementById("editDpPreview");
-
-
-  if(preview){
-
-    preview.src =
-      URL.createObjectURL(file);
-
-  }
-
-
-  if(!storage){
-
-    showToast(
-      "Firebase Storage connected नहीं है"
-    );
-
-    return;
-
-  }
-
-
-  try{
-
-    showToast("Uploading DP...");
-
-
-    const extension =
-      file.name.split(".").pop() || "jpg";
-
-
-    const path =
-      "profilePhotos/"+
-      currentUser.userId+
-      "/profile_"+
-      Date.now()+
-      "."+
-      extension;
-
-
-    const fileRef =
-      storageRef(storage,path);
-
-
-    await uploadBytes(
-      fileRef,
-      file
-    );
-
-
-    const url =
-      await getDownloadURL(fileRef);
-
-
-    currentUser.dp =
-      url;
-
-
-    saveLocalUser();
-
-    renderAll();
-
-
-    await saveUserFirebase();
-
-    await syncUserIntoRooms();
-
-
-    if(preview)
-      preview.src = url;
-
-
-    showToast("DP updated successfully ✅");
-
-
-  }catch(error){
-
-    console.error(error);
-
-    showToast(
-      "DP upload failed: "+error.message
-    );
-
-  }
-
-};
-
-
-/* =========================================================
-   INBOX
-========================================================= */
-
-window.openInbox = function(){
-
-  openModal(`
-
-    <div class="modal-head">
-      <h2>💌 Inbox</h2>
-      <button class="close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="empty">
-
-      💌 No new messages right now.
-
-      <br><br>
-
-      Your follows, CP requests,
-      system rewards and room notifications
-      will appear here.
-
-    </div>
-
-  `);
-
-};
-
-
-/* =========================================================
-   FAMILY
-========================================================= */
-
-window.openFamily = function(){
-
-  openModal(`
-
-    <div class="modal-head">
-      <h2>👨‍👩‍👧‍👦 Family</h2>
-      <button class="close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="info-grid">
-
-      <div class="info-box">
-        <strong>🏠 My Family</strong>
-        <span>Not joined yet</span>
-      </div>
-
-      <div class="info-box">
-        <strong>👥 Members</strong>
-        <span>0 Members</span>
-      </div>
-
-      <div class="info-box">
-        <strong>🏆 Family EXP</strong>
-        <span>0 EXP</span>
-      </div>
-
-      <div class="info-box">
-        <strong>🥇 Ranking</strong>
-        <span>Family Ranking</span>
-      </div>
-
-    </div>
-
-    <br>
-
-    <button
-      class="save-btn"
-      onclick="showToast('Family system coming soon')"
-    >
-      Explore Family
-    </button>
-
-  `);
-
-};
-
-
-/* =========================================================
-   CP
-========================================================= */
-
-window.openCP = function(){
-
-  openModal(`
-
-    <div class="modal-head">
-      <h2>💞 CP Space</h2>
-      <button class="close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="empty">
-
-      💞 You don't have a CP yet.
-
-      <br><br>
-
-      Find a special friend in voice rooms
-      and send a CP request.
-
-    </div>
-
-    <br>
-
-    <button
-      class="save-btn"
-      onclick="openRooms()"
-    >
-      Find Friends
-    </button>
-
-  `);
-
-};
-
-
-/* =========================================================
-   RICH KING
-========================================================= */
-
-window.openRichKing = function(){
-
-  openModal(`
-
-    <div class="modal-head">
-      <h2>👑 Rich King Ranking</h2>
-      <button class="close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="rank-grid">
-
-      <div class="rank-card">
-        <div class="rank-icon">🥇</div>
-        <h4>1st</h4>
-        <p>Coming Soon</p>
-      </div>
-
-      <div class="rank-card">
-        <div class="rank-icon">🥈</div>
-        <h4>2nd</h4>
-        <p>Coming Soon</p>
-      </div>
-
-      <div class="rank-card">
-        <div class="rank-icon">🥉</div>
-        <h4>3rd</h4>
-        <p>Coming Soon</p>
-      </div>
-
-    </div>
-
-  `);
-
-};
-
-
-/* =========================================================
-   VIP
-========================================================= */
-
-window.openVIP = function(){
-
-  const level =
-    safeNumber(currentUser.level,1);
-
-  const vip =
-    safeNumber(currentUser.vipLevel,0);
-
-
-  const vipRequirements = [
-
-    [1,"Level 1"],
-    [1,"Level 5"],
-    [1,"Level 10"],
-    [1,"Level 15"],
-    [1,"Level 20"],
-
-    [2,"Level 25"],
-    [2,"Level 30"],
-
-    [3,"Level 35"],
-    [3,"Level 40"],
-
-    [4,"Level 45"],
-    [4,"Level 50"],
-
-    [5,"Level 55"],
-    [5,"Level 60"],
-
-    [6,"Level 65"],
-    [6,"Level 70"],
-
-    [7,"Level 75"],
-    [7,"Level 80"],
-
-    [8,"Level 85"],
-    [8,"Level 90"],
-
-    [9,"Level 95"],
-
-    [9,"Level 100+"]
-
-  ];
-
-
-  let html = `
-
-    <div class="modal-head">
-      <h2>💎 VIP</h2>
-      <button class="close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="level-big">
-
-      <div>YOUR VIP</div>
-
-      <div class="level-number">
-        VIP ${vip}
-      </div>
-
-      <div class="level-exp">
-        Current User Level: ${level}
-      </div>
-
-    </div>
-
-    <br>
-
-    <div class="level-list">
-
-  `;
-
-
-  vipRequirements.forEach((item,index)=>{
-
-    html += `
-
-      <div class="level-box">
-
-        <strong>
-          VIP ${item[0]}
-        </strong>
-
-        <span>
-          ${item[1]}
-        </span>
-
-      </div>
-
-    `;
-
-  });
-
-
-  html += `</div>`;
-
-
-  openModal(html);
-
-};
+  toast(
+    "Profile saved"
+  );
+
+}
 
 
 /* =========================================================
    LEVEL
 ========================================================= */
 
-window.openLevel = function(){
+function renderLevelRewards(){
 
-  const level =
-    safeNumber(currentUser.level,1);
+  let html="";
 
-  const exp =
-    safeNumber(currentUser.exp,0);
+  for(
+    let level=1;
+    level<=109;
+    level++
+  ){
 
-  const next =
-    Math.max(10000,level*10000);
+    let rewards=[];
 
-  const percent =
-    Math.min(100,(exp/next)*100);
+    if(
+      level%10===0
+    ){
 
+      rewards.push(
+        "🎖️ Level Medal"
+      );
 
-  let html = `
+    }
 
-    <div class="modal-head">
-      <h2>🏅 Level / EXP</h2>
-      <button class="close" onclick="closeModal()">×</button>
-    </div>
+    if(
+      FRAME_LEVELS.includes(level)
+    ){
 
-    <div class="level-big">
+      rewards.push(
+        "🖼️ Avatar Frame"
+      );
 
-      <div>LEVEL</div>
+    }
 
-      <div class="level-number">
-        ${level}
-      </div>
+    if(
+      BADGE_LEVELS.includes(level)
+    ){
 
-      <div class="level-exp">
-        ${formatNumber(exp)}
-        /
-        ${formatNumber(next)}
-        EXP
-      </div>
+      rewards.push(
+        "🎖️ Personal Badge"
+      );
 
-      <div
-        style="
-          margin-top:10px;
-          height:8px;
-          background:rgba(255,255,255,.25);
-          border-radius:20px;
-          overflow:hidden;
-        "
-      >
+    }
 
-        <div
-          style="
-            width:${percent}%;
-            height:100%;
-            background:#fff;
-          "
-        ></div>
+    if(
+      VEHICLE_LEVELS.includes(level)
+    ){
 
-      </div>
+      rewards.push(
+        "🚗 Vehicle"
+      );
 
-    </div>
+    }
 
-    <br>
+    if(
+      CUSTOM_ID_LEVELS.includes(level)
+    ){
 
-    <div class="level-list">
+      rewards.push(
+        "🆔 Custom ID"
+      );
 
-  `;
+    }
 
+    if(level===50){
 
-  for(let start=1;start<=100;start+=10){
+      rewards.push(
+        "🏠 Room Theme"
+      );
 
-    const end =
-      start+8;
+    }
+
+    if(level===55){
+
+      rewards.push(
+        "🎨 Profile Background"
+      );
+
+    }
+
+    if(!rewards.length)
+      continue;
+
 
     html += `
 
-      <div class="level-box">
-
-        <strong>
-          🏅 Level ${start}–${end}
-        </strong>
+      <div class="reward
+        ${level>(user.level||1)?"lock":""}">
 
         <span>
-          ${start<=level ? "Unlocked" : "Locked"}
+          Level ${level}
         </span>
+
+        <small>
+          ${rewards.join(" • ")}
+        </small>
 
       </div>
 
@@ -3072,334 +2200,80 @@ window.openLevel = function(){
 
   }
 
+  levelRewards.innerHTML =
+  html;
 
-  html += `</div>`;
-
-
-  openModal(html);
-
-};
+}
 
 
-/* =========================================================
-   STORE + 200 GIFTS
-========================================================= */
+function openLevel(){
 
-const giftEmojis = [
+  openModal(
+    "🆙 Level & EXP",
+    `
 
-"🌹","🌷","🌺","🌸","💐","❤️","💖","💗","💓","💕",
-"💞","💘","💝","💟","💋","😘","🥰","😍","💎","👑",
+      <div class="reward">
 
-"🧸","🐻","🐼","🐨","🐰","🐱","🐶","🦊","🐯","🦁",
-"🐸","🐵","🐹","🐭","🐷","🐮","🐔","🦄","🐥","🐣",
+        <span>
+          Current Level
+        </span>
 
-"🍎","🍓","🍒","🍉","🍊","🍋","🍌","🍍","🥭","🍑",
-"🍇","🍈","🍉","🥝","🍅","🥕","🌽","🍔","🍕","🍟",
+        <b>
+          ${user.level||1}
+        </b>
 
-"🍗","🍖","🌭","🌮","🌯","🍿","🍩","🍪","🎂","🍰",
-"🧁","🍫","🍭","🍬","🍧","🍨","🍦","☕","🥤","🧋",
+      </div>
 
-"🎈","🎉","🎊","🎁","🎀","🎵","🎶","🎸","🎤","🎧",
-"🎮","🕹️","⚽","🏀","🏆","🥇","🎯","🎲","🃏","🎰",
+      <div class="reward">
 
-"🚗","🚕","🚙","🚌","🚎","🏎️","🚓","🚑","🚒","🚜",
-"✈️","🚁","🚀","🛸","⛵","🚤","🛥️","🚲","🏍️","🛵",
+        <span>
+          Current EXP
+        </span>
 
-"💍","💎","👑","🏰","💰","💵","💸","🪙","🔱","⚜️",
-"🪄","🔮","🧿","✨","⭐","🌟","🌈","🔥","💥","⚡",
+        <b>
+          ${money(user.exp||0)}
+        </b>
 
-"🦋","🦚","🦜","🦩","🐬","🐳","🦈","🐉","🐲","🦖",
-"🌙","☀️","🌞","🌎","🌍","🌌","🌠","☁️","❄️","☃️",
+      </div>
 
-"💯","❤️‍🔥","🤍","🖤","💜","💙","💚","💛","🧡","🤎",
-"💫","🌹","👸","🤴","🎩","👒","👠","💄","💅","🕶️",
+      <p class="muted">
+        Level rewards में
+        Frame, Medal, Badge,
+        Vehicle और Custom ID
+        unlock होंगे।
+      </p>
 
-"🏠","🏯","🗼","🕌","⛪","🛕","🎡","🎢","🎠","🎪",
-"📱","💻","⌚","📷","🎥","🎬","📺","🎙️","🔊","🎧"
+      ${levelRewards.innerHTML}
 
-];
-
-
-const giftNames = [];
-
-for(let i=0;i<200;i++){
-
-  giftNames.push(
-    "Gift "+(i+1)
+    `
   );
 
 }
 
 
-const giftPrices = [];
-
-
-for(let i=0;i<200;i++){
-
-  let price;
-
-  if(i<50)
-    price=(i+1)*100;
-
-  else if(i<100)
-    price=(i-49)*1000;
-
-  else if(i<150)
-    price=(i-99)*10000;
-
-  else
-    price=(i-149)*50000;
-
-  giftPrices.push(price);
-
-}
-
-
-window.openStore = function(){
-
-  let html = `
-
-    <div class="modal-head">
-
-      <h2>🛍️ Gift Store</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()"
-      >×</button>
-
-    </div>
-
-    <div class="info-box">
-
-      <strong>🪙 Your Coins</strong>
-
-      <span>
-        ${formatNumber(currentUser.coins)}
-      </span>
-
-    </div>
-
-    <br>
-
-    <div class="gift-tabs">
-
-      <button
-        class="gift-tab"
-        onclick="filterGifts('all')"
-      >
-        All 200
-      </button>
-
-      <button
-        class="gift-tab"
-        onclick="filterGifts('small')"
-      >
-        Small
-      </button>
-
-      <button
-        class="gift-tab"
-        onclick="filterGifts('medium')"
-      >
-        Medium
-      </button>
-
-      <button
-        class="gift-tab"
-        onclick="filterGifts('large')"
-      >
-        Large
-      </button>
-
-      <button
-        class="gift-tab"
-        onclick="filterGifts('luxury')"
-      >
-        Luxury
-      </button>
-
-    </div>
-
-    <div
-      id="giftStoreGrid"
-      class="gift-grid"
-    ></div>
-
-  `;
-
-
-  openModal(html);
-
-  renderGiftStore("all");
-
-};
-
-
-window.filterGifts = function(category){
-
-  renderGiftStore(category);
-
-};
-
-
-function getGiftSize(index){
-
-  if(index<50)
-    return "small";
-
-  if(index<100)
-    return "medium";
-
-  if(index<150)
-    return "large";
-
-  return "luxury";
-
-}
-
-
-function renderGiftStore(category){
-
-  const grid =
-    document.getElementById("giftStoreGrid");
-
-  if(!grid) return;
-
-
-  const items = [];
-
-
-  for(let i=0;i<200;i++){
-
-    const size =
-      getGiftSize(i);
-
-    if(category!=="all" && category!==size)
-      continue;
-
-
-    items.push(`
-
-      <div class="gift-item">
-
-        <div class="gift-emoji">
-          ${giftEmojis[i] || "🎁"}
-        </div>
-
-        <strong>
-          ${giftNames[i]}
-        </strong>
-
-        <span>
-          🪙 ${formatNumber(giftPrices[i])}
-        </span>
-
-      </div>
-
-    `);
-
-  }
-
-
-  grid.innerHTML =
-    items.join("");
-
-};
-
-
 /* =========================================================
-   7 DAY REWARDS
+   VIP
 ========================================================= */
 
-const weeklyRewards = [
+function renderVIP(){
 
-  {
-    day:1,
-    reward:"1,00,000 Coins"
-  },
+  let html="";
 
-  {
-    day:2,
-    reward:"2,00,000 Coins"
-  },
-
-  {
-    day:3,
-    reward:"Special Frame + 3,00,000 Coins"
-  },
-
-  {
-    day:4,
-    reward:"4,00,000 Coins"
-  },
-
-  {
-    day:5,
-    reward:"Special Gift + 5,00,000 Coins"
-  },
-
-  {
-    day:6,
-    reward:"Diamonds + 6,00,000 Coins"
-  },
-
-  {
-    day:7,
-    reward:"VIP Reward + 7,00,000 Coins"
-  }
-
-];
-
-
-window.openRewards = function(){
-
-  let html = `
-
-    <div class="modal-head">
-
-      <h2>🎁 7 Day Reward</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()"
-      >×</button>
-
-    </div>
-
-    <div class="reward-list">
-
-  `;
-
-
-  weeklyRewards.forEach(item=>{
+  Object.keys(VIP_LEVELS)
+  .forEach(level=>{
 
     html += `
 
-      <div class="reward">
+      <div class="reward
+      ${Number(level)>(user.level||1)?"lock":""}">
 
-        <div class="reward-day">
-          DAY ${item.day}
-        </div>
+        <span>
+          Level ${level}
+        </span>
 
-        <div class="reward-info">
-
-          <strong>
-            Daily Reward
-          </strong>
-
-          <span>
-            ${item.reward}
-          </span>
-
-        </div>
-
-        <button
-          class="claim"
-          onclick="claimWeeklyReward(${item.day})"
-        >
-          Claim
-        </button>
+        <b>
+          VIP ${VIP_LEVELS[level]}
+        </b>
 
       </div>
 
@@ -3407,39 +2281,491 @@ window.openRewards = function(){
 
   });
 
+  vipRewards.innerHTML =
+  html;
 
-  html += `
-
-    </div>
-
-    <br>
-
-    <div class="empty">
-      Login every day to unlock the next reward.
-    </div>
-
-  `;
+}
 
 
-  openModal(html);
+function openVIP(){
 
-};
+  openModal(
+    "👑 VIP",
+    `
+
+      <div class="notice">
+        Level के साथ VIP progression
+        unlock होगा।
+      </div>
+
+      ${vipRewards.innerHTML}
+
+      <button
+        class="btn full"
+        onclick="buyNextVip()">
+
+        Buy Next VIP
+
+      </button>
+
+    `
+  );
+
+}
 
 
-window.claimWeeklyReward = async function(day){
+function buyNextVip(){
 
-  if(day<1 || day>7)
+  const current =
+  maxVIP(
+    user.level || 1
+  );
+
+  const next =
+  Math.min(
+    10,
+    current+1
+  );
+
+
+  if(current>=10){
+
+    toast(
+      "VIP 10 already reached"
+    );
+
     return;
 
-
-  const key =
-    "pv_weekly_claim_"+day;
+  }
 
 
-  if(localStorage.getItem(key)){
+  const cost =
+  next*100000;
 
-    showToast(
-      "Day "+day+" already claimed"
+
+  if(
+    Number(user.coins||0)
+    < cost
+  ){
+
+    toast(
+      "Coins कम हैं. Required: "+
+      money(cost)
+    );
+
+    return;
+
+  }
+
+
+  user.coins -= cost;
+
+  user.vip = next;
+
+  saveUser();
+
+  renderUser();
+
+  closeModal();
+
+  toast(
+    "VIP "+next+" purchased"
+  );
+
+}
+
+
+/* =========================================================
+   RANKING
+========================================================= */
+
+function openRanking(type){
+
+  if(!db){
+
+    showRankingLocal(type);
+
+    return;
+
+  }
+
+
+  db.ref("users")
+  .once("value")
+  .then(snapshot=>{
+
+    let list=[];
+
+    snapshot.forEach(child=>{
+
+      const u =
+      child.val() || {};
+
+      let value=0;
+
+
+      if(type==="CP"){
+
+        value =
+        Number(
+          u.cpPoints ||
+          u.cp ||
+          0
+        );
+
+      }
+      else if(
+        type==="Rich King" ||
+        type==="Wealth"
+      ){
+
+        value =
+        Number(
+          u.coins ||
+          0
+        )+
+        Number(
+          u.diamonds ||
+          0
+        )*100;
+
+      }
+      else{
+
+        value =
+        Number(
+          u.level ||
+          1
+        )+
+        Number(
+          u.exp ||
+          0
+        )/10000;
+
+      }
+
+
+      list.push({
+
+        id:
+        child.key,
+
+        name:
+        u.name || "Guest",
+
+        dp:
+        u.dp || DEFAULT_DP,
+
+        value:value
+
+      });
+
+    });
+
+
+    list.sort(
+      (a,b)=>
+      b.value-a.value
+    );
+
+
+    if(type==="Family"){
+
+      showFamilyRanking();
+
+      return;
+
+    }
+
+
+    openModal(
+      "🏆 "+type+" Ranking",
+
+      list.slice(0,20)
+      .map((x,i)=>`
+
+        <div class="rankRow">
+
+          <div class="rankNo">
+            ${i+1}
+          </div>
+
+          <img
+            src="${esc(x.dp)}"
+            onerror="this.src='${DEFAULT_DP}'">
+
+          <div class="rankInfo">
+
+            <b>
+              ${esc(x.name)}
+            </b>
+
+            <div class="muted">
+              ID: ${esc(x.id)}
+            </div>
+
+          </div>
+
+          <div class="rankValue">
+            ${money(
+              Math.floor(x.value)
+            )}
+          </div>
+
+        </div>
+
+      `).join("") ||
+
+      "<div class='empty'>No ranking data</div>"
+
+    );
+
+  });
+
+}
+
+
+function showRankingLocal(type){
+
+  openModal(
+    "🏆 "+type,
+    `
+
+      <div class="empty">
+        Ranking data Firebase में
+        आने के बाद यहाँ realtime
+        ranking दिखेगी।
+      </div>
+
+    `
+  );
+
+}
+
+
+/* =========================================================
+   FAMILY
+========================================================= */
+
+function openFamily(){
+
+  showFamilyRanking();
+
+}
+
+
+function showFamilyRanking(){
+
+  const familyName =
+  user.familyName ||
+  "No Family";
+
+  openModal(
+    "👨‍👩‍👧 Family Ranking",
+    `
+
+      <div class="reward">
+
+        <span>
+          Family
+        </span>
+
+        <b>
+          ${esc(familyName)}
+        </b>
+
+      </div>
+
+      <div class="reward">
+
+        <span>
+          Family ID
+        </span>
+
+        <b>
+          ${esc(user.familyId||"-")}
+        </b>
+
+      </div>
+
+      <div class="reward">
+
+        <span>
+          Family EXP
+        </span>
+
+        <b>
+          ${money(
+            user.familyExp || 0
+          )}
+        </b>
+
+      </div>
+
+      <p class="muted">
+        Family members और Family
+        ranking Firebase data के
+        साथ यहाँ sync होंगे।
+      </p>
+
+    `
+  );
+
+}
+
+
+function showFamilyProfile(){
+
+  openFamily();
+
+}
+
+
+/* =========================================================
+   CP
+========================================================= */
+
+function openCP(){
+
+  showCP();
+
+}
+
+
+function showCP(){
+
+  openModal(
+    "💎 CP Space",
+    `
+
+      <div class="reward">
+
+        <span>
+          CP Points
+        </span>
+
+        <b>
+          ${money(
+            user.cpPoints || 0
+          )}
+        </b>
+
+      </div>
+
+      <div class="reward">
+
+        <span>
+          Friendship Points
+        </span>
+
+        <b>
+          ${money(
+            user.friendshipPoints || 0
+          )}
+        </b>
+
+      </div>
+
+      <div class="reward">
+
+        <span>
+          CP Level
+        </span>
+
+        <b>
+          ${Math.max(
+            1,
+            Math.floor(
+              Number(
+                user.cpPoints||0
+              )/100
+            )+1
+          )}
+        </b>
+
+      </div>
+
+      <p class="muted">
+        CP data Firebase में save
+        होने पर ranking और CP
+        progress यहाँ दिखाई देगा।
+      </p>
+
+    `
+  );
+
+}
+
+
+/* =========================================================
+   REWARDS
+========================================================= */
+
+function openRewards(){
+
+  let claimed =
+  JSON.parse(
+    localStorage.getItem(
+      "pv_weekly_rewards"
+    ) || "{}"
+  );
+
+
+  openModal(
+    "🎁 7 Day Rewards",
+
+    WEEKLY_REWARDS
+    .map(r=>`
+
+      <div class="reward">
+
+        <span>
+
+          ${r.icon}
+          Day ${r.day}
+
+          <br>
+
+          <small>
+            ${r.title}
+          </small>
+
+        </span>
+
+        <button
+          class="btn
+          ${claimed[r.day]?"dark":"green"}"
+          onclick="claimWeekly(${r.day})">
+
+          ${claimed[r.day]?
+            "Claimed":
+            "Claim"}
+
+        </button>
+
+      </div>
+
+    `).join("")
+
+  );
+
+}
+
+
+function claimWeekly(day){
+
+  let claimed =
+  JSON.parse(
+    localStorage.getItem(
+      "pv_weekly_rewards"
+    ) || "{}"
+  );
+
+
+  if(claimed[day]){
+
+    toast(
+      "Already claimed"
     );
 
     return;
@@ -3448,298 +2774,316 @@ window.claimWeeklyReward = async function(day){
 
 
   const reward =
-    weeklyRewards[day-1];
+  WEEKLY_REWARDS
+  .find(x=>x.day===day);
 
 
-  if(!reward) return;
+  if(!reward)
+    return;
 
 
-  /*
-    Client fallback reward.
-    Server-side claim should also validate
-    rewards before giving coins.
-  */
-
-  const coinMap = {
-
-    1:100000,
-    2:200000,
-    3:300000,
-    4:400000,
-    5:500000,
-    6:600000,
-    7:700000
-
-  };
+  user.coins =
+  Number(user.coins||0)
+  +
+  Number(reward.coins||0);
 
 
-  currentUser.coins +=
-    coinMap[day] || 0;
+  if(reward.diamonds){
 
-
-  currentUser.exp +=
-    day*5000;
-
-
-  if(day===3){
-
-    currentUser.avatarFrame = {
-      id:"weekly_frame_03",
-      name:"Special Weekly Frame",
-      image:"",
-      active:true
-    };
+    user.diamonds =
+    Number(user.diamonds||0)
+    +
+    reward.diamonds;
 
   }
 
 
-  if(day===6){
+  if(reward.frame){
 
-    currentUser.diamonds +=
-      100;
+    user.avatarFrame =
+    "Weekly Reward Frame";
+
+  }
+
+
+  if(reward.vip){
+
+    user.vip =
+    Math.max(
+      Number(user.vip||1),
+      2
+    );
 
   }
 
 
-  if(day===7){
-
-    currentUser.vipLevel =
-      Math.max(
-        currentUser.vipLevel,
-        1
-      );
-
-  }
-
+  claimed[day]=true;
 
   localStorage.setItem(
-    key,
-    "1"
+    "pv_weekly_rewards",
+    JSON.stringify(claimed)
   );
 
 
-  levelUpIfNeeded();
+  saveUser();
 
-  saveLocalUser();
+  renderUser();
 
-  renderAll();
+  openRewards();
 
-  await saveUserFirebase();
-
-
-  showToast(
-    "Day "+day+" reward claimed 🎁"
+  toast(
+    "Day "+day+" reward claimed"
   );
-
-
-  setTimeout(
-    openRewards,
-    400
-  );
-
-};
-
-
-/* =========================================================
-   10 DAILY TASKS
-========================================================= */
-
-const dailyTasks = [
-
-  {
-    id:1,
-    icon:"🌞",
-    name:"Daily Login",
-    reward:"1,000 Coins"
-  },
-
-  {
-    id:2,
-    icon:"🎙️",
-    name:"Join Room",
-    reward:"2,000 Coins"
-  },
-
-  {
-    id:3,
-    icon:"🎤",
-    name:"Voice Time",
-    reward:"3,000 Coins"
-  },
-
-  {
-    id:4,
-    icon:"💬",
-    name:"Send Message",
-    reward:"1,000 Coins"
-  },
-
-  {
-    id:5,
-    icon:"❤️",
-    name:"Follow User",
-    reward:"1,500 Coins"
-  },
-
-  {
-    id:6,
-    icon:"🎁",
-    name:"Send Gift",
-    reward:"5,000 Coins"
-  },
-
-  {
-    id:7,
-    icon:"📨",
-    name:"Invite Friend",
-    reward:"10,000 Coins"
-  },
-
-  {
-    id:8,
-    icon:"🏠",
-    name:"Create Room",
-    reward:"3,000 Coins"
-  },
-
-  {
-    id:9,
-    icon:"📈",
-    name:"Gain EXP",
-    reward:"2,000 Coins"
-  },
-
-  {
-    id:10,
-    icon:"🏆",
-    name:"Daily Ranking",
-    reward:"5,000 Coins"
-  }
-
-];
-
-
-function renderTasks(){
-
-  const list =
-    document.getElementById("tasksList");
-
-  if(!list) return;
-
-
-  list.innerHTML =
-    dailyTasks.slice(0,5).map(task=>`
-
-      <div class="task">
-
-        <div class="task-icon">
-          ${task.icon}
-        </div>
-
-        <div class="task-info">
-
-          <strong>
-            ${task.name}
-          </strong>
-
-          <span>
-            Reward: ${task.reward}
-          </span>
-
-        </div>
-
-        <button
-          onclick="claimTask(${task.id})"
-        >
-          Claim
-        </button>
-
-      </div>
-
-    `).join("");
 
 }
 
 
-window.openTasks = function(){
+/* =========================================================
+   DAILY TASKS
+========================================================= */
 
-  let html = `
+function openTasks(){
 
-    <div class="modal-head">
+  const today =
+  new Date()
+  .toISOString()
+  .slice(0,10);
 
-      <h2>📋 Daily Tasks</h2>
+
+  let data =
+  JSON.parse(
+    localStorage.getItem(
+      "pv_daily_tasks_"+today
+    ) || "{}"
+  );
+
+
+  openModal(
+    "📋 Daily Tasks",
+
+    DAILY_TASKS
+    .map(t=>{
+
+      const progress =
+      Math.min(
+        t.target,
+        Number(
+          data[t.id] || 0
+        )
+      );
+
+      const done =
+      progress>=t.target;
+
+
+      return `
+
+        <div class="task">
+
+          <div class="taskTop">
+
+            <span>
+              ${t.icon}
+              ${t.title}
+            </span>
+
+            <b>
+              ${progress}/${t.target}
+            </b>
+
+          </div>
+
+          <div class="progress">
+
+            <i style="
+              width:${(
+                progress/t.target
+              )*100}%;
+            "></i>
+
+          </div>
+
+          <div class="muted"
+               style="margin-top:7px">
+
+            Reward:
+            🪙 ${money(t.reward)}
+
+            ${done?
+              " • ✅ Completed":
+              ""}
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("")
+
+  );
+
+}
+
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+function openEvent(name){
+
+  openModal(
+    "🎉 "+name,
+
+    `
+
+      <div class="notice">
+        PawanVoice Event
+      </div>
+
+      <div class="reward">
+        <span>Event Status</span>
+        <b>Active</b>
+      </div>
+
+      <p>
+        इस event में participate
+        करके Coins, Diamonds,
+        Frames और दूसरे rewards
+        मिल सकते हैं।
+      </p>
 
       <button
-        class="close"
-        onclick="closeModal()"
-      >×</button>
+        class="btn green full"
+        onclick="toast('Event joined');closeModal()">
 
-    </div>
+        Join Event
 
-    <div class="task-list">
+      </button>
 
-  `;
+    `
+  );
+
+}
 
 
-  dailyTasks.forEach(task=>{
+/* =========================================================
+   STORE
+========================================================= */
 
-    html += `
+function openStore(){
 
-      <div class="task">
+  openModal(
+    "🛍️ PawanVoice Store",
 
-        <div class="task-icon">
-          ${task.icon}
-        </div>
+    `
 
-        <div class="task-info">
+      <div class="notice">
+        Coins से Gifts और
+        profile items खरीदें।
+      </div>
 
-          <strong>
-            ${task.name}
-          </strong>
+      <div class="grid3">
 
-          <span>
-            Reward: ${task.reward}
-          </span>
+        <button class="feature"
+                onclick="openGiftStore()">
 
-        </div>
+          <span class="ico">🎁</span>
+          <b>200 Gifts</b>
 
-        <button
-          onclick="claimTask(${task.id})"
-        >
-          Claim
+        </button>
+
+        <button class="feature"
+                onclick="showReward('🖼️ Frames',FRAME_LEVELS)">
+
+          <span class="ico">🖼️</span>
+          <b>Frames</b>
+
+        </button>
+
+        <button class="feature"
+                onclick="showDress()">
+
+          <span class="ico">👗</span>
+          <b>Dress</b>
+
         </button>
 
       </div>
 
-    `;
+    `
+  );
 
-  });
-
-
-  html += `</div>`;
+}
 
 
-  openModal(html);
+/* =========================================================
+   GIFT STORE
+========================================================= */
 
-};
+function openGiftStore(){
+
+  openModal(
+    "🎁 200 Gifts",
+
+    `
+
+      <div class="notice">
+        आपके पास:
+        🪙 ${money(user.coins)}
+        Coins
+      </div>
+
+      <div class="grid3">
+
+        ${GIFTS.map(g=>`
+
+          <button
+            class="feature"
+            onclick="buyGift(${g.id})">
+
+            <span class="ico">
+              ${g.icon}
+            </span>
+
+            <b>
+              ${esc(g.name)}
+            </b>
+
+            <small>
+              🪙 ${money(g.price)}
+            </small>
+
+          </button>
+
+        `).join("")}
+
+      </div>
+
+    `
+  );
+
+}
 
 
-window.claimTask = async function(id){
+function buyGift(id){
 
-  const task =
-    dailyTasks.find(x=>x.id===id);
+  const gift =
+  GIFTS.find(
+    g=>g.id===id
+  );
 
-  if(!task) return;
+  if(!gift)
+    return;
 
 
-  const key =
-    "pv_task_"+id+"_"+new Date().toDateString();
+  if(
+    Number(user.coins||0)
+    < gift.price
+  ){
 
-
-  if(localStorage.getItem(key)){
-
-    showToast(
-      "This task is already claimed today."
+    toast(
+      "Coins कम हैं"
     );
 
     return;
@@ -3747,329 +3091,68 @@ window.claimTask = async function(id){
   }
 
 
-  const rewards = {
-
-    1:1000,
-    2:2000,
-    3:3000,
-    4:1000,
-    5:1500,
-    6:5000,
-    7:10000,
-    8:3000,
-    9:2000,
-    10:5000
-
-  };
+  user.coins -=
+  gift.price;
 
 
-  currentUser.coins +=
-    rewards[id] || 0;
+  if(!user.gifts)
+    user.gifts={};
 
 
-  currentUser.exp +=
-    500;
+  user.gifts[gift.id] =
+  Number(
+    user.gifts[gift.id] || 0
+  )+1;
 
 
-  levelUpIfNeeded();
+  saveUser();
 
-  saveLocalUser();
+  renderUser();
 
-  renderAll();
-
-  await saveUserFirebase();
-
-
-  localStorage.setItem(
-    key,
-    "1"
+  toast(
+    gift.name+
+    " purchased"
   );
 
-
-  showToast(
-    task.name+" claimed 🎁"
-  );
-
-};
+}
 
 
 /* =========================================================
-   WALLET
+   MEDALS
 ========================================================= */
 
-window.openWallet = function(){
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>💰 Wallet</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()"
-      >×</button>
-
-    </div>
-
-    <div class="wallet-card">
-
-      <div class="wallet-box">
-
-        <small>🪙 Coins</small>
-
-        <strong>
-          ${formatNumber(currentUser.coins)}
-        </strong>
-
-      </div>
-
-      <div class="wallet-box">
-
-        <small>💎 Diamonds</small>
-
-        <strong>
-          ${formatNumber(currentUser.diamonds)}
-        </strong>
-
-      </div>
-
-    </div>
-
-    <br>
-
-    <div class="empty">
-
-      Coins can be used for gifts,
-      events and games.
-
-      <br><br>
-
-      Diamonds will be used for premium
-      features and rewards.
-
-    </div>
-
-  `);
-
-};
-
-
-/* =========================================================
-   INVITE
-========================================================= */
-
-window.openInvite = function(){
-
-  const code =
-    "PV"+currentUser.userId.slice(-6);
-
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>📨 Invite Friends</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()"
-      >×</button>
-
-    </div>
-
-    <div class="level-big">
-
-      <div>YOUR INVITE CODE</div>
-
-      <div class="level-number"
-           style="font-size:28px">
-        ${code}
-      </div>
-
-    </div>
-
-    <br>
-
-    <div class="info-box">
-
-      <strong>🎁 Invite Rewards</strong>
-
-      <span>
-        Invite friends to PawanVoice
-        and complete invite missions.
-      </span>
-
-    </div>
-
-    <br>
-
-    <button
-      class="save-btn"
-      onclick="shareInvite('${escapeJs(code)}')"
-    >
-      Share Invite
-    </button>
-
-  `);
-
-};
-
-
-window.shareInvite = async function(code){
-
-  const text =
-    "Join me on PawanVoice 🎙️"+
-    "\\nInvite Code: "+code;
-
-
-  if(navigator.share){
-
-    try{
-
-      await navigator.share({
-        title:"PawanVoice",
-        text:text
-      });
-
-    }catch(e){}
-
-  }else{
-
-    try{
-
-      await navigator.clipboard.writeText(text);
-
-      showToast(
-        "Invite copied"
-      );
-
-    }catch(e){
-
-      showToast(text);
-
-    }
-
-  }
-
-};
-
-
-/* =========================================================
-   DRESS / FRAME / MEDAL / BADGE
-========================================================= */
-
-window.openDress = function(){
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>👗 My Dress</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()"
-      >×</button>
-
-    </div>
-
-    <div class="empty">
-
-      👗 Your dress collection will
-      appear here.
-
-      <br><br>
-
-      Visit Store to collect outfits.
-
-    </div>
-
-  `);
-
-};
-
-
-window.openFrame = function(){
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>🖼️ Avatar Frame</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()"
-      >×</button>
-
-    </div>
-
-    <div class="info-box">
-
-      <strong>
-        ${escapeHtml(
-          currentUser.avatarFrame?.name ||
-          "Default Frame"
-        )}
-      </strong>
-
-      <span>
-        Current active frame
-      </span>
-
-    </div>
-
-    <br>
-
-    <button
-      class="save-btn"
-      onclick="showToast('Frame collection opened')"
-    >
-      My Frames
-    </button>
-
-  `);
-
-};
-
-
-window.openMedal = function(){
-
-  let html = `
-
-    <div class="modal-head">
-
-      <h2>🏅 Level Medals</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()"
-      >×</button>
-
-    </div>
-
-    <div class="level-list">
-
-  `;
-
-
-  for(let start=1;start<=100;start+=10){
+function showMedals(){
+
+  let html="";
+
+  for(
+    let start=1;
+    start<=100;
+    start+=10
+  ){
 
     const end =
-      start+9;
+    start+8;
 
     html += `
 
-      <div class="level-box">
-
-        <strong>
-          🏅 ${start}–${end}
-        </strong>
+      <div class="reward
+      ${(
+        user.level||1
+      )<start?"lock":""}">
 
         <span>
-          Level Medal
+          🏅 Level
+          ${start}-${end}
         </span>
+
+        <b>
+          ${
+            (user.level||1)>=start
+            ?"Unlocked":
+            "Locked"
+          }
+        </b>
 
       </div>
 
@@ -4078,468 +3161,397 @@ window.openMedal = function(){
   }
 
 
-  html += `</div>`;
+  openModal(
+    "🏅 Medal",
+    html
+  );
+
+}
 
 
-  openModal(html);
+/* =========================================================
+   FRAME / BADGE / VEHICLE
+========================================================= */
 
-};
+function showReward(title,levels){
+
+  openModal(
+    title,
+
+    levels
+    .map(level=>`
+
+      <div class="reward
+      ${level>(user.level||1)?"lock":""}">
+
+        <span>
+          Level ${level}
+        </span>
+
+        <b>
+          ${level<=(user.level||1)?
+            "Unlocked":
+            "Locked"}
+        </b>
+
+      </div>
+
+    `).join("")
+
+  );
+
+}
 
 
-window.openBadge = function(){
+/* =========================================================
+   BAG
+========================================================= */
 
-  openModal(`
+function showBag(){
 
-    <div class="modal-head">
+  const gifts =
+  Object.keys(
+    user.gifts || {}
+  );
 
-      <h2>🎖️ Personal Badge</h2>
 
-      <button
-        class="close"
-        onclick="closeModal()"
-      >×</button>
+  openModal(
+    "🎒 My Bag",
 
-    </div>
+    `
 
-    <div class="info-box">
+      <div class="reward">
+        <span>Frames</span>
+        <b>
+          ${user.avatarFrame||"None"}
+        </b>
+      </div>
 
-      <strong>
-        ${escapeHtml(
-          currentUser.badge?.name ||
-          "New User"
-        )}
-      </strong>
+      <div class="reward">
+        <span>Badge</span>
+        <b>
+          ${user.badge||"None"}
+        </b>
+      </div>
+
+      <div class="reward">
+        <span>Medal</span>
+        <b>
+          ${user.medal||"Level Based"}
+        </b>
+      </div>
+
+      <div class="reward">
+        <span>Gifts Owned</span>
+        <b>
+          ${gifts.length}
+        </b>
+      </div>
+
+    `
+  );
+
+}
+
+
+/* =========================================================
+   DRESS
+========================================================= */
+
+function showDress(){
+
+  openModal(
+    "👗 My Dress",
+
+    `
+
+      <div class="empty">
+        👗 Your Dress Collection
+      </div>
+
+      <div class="reward">
+        <span>Default Dress</span>
+        <b>Equipped</b>
+      </div>
+
+      <p class="muted">
+        Store से खरीदे गए dress
+        यहाँ दिखाई देंगे।
+      </p>
+
+    `
+  );
+
+}
+
+
+/* =========================================================
+   INBOX
+========================================================= */
+
+function renderInbox(list){
+
+  inboxList.innerHTML =
+  list.length ?
+
+  list.map(x=>`
+
+    <div class="reward">
 
       <span>
-        Your current profile badge
+        📩
+        ${esc(
+          x.text ||
+          x.message ||
+          "Message"
+        )}
       </span>
 
+      <small>
+        ${x.createdAt?
+          new Date(
+            x.createdAt
+          ).toLocaleString():
+          ""}
+      </small>
+
     </div>
 
-  `);
+  `).join("") :
 
-};
+  "<div class='empty'>No messages</div>";
+
+
+  inboxDot.textContent =
+  list.length ? "•" : "";
+
+}
 
 
 /* =========================================================
-   RANKING
+   INVITE
 ========================================================= */
 
-window.openRanking = function(){
+function copyInvite(){
 
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>🏆 Rankings</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()"
-      >×</button>
-
-    </div>
-
-    <div class="rank-grid">
-
-      <div class="rank-card">
-        <div class="rank-icon">👨‍👩‍👧</div>
-        <h4>Family</h4>
-        <p>Family Ranking</p>
-      </div>
-
-      <div class="rank-card">
-        <div class="rank-icon">💞</div>
-        <h4>CP</h4>
-        <p>CP Ranking</p>
-      </div>
-
-      <div class="rank-card">
-        <div class="rank-icon">👑</div>
-        <h4>Rich King</h4>
-        <p>Wealth Ranking</p>
-      </div>
-
-    </div>
-
-  `);
-
-};
+  const code =
+  user.inviteCode ||
+  "PV"+USER_ID.slice(-8);
 
 
-/* =========================================================
-   ROOMS NAV
-========================================================= */
+  if(
+    navigator.clipboard
+  ){
 
-window.openRooms = function(){
+    navigator.clipboard
+    .writeText(code);
 
-  switchPage("home");
-
-  setTimeout(()=>{
-
-    document
-      .querySelector(".rooms-list")
-      ?.scrollIntoView({
-        behavior:"smooth",
-        block:"center"
-      });
-
-  },100);
-
-};
+  }
 
 
-/* =========================================================
-   MORE FEATURES
-========================================================= */
+  toast(
+    "Invite Code copied"
+  );
 
-window.openMoreFeatures = function(){
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>✨ More Features</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()"
-      >×</button>
-
-    </div>
-
-    <div class="quick-grid">
-
-      <button class="quick-item"
-        onclick="openFamily()">
-        <div class="quick-icon">👨‍👩‍👧‍👦</div>
-        <div class="quick-name">Family</div>
-      </button>
-
-      <button class="quick-item"
-        onclick="openCP()">
-        <div class="quick-icon">💞</div>
-        <div class="quick-name">CP</div>
-      </button>
-
-      <button class="quick-item"
-        onclick="openRichKing()">
-        <div class="quick-icon">👑</div>
-        <div class="quick-name">Rich King</div>
-      </button>
-
-      <button class="quick-item"
-        onclick="openVIP()">
-        <div class="quick-icon">💎</div>
-        <div class="quick-name">VIP</div>
-      </button>
-
-      <button class="quick-item"
-        onclick="openStore()">
-        <div class="quick-icon">🎁</div>
-        <div class="quick-name">Gifts</div>
-      </button>
-
-      <button class="quick-item"
-        onclick="openLevel()">
-        <div class="quick-icon">🏅</div>
-        <div class="quick-name">Level</div>
-      </button>
-
-      <button class="quick-item"
-        onclick="openTasks()">
-        <div class="quick-icon">📋</div>
-        <div class="quick-name">Tasks</div>
-      </button>
-
-      <button class="quick-item"
-        onclick="openRewards()">
-        <div class="quick-icon">🎁</div>
-        <div class="quick-name">Rewards</div>
-      </button>
-
-    </div>
-
-  `);
-
-};
+}
 
 
 /* =========================================================
    SETTINGS
 ========================================================= */
 
-window.openSettings = function(){
+function showSettings(){
 
-  openModal(`
+  openModal(
+    "⚙️ Settings",
 
-    <div class="modal-head">
+    `
 
-      <h2>⚙️ Settings</h2>
+      <div class="reward">
+        <span>Account</span>
+        <b>Active</b>
+      </div>
+
+      <div class="reward">
+        <span>Privacy</span>
+        <b>Settings</b>
+      </div>
+
+      <div class="reward">
+        <span>Notifications</span>
+        <b>ON</b>
+      </div>
+
+      <div class="reward">
+        <span>Sound</span>
+        <b>ON</b>
+      </div>
 
       <button
-        class="close"
-        onclick="closeModal()"
-      >×</button>
+        class="btn danger full"
+        onclick="logoutUser()">
 
-    </div>
+        Logout / Reset
 
-    <button class="menu-item"
-      onclick="showToast('Notifications enabled')">
+      </button>
 
-      <div class="menu-icon">🔔</div>
-
-      <div class="menu-text">
-        <strong>Notifications</strong>
-        <span>Room and message notifications</span>
-      </div>
-
-      <div class="arrow">›</div>
-
-    </button>
-
-    <button class="menu-item"
-      onclick="showToast('Privacy settings')">
-
-      <div class="menu-icon">🔒</div>
-
-      <div class="menu-text">
-        <strong>Privacy</strong>
-        <span>Manage your privacy</span>
-      </div>
-
-      <div class="arrow">›</div>
-
-    </button>
-
-    <button class="menu-item"
-      onclick="showToast('PawanVoice v1.0')">
-
-      <div class="menu-icon">ℹ️</div>
-
-      <div class="menu-text">
-        <strong>About</strong>
-        <span>PawanVoice</span>
-      </div>
-
-      <div class="arrow">›</div>
-
-    </button>
-
-  `);
-
-};
-
-
-/* =========================================================
-   PAGE SWITCH
-========================================================= */
-
-window.switchPage = function(page){
-
-  document
-    .querySelectorAll(".page")
-    .forEach(el=>{
-      el.classList.remove("active");
-    });
-
-
-  if(page==="profile"){
-
-    document
-      .getElementById("profilePage")
-      .classList.add("active");
-
-    document
-      .getElementById("navProfile")
-      .classList.add("active");
-
-    document
-      .getElementById("navHome")
-      .classList.remove("active");
-
-  }else{
-
-    document
-      .getElementById("homePage")
-      .classList.add("active");
-
-    document
-      .getElementById("navHome")
-      .classList.add("active");
-
-    document
-      .getElementById("navProfile")
-      .classList.remove("active");
-
-  }
-
-};
-
-
-/* =========================================================
-   MODAL
-========================================================= */
-
-function openModal(html){
-
-  document
-    .getElementById("modalBox")
-    .innerHTML = html;
-
-  document
-    .getElementById("modal")
-    .classList.add("show");
-
-}
-
-
-window.closeModal = function(){
-
-  document
-    .getElementById("modal")
-    .classList.remove("show");
-
-};
-
-
-window.closeModalOutside = function(event){
-
-  if(event.target.id==="modal")
-    closeModal();
-
-};
-
-
-/* =========================================================
-   LEVEL UP
-========================================================= */
-
-function levelUpIfNeeded(){
-
-  while(
-    currentUser.exp >=
-    Math.max(
-      10000,
-      currentUser.level*10000
-    )
-  ){
-
-    const need =
-      Math.max(
-        10000,
-        currentUser.level*10000
-      );
-
-    currentUser.exp -= need;
-
-    currentUser.level += 1;
-
-  }
-
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-window.logoutUser = function(){
-
-  const ok =
-    confirm(
-      "Logout from this device?"
-    );
-
-  if(!ok) return;
-
-
-  [
-    "pawanvoice_userid",
-    "pawanvoice_name",
-    "pawanvoice_dp",
-    "pawanvoice_gender",
-    "pawanvoice_coins",
-    "pawanvoice_diamond",
-    "pawanvoice_diamonds",
-    "pawanvoice_level",
-    "pawanvoiceUser"
-  ].forEach(key=>{
-    localStorage.removeItem(key);
-  });
-
-
-  location.href =
-    "login.html";
-
-};
-
-
-/* =========================================================
-   UTILITIES
-========================================================= */
-
-function formatNumber(value){
-
-  return safeNumber(value,0)
-    .toLocaleString("en-IN");
-
-}
-
-
-function escapeHtml(value){
-
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-
-}
-
-
-function escapeAttr(value){
-
-  return escapeHtml(value);
-
-}
-
-
-function escapeJs(value){
-
-  return String(value ?? "")
-    .replaceAll("\\","\\\\")
-    .replaceAll("'","\\'")
-    .replaceAll('"','\\"')
-    .replaceAll("\n","\\n")
-    .replaceAll("\r","\\r");
-
-}
-
-
-function showToast(message){
-
-  const toast =
-    document.getElementById("toast");
-
-  toast.textContent =
-    message;
-
-  toast.classList.add("show");
-
-
-  clearTimeout(
-    window.__pvToastTimer
+    `
   );
 
+}
 
-  window.__pvToastTimer =
-    setTimeout(()=>{
 
-      toast.classList.remove("show");
+function logoutUser(){
 
-    },2600);
+  localStorage.removeItem(
+    "pv_user"
+  );
+
+  localStorage.removeItem(
+    "pv_user_id"
+  );
+
+  location.reload();
+
+}
+
+
+/* =========================================================
+   LANGUAGE
+========================================================= */
+
+function showLanguage(){
+
+  openModal(
+    "🌐 Language",
+
+    `
+
+      <button
+        class="btn dark full"
+        onclick="chooseLanguage('Hindi')">
+
+        🇮🇳 Hindi
+
+      </button>
+
+      <br>
+
+      <button
+        class="btn dark full"
+        onclick="chooseLanguage('English')">
+
+        🇬🇧 English
+
+      </button>
+
+      <br>
+
+      <button
+        class="btn dark full"
+        onclick="chooseLanguage('Indonesian')">
+
+        🇮🇩 Indonesian
+
+      </button>
+
+    `
+  );
+
+}
+
+
+function chooseLanguage(language){
+
+  localStorage.setItem(
+    "pv_language",
+    language
+  );
+
+  toast(
+    "Language: "+language
+  );
+
+  closeModal();
+
+}
+
+
+/* =========================================================
+   HELP
+========================================================= */
+
+function showHelp(){
+
+  openModal(
+    "🆘 Help & Feedback",
+
+    `
+
+      <textarea
+        id="feedback"
+        class="input"
+        rows="5"
+        placeholder="अपना feedback लिखें">
+      </textarea>
+
+      <button
+        class="btn full"
+        onclick="sendFeedback()">
+
+        Send Feedback
+
+      </button>
+
+    `
+  );
+
+}
+
+
+function sendFeedback(){
+
+  const text =
+  feedback.value.trim();
+
+
+  if(!text){
+
+    toast(
+      "Feedback लिखें"
+    );
+
+    return;
+
+  }
+
+
+  if(db){
+
+    db.ref(
+      "feedback/"+USER_ID
+    ).push({
+
+      userId:USER_ID,
+
+      name:
+      user.name || "Guest",
+
+      text:text,
+
+      createdAt:
+      Date.now()
+
+    });
+
+  }
+
+
+  toast(
+    "Feedback sent"
+  );
+
+  closeModal();
 
 }
 
@@ -4548,20 +3560,9 @@ function showToast(message){
    INITIALIZE
 ========================================================= */
 
-async function init(){
+renderUser();
 
-  saveLocalUser();
-
-  renderAll();
-
-  listenRooms();
-
-  await loadUserFirebase();
-
-}
-
-
-init();
+startFirebase();
 
 </script>
 
