@@ -364,7 +364,7 @@ button{border:0;cursor:pointer}
  </div>
 </div>
 
-<!-- BANNER: 🚀 और पुराना text हटाया गया -->
+<!-- BANNER: पुराने slogan और banner rocket को हटाया गया -->
 <div class="room-banner">
  <div>
    <b id="bannerName">Welcome to PawanVoice</b>
@@ -1033,6 +1033,7 @@ window.toggleRoomFeatures=function(){
   document.getElementById("featuresButton");
 
  panel.classList.toggle("show");
+
  button.classList.toggle(
   "open",
   panel.classList.contains("show")
@@ -1103,6 +1104,7 @@ async function loadUser(){
    "Firebase user load:",
    e
   );
+
  }
 
  renderUser();
@@ -3212,6 +3214,18 @@ window.previewRoomDp=function(event){
    "Please select an image"
   );
 
+  event.target.value="";
+  return;
+ }
+
+ /* 5 MB limit */
+ if(file.size>5*1024*1024){
+
+  toast(
+   "Image 5MB से कम रखें"
+  );
+
+  event.target.value="";
   return;
  }
 
@@ -3243,17 +3257,34 @@ async function uploadRoomDp(file){
   );
  }
 
+ if(file.size>5*1024*1024){
+
+  throw new Error(
+   "Image too large"
+  );
+ }
+
+ const extension=
+  (
+   file.name.split(".").pop()||
+   "jpg"
+  )
+   .toLowerCase()
+   .replace(
+    /[^a-z0-9]/g,
+    ""
+   )||
+   "jpg";
+
  const path=
   "rooms/"+
   ROOM_ID+
   "/room-dp-"+
-  Date.now()+
+  USER.id+
   "-"+
-  file.name
-   .replace(
-    /[^a-zA-Z0-9._-]/g,
-    "_"
-   );
+  Date.now()+
+  "."+
+  extension;
 
  const fileRef=
   storageRef(
@@ -3265,7 +3296,8 @@ async function uploadRoomDp(file){
   fileRef,
   file,
   {
-   contentType:file.type
+   contentType:
+    file.type
   }
  );
 
@@ -4644,8 +4676,7 @@ document.addEventListener(
     }catch(e){}
    }
   }
- }
-);
+ });
 
 
 /* ================= BEFORE LEAVE ================= */
