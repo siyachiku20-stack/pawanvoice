@@ -1,51 +1,38 @@
-// ============================================================
-// PawanVoice - Complete Realtime Voice Room Server
-// ============================================================
-
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
-const crypto = require("crypto");
 const path = require("path");
+const crypto = require("crypto");
 const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
-}));
-
+app.use(cors({ origin: "*" }));
 app.use(express.json({ limit: "2mb" }));
-app.use(express.urlencoded({ extended: true }));
 
-// ------------------------------------------------------------
-// Static files
-// ------------------------------------------------------------
-
-app.use(express.static(__dirname, {
-  extensions: ["html"],
-  index: "index.html"
-}));
-
-// ------------------------------------------------------------
-// Socket.IO
-// ------------------------------------------------------------
+app.use(
+  express.static(__dirname, {
+    extensions: ["html"],
+    index: "index.html"
+  })
+);
 
 const io = new Server(server, {
   cors: {
     origin: "*",
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"]
   },
-  transports: ["websocket", "polling"]
+  transports: ["websocket", "polling"],
+  pingInterval: 25000,
+  pingTimeout: 60000
 });
 
-// ============================================================
-// MEMORY DATABASE
-// ============================================================
+/* =========================================================
+   MEMORY DATABASE
+   ========================================================= */
 
 const rooms = {};
 const users = {};
@@ -55,485 +42,124 @@ const socketUsers = {};
 const dailyData = {};
 const inventories = {};
 const games = {};
-const giftHistory = [];
+const giftHistory = {};
+const giftLocks = {};
+const taskProgress = {};
+const weeklyClaims = {};
+const roomRewards = {};
+const inbox = {};
 
-const giftLocks = new Set();
+/* =========================================================
+   HELPERS
+   ========================================================= */
 
-const MAX_GIFT_HISTORY = 10000;
+function safeString(value, fallback = "") {
+  if (value === undefined || value === null) return fallback;
+  return String(value);
+}
 
-// ============================================================
-// HELPERS
-// ============================================================
+function safeNumber(value, fallback = 0) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
 
 function now() {
   return Date.now();
 }
 
-function makeId(prefix = "") {
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function randomId(prefix = "") {
   return prefix + crypto.randomBytes(5).toString("hex");
 }
 
-function cleanText(value, fallback = "") {
-  if (value === undefined || value === null) return fallback;
-
-  return String(value)
-    .replace(/[<>]/g, "")
-    .trim()
-    .slice(0, 200);
+function cleanName(name) {
+  const n = safeString(name, "Pawan User").trim();
+  return n.substring(0, 40) || "Pawan User";
 }
 
-function cleanUserId(value) {
-  return cleanText(value, "")
-    .replace(/[^a-zA-Z0-9_-]/g, "")
-    .slice(0, 80);
+function cleanDp(dp) {
+  const d = safeString(dp, "https://i.pravatar.cc/200?img=12");
+  return d.substring(0, 2000);
 }
 
-function numberValue(value, fallback = 0) {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : fallback;
+function getExpForNextLevel(level) {
+  return Math.max(10000, safeNumber(level, 1) * 10000);
 }
 
-function positiveInt(value, fallback = 1) {
-  const n = Math.floor(Number(value));
-  if (!Number.isFinite(n) || n < 1) return fallback;
-  return n;
+function ensureArray(value) {
+  return Array.isArray(value) ? value : [];
 }
 
-function todayKey() {
-  const d = new Date();
+/* =========================================================
+   200 GIFTS
+   ========================================================= */
 
-  return [
-    d.getFullYear(),
-    String(d.getMonth() + 1).padStart(2, "0"),
-    String(d.getDate()).padStart(2, "0")
-  ].join("-");
-}
-
-function randomRoomId() {
-  return "PV" + Math.floor(100000 + Math.random() * 900000);
-}
-
-// ============================================================
-// 200 GIFTS
-// ============================================================
+const giftEmojis = [
+  "🌹","❤️","💖","💎","👑","🎁","💋","💕",
+  "🌸","🍫","🎂","🍰","🧸","🐻","🐰","🐼",
+  "🍓","🍒","🍎","🍉","🍕","🍔","🍟","🍗",
+  "🍩","🍪","🍭","🍬","☕","🍵","🍹","🥤",
+  "🎈","🎉","🎊","🎀","✨","🔥","⭐","🌟",
+  "⚡","🌈","☀️","🌙","🌺","🌷","🌻","🍀"
+];
 
 const giftCategories = [
-  "Small",
-  "Medium",
-  "Large",
+  "Love",
+  "Cute",
+  "Food",
+  "Fun",
+  "Game",
+  "Premium",
+  "Vehicle",
   "Luxury"
 ];
 
-const giftNames = [
-  "Heart",
-  "Rose",
-  "Kiss",
-  "Star",
-  "Like",
-  "Love",
-  "Tulip",
-  "Sunflower",
-  "Cherry",
-  "Apple",
-  "Orange",
-  "Mango",
-  "Watermelon",
-  "Strawberry",
-  "Lollipop",
-  "Candy",
-  "Cupcake",
-  "Cake",
-  "Donut",
-  "Ice Cream",
-  "Coffee",
-  "Tea",
-  "Burger",
-  "Pizza",
-  "Fries",
-  "Hot Dog",
-  "Popcorn",
-  "Chocolate",
-  "Diamond",
-  "Ruby",
-  "Emerald",
-  "Sapphire",
-  "Pearl",
-  "Crown",
-  "King Crown",
-  "Queen Crown",
-  "Ring",
-  "Necklace",
-  "Bracelet",
-  "Watch",
-  "Gift Box",
-  "Present",
-  "Balloon",
-  "Party",
-  "Firework",
-  "Rocket",
-  "Car",
-  "Sports Car",
-  "Bike",
-  "Motorcycle",
-  "Scooter",
-  "Jet",
-  "Helicopter",
-  "Yacht",
-  "Ship",
-  "Airplane",
-  "Rainbow",
-  "Cloud",
-  "Moon",
-  "Sun",
-  "Galaxy",
-  "Planet",
-  "Earth",
-  "Moon Star",
-  "Magic Wand",
-  "Fairy",
-  "Angel",
-  "Butterfly",
-  "Phoenix",
-  "Dragon",
-  "Unicorn",
-  "Tiger",
-  "Lion",
-  "Panda",
-  "Rabbit",
-  "Cat",
-  "Dog",
-  "Fox",
-  "Bear",
-  "Monkey",
-  "Koala",
-  "Penguin",
-  "Owl",
-  "Eagle",
-  "Dolphin",
-  "Whale",
-  "Fish",
-  "Golden Fish",
-  "Treasure",
-  "Treasure Chest",
-  "Money Bag",
-  "Gold Coin",
-  "Money Rain",
-  "Cash",
-  "Golden Crown",
-  "Golden Heart",
-  "Golden Rose",
-  "Golden Ring",
-  "Golden Car",
-  "Golden Jet",
-  "Golden Yacht",
-  "Luxury Car",
-  "Super Car",
-  "Lamborghini",
-  "Ferrari",
-  "Rolls Royce",
-  "Private Jet",
-  "Royal Yacht",
-  "Royal Palace",
-  "Castle",
-  "Diamond Castle",
-  "Crystal Palace",
-  "Magic Castle",
-  "Love Castle",
-  "Royal Horse",
-  "Pegasus",
-  "Dragon King",
-  "Phoenix King",
-  "Galaxy King",
-  "Universe",
-  "Galaxy Heart",
-  "Planet Heart",
-  "Meteor",
-  "Comet",
-  "Solar System",
-  "Moon Palace",
-  "Star Palace",
-  "Space Ship",
-  "Time Machine",
-  "Magic Portal",
-  "Magic Book",
-  "Magic Sword",
-  "Royal Sword",
-  "Legend Sword",
-  "Hero",
-  "Super Hero",
-  "Super Girl",
-  "Princess",
-  "Prince",
-  "King",
-  "Queen",
-  "Emperor",
-  "Empress",
-  "Royal Couple",
-  "Love Couple",
-  "Wedding",
-  "Wedding Ring",
-  "Wedding Cake",
-  "Wedding Car",
-  "Love Boat",
-  "Love Plane",
-  "Love Rocket",
-  "Cupid",
-  "Cupid Arrow",
-  "Love Bomb",
-  "Love Firework",
-  "Romantic Night",
-  "Red Heart",
-  "Pink Heart",
-  "Blue Heart",
-  "Purple Heart",
-  "Rainbow Heart",
-  "Crystal Heart",
-  "Diamond Heart",
-  "Royal Heart",
-  "Super Heart",
-  "Mega Heart",
-  "Ultra Heart",
-  "Legend Heart",
-  "My Love",
-  "Forever Love",
-  "True Love",
-  "Infinite Love",
-  "Pawan Love",
-  "Pawan Crown",
-  "Pawan Rocket",
-  "Pawan Galaxy",
-  "Pawan King",
-  "Pawan VIP",
-  "Pawan Legend",
-  "Pawan Royal",
-  "Pawan Universe",
-  "Pawan Grand Gift"
-];
+const gifts = [];
 
-const giftEmojis = [
-  "❤️",
-  "🌹",
-  "💋",
-  "⭐",
-  "👍",
-  "💖",
-  "🌷",
-  "🌻",
-  "🍒",
-  "🍎",
-  "🍊",
-  "🥭",
-  "🍉",
-  "🍓",
-  "🍭",
-  "🍬",
-  "🧁",
-  "🎂",
-  "🍩",
-  "🍦",
-  "☕",
-  "🍵",
-  "🍔",
-  "🍕",
-  "🍟",
-  "🌭",
-  "🍿",
-  "🍫",
-  "💎",
-  "♦️",
-  "💚",
-  "💙",
-  "🤍",
-  "👑",
-  "👑",
-  "👸",
-  "💍",
-  "📿",
-  "💎",
-  "⌚",
-  "🎁",
-  "🎁",
-  "🎈",
-  "🎉",
-  "🎆",
-  "🚀",
-  "🚗",
-  "🏎️",
-  "🏍️",
-  "🛵",
-  "🚲",
-  "🚁",
-  "🛥️",
-  "🚢",
-  "✈️",
-  "🌈",
-  "☁️",
-  "🌙",
-  "☀️",
-  "🌌",
-  "🪐",
-  "🌍",
-  "🌙",
-  "🪄",
-  "🧚",
-  "👼",
-  "🦋",
-  "🔥",
-  "🐉",
-  "🦄",
-  "🐯",
-  "🦁",
-  "🐼",
-  "🐰",
-  "🐱",
-  "🐶",
-  "🦊",
-  "🐻",
-  "🐒",
-  "🐨",
-  "🐧",
-  "🦉",
-  "🦅",
-  "🐬",
-  "🐋",
-  "🐟",
-  "🐠",
-  "🐠",
-  "💰",
-  "🧰",
-  "💰",
-  "🪙",
-  "💸",
-  "💵",
-  "👑",
-  "💛",
-  "🌹",
-  "💍",
-  "🚗",
-  "✈️",
-  "🚘",
-  "🏎️",
-  "🏎️",
-  "🏎️",
-  "🚗",
-  "✈️",
-  "🛥️",
-  "🏰",
-  "🏯",
-  "🏛️",
-  "🏰",
-  "🏰",
-  "🐎",
-  "🪽",
-  "🐉",
-  "🔥",
-  "🌌",
-  "🌎",
-  "💫",
-  "🪐",
-  "☄️",
-  "☄️",
-  "🌞",
-  "🌙",
-  "⭐",
-  "🚀",
-  "⏳",
-  "🌀",
-  "📖",
-  "⚔️",
-  "⚔️",
-  "🗡️",
-  "🦸",
-  "🦸‍♀️",
-  "👸",
-  "🤴",
-  "👑",
-  "👑",
-  "👑",
-  "👸",
-  "💑",
-  "💞",
-  "💒",
-  "💍",
-  "🎂",
-  "🚘",
-  "🚢",
-  "✈️",
-  "🚀",
-  "🏹",
-  "💘",
-  "💣",
-  "🎆",
-  "🌃",
-  "❤️",
-  "💗",
-  "💙",
-  "💜",
-  "💓",
-  "💎",
-  "💎",
-  "❤️",
-  "💖",
-  "💗",
-  "💝",
-  "💘",
-  "❤️",
-  "💞",
-  "💕",
-  "♾️",
-  "❤️",
-  "👑",
-  "🚀",
-  "🌌",
-  "👑",
-  "💎",
-  "🔥",
-  "🏰",
-  "🌌",
-  "🎁"
-];
+for (let i = 1; i <= 200; i++) {
+  let price;
 
-const gifts = {};
-
-function getGiftPrice(index) {
-  if (index < 50) {
-    return (index + 1) * 100;
+  if (i <= 50) {
+    price = i * 100;
+  } else if (i <= 100) {
+    price = (i - 50) * 1000;
+  } else if (i <= 150) {
+    price = (i - 100) * 10000;
+  } else {
+    price = (i - 150) * 50000;
   }
 
-  if (index < 100) {
-    return (index - 49) * 1000;
-  }
+  if (price <= 0) price = 100;
 
-  if (index < 150) {
-    return (index - 99) * 10000;
-  }
-
-  return (index - 149) * 50000;
+  gifts.push({
+    id: "gift_" + i,
+    name: giftCategories[Math.floor((i - 1) / 25)] + " Gift " + i,
+    emoji: giftEmojis[(i - 1) % giftEmojis.length],
+    category: giftCategories[Math.floor((i - 1) / 25)],
+    price,
+    size:
+      i <= 50
+        ? "Small"
+        : i <= 100
+        ? "Medium"
+        : i <= 150
+        ? "Large"
+        : i <= 190
+        ? "Luxury"
+        : "Mega"
+  });
 }
 
-for (let i = 0; i < 200; i++) {
-  const id = `gift_${String(i + 1).padStart(3, "0")}`;
-
-  let category = "Small";
-
-  if (i >= 50 && i < 100) category = "Medium";
-  if (i >= 100 && i < 150) category = "Large";
-  if (i >= 150) category = "Luxury";
-
-  gifts[id] = {
-    id,
-    name: giftNames[i] || `Pawan Gift ${i + 1}`,
-    emoji: giftEmojis[i] || "🎁",
-    image: "",
-    category,
-    price: getGiftPrice(i),
-    sort: i + 1
-  };
+function getGift(id) {
+  return gifts.find(g => String(g.id) === String(id));
 }
 
-// ============================================================
-// STORE ITEMS
-// ============================================================
+/* =========================================================
+   STORE
+   ========================================================= */
 
 const store = {
   vehicles: [],
@@ -547,269 +173,309 @@ const store = {
 
 for (let i = 1; i <= 50; i++) {
   store.vehicles.push({
-    id: `vehicle_${String(i).padStart(2, "0")}`,
-    name: `Vehicle ${i}`,
-    price: i * 50000,
-    type: "vehicle"
+    id: "vehicle_" + i,
+    name: "Vehicle " + i,
+    price: i * 5000
   });
 
   store.avatarFrames.push({
-    id: `avatar_frame_${String(i).padStart(2, "0")}`,
-    name: `Avatar Frame ${i}`,
-    price: i * 10000,
-    type: "avatarFrame"
+    id: "frame_" + i,
+    name: "Avatar Frame " + i,
+    price: i * 3000
   });
 
   store.chatBubbles.push({
-    id: `chat_bubble_${String(i).padStart(2, "0")}`,
-    name: `Chat Bubble ${i}`,
-    price: i * 5000,
-    type: "chatBubble"
+    id: "bubble_" + i,
+    name: "Chat Bubble " + i,
+    price: i * 2000
   });
 
   store.profileCards.push({
-    id: `profile_card_${String(i).padStart(2, "0")}`,
-    name: `Profile Card ${i}`,
-    price: i * 8000,
-    type: "profileCard"
+    id: "card_" + i,
+    name: "Profile Card " + i,
+    price: i * 4000
   });
 
   store.rgbNames.push({
-    id: `rgb_name_${String(i).padStart(2, "0")}`,
-    name: `RGB Name ${i}`,
-    price: i * 12000,
-    type: "rgbName"
+    id: "rgb_" + i,
+    name: "RGB Name " + i,
+    price: i * 6000
   });
 
   store.themes.push({
-    id: `theme_${String(i).padStart(2, "0")}`,
-    name: `Theme ${i}`,
-    price: i * 15000,
-    type: "theme"
+    id: "theme_" + i,
+    name: "Room Theme " + i,
+    price: i * 7000
   });
 
   store.visitors.push({
-    id: `visitor_${String(i).padStart(2, "0")}`,
-    name: `Visitor Effect ${i}`,
-    price: i * 7000,
-    type: "visitor"
+    id: "visitor_" + i,
+    name: "Visitor Effect " + i,
+    price: i * 8000
   });
 }
 
-// ============================================================
-// DAILY TASKS
-// ============================================================
+/* =========================================================
+   DAILY TASKS
+   ========================================================= */
 
 const dailyTasks = [
   {
     id: "task_01",
-    name: "Login Today",
-    description: "Open PawanVoice today",
+    name: "Daily Login",
     rewardCoins: 5000,
     rewardExp: 5000
   },
   {
     id: "task_02",
-    name: "Enter a Room",
-    description: "Join any voice room",
+    name: "Enter Room",
     rewardCoins: 5000,
     rewardExp: 5000
   },
   {
     id: "task_03",
-    name: "Send a Gift",
-    description: "Send at least one gift",
+    name: "Send Gift",
     rewardCoins: 10000,
     rewardExp: 5000
   },
   {
     id: "task_04",
-    name: "Chat With Friends",
-    description: "Send 5 chat messages",
+    name: "Chat",
     rewardCoins: 5000,
     rewardExp: 5000
   },
   {
     id: "task_05",
-    name: "Use Voice Room",
-    description: "Stay in a room",
+    name: "Voice",
     rewardCoins: 10000,
     rewardExp: 5000
   },
   {
     id: "task_06",
-    name: "Follow Someone",
-    description: "Follow a user",
+    name: "Follow User",
     rewardCoins: 5000,
     rewardExp: 5000
   },
   {
     id: "task_07",
-    name: "Play a Game",
-    description: "Play one room game",
+    name: "Game",
     rewardCoins: 5000,
     rewardExp: 5000
   },
   {
     id: "task_08",
-    name: "Send Emoji",
-    description: "Send 10 emojis",
+    name: "Emoji",
     rewardCoins: 5000,
     rewardExp: 5000
   },
   {
     id: "task_09",
     name: "Visit Profile",
-    description: "Visit another profile",
     rewardCoins: 5000,
     rewardExp: 5000
   },
   {
     id: "task_10",
     name: "Daily Mission",
-    description: "Complete all available daily activity",
     rewardCoins: 25000,
     rewardExp: 10000
   }
 ];
 
-// ============================================================
-// 7 DAY LOGIN REWARDS
-// ============================================================
+/* =========================================================
+   WEEKLY REWARDS
+   ========================================================= */
 
 const weeklyRewards = [
   {
     day: 1,
     coins: 100000,
-    exp: 5000,
+    diamonds: 0,
     item: null,
-    vip: 0
+    vipLevel: 0
   },
   {
     day: 2,
     coins: 200000,
-    exp: 10000,
+    diamonds: 0,
     item: null,
-    vip: 0
+    vipLevel: 0
   },
   {
     day: 3,
     coins: 300000,
-    exp: 15000,
+    diamonds: 0,
     item: {
       type: "avatarFrame",
       id: "weekly_frame_03",
-      name: "Day 3 Special Frame"
+      name: "Special Weekly Frame"
     },
-    vip: 0
+    vipLevel: 0
   },
   {
     day: 4,
     coins: 400000,
-    exp: 20000,
+    diamonds: 0,
     item: null,
-    vip: 0
+    vipLevel: 0
   },
   {
     day: 5,
     coins: 500000,
-    exp: 25000,
+    diamonds: 0,
     item: {
-      type: "avatarFrame",
-      id: "weekly_frame_05",
-      name: "Day 5 Special Frame"
+      type: "gift",
+      id: "weekly_special_gift",
+      name: "Special Gift"
     },
-    vip: 0
+    vipLevel: 0
   },
   {
     day: 6,
     coins: 600000,
-    exp: 30000,
+    diamonds: 1000,
     item: null,
-    vip: 0
+    vipLevel: 0
   },
   {
     day: 7,
-    coins: 1000000,
-    exp: 50000,
+    coins: 700000,
+    diamonds: 0,
     item: {
-      type: "avatarFrame",
-      id: "weekly_frame_07",
-      name: "Day 7 VIP Frame"
+      type: "vip",
+      id: "vip_reward",
+      name: "VIP Reward"
     },
-    vip: 1
+    vipLevel: 1
   }
 ];
 
-// ============================================================
-// 20 ROOM GAMES
-// ============================================================
+/* =========================================================
+   GAMES
+   ========================================================= */
 
-const gameNames = [
-  "Baby",
-  "Gareebi",
-  "Lucky Wheel",
+const gameList = [
   "Dice",
-  "Guess Number",
+  "Lucky Shot",
+  "Cards",
+  "Lucky Spin",
+  "Quiz",
+  "Bowling",
+  "Football",
+  "Basketball",
+  "Pool",
+  "Race",
+  "Puzzle",
   "Rock Paper Scissors",
-  "Treasure Box",
-  "Bomb Game",
-  "Lucky Card",
-  "Number King",
-  "Fast Tap",
-  "Emoji Battle",
-  "Guess Emoji",
-  "Memory Card",
-  "Color Battle",
-  "Lucky Egg",
-  "Gift Battle",
-  "King Queen",
   "Treasure Hunt",
-  "Pawan Challenge"
+  "Wheel",
+  "Number Guess",
+  "Memory",
+  "Battle",
+  "Fishing",
+  "Lottery",
+  "Jackpot"
 ];
 
-gameNames.forEach((name, index) => {
-  const id = `game_${String(index + 1).padStart(2, "0")}`;
+/* =========================================================
+   USER
+   ========================================================= */
 
-  games[id] = {
-    id,
-    name,
-    enabled: true,
-    minPlayers: 1,
-    maxPlayers: 50
-  };
-});
+function ensureUser(input = {}) {
+  const id = safeString(
+    input.userId ||
+    input.id ||
+    input.userid ||
+    randomId("PV")
+  );
 
-// ============================================================
-// USER FUNCTIONS
-// ============================================================
+  if (!users[id]) {
+    users[id] = {
+      id,
+      userId: id,
+      name: cleanName(input.name),
+      dp: cleanDp(input.dp),
+      gender: safeString(input.gender, "Male"),
 
-function ensureUser(userId, data = {}) {
-  userId = cleanUserId(userId) || "guest";
+      level: Math.max(1, safeNumber(input.level, 1)),
+      exp: Math.max(0, safeNumber(input.exp, 0)),
 
-  if (!users[userId]) {
-    users[userId] = {
-      id: userId,
-      name: cleanText(data.name, "Guest"),
-      dp: cleanText(
-        data.dp,
-        `https://i.pravatar.cc/150?u=${encodeURIComponent(userId)}`
+      coins: Math.max(
+        0,
+        safeNumber(
+          input.coins,
+          100000
+        )
       ),
-      gender: cleanText(data.gender, "Male"),
-      level: numberValue(data.level, 1),
-      exp: numberValue(data.exp, 0),
-      coins: numberValue(data.coins, 100000),
-      diamonds: numberValue(data.diamonds, 0),
-      following: numberValue(data.following, 0),
-      followers: numberValue(data.followers, 0),
-      visitors: numberValue(data.visitors, 0),
-      vipLevel: numberValue(data.vipLevel, 0),
+
+      diamonds: Math.max(
+        0,
+        safeNumber(
+          input.diamonds !== undefined
+            ? input.diamonds
+            : input.diamond,
+          0
+        )
+      ),
+
+      following: Math.max(0, safeNumber(input.following, 0)),
+      followers: Math.max(0, safeNumber(input.followers, 0)),
+      visitors: Math.max(0, safeNumber(input.visitors, 0)),
+
+      vipLevel: Math.max(0, safeNumber(input.vipLevel, 0)),
+      vipExp: Math.max(0, safeNumber(input.vipExp, 0)),
+
+      avatarFrame: input.avatarFrame || null,
+      badge: input.badge || null,
+      entryEffect: input.entryEffect || null,
+
+      followingUsers: {},
       createdAt: now(),
       updatedAt: now()
     };
+  } else {
+    const u = users[id];
+
+    if (input.name !== undefined) u.name = cleanName(input.name);
+    if (input.dp !== undefined) u.dp = cleanDp(input.dp);
+    if (input.gender !== undefined) u.gender = input.gender;
+
+    if (input.level !== undefined)
+      u.level = Math.max(1, safeNumber(input.level, u.level));
+
+    if (input.exp !== undefined)
+      u.exp = Math.max(0, safeNumber(input.exp, u.exp));
+
+    if (input.avatarFrame !== undefined)
+      u.avatarFrame = input.avatarFrame;
+
+    if (input.badge !== undefined)
+      u.badge = input.badge;
+
+    if (input.entryEffect !== undefined)
+      u.entryEffect = input.entryEffect;
+
+    u.updatedAt = now();
   }
 
-  return users[userId];
+  levelUpUser(users[id]);
+
+  return users[id];
+}
+
+function levelUpUser(user) {
+  let safety = 0;
+
+  while (
+    user.exp >= getExpForNextLevel(user.level) &&
+    safety < 1000
+  ) {
+    user.exp -= getExpForNextLevel(user.level);
+    user.level += 1;
+    safety++;
+  }
+
+  return user;
 }
 
 function publicUser(user) {
@@ -817,499 +483,648 @@ function publicUser(user) {
 
   return {
     id: user.id,
+    userId: user.userId,
     name: user.name,
     dp: user.dp,
     gender: user.gender,
+
     level: user.level,
     exp: user.exp,
+
     coins: user.coins,
     diamonds: user.diamonds,
+    diamond: user.diamonds,
+
     following: user.following,
     followers: user.followers,
     visitors: user.visitors,
-    vipLevel: user.vipLevel
+
+    vipLevel: user.vipLevel,
+    vipExp: user.vipExp,
+
+    avatarFrame: user.avatarFrame || null,
+    badge: user.badge || null,
+    entryEffect: user.entryEffect || null
   };
 }
 
-function saveUser(user) {
-  if (!user) return;
-
-  user.updatedAt = now();
-}
-
 function addCoins(userId, amount) {
-  const user = ensureUser(userId);
+  const user = users[userId];
+  if (!user) return 0;
 
   user.coins = Math.max(
     0,
-    Math.floor(numberValue(user.coins, 0) + numberValue(amount, 0))
+    user.coins + safeNumber(amount, 0)
   );
 
-  saveUser(user);
+  user.updatedAt = now();
 
   return user.coins;
 }
 
-function addExp(userId, amount) {
-  const user = ensureUser(userId);
+function addDiamonds(userId, amount) {
+  const user = users[userId];
+  if (!user) return 0;
 
-  user.exp = Math.max(
+  user.diamonds = Math.max(
     0,
-    Math.floor(numberValue(user.exp, 0) + numberValue(amount, 0))
+    user.diamonds + safeNumber(amount, 0)
   );
 
-  while (user.exp >= getExpForNextLevel(user.level)) {
-    user.exp -= getExpForNextLevel(user.level);
-    user.level += 1;
-  }
+  user.updatedAt = now();
 
-  saveUser(user);
-
-  return {
-    level: user.level,
-    exp: user.exp
-  };
+  return user.diamonds;
 }
 
-function getExpForNextLevel(level) {
-  return Math.max(10000, Number(level || 1) * 10000);
+function addExp(userId, amount) {
+  const user = users[userId];
+  if (!user) return;
+
+  user.exp += Math.max(
+    0,
+    safeNumber(amount, 0)
+  );
+
+  levelUpUser(user);
 }
 
-// ============================================================
-// DAILY DATA
-// ============================================================
+/* =========================================================
+   DAILY LOGIN
+   ========================================================= */
 
-function ensureDailyData(userId) {
-  if (!dailyData[userId]) {
-    dailyData[userId] = {
-      loginDay: 0,
-      lastLoginDate: "",
-      streak: 0,
-      lastExpDate: "",
-      tasks: {},
-      weeklyClaimed: {}
+function getWeeklyDay(userId) {
+  if (!weeklyClaims[userId]) {
+    weeklyClaims[userId] = {
+      day: 1,
+      lastClaimDate: null,
+      claimed: {}
     };
   }
 
-  return dailyData[userId];
+  return weeklyClaims[userId];
 }
 
 function applyDailyLogin(userId) {
-  const data = ensureDailyData(userId);
-  const today = todayKey();
+  const user = users[userId];
 
-  if (data.lastLoginDate === today) {
+  if (!user) return null;
+
+  const key = todayKey();
+
+  if (!dailyData[userId]) {
+    dailyData[userId] = {};
+  }
+
+  if (dailyData[userId].loginDate === key) {
     return {
-      alreadyClaimed: true,
-      day: data.loginDay,
-      reward: null
+      alreadyClaimed: true
     };
   }
 
-  data.loginDay += 1;
+  dailyData[userId].loginDate = key;
 
-  if (data.loginDay > 7) {
-    data.loginDay = 1;
-    data.weeklyClaimed = {};
-  }
-
-  data.streak += 1;
-  data.lastLoginDate = today;
-
-  const reward = weeklyRewards[data.loginDay - 1];
-
-  const user = ensureUser(userId);
-
-  user.coins += reward.coins;
-  user.exp += reward.exp;
-
-  if (reward.vip) {
-    user.vipLevel = Math.max(user.vipLevel, reward.vip);
-  }
-
-  if (reward.item) {
-    ensureInventory(userId);
-
-    inventories[userId].avatarFrames.push({
-      id: reward.item.id,
-      name: reward.item.name,
-      obtainedAt: now()
-    });
-  }
-
-  saveUser(user);
+  addCoins(userId, 5000);
+  addExp(userId, 5000);
 
   return {
     alreadyClaimed: false,
-    day: data.loginDay,
-    streak: data.streak,
-    reward
+    coins: 5000,
+    exp: 5000
   };
 }
 
-// ============================================================
-// INVENTORY
-// ============================================================
+/* =========================================================
+   TASKS
+   ========================================================= */
 
-function ensureInventory(userId) {
-  if (!inventories[userId]) {
-    inventories[userId] = {
-      vehicles: [],
-      avatarFrames: [],
-      chatBubbles: [],
-      profileCards: [],
-      rgbNames: [],
-      themes: [],
-      visitors: []
+function getTaskState(userId) {
+  const key = todayKey();
+
+  if (!taskProgress[userId]) {
+    taskProgress[userId] = {};
+  }
+
+  if (taskProgress[userId].date !== key) {
+    taskProgress[userId] = {
+      date: key,
+      progress: {},
+      claimed: {}
     };
   }
 
-  return inventories[userId];
+  return taskProgress[userId];
 }
 
-// ============================================================
-// ROOMS
-// ============================================================
+function increaseTask(userId, taskId, amount = 1) {
+  const state = getTaskState(userId);
 
-function createRoom(roomId, ownerId, data = {}) {
-  roomId = cleanText(roomId, randomRoomId());
-  ownerId = cleanUserId(ownerId) || "guest";
+  state.progress[taskId] =
+    safeNumber(state.progress[taskId], 0) +
+    amount;
 
-  const owner = ensureUser(ownerId, data);
+  return state.progress[taskId];
+}
 
-  if (!rooms[roomId]) {
-    rooms[roomId] = {
-      id: roomId,
-      name: cleanText(data.name || data.roomName, `${owner.name}'s Room`),
-      roomName: cleanText(
-        data.name || data.roomName,
-        `${owner.name}'s Room`
-      ),
-      dp: cleanText(data.dp, owner.dp),
-      owner: owner.name,
+function claimTask(userId, taskId) {
+  const task = dailyTasks.find(t => t.id === taskId);
+
+  if (!task) {
+    return {
+      ok: false,
+      message: "Task not found"
+    };
+  }
+
+  const state = getTaskState(userId);
+
+  if (state.claimed[taskId]) {
+    return {
+      ok: false,
+      message: "Task already claimed"
+    };
+  }
+
+  const progress = safeNumber(
+    state.progress[taskId],
+    0
+  );
+
+  const target =
+    taskId === "task_10" ? 10 : 1;
+
+  if (progress < target) {
+    return {
+      ok: false,
+      message: "Task not completed"
+    };
+  }
+
+  state.claimed[taskId] = true;
+
+  addCoins(userId, task.rewardCoins);
+  addExp(userId, task.rewardExp);
+
+  return {
+    ok: true,
+    coins: task.rewardCoins,
+    exp: task.rewardExp,
+    wallet: publicUser(users[userId])
+  };
+}
+
+/* =========================================================
+   ROOMS
+   ========================================================= */
+
+function createRoomObject(data = {}) {
+  const ownerId = safeString(
+    data.ownerId ||
+    data.owner ||
+    data.userId
+  );
+
+  const owner = users[ownerId] ||
+    ensureUser({
+      userId: ownerId,
+      name: data.ownerName,
+      dp: data.ownerDp
+    });
+
+  const roomId =
+    safeString(data.id) ||
+    "PV" +
+    Math.floor(
+      100000 +
+      Math.random() * 900000
+    );
+
+  return {
+    id: roomId,
+
+    name: cleanName(
+      data.name ||
+      data.roomName ||
+      owner.name + "'s Room"
+    ),
+
+    roomName: cleanName(
+      data.roomName ||
+      data.name ||
+      owner.name + "'s Room"
+    ),
+
+    dp: cleanDp(
+      data.dp ||
+      owner.dp
+    ),
+
+    owner: owner.id,
+    ownerId: owner.id,
+    ownerDp: owner.dp,
+
+    category: safeString(
+      data.category,
+      "General"
+    ),
+
+    users: 0,
+
+    seats: Array(9).fill(null),
+
+    members: {},
+
+    mutedUsers: {},
+
+    messages: [],
+
+    gifts: [],
+
+    roomExp: 0,
+
+    topUsers: [],
+
+    createdAt: now(),
+    updatedAt: now()
+  };
+}
+
+function ensureRoom(roomId) {
+  const id = safeString(roomId, "main");
+
+  if (!rooms[id]) {
+    const owner = ensureUser({
+      userId: "system",
+      name: "PawanVoice",
+      dp: "https://i.pravatar.cc/200?img=12"
+    });
+
+    rooms[id] = createRoomObject({
+      id,
       ownerId: owner.id,
-      ownerDp: owner.dp,
-      category: cleanText(data.category, "General"),
-      users: 0,
-      seats: Array(9).fill(null),
-      members: {},
-      mutedUsers: {},
-      messages: [],
-      gifts: [],
-      roomExp: 0,
-      topUsers: [],
-      createdAt: numberValue(data.createdAt, now()),
-      updatedAt: now()
-    };
+      name: "PawanVoice Room",
+      dp: owner.dp
+    });
   }
 
-  return rooms[roomId];
-}
-
-function ensureRoom(roomId, ownerId = "guest", data = {}) {
-  if (!rooms[roomId]) {
-    return createRoom(roomId, ownerId, data);
-  }
-
-  return rooms[roomId];
-}
-
-function getRoomUserCount(room) {
-  if (!room) return 0;
-
-  return Object.keys(room.members || {}).length;
+  return rooms[id];
 }
 
 function roomData(room) {
   if (!room) return null;
-
-  const members = {};
-
-  Object.keys(room.members || {}).forEach(id => {
-    const member = room.members[id];
-
-    members[id] = {
-      userId: member.userId,
-      name: member.name,
-      dp: member.dp,
-      seatIndex: member.seatIndex,
-      mic: member.mic,
-      speaker: member.speaker,
-      muted: member.muted
-    };
-  });
 
   return {
     id: room.id,
     name: room.name,
     roomName: room.roomName,
     dp: room.dp,
+
     owner: room.owner,
     ownerId: room.ownerId,
     ownerDp: room.ownerDp,
+
     category: room.category,
-    users: getRoomUserCount(room),
+
+    users: room.members
+      ? Object.keys(room.members).length
+      : safeNumber(room.users, 0),
+
     seats: room.seats,
-    members,
-    gifts: room.gifts.slice(-100),
-    roomExp: room.roomExp,
-    topUsers: room.topUsers,
+
+    members: room.members,
+
+    mutedUsers: room.mutedUsers,
+
+    gifts: ensureArray(room.gifts).slice(-100),
+
+    roomExp: safeNumber(room.roomExp, 0),
+
+    topUsers: room.topUsers || [],
+
     createdAt: room.createdAt,
     updatedAt: room.updatedAt
   };
 }
 
-function broadcastRoom(roomId) {
-  const room = rooms[roomId];
-
+function broadcastRoom(room) {
   if (!room) return;
 
-  room.users = getRoomUserCount(room);
+  room.users =
+    Object.keys(room.members).length;
+
   room.updatedAt = now();
 
-  io.to(roomId).emit("room-state", roomData(room));
-  io.to(roomId).emit("room-updated", roomData(room));
+  io.to(room.id).emit(
+    "room-state",
+    roomData(room)
+  );
+
+  io.to(room.id).emit(
+    "room-updated",
+    roomData(room)
+  );
 }
 
-function removeUserFromRoom(socket, roomId) {
-  const room = rooms[roomId];
+function removeUserFromRoom(room, userId, socketId) {
+  if (!room || !userId) return;
 
-  if (!room) return;
+  const member = room.members[userId];
 
-  const userId = socketUsers[socket.id];
-
-  if (!userId) return;
-
-  if (room.members[userId]) {
-    const seatIndex = room.members[userId].seatIndex;
+  if (member) {
+    const seat = safeNumber(member.seat, -1);
 
     if (
-      seatIndex !== null &&
-      seatIndex !== undefined &&
-      room.seats[seatIndex]
+      seat >= 0 &&
+      seat < 9 &&
+      room.seats[seat] &&
+      String(room.seats[seat].userId || room.seats[seat].id) ===
+        String(userId)
     ) {
-      room.seats[seatIndex] = null;
+      room.seats[seat] = null;
     }
 
     delete room.members[userId];
   }
 
-  room.users = getRoomUserCount(room);
-  room.updatedAt = now();
+  room.users =
+    Object.keys(room.members).length;
 
-  socket.leave(roomId);
+  if (socketId) {
+    try {
+      io.sockets.sockets.get(socketId)?.leave(room.id);
+    } catch (e) {}
+  }
 
-  socket.currentRoom = null;
-
-  io.to(roomId).emit("user-left", {
+  io.to(room.id).emit("user-left", {
     userId,
-    roomId
+    roomId: room.id,
+    name: member?.name || "User"
   });
 
-  broadcastRoom(roomId);
+  broadcastRoom(room);
 }
 
-// ============================================================
-// DAILY EXP
-// ============================================================
+/* =========================================================
+   FOLLOW
+   ========================================================= */
 
-function applyDailyExp(userId) {
-  const data = ensureDailyData(userId);
-  const today = todayKey();
+function followUser(fromId, targetId) {
+  const from = users[fromId];
+  const target = users[targetId];
 
-  if (data.lastExpDate === today) {
+  if (!from || !target) {
     return {
-      applied: false,
-      amount: 0
+      ok: false,
+      message: "User not found"
     };
   }
 
-  data.lastExpDate = today;
+  if (String(fromId) === String(targetId)) {
+    return {
+      ok: false,
+      message: "Cannot follow yourself"
+    };
+  }
 
-  const result = addExp(userId, 50000);
+  if (!from.followingUsers) {
+    from.followingUsers = {};
+  }
+
+  if (from.followingUsers[targetId]) {
+    return {
+      ok: false,
+      message: "Already following"
+    };
+  }
+
+  from.followingUsers[targetId] = true;
+
+  from.following += 1;
+  target.followers += 1;
 
   return {
-    applied: true,
-    amount: 50000,
-    level: result.level,
-    exp: result.exp
+    ok: true
   };
 }
 
-// ============================================================
-// GIFT PROCESSING
-// ============================================================
+/* =========================================================
+   GIFT
+   ========================================================= */
 
-function processGift({
-  senderId,
-  receiverId,
-  giftId,
-  quantity,
-  roomId
-}) {
-  senderId = cleanUserId(senderId);
-  receiverId = cleanUserId(receiverId);
-  giftId = cleanText(giftId);
+function processGift(data) {
+  const senderId = safeString(
+    data.userId ||
+    data.senderId
+  );
 
-  const qty = Math.min(100, Math.max(1, positiveInt(quantity, 1)));
+  const receiverId = safeString(
+    data.targetUserId ||
+    data.receiverUserId
+  );
 
-  if (!senderId) {
+  const sender = users[senderId];
+  const receiver = users[receiverId];
+
+  if (!sender || !receiver) {
     return {
       ok: false,
-      error: "Sender not found"
-    };
-  }
-
-  if (!receiverId) {
-    return {
-      ok: false,
-      error: "Receiver not found"
+      message: "Sender or receiver not found"
     };
   }
 
   if (senderId === receiverId) {
     return {
       ok: false,
-      error: "You cannot send a gift to yourself"
+      message: "You cannot send gift to yourself"
     };
   }
 
-  const gift = gifts[giftId];
+  const gift = getGift(data.giftId);
 
-  // IMPORTANT:
-  // Price is ALWAYS taken from server-side gift database.
-  // Browser price is ignored.
   if (!gift) {
     return {
       ok: false,
-      error: "Invalid gift"
+      message: "Invalid gift"
     };
   }
 
-  const sender = ensureUser(senderId);
-  const receiver = ensureUser(receiverId);
+  let quantity = Math.floor(
+    safeNumber(data.quantity, 1)
+  );
 
-  const total = gift.price * qty;
+  quantity = Math.max(
+    1,
+    Math.min(100, quantity)
+  );
+
+  const total = gift.price * quantity;
 
   if (sender.coins < total) {
     return {
       ok: false,
-      error: "Insufficient coins",
-      required: total,
-      balance: sender.coins
+      message: "Not enough coins",
+      requiredCoins: total,
+      currentCoins: sender.coins
     };
   }
 
-  const lockKey = `${senderId}:${receiverId}:${giftId}`;
+  const lockKey =
+    senderId +
+    "_" +
+    receiverId +
+    "_" +
+    gift.id;
 
-  if (giftLocks.has(lockKey)) {
+  if (giftLocks[lockKey]) {
     return {
       ok: false,
-      error: "Please wait and try again"
+      message: "Gift is processing"
     };
   }
 
-  giftLocks.add(lockKey);
+  giftLocks[lockKey] = true;
 
   try {
-    // Secure server-side deduction.
     sender.coins -= total;
 
-    // Receiver gets a record/reward.
-    // Receiver coins are not automatically increased here.
-    // The gift is recorded as received.
-    ensureInventory(receiverId);
+    if (!inventories[receiverId]) {
+      inventories[receiverId] = {
+        gifts: {},
+        frames: [],
+        badges: [],
+        vehicles: [],
+        items: []
+      };
+    }
+
+    if (!inventories[receiverId].gifts[gift.id]) {
+      inventories[receiverId].gifts[gift.id] = 0;
+    }
+
+    inventories[receiverId].gifts[gift.id] += quantity;
 
     const transaction = {
-      id: makeId("gift_tx_"),
-      roomId: cleanText(roomId, ""),
+      id: randomId("TX"),
+      roomId: safeString(data.roomId),
       senderId,
       senderName: sender.name,
-      senderDp: sender.dp,
       receiverId,
       receiverName: receiver.name,
-      receiverDp: receiver.dp,
+
       giftId: gift.id,
       giftName: gift.name,
       giftEmoji: gift.emoji,
-      category: gift.category,
-      unitPrice: gift.price,
-      quantity: qty,
-      totalCoins: total,
-      senderBalance: sender.coins,
+
+      price: gift.price,
+      quantity,
+
+      totalPrice: total,
+
       createdAt: now()
     };
 
-    giftHistory.push(transaction);
-
-    while (giftHistory.length > MAX_GIFT_HISTORY) {
-      giftHistory.shift();
+    if (!giftHistory[senderId]) {
+      giftHistory[senderId] = [];
     }
 
-    // Add receiver-side inventory history.
-    inventories[receiverId].gifts =
-      inventories[receiverId].gifts || [];
-
-    inventories[receiverId].gifts.push({
-      transactionId: transaction.id,
-      giftId: gift.id,
-      giftName: gift.name,
-      giftEmoji: gift.emoji,
-      fromUserId: senderId,
-      fromName: sender.name,
-      quantity: qty,
-      totalCoins: total,
-      receivedAt: transaction.createdAt
-    });
-
-    if (inventories[receiverId].gifts.length > 1000) {
-      inventories[receiverId].gifts.shift();
+    if (!giftHistory[receiverId]) {
+      giftHistory[receiverId] = [];
     }
 
-    // Room gift display.
-    if (roomId && rooms[roomId]) {
-      rooms[roomId].gifts.push(transaction);
+    giftHistory[senderId].push(transaction);
+    giftHistory[receiverId].push(transaction);
 
-      if (rooms[roomId].gifts.length > 100) {
-        rooms[roomId].gifts.shift();
+    giftHistory[senderId] =
+      giftHistory[senderId].slice(-500);
+
+    giftHistory[receiverId] =
+      giftHistory[receiverId].slice(-500);
+
+    const room = rooms[transaction.roomId];
+
+    if (room) {
+      room.gifts.push(transaction);
+
+      room.gifts =
+        room.gifts.slice(-100);
+
+      room.roomExp +=
+        Math.floor(total / 100);
+
+      const member =
+        room.members[senderId];
+
+      if (member) {
+        member.giftValue =
+          safeNumber(member.giftValue, 0) +
+          total;
       }
 
-      rooms[roomId].roomExp += Math.floor(total / 100);
-      rooms[roomId].updatedAt = now();
+      room.topUsers =
+        Object.values(room.members)
+          .sort(
+            (a, b) =>
+              safeNumber(b.giftValue, 0) -
+              safeNumber(a.giftValue, 0)
+          )
+          .slice(0, 3);
     }
-
-    saveUser(sender);
-    saveUser(receiver);
 
     return {
       ok: true,
       transaction,
+      remainingCoins: sender.coins,
       sender: publicUser(sender),
-      receiver: publicUser(receiver),
-      gift
+      receiver: publicUser(receiver)
     };
+
   } finally {
-    giftLocks.delete(lockKey);
+    setTimeout(() => {
+      delete giftLocks[lockKey];
+    }, 500);
   }
 }
 
-// ============================================================
-// API - BASIC
-// ============================================================
+/* =========================================================
+   INBOX
+   ========================================================= */
+
+function addInbox(userId, message) {
+  if (!inbox[userId]) {
+    inbox[userId] = [];
+  }
+
+  inbox[userId].push({
+    id: randomId("MSG"),
+    ...message,
+    createdAt: now(),
+    read: false
+  });
+
+  inbox[userId] =
+    inbox[userId].slice(-200);
+}
+
+/* =========================================================
+   HTTP API
+   ========================================================= */
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
-
-app.get("/room.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "room.html"));
+  res.json({
+    app: "PawanVoice Room Server",
+    status: "running",
+    socketIO: true,
+    seats: 9,
+    rooms: Object.keys(rooms).length,
+    users: Object.keys(users).length,
+    gifts: gifts.length
+  });
 });
 
 app.get("/health", (req, res) => {
   res.json({
-    ok: true,
+    status: "ok",
     app: "PawanVoice",
-    status: "running",
+    socketIO: true,
     time: now()
   });
 });
@@ -1322,222 +1137,62 @@ app.get("/api/status", (req, res) => {
     seats: 9,
     rooms: Object.keys(rooms).length,
     users: Object.keys(users).length,
-    gifts: Object.keys(gifts).length,
-    giftHistory: giftHistory.length,
-    games: Object.keys(games).length
+    gifts: gifts.length
   });
 });
-
-// ============================================================
-// API - GIFTS
-// ============================================================
 
 app.get("/api/gifts", (req, res) => {
-  res.json({
-    ok: true,
-    count: Object.keys(gifts).length,
-    gifts: Object.values(gifts)
-  });
+  res.json(gifts);
 });
-
-// ============================================================
-// API - STORE
-// ============================================================
 
 app.get("/api/store", (req, res) => {
-  res.json({
-    ok: true,
-    store
-  });
+  res.json(store);
 });
-
-// ============================================================
-// API - EVENTS
-// ============================================================
-
-app.get("/api/events", (req, res) => {
-  res.json({
-    ok: true,
-    events: [
-      {
-        id: "event_family",
-        name: "Family Ranking",
-        active: true
-      },
-      {
-        id: "event_cp",
-        name: "CP Ranking",
-        active: true
-      },
-      {
-        id: "event_rich",
-        name: "Rich King",
-        active: true
-      },
-      {
-        id: "event_daily",
-        name: "Daily Login Event",
-        active: true
-      },
-      {
-        id: "event_gift",
-        name: "Gift Festival",
-        active: true
-      },
-      {
-        id: "event_game",
-        name: "Room Game Event",
-        active: true
-      },
-      {
-        id: "event_vehicle",
-        name: "Vehicle Event",
-        active: true
-      },
-      {
-        id: "event_frame",
-        name: "Avatar Frame Event",
-        active: true
-      },
-      {
-        id: "event_vip",
-        name: "VIP Event",
-        active: true
-      },
-      {
-        id: "event_pawan",
-        name: "PawanVoice Exclusive",
-        active: true
-      }
-    ]
-  });
-});
-
-// ============================================================
-// API - TASKS
-// ============================================================
 
 app.get("/api/tasks", (req, res) => {
-  const userId = cleanUserId(req.query.userId);
-
-  if (!userId) {
-    return res.json({
-      ok: true,
-      tasks: dailyTasks
-    });
-  }
-
-  const data = ensureDailyData(userId);
-  const today = todayKey();
-
-  if (data.taskDate !== today) {
-    data.taskDate = today;
-    data.tasks = {};
-  }
-
-  res.json({
-    ok: true,
-    date: today,
-    tasks: dailyTasks.map(task => ({
-      ...task,
-      completed: !!data.tasks[task.id]
-    }))
-  });
+  res.json(dailyTasks);
 });
 
-// ============================================================
-// API - WEEKLY REWARDS
-// ============================================================
+app.get("/api/events", (req, res) => {
+  res.json([
+    {
+      id: "event_01",
+      title: "7 Day Reward",
+      description: "Login every day and claim rewards."
+    },
+    {
+      id: "event_02",
+      title: "New User Event",
+      description: "Complete tasks and earn Coins."
+    },
+    {
+      id: "event_03",
+      title: "Room EXP Event",
+      description: "Send gifts and increase Room EXP."
+    }
+  ]);
+});
 
 app.get("/api/weekly-rewards", (req, res) => {
-  res.json({
-    ok: true,
-    rewards: weeklyRewards
-  });
+  res.json(weeklyRewards);
 });
 
-app.post("/api/weekly-rewards/claim", (req, res) => {
-  const userId = cleanUserId(req.body.userId);
-
-  if (!userId) {
-    return res.status(400).json({
-      ok: false,
-      error: "userId required"
-    });
-  }
-
-  const data = ensureDailyData(userId);
-  const today = todayKey();
-
-  if (data.lastLoginDate !== today) {
-    const result = applyDailyLogin(userId);
-
-    return res.json({
-      ok: true,
-      result,
-      user: publicUser(ensureUser(userId))
-    });
-  }
-
-  return res.json({
-    ok: false,
-    error: "Today's reward already claimed",
-    user: publicUser(ensureUser(userId))
-  });
-});
-
-// ============================================================
-// API - GAMES
-// ============================================================
-
-app.get("/api/games", (req, res) => {
-  res.json({
-    ok: true,
-    count: Object.keys(games).length,
-    games: Object.values(games)
-  });
-});
-
-// ============================================================
-// API - USER
-// ============================================================
+/* USER */
 
 app.get("/api/user/:id", (req, res) => {
-  const userId = cleanUserId(req.params.id);
+  const user = users[req.params.id];
 
-  const user = ensureUser(userId);
+  if (!user) {
+    return res.status(404).json({
+      error: "User not found"
+    });
+  }
 
-  res.json({
-    ok: true,
-    user: publicUser(user)
-  });
+  res.json(publicUser(user));
 });
 
 app.post("/api/user", (req, res) => {
-  const userId = cleanUserId(req.body.userId || req.body.id);
-
-  if (!userId) {
-    return res.status(400).json({
-      ok: false,
-      error: "userId required"
-    });
-  }
-
-  const user = ensureUser(userId, req.body);
-
-  if (req.body.name !== undefined) {
-    user.name = cleanText(req.body.name, user.name);
-  }
-
-  if (req.body.dp !== undefined) {
-    user.dp = cleanText(req.body.dp, user.dp);
-  }
-
-  if (req.body.gender !== undefined) {
-    user.gender = cleanText(req.body.gender, user.gender);
-  }
-
-  saveUser(user);
+  const user = ensureUser(req.body || {});
 
   res.json({
     ok: true,
@@ -1546,41 +1201,34 @@ app.post("/api/user", (req, res) => {
 });
 
 app.patch("/api/user/:id", (req, res) => {
-  const userId = cleanUserId(req.params.id);
-
-  const user = ensureUser(userId);
-
-  if (req.body.name !== undefined) {
-    user.name = cleanText(req.body.name, user.name);
-  }
-
-  if (req.body.dp !== undefined) {
-    user.dp = cleanText(req.body.dp, user.dp);
-  }
-
-  if (req.body.gender !== undefined) {
-    user.gender = cleanText(req.body.gender, user.gender);
-  }
-
-  saveUser(user);
-
-  // Update all rooms owned by this user.
-  Object.values(rooms).forEach(room => {
-    if (room.ownerId === userId) {
-      room.owner = user.name;
-      room.ownerDp = user.dp;
-      room.dp = user.dp;
-      room.name = room.name;
-      room.updatedAt = now();
-
-      broadcastRoom(room.id);
-    }
-
-    if (room.members[userId]) {
-      room.members[userId].name = user.name;
-      room.members[userId].dp = user.dp;
-    }
+  const user = ensureUser({
+    ...(req.body || {}),
+    userId: req.params.id
   });
+
+  if (req.body.coins !== undefined) {
+    user.coins = Math.max(
+      0,
+      safeNumber(req.body.coins, user.coins)
+    );
+  }
+
+  if (
+    req.body.diamonds !== undefined ||
+    req.body.diamond !== undefined
+  ) {
+    user.diamonds = Math.max(
+      0,
+      safeNumber(
+        req.body.diamonds !== undefined
+          ? req.body.diamonds
+          : req.body.diamond,
+        user.diamonds
+      )
+    );
+  }
+
+  updateUserInRooms(user);
 
   res.json({
     ok: true,
@@ -1588,151 +1236,100 @@ app.patch("/api/user/:id", (req, res) => {
   });
 });
 
-// ============================================================
-// API - WALLET
-// ============================================================
+app.post("/api/user/:userId/wallet", (req, res) => {
+  const user = users[req.params.userId];
 
-app.get("/api/user/:userId/wallet", (req, res) => {
-  const userId = cleanUserId(req.params.userId);
-
-  const user = ensureUser(userId);
-
-  res.json({
-    ok: true,
-    userId,
-    coins: user.coins,
-    diamonds: user.diamonds,
-    level: user.level,
-    exp: user.exp,
-    vipLevel: user.vipLevel
-  });
-});
-
-// ============================================================
-// API - GIFT SEND
-// ============================================================
-
-app.post("/api/gifts/send", (req, res) => {
-  const senderId = cleanUserId(
-    req.body.senderId ||
-    req.body.userId ||
-    req.body.fromUserId
-  );
-
-  const receiverId = cleanUserId(
-    req.body.receiverId ||
-    req.body.targetUserId ||
-    req.body.toUserId
-  );
-
-  const giftId = cleanText(req.body.giftId);
-  const quantity = positiveInt(req.body.quantity, 1);
-  const roomId = cleanText(req.body.roomId);
-
-  const result = processGift({
-    senderId,
-    receiverId,
-    giftId,
-    quantity,
-    roomId
-  });
-
-  if (!result.ok) {
-    return res.status(400).json(result);
+  if (!user) {
+    return res.status(404).json({
+      error: "User not found"
+    });
   }
 
-  res.json(result);
-});
-
-// ============================================================
-// API - GIFT HISTORY
-// ============================================================
-
-app.get("/api/gift-history", (req, res) => {
-  const userId = cleanUserId(req.query.userId);
-
-  let list = giftHistory;
-
-  if (userId) {
-    list = giftHistory.filter(
-      x =>
-        x.senderId === userId ||
-        x.receiverId === userId
+  if (req.body.coins !== undefined) {
+    user.coins = Math.max(
+      0,
+      safeNumber(req.body.coins, user.coins)
     );
   }
 
-  const limit = Math.min(
-    500,
-    Math.max(1, numberValue(req.query.limit, 100))
-  );
+  if (req.body.diamonds !== undefined) {
+    user.diamonds = Math.max(
+      0,
+      safeNumber(req.body.diamonds, user.diamonds)
+    );
+  }
 
   res.json({
     ok: true,
-    count: list.length,
-    history: list.slice(-limit).reverse()
+    wallet: {
+      coins: user.coins,
+      diamonds: user.diamonds
+    }
   });
 });
 
-app.get("/api/user/:userId/gift-history", (req, res) => {
-  const userId = cleanUserId(req.params.userId);
-
-  const list = giftHistory
-    .filter(
-      x =>
-        x.senderId === userId ||
-        x.receiverId === userId
-    )
-    .slice(-500)
-    .reverse();
-
-  res.json({
-    ok: true,
-    userId,
-    count: list.length,
-    history: list
-  });
-});
-
-// ============================================================
-// API - ROOM
-// ============================================================
+/* ROOMS */
 
 app.get("/api/room/:id", (req, res) => {
-  const roomId = cleanText(req.params.id);
-
-  const room = rooms[roomId];
+  const room = rooms[req.params.id];
 
   if (!room) {
     return res.status(404).json({
-      ok: false,
       error: "Room not found"
     });
   }
 
-  res.json({
-    ok: true,
-    room: roomData(room)
-  });
+  res.json(roomData(room));
+});
+
+app.get("/api/rooms", (req, res) => {
+  res.json(
+    Object.values(rooms).map(roomData)
+  );
 });
 
 app.post("/api/room", (req, res) => {
-  const ownerId = cleanUserId(
-    req.body.ownerId ||
-    req.body.userId
-  );
+  const data = req.body || {};
 
-  if (!ownerId) {
-    return res.status(400).json({
-      ok: false,
-      error: "ownerId required"
+  const ownerId =
+    safeString(
+      data.ownerId ||
+      data.owner ||
+      data.userId
+    );
+
+  const owner =
+    ensureUser({
+      userId: ownerId,
+      name: data.ownerName || data.name,
+      dp: data.ownerDp || data.dp
     });
+
+  let roomId =
+    safeString(data.id) ||
+    "PV" +
+    Math.floor(
+      100000 +
+      Math.random() * 900000
+    );
+
+  while (rooms[roomId]) {
+    roomId =
+      "PV" +
+      Math.floor(
+        100000 +
+        Math.random() * 900000
+      );
   }
 
-  const roomId =
-    cleanText(req.body.roomId) ||
-    randomRoomId();
+  const room =
+    createRoomObject({
+      ...data,
+      id: roomId,
+      ownerId: owner.id
+    });
 
-  const room = createRoom(roomId, ownerId, req.body);
+  rooms[roomId] = room;
 
   res.json({
     ok: true,
@@ -1741,52 +1338,56 @@ app.post("/api/room", (req, res) => {
 });
 
 app.patch("/api/room/:id", (req, res) => {
-  const roomId = cleanText(req.params.id);
-
-  const room = rooms[roomId];
+  const room = rooms[req.params.id];
 
   if (!room) {
     return res.status(404).json({
-      ok: false,
       error: "Room not found"
     });
   }
 
+  const requester =
+    safeString(
+      req.body.userId ||
+      req.body.ownerId
+    );
+
+  if (
+    requester &&
+    requester !== room.ownerId
+  ) {
+    return res.status(403).json({
+      error: "Only room owner can edit room"
+    });
+  }
+
   if (req.body.name !== undefined) {
-    room.name = cleanText(req.body.name, room.name);
-    room.roomName = room.name;
+    room.name =
+      cleanName(req.body.name);
+    room.roomName =
+      room.name;
   }
 
   if (req.body.roomName !== undefined) {
-    room.name = cleanText(req.body.roomName, room.name);
-    room.roomName = room.name;
+    room.roomName =
+      cleanName(req.body.roomName);
+    room.name =
+      room.roomName;
   }
 
   if (req.body.dp !== undefined) {
-    room.dp = cleanText(req.body.dp, room.dp);
+    room.dp =
+      cleanDp(req.body.dp);
   }
 
   if (req.body.category !== undefined) {
-    room.category = cleanText(
-      req.body.category,
-      room.category
-    );
-  }
-
-  if (req.body.ownerId) {
-    const ownerId = cleanUserId(req.body.ownerId);
-
-    if (ownerId === room.ownerId) {
-      const owner = ensureUser(ownerId);
-
-      room.owner = owner.name;
-      room.ownerDp = owner.dp;
-    }
+    room.category =
+      safeString(req.body.category);
   }
 
   room.updatedAt = now();
 
-  broadcastRoom(roomId);
+  broadcastRoom(room);
 
   res.json({
     ok: true,
@@ -1794,1103 +1395,1476 @@ app.patch("/api/room/:id", (req, res) => {
   });
 });
 
-// ============================================================
-// SOCKET.IO
-// ============================================================
+/* GIFT API */
 
-io.on("connection", socket => {
+app.post("/api/gifts/send", (req, res) => {
+  const result =
+    processGift(req.body || {});
 
-  console.log("Socket connected:", socket.id);
-
-  // ----------------------------------------------------------
-  // REGISTER USER
-  // ----------------------------------------------------------
-
-  socket.on("register-user", payload => {
-    payload = payload || {};
-
-    const userId = cleanUserId(
-      payload.userId ||
-      payload.id ||
-      socket.id
-    );
-
-    const user = ensureUser(userId, payload);
-
-    socketUsers[socket.id] = userId;
-
-    if (!userSockets[userId]) {
-      userSockets[userId] = new Set();
-    }
-
-    userSockets[userId].add(socket.id);
-
-    socket.userId = userId;
-
-    // Daily login.
-    const loginResult = applyDailyLogin(userId);
-
-    // Daily 50,000 EXP once per day.
-    const dailyExp = applyDailyExp(userId);
-
-    socket.emit("user-registered", {
-      ok: true,
-      user: publicUser(user),
-      loginReward: loginResult,
-      dailyExp
-    });
-
-    socket.emit("wallet-updated", {
-      userId,
-      coins: user.coins,
-      diamonds: user.diamonds,
-      level: user.level,
-      exp: user.exp,
-      vipLevel: user.vipLevel
-    });
-  });
-
-  // ----------------------------------------------------------
-  // JOIN ROOM
-  // ----------------------------------------------------------
-
-  socket.on("join-room", payload => {
-    payload = payload || {};
-
-    const roomId = cleanText(
-      payload.roomId ||
-      payload.id ||
-      "main"
-    );
-
-    const userId =
-      socketUsers[socket.id] ||
-      cleanUserId(payload.userId) ||
-      socket.id;
-
-    const user = ensureUser(userId, payload);
-
-    socketUsers[socket.id] = userId;
-    socket.userId = userId;
-
-    if (!userSockets[userId]) {
-      userSockets[userId] = new Set();
-    }
-
-    userSockets[userId].add(socket.id);
-
-    const room = ensureRoom(
-      roomId,
-      userId,
-      payload
-    );
-
-    // If socket is already in another room, leave it first.
-    if (
-      socket.currentRoom &&
-      socket.currentRoom !== roomId
-    ) {
-      removeUserFromRoom(
-        socket,
-        socket.currentRoom
-      );
-    }
-
-    socket.join(roomId);
-    socket.currentRoom = roomId;
-
-    if (!room.members[userId]) {
-      room.members[userId] = {
-        userId,
-        name: user.name,
-        dp: user.dp,
-        seatIndex: null,
-        mic: false,
-        speaker: true,
-        muted: false,
-        joinedAt: now()
-      };
-    } else {
-      room.members[userId].name = user.name;
-      room.members[userId].dp = user.dp;
-    }
-
-    room.users = getRoomUserCount(room);
-    room.updatedAt = now();
-
-    // Daily task.
-    const daily = ensureDailyData(userId);
-    daily.taskDate = todayKey();
-    daily.tasks = daily.tasks || {};
-    daily.tasks.task_02 = true;
-
-    socket.emit("room-state", roomData(room));
-
-    socket.to(roomId).emit("user-entry", {
-      userId,
-      name: user.name,
-      dp: user.dp,
-      roomId
-    });
-
-    broadcastRoom(roomId);
-  });
-
-  // ----------------------------------------------------------
-  // LEAVE ROOM
-  // ----------------------------------------------------------
-
-  socket.on("leave-room", payload => {
-    const roomId =
-      cleanText(payload && payload.roomId) ||
-      socket.currentRoom;
-
-    if (roomId) {
-      removeUserFromRoom(socket, roomId);
-    }
-  });
-
-  // ----------------------------------------------------------
-  // TAKE SEAT
-  // ----------------------------------------------------------
-
-  socket.on("take-seat", payload => {
-    payload = payload || {};
-
-    const roomId =
-      cleanText(payload.roomId) ||
-      socket.currentRoom;
-
-    const seatIndex = Number(payload.seatIndex);
-
-    const userId =
-      socketUsers[socket.id] ||
-      socket.userId;
-
-    if (!roomId || !userId) return;
-
-    const room = rooms[roomId];
-
-    if (!room) {
-      return socket.emit("error-message", {
-        message: "Room not found"
-      });
-    }
-
-    if (
-      !Number.isInteger(seatIndex) ||
-      seatIndex < 0 ||
-      seatIndex >= 9
-    ) {
-      return socket.emit("error-message", {
-        message: "Invalid seat"
-      });
-    }
-
-    const member = room.members[userId];
-
-    if (!member) {
-      return socket.emit("error-message", {
-        message: "Join the room first"
-      });
-    }
-
-    // Remove user's previous seat.
-    room.seats.forEach((seat, index) => {
-      if (seat && seat.userId === userId) {
-        room.seats[index] = null;
-      }
-    });
-
-    // Seat already occupied.
-    if (
-      room.seats[seatIndex] &&
-      room.seats[seatIndex].userId !== userId
-    ) {
-      return socket.emit("error-message", {
-        message: "This seat is occupied"
-      });
-    }
-
-    member.seatIndex = seatIndex;
-
-    room.seats[seatIndex] = {
-      userId,
-      name: member.name,
-      dp: member.dp,
-      mic: member.mic,
-      speaker: member.speaker
-    };
-
-    room.updatedAt = now();
-
-    io.to(roomId).emit("seat-update", {
-      seatIndex,
-      userId,
-      name: member.name,
-      dp: member.dp,
-      mic: member.mic,
-      speaker: member.speaker
-    });
-
-    broadcastRoom(roomId);
-  });
-
-  // ----------------------------------------------------------
-  // LEAVE SEAT
-  // ----------------------------------------------------------
-
-  socket.on("leave-seat", payload => {
-    payload = payload || {};
-
-    const roomId =
-      cleanText(payload.roomId) ||
-      socket.currentRoom;
-
-    const userId =
-      socketUsers[socket.id] ||
-      socket.userId;
-
-    const room = rooms[roomId];
-
-    if (!room || !userId) return;
-
-    const member = room.members[userId];
-
-    if (!member) return;
-
-    const oldSeat = member.seatIndex;
-
-    if (
-      oldSeat !== null &&
-      oldSeat !== undefined
-    ) {
-      room.seats[oldSeat] = null;
-    }
-
-    member.seatIndex = null;
-
-    io.to(roomId).emit("seat-update", {
-      seatIndex: oldSeat,
-      userId,
-      name: member.name,
-      dp: member.dp,
-      mic: false,
-      speaker: member.speaker
-    });
-
-    broadcastRoom(roomId);
-  });
-
-  // ----------------------------------------------------------
-  // MIC
-  // ----------------------------------------------------------
-
-  socket.on("mic", payload => {
-    payload = payload || {};
-
-    const roomId =
-      cleanText(payload.roomId) ||
-      socket.currentRoom;
-
-    const userId =
-      socketUsers[socket.id] ||
-      socket.userId;
-
-    const room = rooms[roomId];
-
-    if (!room || !userId) return;
-
-    const member = room.members[userId];
-
-    if (!member) return;
-
-    member.mic = Boolean(payload.enabled);
-
-    if (
-      member.seatIndex !== null &&
-      member.seatIndex !== undefined
-    ) {
-      room.seats[member.seatIndex] = {
-        ...room.seats[member.seatIndex],
-        mic: member.mic
-      };
-    }
-
-    io.to(roomId).emit("mic", {
-      userId,
-      enabled: member.mic
-    });
-
-    broadcastRoom(roomId);
-  });
-
-  // ----------------------------------------------------------
-  // SPEAKER
-  // ----------------------------------------------------------
-
-  socket.on("speaker", payload => {
-    payload = payload || {};
-
-    const roomId =
-      cleanText(payload.roomId) ||
-      socket.currentRoom;
-
-    const userId =
-      socketUsers[socket.id] ||
-      socket.userId;
-
-    const room = rooms[roomId];
-
-    if (!room || !userId) return;
-
-    const member = room.members[userId];
-
-    if (!member) return;
-
-    member.speaker = Boolean(payload.enabled);
-
-    if (
-      member.seatIndex !== null &&
-      member.seatIndex !== undefined
-    ) {
-      room.seats[member.seatIndex] = {
-        ...room.seats[member.seatIndex],
-        speaker: member.speaker
-      };
-    }
-
-    io.to(roomId).emit("speaker", {
-      userId,
-      enabled: member.speaker
-    });
-
-    broadcastRoom(roomId);
-  });
-
-  // ----------------------------------------------------------
-  // CHAT
-  // ----------------------------------------------------------
-
-  function handleChat(payload) {
-    payload = payload || {};
-
-    const roomId =
-      cleanText(payload.roomId) ||
-      socket.currentRoom;
-
-    const userId =
-      socketUsers[socket.id] ||
-      socket.userId;
-
-    const room = rooms[roomId];
-
-    if (!room || !userId) return;
-
-    const user = ensureUser(userId);
-
-    const textMessage = cleanText(
-      payload.message ||
-      payload.text,
-      ""
-    );
-
-    if (!textMessage) return;
-
-    const message = {
-      id: makeId("msg_"),
-      roomId,
-      userId,
-      name: user.name,
-      dp: user.dp,
-      text: textMessage,
-      createdAt: now()
-    };
-
-    room.messages.push(message);
-
-    if (room.messages.length > 300) {
-      room.messages.shift();
-    }
-
-    const daily = ensureDailyData(userId);
-
-    daily.taskDate = todayKey();
-    daily.tasks = daily.tasks || {};
-
-    daily.chatCount =
-      numberValue(daily.chatCount, 0) + 1;
-
-    if (daily.chatCount >= 5) {
-      daily.tasks.task_04 = true;
-    }
-
-    io.to(roomId).emit("chat", message);
-    io.to(roomId).emit("room-chat", message);
+  if (!result.ok) {
+    return res.status(400).json(result);
   }
 
-  socket.on("chat", handleChat);
-  socket.on("room-chat", handleChat);
-
-  // ----------------------------------------------------------
-  // EMOJI
-  // ----------------------------------------------------------
-
-  socket.on("emoji", payload => {
-    payload = payload || {};
-
-    const roomId =
-      cleanText(payload.roomId) ||
-      socket.currentRoom;
-
-    const userId =
-      socketUsers[socket.id] ||
-      socket.userId;
-
-    const user = ensureUser(userId);
-
-    if (!roomId) return;
-
-    const daily = ensureDailyData(userId);
-
-    daily.emojiCount =
-      numberValue(daily.emojiCount, 0) + 1;
-
-    if (daily.emojiCount >= 10) {
-      daily.taskDate = todayKey();
-      daily.tasks = daily.tasks || {};
-      daily.tasks.task_08 = true;
-    }
-
-    io.to(roomId).emit("emoji", {
-      userId,
-      name: user.name,
-      emoji: cleanText(
-        payload.emoji,
-        "❤️"
-      ),
-      createdAt: now()
-    });
-  });
-
-  // ----------------------------------------------------------
-  // GIFT
-  // ----------------------------------------------------------
-
-  socket.on("gift", payload => {
-    payload = payload || {};
-
-    const senderId =
-      socketUsers[socket.id] ||
-      socket.userId;
-
-    const roomId =
-      cleanText(payload.roomId) ||
-      socket.currentRoom;
-
-    const receiverId = cleanUserId(
-      payload.targetUserId ||
-      payload.receiverId ||
-      payload.toUserId
-    );
-
-    const giftId = cleanText(
-      payload.giftId
-    );
-
-    const quantity = positiveInt(
-      payload.quantity,
-      1
-    );
-
-    // Browser supplied price/name/emoji are intentionally NOT trusted.
-    const result = processGift({
-      senderId,
-      receiverId,
-      giftId,
-      quantity,
-      roomId
-    });
-
-    if (!result.ok) {
-      socket.emit("gift-error", result);
-      return;
-    }
-
-    const daily = ensureDailyData(senderId);
-
-    daily.taskDate = todayKey();
-    daily.tasks = daily.tasks || {};
-    daily.tasks.task_03 = true;
-
-    const event = {
-      ...result.transaction,
-      sender: result.sender,
-      receiver: result.receiver,
-      gift: result.gift
-    };
-
-    if (roomId) {
-      io.to(roomId).emit("gift-sent", event);
-    }
-
-    // Direct receiver notification.
-    const receiverSocketSet =
-      userSockets[receiverId];
-
-    if (receiverSocketSet) {
-      receiverSocketSet.forEach(socketId => {
-        io.to(socketId).emit(
-          "gift-received",
-          event
-        );
-
-        io.to(socketId).emit(
-          "wallet-updated",
-          {
-            userId: receiverId,
-            coins: result.receiver.coins,
-            diamonds: result.receiver.diamonds,
-            level: result.receiver.level,
-            exp: result.receiver.exp,
-            vipLevel: result.receiver.vipLevel
-          }
-        );
-      });
-    }
-
-    // Sender wallet.
-    socket.emit("wallet-updated", {
-      userId: senderId,
-      coins: result.sender.coins,
-      diamonds: result.sender.diamonds,
-      level: result.sender.level,
-      exp: result.sender.exp,
-      vipLevel: result.sender.vipLevel
-    });
-
-    if (roomId) {
-      broadcastRoom(roomId);
-    }
-  });
-
-  // ----------------------------------------------------------
-  // FOLLOW
-  // ----------------------------------------------------------
-
-  socket.on("follow", payload => {
-    payload = payload || {};
-
-    const fromUserId =
-      socketUsers[socket.id] ||
-      socket.userId;
-
-    const targetUserId =
-      cleanUserId(
-        payload.targetUserId ||
-        payload.userId
-      );
-
-    if (
-      !fromUserId ||
-      !targetUserId ||
-      fromUserId === targetUserId
-    ) {
-      return;
-    }
-
-    const fromUser = ensureUser(fromUserId);
-    const targetUser = ensureUser(targetUserId);
-
-    fromUser.following += 1;
-    targetUser.followers += 1;
-
-    saveUser(fromUser);
-    saveUser(targetUser);
-
-    socket.emit("follow-updated", {
-      targetUserId,
-      following: fromUser.following
-    });
-
-    const targetSockets =
-      userSockets[targetUserId];
-
-    if (targetSockets) {
-      targetSockets.forEach(socketId => {
-        io.to(socketId).emit(
-          "followers-updated",
-          {
-            followers: targetUser.followers
-          }
-        );
-      });
-    }
-  });
-
-  // ----------------------------------------------------------
-  // CP REQUEST
-  // ----------------------------------------------------------
-
-  socket.on("cp-request", payload => {
-    payload = payload || {};
-
-    const fromUserId =
-      socketUsers[socket.id] ||
-      socket.userId;
-
-    const targetUserId =
-      cleanUserId(
-        payload.targetUserId ||
-        payload.userId
-      );
-
-    if (!targetUserId) return;
-
-    const sender = ensureUser(fromUserId);
-    const receiver = ensureUser(targetUserId);
-
-    const request = {
-      id: makeId("cp_"),
-      fromUserId,
-      fromName: sender.name,
-      fromDp: sender.dp,
-      targetUserId,
-      targetName: receiver.name,
-      targetDp: receiver.dp,
-      status: "pending",
-      createdAt: now()
-    };
-
-    const targetSockets =
-      userSockets[targetUserId];
-
-    if (targetSockets) {
-      targetSockets.forEach(socketId => {
-        io.to(socketId).emit(
-          "cp-request",
-          request
-        );
-      });
-    }
-
-    socket.emit("cp-request-sent", request);
-  });
-
-  // ----------------------------------------------------------
-  // KICK
-  // ----------------------------------------------------------
-
-  socket.on("kick", payload => {
-    payload = payload || {};
-
-    const roomId =
-      cleanText(payload.roomId) ||
-      socket.currentRoom;
-
-    const targetUserId =
-      cleanUserId(
-        payload.targetUserId ||
-        payload.userId
-      );
-
-    const room = rooms[roomId];
-
-    if (!room || !targetUserId) return;
-
-    const requesterId =
-      socketUsers[socket.id] ||
-      socket.userId;
-
-    // Only room owner can kick in this basic server.
-    if (room.ownerId !== requesterId) {
-      return socket.emit("error-message", {
-        message: "Only room owner can kick users"
-      });
-    }
-
-    const targetSockets =
-      userSockets[targetUserId];
-
-    if (!targetSockets) return;
-
-    targetSockets.forEach(socketId => {
-      const targetSocket =
-        io.sockets.sockets.get(socketId);
-
-      if (!targetSocket) return;
-
-      if (targetSocket.currentRoom === roomId) {
-        targetSocket.emit("kicked", {
-          roomId,
-          userId: targetUserId
-        });
-
-        removeUserFromRoom(
-          targetSocket,
-          roomId
-        );
-      }
-    });
-  });
-
-  // ----------------------------------------------------------
-  // MUTE
-  // ----------------------------------------------------------
-
-  socket.on("mute", payload => {
-    payload = payload || {};
-
-    const roomId =
-      cleanText(payload.roomId) ||
-      socket.currentRoom;
-
-    const targetUserId =
-      cleanUserId(
-        payload.targetUserId ||
-        payload.userId
-      );
-
-    const room = rooms[roomId];
-
-    if (!room || !targetUserId) return;
-
-    const requesterId =
-      socketUsers[socket.id] ||
-      socket.userId;
-
-    if (room.ownerId !== requesterId) {
-      return socket.emit("error-message", {
-        message: "Only room owner can mute users"
-      });
-    }
-
-    const member =
-      room.members[targetUserId];
-
-    if (!member) return;
-
-    member.muted =
-      payload.muted === undefined
-        ? true
-        : Boolean(payload.muted);
-
-    room.mutedUsers[targetUserId] =
-      member.muted;
-
-    io.to(roomId).emit("mute", {
-      userId: targetUserId,
-      muted: member.muted
-    });
-
-    broadcastRoom(roomId);
-  });
-
-  // ----------------------------------------------------------
-  // ROOM SETTINGS
-  // ----------------------------------------------------------
-
-  socket.on("room-update", payload => {
-    payload = payload || {};
-
-    const roomId =
-      cleanText(payload.roomId) ||
-      socket.currentRoom;
-
-    const room = rooms[roomId];
-
-    if (!room) return;
-
-    const requesterId =
-      socketUsers[socket.id] ||
-      socket.userId;
-
-    if (room.ownerId !== requesterId) {
-      return socket.emit("error-message", {
-        message: "Only room owner can update room"
-      });
-    }
-
-    if (payload.name !== undefined) {
-      room.name = cleanText(
-        payload.name,
-        room.name
-      );
-
-      room.roomName = room.name;
-    }
-
-    if (payload.roomName !== undefined) {
-      room.name = cleanText(
-        payload.roomName,
-        room.name
-      );
-
-      room.roomName = room.name;
-    }
-
-    if (payload.dp !== undefined) {
-      room.dp = cleanText(
-        payload.dp,
-        room.dp
-      );
-    }
-
-    if (payload.category !== undefined) {
-      room.category = cleanText(
-        payload.category,
-        room.category
-      );
-    }
-
-    room.updatedAt = now();
-
-    broadcastRoom(roomId);
-  });
-
-  // ----------------------------------------------------------
-  // ROOM GAME
-  // ----------------------------------------------------------
-
-  socket.on("game-start", payload => {
-    payload = payload || {};
-
-    const roomId =
-      cleanText(payload.roomId) ||
-      socket.currentRoom;
-
-    const gameId =
-      cleanText(payload.gameId);
-
-    const room = rooms[roomId];
-
-    if (!room || !games[gameId]) return;
-
-    const userId =
-      socketUsers[socket.id] ||
-      socket.userId;
-
-    const gameSession = {
-      id: makeId("game_"),
-      gameId,
-      gameName: games[gameId].name,
-      roomId,
-      startedBy: userId,
-      startedAt: now(),
-      status: "running"
-    };
-
-    games[gameId].lastSession =
-      gameSession;
-
-    io.to(roomId).emit(
-      "game-started",
-      gameSession
-    );
-  });
-
-  // ----------------------------------------------------------
-  // GAME ACTION
-  // ----------------------------------------------------------
-
-  socket.on("game-action", payload => {
-    payload = payload || {};
-
-    const roomId =
-      cleanText(payload.roomId) ||
-      socket.currentRoom;
-
-    if (!roomId) return;
-
-    const userId =
-      socketUsers[socket.id] ||
-      socket.userId;
-
-    io.to(roomId).emit(
-      "game-action",
-      {
-        ...payload,
-        userId,
-        createdAt: now()
-      }
-    );
-  });
-
-  // ----------------------------------------------------------
-  // ROOM EXP
-  // ----------------------------------------------------------
-
-  socket.on("room-exp", payload => {
-    payload = payload || {};
-
-    const roomId =
-      cleanText(payload.roomId) ||
-      socket.currentRoom;
-
-    const room = rooms[roomId];
-
-    if (!room) return;
-
-    const amount = Math.min(
-      1000000,
+  res.json(result);
+});
+
+app.get("/api/gifts/history/:userId", (req, res) => {
+  res.json(
+    giftHistory[req.params.userId] || []
+  );
+});
+
+/* WEEKLY CLAIM */
+
+app.post("/api/weekly-rewards/claim", (req, res) => {
+  const userId =
+    safeString(req.body.userId);
+
+  const user =
+    users[userId] ||
+    ensureUser({ userId });
+
+  const state =
+    getWeeklyDay(userId);
+
+  const day =
+    Math.min(
+      7,
       Math.max(
-        0,
-        Math.floor(
-          numberValue(payload.amount, 0)
-        )
+        1,
+        safeNumber(state.day, 1)
       )
     );
 
-    room.roomExp += amount;
+  const today = todayKey();
 
-    broadcastRoom(roomId);
-  });
-
-  // ----------------------------------------------------------
-  // WEBRTC OFFER
-  // ----------------------------------------------------------
-
-  function sendToPeer(eventName, payload) {
-    payload = payload || {};
-
-    const targetUserId =
-      cleanUserId(
-        payload.targetUserId ||
-        payload.toUserId ||
-        payload.peerId
-      );
-
-    if (!targetUserId) return;
-
-    const targetSockets =
-      userSockets[targetUserId];
-
-    if (!targetSockets) return;
-
-    targetSockets.forEach(socketId => {
-      io.to(socketId).emit(
-        eventName,
-        {
-          ...payload,
-          fromUserId:
-            socketUsers[socket.id] ||
-            socket.userId
-        }
-      );
+  if (state.lastClaimDate === today) {
+    return res.status(400).json({
+      ok: false,
+      message: "Today's weekly reward already claimed"
     });
   }
 
-  socket.on("webrtc-offer", payload => {
-    sendToPeer(
-      "webrtc-offer",
-      payload
+  const reward =
+    weeklyRewards.find(
+      r => r.day === day
+    );
+
+  if (!reward) {
+    return res.status(400).json({
+      ok: false,
+      message: "Reward not found"
+    });
+  }
+
+  addCoins(
+    userId,
+    reward.coins
+  );
+
+  addDiamonds(
+    userId,
+    reward.diamonds
+  );
+
+  addExp(
+    userId,
+    reward.day * 5000
+  );
+
+  if (reward.item) {
+
+    if (
+      reward.item.type ===
+      "avatarFrame"
+    ) {
+
+      user.avatarFrame =
+        reward.item;
+
+      if (!inventories[userId]) {
+        inventories[userId] = {
+          gifts: {},
+          frames: [],
+          badges: [],
+          vehicles: [],
+          items: []
+        };
+      }
+
+      inventories[userId].frames.push(
+        reward.item
+      );
+    }
+
+    if (
+      reward.item.type ===
+      "gift"
+    ) {
+
+      if (!inventories[userId]) {
+        inventories[userId] = {
+          gifts: {},
+          frames: [],
+          badges: [],
+          vehicles: [],
+          items: []
+        };
+      }
+
+      inventories[userId].items.push(
+        reward.item
+      );
+    }
+
+    if (
+      reward.item.type ===
+      "vip"
+    ) {
+      user.vipLevel =
+        Math.max(
+          user.vipLevel,
+          reward.vipLevel || 1
+        );
+    }
+  }
+
+  state.lastClaimDate = today;
+  state.claimed[day] = today;
+
+  if (day >= 7) {
+    state.day = 1;
+  } else {
+    state.day = day + 1;
+  }
+
+  res.json({
+    ok: true,
+    day,
+    reward,
+    user: publicUser(user)
+  });
+});
+
+/* TASK CLAIM */
+
+app.post("/api/tasks/claim", (req, res) => {
+  const userId =
+    safeString(req.body.userId);
+
+  ensureUser({
+    userId
+  });
+
+  const result =
+    claimTask(
+      userId,
+      safeString(req.body.taskId)
+    );
+
+  if (!result.ok) {
+    return res.status(400).json(result);
+  }
+
+  res.json(result);
+});
+
+/* =========================================================
+   ROOM UPDATE USER DATA
+   ========================================================= */
+
+function updateUserInRooms(user) {
+
+ Object.values(rooms).forEach(room => {
+
+  const member =
+   room.members[user.id];
+
+  if (member) {
+
+   member.name=user.name;
+   member.dp=user.dp;
+   member.level=user.level;
+
+   const seat=
+    safeNumber(member.seat,-1);
+
+   if(
+    seat>=0 &&
+    seat<9 &&
+    room.seats[seat]
+   ){
+
+    room.seats[seat]={
+     ...room.seats[seat],
+     name:user.name,
+     dp:user.dp,
+     level:user.level
+    };
+   }
+
+   broadcastRoom(room);
+  }
+ });
+}
+
+/* =========================================================
+   SOCKET.IO
+   ========================================================= */
+
+io.on("connection", socket => {
+
+  socket.on("register-user", data => {
+
+    const user =
+      ensureUser(data || {});
+
+    userSockets[user.id] = socket.id;
+    socketUsers[socket.id] = user.id;
+
+    socket.emit(
+      "user-registered",
+      publicUser(user)
+    );
+
+    socket.emit(
+      "wallet-updated",
+      {
+        coins:user.coins,
+        diamonds:user.diamonds
+      }
+    );
+
+    const login =
+      applyDailyLogin(user.id);
+
+    if (login && !login.alreadyClaimed) {
+
+      socket.emit(
+        "daily-login-reward",
+        login
+      );
+    }
+  });
+
+  /* JOIN ROOM */
+
+  socket.on("join-room", data => {
+
+    const roomId =
+      safeString(
+        data.roomId ||
+        data.room ||
+        "main"
+      );
+
+    const user =
+      ensureUser({
+        ...(data || {}),
+        userId:
+          data.userId ||
+          data.id
+      });
+
+    const room =
+      ensureRoom(roomId);
+
+    const oldRoomId =
+      socket.data.roomId;
+
+    if (
+      oldRoomId &&
+      oldRoomId !== roomId
+    ) {
+
+      const oldRoom =
+        rooms[oldRoomId];
+
+      if (oldRoom) {
+        removeUserFromRoom(
+          oldRoom,
+          user.id,
+          socket.id
+        );
+      }
+    }
+
+    socket.join(roomId);
+
+    socket.data.roomId =
+      roomId;
+
+    socket.data.userId =
+      user.id;
+
+    userSockets[user.id] =
+      socket.id;
+
+    socketUsers[socket.id] =
+      user.id;
+
+    room.members[user.id]={
+      userId:user.id,
+      id:user.id,
+      name:user.name,
+      dp:user.dp,
+      level:user.level,
+      exp:user.exp,
+      micEnabled:false,
+      speakerEnabled:true,
+      seat:-1,
+      giftValue:0,
+      joinedAt:now()
+    };
+
+    increaseTask(
+      user.id,
+      "task_02",
+      1
+    );
+
+    room.users =
+      Object.keys(room.members).length;
+
+    socket.emit(
+      "room-state",
+      roomData(room)
+    );
+
+    socket.emit(
+      "room-joined",
+      roomData(room)
+    );
+
+    socket.to(roomId).emit(
+      "user-joined",
+      {
+        userId:user.id,
+        name:user.name,
+        dp:user.dp,
+        roomId
+      }
+    );
+
+    socket.to(roomId).emit(
+      "user-entry",
+      {
+        userId:user.id,
+        name:user.name,
+        dp:user.dp
+      }
+    );
+
+    broadcastRoom(room);
+  });
+
+  /* LEAVE ROOM */
+
+  socket.on("leave-room", data => {
+
+    const roomId =
+      safeString(
+        data?.roomId ||
+        socket.data.roomId
+      );
+
+    const userId =
+      safeString(
+        data?.userId ||
+        socket.data.userId
+      );
+
+    const room =
+      rooms[roomId];
+
+    if (room) {
+
+      removeUserFromRoom(
+        room,
+        userId,
+        socket.id
+      );
+    }
+
+    socket.data.roomId=null;
+  });
+
+  /* TAKE SEAT */
+
+  socket.on("take-seat", data => {
+
+    const room =
+      rooms[safeString(data?.roomId)];
+
+    const userId =
+      safeString(
+        data?.userId ||
+        socket.data.userId
+      );
+
+    const seat =
+      Math.floor(
+        safeNumber(data?.seat,-1)
+      );
+
+    if (!room) {
+      return socket.emit(
+        "seat-error",
+        { message:"Room not found" }
+      );
+    }
+
+    if (seat < 0 || seat > 8) {
+      return socket.emit(
+        "seat-error",
+        { message:"Invalid seat" }
+      );
+    }
+
+    if (!room.members[userId]) {
+      return socket.emit(
+        "seat-error",
+        { message:"Join room first" }
+      );
+    }
+
+    if (room.seats[seat]) {
+      return socket.emit(
+        "seat-taken",
+        { seat }
+      );
+    }
+
+    const member =
+      room.members[userId];
+
+    /* Remove old seat */
+
+    if (
+      member.seat >= 0 &&
+      member.seat < 9
+    ) {
+
+      if (
+        room.seats[member.seat] &&
+        String(
+          room.seats[member.seat].userId
+        ) === String(userId)
+      ) {
+        room.seats[member.seat]=null;
+      }
+    }
+
+    const user =
+      users[userId];
+
+    room.seats[seat]={
+      userId,
+      id:userId,
+      name:user?.name || member.name,
+      dp:user?.dp || member.dp,
+      level:user?.level || member.level,
+      seat,
+      micEnabled:false
+    };
+
+    member.seat=seat;
+
+    increaseTask(
+      userId,
+      "task_05",
+      1
+    );
+
+    socket.emit(
+      "seat-update",
+      roomData(room)
+    );
+
+    broadcastRoom(room);
+  });
+
+  /* LEAVE SEAT */
+
+  socket.on("leave-seat", data => {
+
+    const room =
+      rooms[safeString(data?.roomId)];
+
+    const userId =
+      safeString(
+        data?.userId ||
+        socket.data.userId
+      );
+
+    if (!room) return;
+
+    const member =
+      room.members[userId];
+
+    if (!member) return;
+
+    const seat =
+      safeNumber(member.seat,-1);
+
+    if (
+      seat >= 0 &&
+      seat < 9
+    ) {
+      room.seats[seat]=null;
+    }
+
+    member.seat=-1;
+    member.micEnabled=false;
+
+    broadcastRoom(room);
+  });
+
+  /* MIC */
+
+  socket.on("mic-status", data => {
+
+    const room =
+      rooms[safeString(data?.roomId)];
+
+    const userId =
+      safeString(
+        data?.userId ||
+        socket.data.userId
+      );
+
+    if (!room) return;
+
+    const enabled =
+      data?.enabled !== false;
+
+    const member =
+      room.members[userId];
+
+    if (member) {
+      member.micEnabled=enabled;
+    }
+
+    const seat =
+      safeNumber(
+        member?.seat,
+        -1
+      );
+
+    if (
+      seat >= 0 &&
+      seat < 9 &&
+      room.seats[seat]
+    ) {
+      room.seats[seat].micEnabled=
+        enabled;
+    }
+
+    io.to(room.id).emit(
+      "mic-status",
+      {
+        roomId:room.id,
+        userId,
+        enabled
+      }
+    );
+
+    broadcastRoom(room);
+  });
+
+  /* SPEAKER */
+
+  socket.on("speaker-status", data => {
+
+    const room =
+      rooms[safeString(data?.roomId)];
+
+    const userId =
+      safeString(
+        data?.userId ||
+        socket.data.userId
+      );
+
+    if (!room) return;
+
+    const member =
+      room.members[userId];
+
+    if (member) {
+      member.speakerEnabled =
+        data?.enabled !== false;
+    }
+
+    socket.emit(
+      "speaker-status",
+      {
+        userId,
+        enabled:
+          data?.enabled !== false
+      }
     );
   });
 
-  socket.on("webrtc-answer", payload => {
-    sendToPeer(
-      "webrtc-answer",
-      payload
+  /* CHAT */
+
+  function handleChat(data) {
+
+    const room =
+      rooms[safeString(data?.roomId)];
+
+    const userId =
+      safeString(
+        data?.userId ||
+        socket.data.userId
+      );
+
+    if (!room) return;
+
+    if (!room.members[userId]) {
+      return;
+    }
+
+    const user =
+      users[userId];
+
+    const message =
+      safeString(data?.message)
+        .trim()
+        .substring(0,300);
+
+    if (!message) return;
+
+    const item={
+      id:randomId("CHAT"),
+      userId,
+      name:user?.name || data.name || "User",
+      dp:user?.dp || data.dp || "",
+      message,
+      createdAt:now()
+    };
+
+    room.messages.push(item);
+
+    room.messages =
+      room.messages.slice(-300);
+
+    increaseTask(
+      userId,
+      "task_04",
+      1
+    );
+
+    io.to(room.id).emit(
+      "chat",
+      item
+    );
+
+    io.to(room.id).emit(
+      "room-chat",
+      item
+    );
+  }
+
+  socket.on("chat",handleChat);
+  socket.on("room-chat",handleChat);
+
+  /* EMOJI */
+
+  socket.on("emoji", data => {
+
+    const room =
+      rooms[safeString(data?.roomId)];
+
+    const userId =
+      safeString(
+        data?.userId ||
+        socket.data.userId
+      );
+
+    if (!room) return;
+
+    const emoji =
+      safeString(
+        data?.emoji,
+        "😀"
+      ).substring(0,10);
+
+    increaseTask(
+      userId,
+      "task_08",
+      1
+    );
+
+    io.to(room.id).emit(
+      "emoji",
+      {
+        userId,
+        name:
+          users[userId]?.name ||
+          data?.name ||
+          "User",
+        emoji
+      }
     );
   });
 
-  socket.on("webrtc-ice", payload => {
-    sendToPeer(
-      "webrtc-ice",
-      payload
+  /* GIFT */
+
+  socket.on("gift", data => {
+
+    const result =
+      processGift(data || {});
+
+    if (!result.ok) {
+
+      socket.emit(
+        "gift-error",
+        result
+      );
+
+      return;
+    }
+
+    const transaction =
+      result.transaction;
+
+    const room =
+      rooms[transaction.roomId];
+
+    increaseTask(
+      transaction.senderId,
+      "task_03",
+      1
+    );
+
+    socket.emit(
+      "gift-sent",
+      {
+        ...transaction,
+        remainingCoins:
+          result.remainingCoins
+      }
+    );
+
+    if (room) {
+
+      io.to(room.id).emit(
+        "gift-received",
+        {
+          ...transaction
+        }
+      );
+
+      broadcastRoom(room);
+    }
+
+    socket.emit(
+      "wallet-updated",
+      {
+        coins:
+          result.remainingCoins,
+        diamonds:
+          users[transaction.senderId].diamonds
+      }
     );
   });
 
-  socket.on("webrtc-ice-candidate", payload => {
-    sendToPeer(
-      "webrtc-ice-candidate",
-      payload
+  /* FOLLOW */
+
+  socket.on("follow", data => {
+
+    const fromId =
+      safeString(
+        data?.fromUserId ||
+        data?.userId ||
+        socket.data.userId
+      );
+
+    const targetId =
+      safeString(
+        data?.targetUserId
+      );
+
+    const result =
+      followUser(
+        fromId,
+        targetId
+      );
+
+    socket.emit(
+      "follow-result",
+      result
+    );
+
+    if (result.ok) {
+
+      increaseTask(
+        fromId,
+        "task_06",
+        1
+      );
+
+      addInbox(
+        targetId,
+        {
+          type:"follow",
+          fromUserId:fromId,
+          fromName:
+            users[fromId]?.name ||
+            "User",
+          text:
+            (users[fromId]?.name || "Someone")+
+            " started following you."
+        }
+      );
+
+      const targetSocket =
+        userSockets[targetId];
+
+      if (targetSocket) {
+
+        io.to(targetSocket).emit(
+          "inbox-message",
+          inbox[targetId]?.slice(-1)[0]
+        );
+      }
+    }
+  });
+
+  /* CP */
+
+  socket.on("cp-request", data => {
+
+    const fromId =
+      safeString(
+        data?.fromUserId ||
+        data?.userId ||
+        socket.data.userId
+      );
+
+    const targetId =
+      safeString(
+        data?.targetUserId
+      );
+
+    if (
+      !users[fromId] ||
+      !users[targetId]
+    ) {
+
+      return socket.emit(
+        "cp-result",
+        {
+          ok:false,
+          message:"User not found"
+        }
+      );
+    }
+
+    const request={
+      id:randomId("CP"),
+      fromUserId:fromId,
+      fromName:users[fromId].name,
+      targetUserId:targetId,
+      status:"pending",
+      createdAt:now()
+    };
+
+    addInbox(
+      targetId,
+      {
+        type:"cp-request",
+        request
+      }
+    );
+
+    const targetSocket =
+      userSockets[targetId];
+
+    if (targetSocket) {
+
+      io.to(targetSocket).emit(
+        "cp-request",
+        request
+      );
+
+      io.to(targetSocket).emit(
+        "inbox-message",
+        inbox[targetId]?.slice(-1)[0]
+      );
+    }
+
+    socket.emit(
+      "cp-result",
+      {
+        ok:true,
+        request
+      }
     );
   });
 
-  // ----------------------------------------------------------
-  // OLD WEBRTC ALIASES
-  // ----------------------------------------------------------
+  /* KICK */
 
-  socket.on("offer", payload => {
-    sendToPeer("webrtc-offer", payload);
+  socket.on("kick", data => {
+
+    const room =
+      rooms[safeString(data?.roomId)];
+
+    const ownerId =
+      safeString(
+        data?.userId ||
+        socket.data.userId
+      );
+
+    const targetId =
+      safeString(
+        data?.targetUserId
+      );
+
+    if (!room) return;
+
+    if (
+      String(room.ownerId) !==
+      String(ownerId)
+    ) {
+
+      return socket.emit(
+        "kick-error",
+        {
+          message:
+            "Only room owner can kick"
+        }
+      );
+    }
+
+    const targetSocket =
+      userSockets[targetId];
+
+    removeUserFromRoom(
+      room,
+      targetId,
+      targetSocket
+    );
+
+    if (targetSocket) {
+
+      io.to(targetSocket).emit(
+        "user-kicked",
+        {
+          userId:targetId,
+          roomId:room.id
+        }
+      );
+
+      io.to(targetSocket).emit(
+        "kicked",
+        {
+          userId:targetId,
+          roomId:room.id
+        }
+      );
+    }
   });
 
-  socket.on("answer", payload => {
-    sendToPeer("webrtc-answer", payload);
+  /* MUTE */
+
+  socket.on("mute", data => {
+
+    const room =
+      rooms[safeString(data?.roomId)];
+
+    const ownerId =
+      safeString(
+        data?.userId ||
+        socket.data.userId
+      );
+
+    const targetId =
+      safeString(
+        data?.targetUserId
+      );
+
+    if (!room) return;
+
+    if (
+      String(room.ownerId) !==
+      String(ownerId)
+    ) {
+
+      return socket.emit(
+        "mute-error",
+        {
+          message:
+            "Only room owner can mute"
+        }
+      );
+    }
+
+    room.mutedUsers[targetId]=
+      data?.muted !== false;
+
+    const targetSocket =
+      userSockets[targetId];
+
+    if (targetSocket) {
+
+      io.to(targetSocket).emit(
+        "force-mute",
+        {
+          userId:targetId,
+          muted:true
+        }
+      );
+    }
+
+    broadcastRoom(room);
   });
 
-  socket.on("ice-candidate", payload => {
-    sendToPeer(
-      "webrtc-ice-candidate",
-      payload
+  /* ROOM UPDATE */
+
+  socket.on("room-update", data => {
+
+    const room =
+      rooms[safeString(data?.roomId)];
+
+    const userId =
+      safeString(
+        data?.userId ||
+        socket.data.userId
+      );
+
+    if (!room) return;
+
+    if (
+      String(room.ownerId) !==
+      String(userId)
+    ) {
+
+      return socket.emit(
+        "room-update-error",
+        {
+          message:
+            "Only room owner can update room"
+        }
+      );
+    }
+
+    if (data.name !== undefined) {
+      room.name =
+        cleanName(data.name);
+    }
+
+    if (data.roomName !== undefined) {
+      room.roomName =
+        cleanName(data.roomName);
+      room.name =
+        room.roomName;
+    }
+
+    if (data.dp !== undefined) {
+      room.dp =
+        cleanDp(data.dp);
+    }
+
+    if (data.category !== undefined) {
+      room.category =
+        safeString(data.category);
+    }
+
+    const owner =
+      users[room.ownerId];
+
+    if (owner) {
+      room.ownerDp =
+        owner.dp;
+    }
+
+    broadcastRoom(room);
+
+    socket.emit(
+      "room-update-success",
+      roomData(room)
     );
   });
 
-  // ----------------------------------------------------------
-  // DISCONNECT
-  // ----------------------------------------------------------
+  /* ROOM EXP */
+
+  socket.on("room-exp", data => {
+
+    const room =
+      rooms[safeString(data?.roomId)];
+
+    const userId =
+      safeString(
+        data?.userId ||
+        socket.data.userId
+      );
+
+    if (!room) return;
+
+    const amount =
+      Math.max(
+        0,
+        safeNumber(
+          data?.amount,
+          0
+        )
+      );
+
+    room.roomExp +=
+      Math.min(amount,100000);
+
+    broadcastRoom(room);
+
+    socket.emit(
+      "room-exp-updated",
+      {
+        roomId:room.id,
+        roomExp:room.roomExp,
+        userId
+      }
+    );
+  });
+
+  /* DAILY REWARD */
+
+  socket.on("daily-reward", data => {
+
+    const userId =
+      safeString(
+        data?.userId ||
+        socket.data.userId
+      );
+
+    const user =
+      users[userId];
+
+    if (!user) return;
+
+    const key =
+      "daily_" +
+      userId +
+      "_" +
+      todayKey();
+
+    if (dailyData[key]) {
+
+      return socket.emit(
+        "daily-reward-result",
+        {
+          ok:false,
+          message:
+            "Already claimed today"
+        }
+      );
+    }
+
+    dailyData[key]=true;
+
+    addCoins(userId,100000);
+
+    socket.emit(
+      "daily-reward-result",
+      {
+        ok:true,
+        coins:100000,
+        user:publicUser(user)
+      }
+    );
+
+    socket.emit(
+      "wallet-updated",
+      {
+        coins:user.coins,
+        diamonds:user.diamonds
+      }
+    );
+  });
+
+  /* GAME */
+
+  socket.on("game-start", data => {
+
+    const room =
+      rooms[safeString(data?.roomId)];
+
+    const userId =
+      safeString(
+        data?.userId ||
+        socket.data.userId
+      );
+
+    if (!room) return;
+
+    const gameName =
+      safeString(
+        data?.game,
+        "Dice"
+      );
+
+    const gameId =
+      randomId("GAME");
+
+    const result =
+      Math.floor(
+        Math.random()*100
+      )+1;
+
+    const game={
+      id:gameId,
+      roomId:room.id,
+      userId,
+      game:gameName,
+      result,
+      createdAt:now()
+    };
+
+    games[gameId]=game;
+
+    increaseTask(
+      userId,
+      "task_07",
+      1
+    );
+
+    io.to(room.id).emit(
+      "game-result",
+      game
+    );
+  });
+
+  socket.on("game-action", data => {
+
+    const room =
+      rooms[safeString(data?.roomId)];
+
+    if (!room) return;
+
+    io.to(room.id).emit(
+      "game-action",
+      {
+        ...data,
+        createdAt:now()
+      }
+    );
+  });
+
+  /* =======================================================
+     WEBRTC SIGNALING
+     ======================================================= */
+
+  socket.on("offer", data => {
+
+    const target =
+      userSockets[
+        safeString(data?.to)
+      ];
+
+    if (!target) return;
+
+    io.to(target).emit(
+      "offer",
+      {
+        ...data,
+        from:
+          data.from ||
+          socket.data.userId
+      }
+    );
+  });
+
+  socket.on("answer", data => {
+
+    const target =
+      userSockets[
+        safeString(data?.to)
+      ];
+
+    if (!target) return;
+
+    io.to(target).emit(
+      "answer",
+      {
+        ...data,
+        from:
+          data.from ||
+          socket.data.userId
+      }
+    );
+  });
+
+  socket.on("ice-candidate", data => {
+
+    const target =
+      userSockets[
+        safeString(data?.to)
+      ];
+
+    if (!target) return;
+
+    io.to(target).emit(
+      "ice-candidate",
+      {
+        ...data,
+        from:
+          data.from ||
+          socket.data.userId
+      }
+    );
+  });
+
+  /* aliases */
+
+  socket.on("webrtc-offer", data => {
+
+    const target =
+      userSockets[
+        safeString(data?.to)
+      ];
+
+    if (target) {
+      io.to(target).emit(
+        "offer",
+        data
+      );
+    }
+  });
+
+  socket.on("webrtc-answer", data => {
+
+    const target =
+      userSockets[
+        safeString(data?.to)
+      ];
+
+    if (target) {
+      io.to(target).emit(
+        "answer",
+        data
+      );
+    }
+  });
+
+  socket.on("webrtc-ice", data => {
+
+    const target =
+      userSockets[
+        safeString(data?.to)
+      ];
+
+    if (target) {
+      io.to(target).emit(
+        "ice-candidate",
+        data
+      );
+    }
+  });
+
+  /* DISCONNECT */
 
   socket.on("disconnect", () => {
-    console.log(
-      "Socket disconnected:",
-      socket.id
-    );
 
     const userId =
       socketUsers[socket.id];
 
     const roomId =
-      socket.currentRoom;
+      socket.data.roomId;
 
-    if (roomId) {
-      removeUserFromRoom(
-        socket,
-        roomId
-      );
+    if (roomId && userId) {
+
+      const room =
+        rooms[roomId];
+
+      if (room) {
+
+        removeUserFromRoom(
+          room,
+          userId,
+          socket.id
+        );
+      }
     }
 
-    if (userId && userSockets[userId]) {
-      userSockets[userId].delete(
-        socket.id
-      );
-
-      if (
-        userSockets[userId].size === 0
-      ) {
-        delete userSockets[userId];
-      }
+    if (
+      userId &&
+      userSockets[userId] ===
+      socket.id
+    ) {
+      delete userSockets[userId];
     }
 
     delete socketUsers[socket.id];
   });
 });
 
-// ============================================================
-// ERROR HANDLER
-// ============================================================
+/* =========================================================
+   EMPTY ROOM CLEANUP
+   ========================================================= */
 
-app.use((err, req, res, next) => {
-  console.error(err);
+setInterval(() => {
 
-  res.status(500).json({
-    ok: false,
-    error: "Server error"
+  const cutoff =
+    now() - 30 * 60 * 1000;
+
+  Object.keys(rooms).forEach(id => {
+
+    const room=rooms[id];
+
+    const members =
+      Object.keys(
+        room.members || {}
+      ).length;
+
+    if (
+      members===0 &&
+      room.updatedAt < cutoff &&
+      id!=="main"
+    ) {
+
+      delete rooms[id];
+    }
   });
-});
 
-// ============================================================
-// START SERVER
-// ============================================================
+}, 5 * 60 * 1000);
 
-server.listen(PORT, "0.0.0.0", () => {
-  console.log("======================================");
-  console.log(" PawanVoice Server Started");
-  console.log("======================================");
-  console.log("Port:", PORT);
-  console.log("Static folder:", __dirname);
-  console.log("Rooms:", Object.keys(rooms).length);
-  console.log("Gifts:", Object.keys(gifts).length);
-  console.log("Games:", Object.keys(games).length);
-  console.log("======================================");
+/* =========================================================
+   START SERVER
+   ========================================================= */
+
+server.listen(PORT, () => {
+
+  console.log(
+    "===================================="
+  );
+
+  console.log(
+    "PawanVoice Server Running"
+  );
+
+  console.log(
+    "PORT:",
+    PORT
+  );
+
+  console.log(
+    "Socket.IO: ENABLED"
+  );
+
+  console.log(
+    "Seats: 9"
+  );
+
+  console.log(
+    "Gifts:",
+    gifts.length
+  );
+
+  console.log(
+    "Rooms:",
+    Object.keys(rooms).length
+  );
+
+  console.log(
+    "===================================="
+  );
 });
