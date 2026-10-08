@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>PawanVoice Games</title>
+
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#100b20;
+  color:#fff;
+}
+
+.app{
+  width:100%;
+  max-width:600px;
+  margin:auto;
+  min-height:100vh;
+  padding-bottom:30px;
+}
+
+/* HEADER */
+
+.header{
+  padding:15px;
+  background:#19112e;
+  border-bottom:1px solid #382951;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.header-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo{
+  font-size:21px;
+  font-weight:800;
+}
+
+.connection{
+  font-size:11px;
+  padding:6px 9px;
+  border-radius:20px;
+  background:#173c2a;
+  color:#69ffad;
+}
+
+.coins{
+  margin-top:10px;
+  padding:11px;
+  text-align:center;
+  border-radius:12px;
+  background:#251a40;
+  color:#ffd65a;
+  font-weight:bold;
+}
+
+/* GAME TABS */
+
+.tabs{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:12px;
+}
+
+.tabs::-webkit-scrollbar{
+  display:none;
+}
+
+.tab{
+  flex:none;
+  border:1px solid #463361;
+  background:#211736;
+  color:white;
+  border-radius:22px;
+  padding:10px 14px;
+  font-size:13px;
+}
+
+.tab.active{
+  background:#7046d7;
+  border-color:#8e6bea;
+}
+
+/* GAME CARD */
+
+.game{
+  margin:0 12px;
+  border:1px solid #3c2d55;
+  border-radius:20px;
+  overflow:hidden;
+  background:#19132c;
+}
+
+.game-top{
+  padding:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:#241a3c;
+}
+
+.game-title{
+  font-size:21px;
+  font-weight:800;
+}
+
+.live{
+  color:#65ffad;
+  font-size:11px;
+  font-weight:bold;
+}
+
+/* ROUND */
+
+.round{
+  text-align:center;
+  padding:15px;
+  background:#130e22;
+}
+
+.round-number{
+  color:#999;
+  font-size:12px;
+}
+
+.timer{
+  font-size:32px;
+  font-weight:900;
+  color:#ffd35a;
+  margin-top:4px;
+}
+
+.reward{
+  margin-top:8px;
+  font-size:20px;
+  color:#ffd65a;
+  font-weight:bold;
+}
+
+/* ITEMS */
+
+.items{
+  padding:13px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px;
+}
+
+.item{
+  min-height:82px;
+  border:1px solid #493766;
+  border-radius:15px;
+  background:#281d43;
+  color:#fff;
+  cursor:pointer;
+  font-size:29px;
+}
+
+.item-name{
+  display:block;
+  margin-top:5px;
+  font-size:10px;
+  color:#aaa;
+}
+
+.item.selected{
+  border:3px solid #ffd34f;
+  background:#39285a;
+}
+
+.item.winner{
+  border:3px solid #59ff9e;
+  background:#19492f;
+}
+
+/* PLAYERS */
+
+.players{
+  padding:0 13px 13px;
+}
+
+.players-title{
+  color:#999;
+  font-size:12px;
+  margin-bottom:8px;
+}
+
+.player-list{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.player{
+  padding:7px 9px;
+  background:#281d42;
+  border:1px solid #45345f;
+  border-radius:10px;
+  font-size:11px;
+}
+
+/* STATUS */
+
+.status{
+  text-align:center;
+  min-height:38px;
+  padding:8px 12px;
+  color:#aaa;
+  font-size:13px;
+}
+
+/* BUTTON */
+
+.join{
+  width:calc(100% - 26px);
+  margin:0 13px 14px;
+  min-height:48px;
+  border:0;
+  border-radius:14px;
+  background:#7046d7;
+  color:#fff;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.join:disabled{
+  opacity:.5;
+}
+
+/* RESULT */
+
+.result{
+  display:none;
+  margin:0 13px 14px;
+  padding:13px;
+  text-align:center;
+  border-radius:13px;
+  background:#183b29;
+  color:#70ffb0;
+  font-weight:bold;
+}
+
+/* NOTICE */
+
+.notice{
+  margin:13px;
+  padding:10px;
+  text-align:center;
+  border-radius:10px;
+  background:#201733;
+  color:#888;
+  font-size:11px;
+}
+
+@media(max-width:400px){
+
+  .items{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header">
+
+    <div class="header-row">
+
+      <div class="logo">
+        🎮 PawanVoice Games
+      </div>
+
+      <div
+        class="connection"
+        id="connection">
+        ● CONNECTING
+      </div>
+
+    </div>
+
+    <div class="coins">
+      🪙 Coins:
+      <span id="coins">100000</span>
+    </div>
+
+  </div>
+
+
+  <!-- GAME TABS -->
+
+  <div
+    class="tabs"
+    id="tabs">
+  </div>
+
+
+  <!-- GAME -->
+
+  <div id="gameArea"></div>
+
+
+  <div class="notice">
+    Live Room Game • PawanVoice
+  </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   PAWANVOICE GAME SYSTEM
+   ONLY 3 GAMES
+========================================= */
+
+const SERVER_URL =
+"https://pawanvoice-1.onrender.com";
+
+
+const socket = io(
+  SERVER_URL,
+  {
+    transports:["websocket","polling"]
+  }
+);
+
+
+/* =========================================
+   USER / ROOM
+========================================= */
+
+const params =
+new URLSearchParams(
+  window.location.search
+);
+
+const roomId =
+params.get("room") || "PV100";
+
+const userId =
+params.get("userid") ||
+("user_" + Math.floor(
+  Math.random()*999999
+));
+
+const userName =
+params.get("name") ||
+"Guest";
+
+
+/* =========================================
+   ONLY 3 GAMES
+========================================= */
+
+const games = [
+
+  {
+    id:"greedy",
+
+    title:"👶 Greedy Baby",
+
+    subtitle:"8 Items • Live Round",
+
+    items:[
+      ["🍒","Baby 1"],
+      ["🍋","Baby 2"],
+      ["🍇","Baby 3"],
+      ["🍉","Baby 4"],
+      ["🥝","Baby 5"],
+      ["🍎","Baby 6"],
+      ["🔔","Baby 7"],
+      ["⭐","Baby 8"]
+    ]
+  },
+
+
+  {
+    id:"animal",
+
+    title:"🐯 Animal",
+
+    subtitle:"8 Animals • Live Round",
+
+    items:[
+      ["🐯","Tiger"],
+      ["🐰","Rabbit"],
+      ["🐼","Panda"],
+      ["🦁","Lion"],
+      ["🐘","Elephant"],
+      ["🐵","Monkey"],
+      ["🐸","Frog"],
+      ["🐲","Dragon"]
+    ]
+  },
+
+
+  {
+    id:"lucky",
+
+    title:"🎡 Lucky Spin",
+
+    subtitle:"8 Slots • Live Round",
+
+    items:[
+      ["🍒","Cherry"],
+      ["🍋","Lemon"],
+      ["💎","Diamond"],
+      ["👑","Crown"],
+      ["🎁","Gift"],
+      ["⭐","Star"],
+      ["🔥","Fire"],
+      ["💰","Jackpot"]
+    ]
+  }
+
+];
+
+
+/* =========================================
+   VARIABLES
+========================================= */
+
+let currentGame =
+"greedy";
+
+let selectedItem =
+null;
+
+let currentState =
+null;
+
+let players =
+[];
+
+let timerInterval =
+null;
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const tabs =
+document.getElementById(
+  "tabs"
+);
+
+const gameArea =
+document.getElementById(
+  "gameArea"
+);
+
+
+/* =========================================
+   GET GAME
+========================================= */
+
+function getGame(){
+
+  return games.find(
+    game =>
+      game.id === currentGame
+  );
+
+}
+
+
+/* =========================================
+   GAME TABS
+========================================= */
+
+function renderTabs(){
+
+  tabs.innerHTML = "";
+
+  games.forEach(
+    game => {
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+      button.className =
+        "tab";
+
+      if(
+        game.id ===
+        currentGame
+      ){
+
+        button.classList.add(
+          "active"
+        );
+
+      }
+
+      button.textContent =
+        game.title;
+
+      button.onclick =
+        function(){
+
+          currentGame =
+            game.id;
+
+          selectedItem =
+            null;
+
+          stopTimer();
+
+          renderTabs();
+
+          renderGame();
+
+          openGame();
+
+        };
+
+      tabs.appendChild(
+        button
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================
+   RENDER GAME
+========================================= */
+
+function renderGame(){
+
+  const game =
+    getGame();
+
+  selectedItem =
+    null;
+
+  let html = "";
+
+  html += `
+    <div class="game">
+
+      <div class="game-top">
+
+        <div>
+
+          <div class="game-title">
+            ${game.title}
+          </div>
+
+          <div
+            style="
+              font-size:12px;
+              color:#999;
+              margin-top:3px;
+            "
+          >
+            ${game.subtitle}
+          </div>
+
+        </div>
+
+        <div class="live">
+          ● LIVE
+        </div>
+
+      </div>
+
+
+      <div class="round">
+
+        <div class="round-number">
+          Round
+          <span id="roundNumber">
+            --
+          </span>
+        </div>
+
+        <div
+          class="timer"
+          id="timer"
+        >
+          00:00
+        </div>
+
+        <div class="reward">
+
+          🪙 Reward:
+          <span id="reward">
+            0
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="items">
+  `;
+
+
+  game.items.forEach(
+    (item,index) => {
+
+      html += `
+
+        <button
+          class="item"
+          data-index="${index}"
+        >
+
+          ${item[0]}
+
+          <span class="item-name">
+            ${item[1]}
+          </span>
+
+        </button>
+
+      `;
+
+    }
+  );
+
+
+  html += `
+      </div>
+
+
+      <div class="players">
+
+        <div class="players-title">
+          👥 Players
+        </div>
+
+        <div
+          class="player-list"
+          id="playerList"
+        >
+        </div>
+
+      </div>
+
+
+      <div
+        class="status"
+        id="status"
+      >
+        Choose one item to join this round.
+      </div>
+
+
+      <button
+        class="join"
+        id="joinButton"
+      >
+        🎮 JOIN ROUND
+      </button>
+
+
+      <div
+        class="result"
+        id="result"
+      >
+      </div>
+
+    </div>
+  `;
+
+
+  gameArea.innerHTML =
+    html;
+
+
+  /* ITEM CLICK */
+
+  document
+    .querySelectorAll(
+      ".item"
+    )
+    .forEach(
+      button => {
+
+        button.onclick =
+          function(){
+
+            if(
+              currentState &&
+              currentState.phase ===
+              "closed"
+            ){
+
+              return;
+
+            }
+
+            document
+              .querySelectorAll(
+                ".item"
+              )
+              .forEach(
+                item =>
+                  item.classList
+                    .remove(
+                      "selected"
+                    )
+              );
+
+            button.classList
+              .add(
+                "selected"
+              );
+
+            selectedItem =
+              Number(
+                button.dataset.index
+              );
+
+            document
+              .getElementById(
+                "status"
+              )
+              .textContent =
+              "Selected " +
+              getGame().items[
+                selectedItem
+              ][1] +
+              ". Tap JOIN ROUND.";
+
+          };
+
+      }
+    );
+
+
+  /* JOIN */
+
+  document
+    .getElementById(
+      "joinButton"
+    )
+    .onclick =
+      joinRound;
+
+
+  updatePlayers();
+
+}
+
+
+/* =========================================
+   OPEN GAME
+========================================= */
+
+function openGame(){
+
+  if(
+    !socket.connected
+  ){
+
+    return;
+
+  }
+
+  socket.emit(
+    "game:open",
+    {
+      roomId:
+        roomId,
+
+      gameId:
+        currentGame
+    }
+  );
+
+}
+
+
+/* =========================================
+   JOIN ROUND
+========================================= */
+
+function joinRound(){
+
+  if(
+    selectedItem === null
+  ){
+
+    document
+      .getElementById(
+        "status"
+      )
+      .textContent =
+      "⚠️ Pehle ek item select karo.";
+
+    return;
+
+  }
+
+
+  socket.emit(
+    "game:join",
+    {
+
+      roomId:
+        roomId,
+
+      gameId:
+        currentGame,
+
+      itemIndex:
+        selectedItem,
+
+      userId:
+        userId,
+
+      name:
+        userName
+
+    }
+  );
+
+
+  const status =
+    document.getElementById(
+      "status"
+    );
+
+  if(status){
+
+    status.textContent =
+      "✅ Joining live round...";
+
+  }
+
+}
+
+
+/* =========================================
+   PLAYERS
+========================================= */
+
+function updatePlayers(){
+
+  const box =
+    document.getElementById(
+      "playerList"
+    );
+
+  if(!box){
+
+    return;
+
+  }
+
+  box.innerHTML = "";
+
+
+  if(
+    !players ||
+    players.length === 0
+  ){
+
+    box.innerHTML =
+      `
+        <span class="player">
+          Waiting for players...
+        </span>
+      `;
+
+    return;
+
+  }
+
+
+  players.forEach(
+    player => {
+
+      const element =
+        document.createElement(
+          "span"
+        );
+
+      element.className =
+        "player";
+
+      element.textContent =
+        "👤 " +
+        (
+          player.name ||
+          "Guest"
+        );
+
+      box.appendChild(
+        element
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================
+   CONNECTION
+========================================= */
+
+socket.on(
+  "connect",
+  function(){
+
+    document
+      .getElementById(
+        "connection"
+      )
+      .textContent =
+      "● CONNECTED";
+
+    openGame();
+
+  }
+);
+
+
+socket.on(
+  "disconnect",
+  function(){
+
+    document
+      .getElementById(
+        "connection"
+      )
+      .textContent =
+      "● OFFLINE";
+
+  }
+);
+
+
+/* =========================================
+   GAME STATE
+========================================= */
+
+socket.on(
+  "game:state",
+  function(data){
+
+    if(!data){
+
+      return;
+
+    }
+
+
+    if(
+      data.gameId !==
+      currentGame
+    ){
+
+      return;
+
+    }
+
+
+    currentState =
+      data;
+
+
+    players =
+      data.players || [];
+
+
+    updatePlayers();
+
+
+    const round =
+      document.getElementById(
+        "roundNumber"
+      );
+
+    const reward =
+      document.getElementById(
+        "reward"
+      );
+
+    const timer =
+      document.getElementById(
+        "timer"
+      );
+
+
+    if(round){
+
+      round.textContent =
+        data.round ||
+        "--";
+
+    }
+
+
+    if(reward){
+
+      reward.textContent =
+        Number(
+          data.reward || 0
+        ).toLocaleString(
+          "en-IN"
+        );
+
+    }
+
+
+    if(
+      timer &&
+      typeof data.remaining ===
+      "number"
+    ){
+
+      timer.textContent =
+        formatTime(
+          data.remaining
+        );
+
+    }
+
+
+    if(
+      data.phase ===
+      "closed"
+    ){
+
+      const status =
+        document.getElementById(
+          "status"
+        );
+
+      if(status){
+
+        status.textContent =
+          "Round closed. Result coming...";
+
+      }
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   GAME PLAYERS
+========================================= */
+
+socket.on(
+  "game:players",
+  function(data){
+
+    if(!data){
+
+      return;
+
+    }
+
+
+    if(
+      data.gameId !==
+      currentGame
+    ){
+
+      return;
+
+    }
+
+
+    players =
+      data.players || [];
+
+
+    updatePlayers();
+
+  }
+);
+
+
+/* =========================================
+   JOIN SUCCESS
+========================================= */
+
+socket.on(
+  "game:joined",
+  function(data){
+
+    if(!data){
+
+      return;
+
+    }
+
+
+    if(
+      data.gameId !==
+      currentGame
+    ){
+
+      return;
+
+    }
+
+
+    const status =
+      document.getElementById(
+        "status"
+      );
+
+    if(status){
+
+      status.textContent =
+        "🎮 You joined the live round!";
+
+    }
+
+
+    const button =
+      document.getElementById(
+        "joinButton"
+      );
+
+    if(button){
+
+      button.disabled =
+        true;
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   RESULT
+========================================= */
+
+socket.on(
+  "game:result",
+  function(data){
+
+    if(!data){
+
+      return;
+
+    }
+
+
+    if(
+      data.gameId !==
+      currentGame
+    ){
+
+      return;
+
+    }
+
+
+    const result =
+      document.getElementById(
+        "result"
+      );
+
+
+    if(result){
+
+      result.style.display =
+        "block";
+
+      result.textContent =
+        "🏆 Winner: " +
+        (
+          data.winnerName ||
+          "Player"
+        ) +
+        " • 🪙 " +
+        Number(
+          data.reward || 0
+        ).toLocaleString(
+          "en-IN"
+        );
+
+    }
+
+
+    /* winner item */
+
+    document
+      .querySelectorAll(
+        ".item"
+      )
+      .forEach(
+        item =>
+          item.classList
+            .remove(
+              "winner"
+            )
+      );
+
+
+    if(
+      typeof data.winnerIndex ===
+      "number"
+    ){
+
+      const winner =
+        document.querySelector(
+          '.item[data-index="' +
+          data.winnerIndex +
+          '"]'
+        );
+
+      if(winner){
+
+        winner.classList
+          .add(
+            "winner"
+          );
+
+      }
+
+    }
+
+
+    const status =
+      document.getElementById(
+        "status"
+      );
+
+
+    if(status){
+
+      status.textContent =
+        "🏆 Round finished! Next round starting...";
+
+    }
+
+
+    const join =
+      document.getElementById(
+        "joinButton"
+      );
+
+
+    if(join){
+
+      join.disabled =
+        false;
+
+    }
+
+
+    selectedItem =
+      null;
+
+  }
+);
+
+
+/* =========================================
+   ERROR
+========================================= */
+
+socket.on(
+  "game:error",
+  function(data){
+
+    const status =
+      document.getElementById(
+        "status"
+      );
+
+    if(status){
+
+      status.textContent =
+        "⚠️ " +
+        (
+          data?.message ||
+          "Game error"
+        );
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   TIMER FALLBACK
+========================================= */
+
+function startLocalTimer(){
+
+  stopTimer();
+
+  timerInterval =
+    setInterval(
+      function(){
+
+        if(
+          !currentState ||
+          typeof currentState.remaining !==
+          "number"
+        ){
+
+          return;
+
+        }
+
+
+        if(
+          currentState.remaining <=
+          0
+        ){
+
+          return;
+
+        }
+
+
+        currentState.remaining--;
+
+        const timer =
+          document.getElementById(
+            "timer"
+          );
+
+        if(timer){
+
+          timer.textContent =
+            formatTime(
+              currentState.remaining
+            );
+
+        }
+
+      },
+      1000
+    );
+
+}
+
+
+function stopTimer(){
+
+  if(
+    timerInterval
+  ){
+
+    clearInterval(
+      timerInterval
+    );
+
+    timerInterval =
+      null;
+
+  }
+
+}
+
+
+function formatTime(
+  seconds
+){
+
+  seconds =
+    Math.max(
+      0,
+      Number(seconds) || 0
+    );
+
+
+  const minutes =
+    Math.floor(
+      seconds / 60
+    );
+
+
+  const secs =
+    seconds % 60;
+
+
+  return (
+    String(minutes)
+      .padStart(2,"0")
+    +
+    ":"
+    +
+    String(secs)
+      .padStart(2,"0")
+  );
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+renderTabs();
+
+renderGame();
+
+</script>
+
+</body>
+</html>
