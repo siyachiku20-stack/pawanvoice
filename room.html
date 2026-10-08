@@ -7703,204 +7703,6 @@ async function init(){
 
 init();
 
-
-/* =========================================================
-   PAWANVOICE COMPLETE FEATURE PACK
-   Keeps the existing room system and adds persistent
-   profile/game/reward features without removing old UI.
-========================================================= */
-
-function pvToday(){
-  return new Date().toISOString().slice(0,10);
-}
-function pvUserRef(uid){ return ref(db,"users/"+String(uid)); }
-async function pvSaveFields(fields){
-  Object.assign(USER,fields||{});
-  saveLocalUser();
-  try{ await update(pvUserRef(USER.id),fields||{}); }catch(e){ console.log("PV save:",e); }
-  renderRoom();
-}
-function pvEsc(v){ return escapeHtml(String(v??"")); }
-
-const PV_TASKS=[
- {id:"login",icon:"ðŸŽ",name:"Daily Login",reward:10000},
- {id:"chat",icon:"ðŸ’¬",name:"Send 10 Messages",reward:15000},
- {id:"seat",icon:"ðŸŽ™",name:"Join a Voice Seat",reward:20000},
- {id:"gift",icon:"ðŸŽ",name:"Send a Gift",reward:25000},
- {id:"follow",icon:"â¤ï¸",name:"Follow a User",reward:12000},
- {id:"cp",icon:"ðŸ’‘",name:"Send a CP Request",reward:18000},
- {id:"support",icon:"ðŸ’œ",name:"Support a Room",reward:10000},
- {id:"wheel",icon:"ðŸŽ¡",name:"Spin Lucky Wheel",reward:10000},
- {id:"game",icon:"ðŸŽ®",name:"Play a Game",reward:15000},
- {id:"invite",icon:"ðŸ“¨",name:"Invite a Friend",reward:30000}
-];
-const PV_WEEK=[
- {day:1,icon:"ðŸª™",text:"1 Lakh Coins",coins:100000},
- {day:2,icon:"ðŸª™",text:"2 Lakh Coins",coins:200000},
- {day:3,icon:"ðŸŽ€",text:"Frame + 3 Lakh Coins",coins:300000,frame:"7-Day Reward Frame"},
- {day:4,icon:"ðŸª™",text:"4 Lakh Coins",coins:400000},
- {day:5,icon:"ðŸŽ",text:"Gift + 5 Lakh Coins",coins:500000},
- {day:6,icon:"ðŸ’Ž",text:"Diamond + 6 Lakh Coins",coins:600000,diamonds:1000},
- {day:7,icon:"ðŸ‘‘",text:"VIP Reward + 7 Lakh Coins",coins:700000,vip:1}
-];
-const PV_FRAMES=["Golden Crown","Royal Purple","Neon Heart","Galaxy","Diamond Aura","7-Day Reward Frame"];
-const PV_BADGES=["New Star","Voice King","Gift Lover","Room Hero","Rich King","CP Champion"];
-
-function pvTaskState(){
-  USER.dailyTasks=USER.dailyTasks||{};
-  if(USER.dailyTasks.date!==pvToday()) USER.dailyTasks={date:pvToday(),done:{}};
-  USER.dailyTasks.done=USER.dailyTasks.done||{};
-  return USER.dailyTasks;
-}
-async function pvClaimTask(id){
-  const st=pvTaskState();
-  if(st.done[id]) return toast("âœ… Task already claimed today");
-  const task=PV_TASKS.find(x=>x.id===id); if(!task)return;
-  st.done[id]=Date.now();
-  USER.coins=safeNumber(USER.coins,0)+task.reward;
-  await pvSaveFields({coins:USER.coins,dailyTasks:st});
-  openDailyTasks();
-  toast("ðŸŽ‰ +"+task.reward.toLocaleString("en-IN")+" Coins");
-}
-window.openDailyTasks=function(){
-  const st=pvTaskState();
-  showFeature("ðŸ“‹ Daily Tasks",`<p style="color:#bbb;font-size:12px">10 tasks â€¢ complete once every day.</p><div class="option-grid">${PV_TASKS.map(t=>`<button class="option" onclick="pvClaimTask('${t.id}')"><div>${t.icon}</div>${pvEsc(t.name)}<br><b>ðŸª™ ${t.reward.toLocaleString("en-IN")}</b><br><small>${st.done[t.id]?"âœ… Claimed":"Claim"}</small></button>`).join("")}</div>`);
-};
-window.pvClaimTask=pvClaimTask;
-
-async function pvClaimWeek(day){
-  USER.weeklyRewards=USER.weeklyRewards||{day:1,claimed:{}};
-  USER.weeklyRewards.claimed=USER.weeklyRewards.claimed||{};
-  const w=USER.weeklyRewards;
-  if(day!==safeNumber(w.day,1)) return toast("ðŸ”’ Day "+w.day+" reward is next");
-  if(w.claimed[day]) return toast("Already claimed");
-  const r=PV_WEEK.find(x=>x.day===day); if(!r)return;
-  USER.coins=safeNumber(USER.coins,0)+r.coins;
-  if(r.diamonds) USER.diamonds=safeNumber(USER.diamonds,0)+r.diamonds;
-  if(r.frame) USER.avatarFrame=r.frame;
-  if(r.vip) USER.vipLevel=Math.max(safeNumber(USER.vipLevel,0),r.vip);
-  w.claimed[day]=Date.now(); w.day=Math.min(7,day+1);
-  await pvSaveFields({coins:USER.coins,diamonds:USER.diamonds,avatarFrame:USER.avatarFrame,vipLevel:USER.vipLevel,weeklyRewards:w});
-  openWeeklyRewards();
-  toast("ðŸŽ Day "+day+" reward claimed");
-}
-window.openWeeklyRewards=function(){
-  USER.weeklyRewards=USER.weeklyRewards||{day:1,claimed:{}};
-  const w=USER.weeklyRewards;
-  showFeature("ðŸ† 7-Day Rewards",`<p style="color:#bbb;font-size:12px">Current day: <b>${w.day}</b></p><div class="option-grid">${PV_WEEK.map(r=>`<button class="option" onclick="pvClaimWeek(${r.day})" style="opacity:${r.day>w.day?.5:1}"><div>${r.icon}</div>Day ${r.day}<br>${pvEsc(r.text)}<br><small>${r.day<w.day?"âœ… Done":r.day===w.day?"ðŸŽ Claim":"ðŸ”’ Locked"}</small></button>`).join("")}</div>`);
-};
-window.pvClaimWeek=pvClaimWeek;
-
-window.openWallet=function(){
- showFeature("ðŸ’° Wallet",`<div class="profile-meta"><div class="option"><div>ðŸª™</div>Coins<br><b>${safeNumber(USER.coins,0).toLocaleString("en-IN")}</b></div><div class="option"><div>ðŸ’Ž</div>Diamonds<br><b>${safeNumber(USER.diamonds,0).toLocaleString("en-IN")}</b></div><div class="option"><div>â­</div>Level<br><b>${safeNumber(USER.level,1)}</b></div></div><button class="secondary" onclick="openDailyTasks()">ðŸ“‹ Daily Tasks</button><button class="secondary" onclick="openWeeklyRewards()">ðŸ† 7-Day Rewards</button>`);
-};
-
-window.openInventory=function(){
- showFeature("ðŸŽ€ My Collection",`<h4>Frames</h4><div class="option-grid">${PV_FRAMES.map(x=>`<button class="option" onclick="pvEquipFrame('${escapeAttr(x)}')"><div>ðŸŽ€</div>${pvEsc(x)}<br><small>${USER.avatarFrame===x?"âœ… Equipped":"Equip"}</small></button>`).join("")}</div><h4>Badges</h4><div class="option-grid">${PV_BADGES.map(x=>`<button class="option" onclick="pvEquipBadge('${escapeAttr(x)}')"><div>ðŸ…</div>${pvEsc(x)}<br><small>${USER.badge===x?"âœ… Equipped":"Equip"}</small></button>`).join("")}</div>`);
-};
-window.pvEquipFrame=async function(x){await pvSaveFields({avatarFrame:x});openInventory();toast("ðŸŽ€ Frame equipped");};
-window.pvEquipBadge=async function(x){await pvSaveFields({badge:x});openInventory();toast("ðŸ… Badge equipped");};
-
-window.openVIPDetails=function(){
- const v=safeNumber(USER.vipLevel,0), exp=safeNumber(USER.vipExp,0);
- const levels=[1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95];
- showFeature("ðŸ‘‘ VIP",`<div class="profile-card"><div style="font-size:65px">ðŸ‘‘</div><h3>VIP ${v}</h3><p>VIP EXP: ${exp.toLocaleString("en-IN")}</p><div class="option-grid">${levels.map(x=>`<div class="option"><div>ðŸ‘‘</div>VIP ${Math.ceil(x/10)}<br>Level ${x}</div>`).join("")}</div></div>`);
-};
-window.openLevelDetails=function(){
- const l=safeNumber(USER.level,1),e=safeNumber(USER.exp,0),next=Math.max(10000,l*10000),pct=Math.min(100,(e%next)/next*100);
- showFeature("â­ Level / EXP",`<div class="profile-card"><div style="font-size:65px">ðŸ…</div><h3>Level ${l}</h3><p>${e.toLocaleString("en-IN")} / ${next.toLocaleString("en-IN")} EXP</p><div class="exp-bar"><div class="exp-fill" style="width:${Math.max(2,pct)}%"></div></div><p>Every level has its own medal and rewards.</p></div>`);
-};
-
-window.openRankings=function(){
- const arr=Object.values(ROOM?.users||{}).filter(Boolean).sort((a,b)=>safeNumber(b.coins,0)-safeNumber(a.coins,0)).slice(0,20);
- showFeature("ðŸ† Rich King / CP / Voice Ranking",`<div class="option-grid">${arr.length?arr.map((u,i)=>`<div class="option"><div>${i<3?["ðŸ¥‡","ðŸ¥ˆ","ðŸ¥‰"][i]:"ðŸ†"}</div>${pvEsc(u.name||"User")}<br>ðŸª™ ${safeNumber(u.coins,0).toLocaleString("en-IN")}<br>â­ L${safeNumber(u.level,1)}</div>`).join(""):"<p>No ranking data yet.</p>"}</div>`);
-};
-
-window.openFamily=function(){
- const family=USER.familyName||"No Family";
- showFeature("ðŸ‘¨â€ðŸ‘©â€ðŸ‘§ Family",`<div class="profile-card"><div style="font-size:65px">ðŸ‘¨â€ðŸ‘©â€ðŸ‘§</div><h3>${pvEsc(family)}</h3><p>Family ID: ${pvEsc(USER.familyId||"-")}</p><p>Members: ${safeNumber(USER.familyMembers,0)} â€¢ EXP: ${safeNumber(USER.familyExp,0).toLocaleString("en-IN")}</p><button class="primary" onclick="pvJoinFamily()">Join / Create Family</button></div>`);
-};
-window.pvJoinFamily=async function(){
- const name=prompt("Family name"); if(!name)return;
- const fid="FAM"+Date.now();
- await pvSaveFields({familyId:fid,familyName:name,familyMembers:1,familyExp:safeNumber(USER.familyExp,0)});
- openFamily(); toast("ðŸ‘¨â€ðŸ‘©â€ðŸ‘§ Family saved");
-};
-window.openCPDetails=function(){
- showFeature("ðŸ’‘ CP Space",`<div class="profile-card"><div style="font-size:65px">ðŸ’‘</div><h3>CP Points: ${safeNumber(USER.cpPoints,0).toLocaleString("en-IN")}</h3><p>Send CP requests from another user's profile.</p></div>`);
-};
-
-/* Persistent CP request. */
-window.sendCP=async function(userId){
- if(String(userId)===String(USER.id))return toast("You cannot CP yourself");
- try{
-  const targetSnap=await get(pvUserRef(userId));
-  const target=targetSnap.exists()?targetSnap.val():{};
-  const requests=target.cpRequests||{};
-  requests[String(USER.id)]={fromId:String(USER.id),fromName:USER.name,fromDp:USER.dp,createdAt:Date.now(),status:"pending"};
-  await update(pvUserRef(userId),{cpRequests:requests});
-  toast("ðŸ’‘ CP request sent");
-  try{if(SOCKET?.connected)SOCKET.emit("cp-request",{roomId:ROOM_ID,userId:USER.id,targetUserId:userId,receiverId:userId});}catch(e){}
- }catch(e){toast("CP save failed");}
-};
-
-/* Follow now updates both users in Firebase and prevents repeat follows. */
-window.followUser=async function(userId){
- if(String(userId)===String(USER.id))return toast("You cannot follow yourself");
- try{
-  const key="pv_followed_"+String(userId);
-  if(localStorage.getItem(key))return toast("â¤ï¸ Already following");
-  const snap=await get(pvUserRef(userId)); const target=snap.exists()?snap.val():{};
-  const following=safeNumber(USER.following,0)+1, followers=safeNumber(target.followers,0)+1;
-  localStorage.setItem(key,"1");
-  await pvSaveFields({following});
-  await update(pvUserRef(userId),{followers});
-  toast("â¤ï¸ Following");
-  if(SOCKET?.connected)SOCKET.emit("follow",{roomId:ROOM_ID,userId:USER.id,targetUserId:userId,followingId:userId});
- }catch(e){toast("Follow save failed");}
-};
-
-/* Gift receiver wallet + sender wallet persistence. */
-window.sendGift=async function(giftId){
- const gift=GIFTS.find(g=>g.id===giftId); if(!gift)return;
- const target=(ROOM?.seats||[]).find(u=>u&&String(u.userId||u.id)!==String(USER.id))||(ROOM?.seats||[]).find(Boolean);
- if(!target)return toast("Gift receiver à¤¨à¤¹à¥€à¤‚ à¤®à¤¿à¤²à¤¾");
- if(safeNumber(USER.coins,0)<gift.price)return toast("Coins à¤•à¤® à¤¹à¥ˆà¤‚");
- const receiverId=String(target.userId||target.id);
- USER.coins-=gift.price;
- await pvSaveFields({coins:USER.coins});
- try{
-  const snap=await get(pvUserRef(receiverId));
-  const ru=snap.exists()?snap.val():{};
-  const giftsReceived=ru.giftsReceived||{};
-  giftsReceived[gift.id]=(safeNumber(giftsReceived[gift.id],0)+1);
-  const rcoins=safeNumber(ru.coins,0)+gift.price;
-  const rexp=safeNumber(ru.exp,0)+gift.price;
-  await update(pvUserRef(receiverId),{coins:rcoins,giftsReceived,exp:rexp});
- }catch(e){}
- addSystem("ðŸŽ "+USER.name+" sent "+gift.name+" to "+(target.name||"User"));
- try{if(SOCKET?.connected)SOCKET.emit("gift",{roomId:ROOM_ID,userId:USER.id,senderId:USER.id,senderName:USER.name,receiverId,giftId:gift.id,giftName:gift.name,quantity:1,price:gift.price});}catch(e){}
- document.getElementById("giftCoins").textContent=USER.coins.toLocaleString("en-IN");
- toast("ðŸŽ Gift sent");
-};
-
-/* Add the missing feature shortcuts to the existing Room Features panel. */
-(function pvAddFeatureButtons(){
- const panel=document.getElementById("featuresPanel"); if(!panel||panel.dataset.pvEnhanced)return;
- panel.dataset.pvEnhanced="1";
- const items=[
-  ["ðŸ“‹","Daily Tasks","openDailyTasks"],["ðŸ†","7-Day Rewards","openWeeklyRewards"],
-  ["ðŸ’°","Wallet","openWallet"],["ðŸŽ€","Collection","openInventory"],
-  ["ðŸ‘¨â€ðŸ‘©â€ðŸ‘§","Family","openFamily"],["ðŸ’‘","CP Space","openCPDetails"],
-  ["ðŸ‘‘","VIP","openVIPDetails"],["â­","Level / EXP","openLevelDetails"],
-  ["ðŸ†","Rankings","openRankings"]
- ];
- items.forEach(([ico,name,fn])=>{
-  const b=document.createElement("button");b.className="feature-item";b.onclick=window[fn];b.innerHTML=`<div class="ico">${ico}</div><span>${name}</span>`;panel.appendChild(b);
- });
-})();
-
-
 </script>
 
 
@@ -7921,5 +7723,96 @@ window.openRoomInfo=
 
 </script>
 
+
+<!-- PawanVoice final enhancement layer: keeps the original room UI/code and adds persistent actions. -->
+<script>
+(function(){
+  'use strict';
+  const DB='https://pawanvoice-68c5e-default-rtdb.firebaseio.com';
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const uid=()=>String((window.USER&& (USER.id||USER.userId))||'');
+  const userPath=id=>DB+'/users/'+encodeURIComponent(id)+'.json';
+  async function fbGet(path){const r=await fetch(DB+'/'+path+'.json'); if(!r.ok) throw Error('Firebase read '+r.status); return r.json();}
+  async function fbPatch(path,data){const r=await fetch(DB+'/'+path+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); if(!r.ok) throw Error('Firebase write '+r.status); return r.json();}
+  async function fbPut(path,data){const r=await fetch(DB+'/'+path+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); if(!r.ok) throw Error('Firebase write '+r.status); return r.json();}
+  function mergeUser(data){ if(!data) return; Object.assign(USER,data); try{localStorage.setItem('PV_USER',JSON.stringify(USER));}catch(e){}; if(typeof renderRoom==='function') renderRoom(); }
+  async function persistUser(extra){ const patch=Object.assign({},extra||{}, {updatedAt:Date.now()}); mergeUser(patch); try{await fbPatch('users/'+encodeURIComponent(uid()),patch);}catch(e){console.warn(e); toast('âš ï¸ Firebase save failed');} }
+  function panel(title,html){
+    let m=document.getElementById('pvEnhanceModal');
+    if(!m){m=document.createElement('div');m.id='pvEnhanceModal';m.className='modal';m.innerHTML='<div class="modal-box" style="max-height:88vh;overflow:auto"><div id="pvEnhanceBody"></div></div>';document.body.appendChild(m);}
+    document.getElementById('pvEnhanceBody').innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0">'+esc(title)+'</h2><button class="secondary" onclick="closePVPanel()">âœ•</button></div>'+html;
+    m.classList.add('show');
+  }
+  window.closePVPanel=()=>{const m=document.getElementById('pvEnhanceModal');if(m)m.classList.remove('show');};
+  window.pvEditProfile=function(){
+    panel('Edit Profile',`<div class="profile-card"><label>Name</label><input id="pvName" value="${esc(USER.name||'User')}" maxlength="30"><label style="display:block;margin-top:10px">DP URL</label><input id="pvDp" value="${esc(USER.dp||'')}" placeholder="https://..."><label style="display:block;margin-top:10px">Gender</label><select id="pvGender"><option>Male</option><option>Female</option><option>Other</option></select><button style="margin-top:14px;width:100%" onclick="pvSaveProfile()">ðŸ’¾ Save Profile</button></div>`);
+    const g=document.getElementById('pvGender'); if(g)g.value=USER.gender||'Male';
+  };
+  window.pvSaveProfile=async function(){
+    const name=document.getElementById('pvName').value.trim()||USER.name||'User'; const dp=document.getElementById('pvDp').value.trim()||USER.dp||''; const gender=document.getElementById('pvGender').value;
+    await persistUser({name,dp,gender});
+    try{await fbPatch('rooms/'+encodeURIComponent(ROOM_ID)+'/users/'+encodeURIComponent(uid()),{name,dp,gender,updatedAt:Date.now()});}catch(e){}
+    closePVPanel(); toast('âœ… Profile saved');
+  };
+  window.openMyProfile=function(){ pvEditProfile(); };
+  window.sendCP=async function(targetId){
+    targetId=String(targetId); if(targetId===uid()){toast('You cannot CP yourself');return;}
+    const req={requesterId:uid(),requesterName:USER.name||'User',requesterDp:USER.dp||'',targetId,status:'pending',createdAt:Date.now()};
+    try{await fbPut('cpRequests/'+encodeURIComponent(targetId)+'/'+encodeURIComponent(uid()),req); toast('ðŸ’‘ CP request sent');}
+    catch(e){toast('âš ï¸ CP save failed');}
+    if(window.SOCKET&&SOCKET.connected) SOCKET.emit('cp-request',{roomId:ROOM_ID,userId:uid(),targetUserId:targetId});
+  };
+  window.followUser=async function(targetId){
+    targetId=String(targetId); if(targetId===uid()){toast('You cannot follow yourself');return;}
+    try{
+      const mine=await fbGet('users/'+encodeURIComponent(uid())); const target=await fbGet('users/'+encodeURIComponent(targetId));
+      const following=Number(mine?.following||USER.following||0)+1; const followers=Number(target?.followers||0)+1;
+      await fbPatch('users/'+encodeURIComponent(uid()),{following}); await fbPatch('users/'+encodeURIComponent(targetId),{followers});
+      mergeUser({following}); toast('â¤ï¸ Followed successfully');
+    }catch(e){toast('âš ï¸ Follow save failed');}
+  };
+  window.profileFrame=function(){panel('Avatar Frame',`<div class="option-grid">${['âœ¨ Classic','ðŸ”¥ Fire','ðŸ’Ž Diamond','ðŸ‘‘ Royal','ðŸŒ¸ Flower','âš¡ Energy'].map((x,i)=>`<button class="option" onclick="pvEquip('avatarFrame','${esc(x)}')"><div style="font-size:30px">${['âœ¨','ðŸ”¥','ðŸ’Ž','ðŸ‘‘','ðŸŒ¸','âš¡'][i]}</div>${x}</button>`).join('')}</div>`);};
+  window.profileBadge=function(){panel('Personal Badge',`<div class="option-grid">${['Newbie','Friendly','Singer','Host','Rich King','Pawan Star'].map(x=>`<button class="option" onclick="pvEquip('badge','${esc(x)}')">ðŸ… ${x}</button>`).join('')}</div>`);};
+  window.profileMedal=function(){panel('Medal',`<div class="profile-card"><h3>ðŸ… Level Medal</h3><p>Your medal follows your level.</p><div style="font-size:42px">ðŸ†</div><b>Level ${Number(USER.level||1)}</b></div>`);};
+  window.pvEquip=async function(key,value){await persistUser({[key]:value});closePVPanel();toast('âœ… '+value+' equipped');};
+  window.profileFamily=function(){panel('Family',`<div class="profile-card"><h3>ðŸ‘¨â€ðŸ‘©â€ðŸ‘§ Family</h3><p>Family: <b>${esc(USER.familyName||'No Family')}</b></p><input id="pvFamily" placeholder="Family name" value="${esc(USER.familyName||'')}"><button style="width:100%;margin-top:10px" onclick="pvJoinFamily()">âž• Create / Join Family</button></div>`);};
+  window.pvJoinFamily=async function(){const name=document.getElementById('pvFamily').value.trim();if(!name){toast('Family name required');return;}const fid='F'+Math.random().toString(36).slice(2,10).toUpperCase();await fbPatch('families/'+fid,{id:fid,name,ownerId:uid(),ownerName:USER.name||'User',createdAt:Date.now()});await persistUser({familyId:fid,familyName:name,familyExp:Number(USER.familyExp||0)});closePVPanel();toast('ðŸ‘¨â€ðŸ‘©â€ðŸ‘§ Family saved');};
+  window.profileEvents=function(){panel('Events',`<div class="option-grid">${['ðŸŽ‰ Welcome Event','ðŸ”¥ Daily Online','ðŸŽ Gift Festival','ðŸ† Rich King','ðŸ’‘ CP Event','ðŸ‘‘ VIP Week'].map((x,i)=>`<div class="option"><div style="font-size:30px">${x.slice(0,2)}</div><b>${esc(x.slice(2))}</b><br><small>${i%2?'Coming soon':'Active'}</small></div>`).join('')}</div>`);};
+  window.profileRanking=function(){panel('Ranking',`<div class="profile-card"><h3>ðŸ† Room Ranking</h3><p>Level: ${USER.level||1} â€¢ EXP: ${USER.exp||0}</p><p>Coins: ðŸª™ ${Number(USER.coins||0).toLocaleString('en-IN')}</p><p>Diamonds: ðŸ’Ž ${Number(USER.diamonds||0).toLocaleString('en-IN')}</p></div>`);};
+  window.profileVIP=function(){const lv=Number(USER.vipLevel||0);panel('VIP',`<div class="profile-card"><h3>ðŸ‘‘ VIP ${lv}</h3><p>VIP EXP: ${Number(USER.vipExp||0).toLocaleString('en-IN')}</p><div class="option-grid">${[1,2,3,4,5,6,7,8,9].map(v=>`<div class="option"><b>VIP ${v}</b><br>${v===1?'1/5/10/15/20':v===2?'25/30':v===3?'35/40':v===4?'45/50':v===5?'55/60':v===6?'65/70':v===7?'75/80':v===8?'85/90':'95+'}</div>`).join('')}</div></div>`);};
+  window.profileLevel=function(){const exp=Number(USER.exp||0), level=Math.max(1,Math.floor(exp/1000)+1);panel('Level / EXP',`<div class="profile-card"><div style="font-size:54px">ðŸ…</div><h2>Level ${level}</h2><p>EXP ${exp.toLocaleString('en-IN')}</p><div style="background:#eee;border-radius:12px;height:14px;overflow:hidden"><div style="width:${Math.min(100,exp%1000/10)}%;height:100%;background:linear-gradient(90deg,#7c4dff,#00bcd4)"></div></div><p>Next level: ${(level*1000-exp).toLocaleString('en-IN')} EXP</p></div>`);};
+  window.dailyReward=function(){
+    panel('7-Day Reward',`<div class="option-grid">${[
+      ['Day 1','ðŸª™ 1,00,000 Coins'],['Day 2','ðŸª™ 2,00,000 Coins'],['Day 3','ðŸŽ€ Frame + ðŸª™ 3,00,000'],['Day 4','ðŸª™ 4,00,000 Coins'],['Day 5','ðŸŽ Gift + ðŸª™ 5,00,000'],['Day 6','ðŸ’Ž Diamonds + ðŸª™ 6,00,000'],['Day 7','ðŸ‘‘ VIP + ðŸª™ 7,00,000']
+    ].map((r,i)=>`<button class="option" onclick="pvClaimDay(${i+1})"><b>${r[0]}</b><br>${r[1]}</button>`).join('')}</div>`);
+  };
+  window.pvClaimDay=async function(day){const key='day'+day;try{const d=await fbGet('rewards/'+encodeURIComponent(uid())+'/'+key);if(d){toast('Already claimed');return;}let coins=day*100000;let patch={};patch[key]={claimedAt:Date.now()};patch='';await fbPut('rewards/'+encodeURIComponent(uid())+'/'+key,{claimedAt:Date.now(),day});let extra={coins:Number(USER.coins||0)+coins,exp:Number(USER.exp||0)+day*100};if(day===3)extra.avatarFrame='ðŸŒŸ Day 3 Frame';await persistUser(extra);toast('ðŸŽ Day '+day+' reward claimed');}catch(e){toast('âš ï¸ Reward save failed');}};
+  window.openGames=function(){panel('Games',`<div class="option-grid"><button class="option" onclick="pvGame('Lucky Wheel')">ðŸŽ¡ Lucky Wheel</button><button class="option" onclick="pvGame('Bounty Hunter')">ðŸŽ¯ Bounty Hunter</button><button class="option" onclick="pvGame('Dice')">ðŸŽ² Dice</button><button class="option" onclick="pvGame('Treasure')">ðŸ’° Treasure</button></div>`);};
+  window.pvGame=function(name){toast('ðŸŽ® '+name+' opened');};
+  window.openExclusive=function(){panel('Daily Tasks',`<div class="option-grid">${['Login','Enter Room','Speak 10 min','Send Gift','Receive Gift','Follow User','Send CP','Play Game','Complete Profile','Share Room'].map((x,i)=>`<div class="option"><b>${i+1}. ${x}</b><br><small>Daily task â€¢ +${(i+1)*100} EXP</small></div>`).join('')}</div>`);};
+  window.openRoomInfo=function(){panel('Room Information',`<div class="profile-card"><h3>${esc(ROOM.name||'PawanVoice Room')}</h3><p>Room ID: <b>${esc(ROOM_ID)}</b></p><p>Owner: ${esc(ROOM.ownerName||USER.name||'Owner')}</p><p>Category: ${esc(ROOM.category||'General')}</p><p>Online: ${typeof countOnline==='function'?countOnline():(ROOM.users?.length||0)}/9</p></div>`);};
+  const oldSpeaker=window.toggleSpeaker;
+  window.toggleSpeaker=function(){if(typeof oldSpeaker==='function')oldSpeaker(); document.querySelectorAll('audio').forEach(a=>a.muted=!window.speakerOn);};
+  const oldSendGift=window.sendGift;
+  window.sendGift=async function(giftId){
+    const gift=GIFTS.find(g=>g.id===giftId);if(!gift)return;
+    const target=(ROOM.seats||[]).find(u=>u&&String(u.userId||u.id)!==uid())||(ROOM.seats||[]).find(Boolean);const receiverId=String(target?.userId||target?.id||'');
+    if(!receiverId){toast('Gift receiver à¤¨à¤¹à¥€à¤‚ à¤®à¤¿à¤²à¤¾');return;} if(Number(USER.coins||0)<Number(gift.price||0)){toast('Coins à¤•à¤® à¤¹à¥ˆà¤‚');return;}
+    try{
+      const receiver=await fbGet('users/'+encodeURIComponent(receiverId))||{};
+      await fbPatch('users/'+encodeURIComponent(uid()),{coins:Number(USER.coins||0)-Number(gift.price),exp:Number(USER.exp||0)+Number(gift.price)});
+      await fbPatch('users/'+encodeURIComponent(receiverId),{coins:Number(receiver.coins||0)+Number(gift.price),diamonds:Number(receiver.diamonds||0)+Math.max(1,Math.floor(Number(gift.price)/100)),receivedGifts:Number(receiver.receivedGifts||0)+1});
+      mergeUser({coins:Number(USER.coins||0)-Number(gift.price),exp:Number(USER.exp||0)+Number(gift.price)});
+      await fbPatch('giftHistory/'+encodeURIComponent(uid())+'/'+Date.now(),{giftId,giftName:gift.name,price:gift.price,receiverId,receiverName:target?.name||'',createdAt:Date.now()});
+      if(window.SOCKET&&SOCKET.connected)SOCKET.emit('gift',{roomId:ROOM_ID,userId:uid(),senderId:uid(),senderName:USER.name,receiverId,giftId,giftName:gift.name,quantity:1,price:gift.price});
+      const c=document.getElementById('giftCoins');if(c)c.textContent=Number(USER.coins||0).toLocaleString('en-IN');toast('ðŸŽ Gift sent to '+(target?.name||'User'));
+    }catch(e){console.error(e);toast('âš ï¸ Gift save failed');}
+  };
+  // Add a visible Edit Profile button to the existing header without deleting original markup.
+  function addEdit(){if(document.getElementById('pvEditBtn'))return;const h=document.querySelector('.header-actions')||document.querySelector('header');if(!h)return;const b=document.createElement('button');b.id='pvEditBtn';b.className='icon-btn';b.textContent='ðŸ‘¤';b.title='Edit Profile';b.onclick=pvEditProfile;h.appendChild(b);}
+  setTimeout(addEdit,800);
+})();
+</script>
+
 </body>
-      </html>
+  </html>
