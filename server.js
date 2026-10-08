@@ -4440,52 +4440,6 @@ io.on("connection",(socket)=>{
      OLD GAME ACTION COMPATIBILITY
      ========================================================= */
 
-  socket.on(
-    "game-action",
-    (data = {}) => {
-
-      const roomId =
-        String(
-          data.roomId || ""
-        );
-
-
-      io.to(
-        `room:${roomId}`
-      ).emit(
-        "game-action",
-        {
-          ...data,
-
-          userId:
-            data.userId ||
-            socketUsers[socket.id]
-
-        }
-      );
-
-    }
-  );
-    (data={})=>{
-
-      const roomId =
-        String(data.roomId || "");
-
-      io.to(
-        `room:${roomId}`
-      ).emit(
-        "game-action",
-        {
-          ...data,
-          userId:
-            data.userId ||
-            socketUsers[socket.id]
-        }
-      );
-    }
-  );
-
-
   /* WEBRTC OFFER */
 
   socket.on(
