@@ -2,365 +2,99 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#17102f">
 <title>PawanVoice Games</title>
-
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
 <style>
 *{box-sizing:border-box}
-
-:root{
-  --bg:#100d24;
-  --card:#211a3e;
-  --purple:#8b5cf6;
-  --pink:#f472b6;
-  --gold:#ffd166;
-  --text:#fff;
-  --muted:#c7bddf;
-  --green:#35d07f;
-  --red:#ff7070;
-}
-
 body{
-  margin:0;
-  background:linear-gradient(160deg,#17102f,#080817);
-  color:var(--text);
-  font-family:Arial,sans-serif;
+  margin:0;background:linear-gradient(160deg,#17102f,#080817);
+  color:white;font-family:Arial,sans-serif;min-height:100vh
 }
-
-button,select{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
+button,select{font:inherit;cursor:pointer}
 .header{
-  padding:15px;
-  background:#19132f;
-  border-bottom:1px solid #3c2b62;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  position:sticky;
-  top:0;
-  z-index:10;
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:14px;background:#19132f;border-bottom:1px solid #49366d;
+  position:sticky;top:0;z-index:5
 }
-
-.brand{
-  font-size:20px;
-  font-weight:bold;
-}
-
-.brand span{
-  color:#c4a4ff;
-}
-
+.brand{font-size:20px;font-weight:bold}
+.brand span{color:#c4a4ff}
 .wallet{
-  background:#34244f;
-  border:1px solid #7550a7;
-  border-radius:20px;
-  padding:9px 13px;
-  color:var(--gold);
-  font-weight:bold;
-  white-space:nowrap;
+  background:#34244f;border:1px solid #7550a7;border-radius:20px;
+  padding:9px 11px;color:#ffd166;font-weight:bold
 }
-
-.container{
-  max-width:900px;
-  margin:auto;
-  padding:14px;
+.back{
+  color:white;background:#302249;border:1px solid #72569b;
+  padding:9px;border-radius:10px
 }
-
+.container{max-width:900px;margin:auto;padding:14px}
 .banner{
+  padding:20px;border-radius:17px;margin-bottom:18px;
   background:linear-gradient(120deg,#4e248e,#9a3b9b,#e76b93);
-  padding:19px;
-  border-radius:17px;
-  margin-bottom:15px;
+  position:relative;overflow:hidden
 }
-
-.banner h2{
-  margin:0 0 7px;
-}
-
-.banner p{
-  margin:0;
-  font-size:13px;
-  line-height:1.6;
-}
-
-.tabs{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:8px;
-  margin:15px 0;
-}
-
-.tab{
-  background:#211a3e;
-  border:1px solid #4b376f;
-  color:white;
-  border-radius:12px;
-  padding:12px 4px;
-  font-weight:bold;
-}
-
-.tab.active{
-  background:linear-gradient(135deg,#8b5cf6,#c044a0);
-  border-color:#e2c5ff;
-}
-
-.panel{
-  background:rgba(33,26,62,.96);
-  border:1px solid #49366d;
-  border-radius:16px;
-  padding:14px;
-  margin-bottom:14px;
-}
-
-.game-title{
-  font-size:21px;
-  font-weight:bold;
-}
-
-.muted{
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.5;
-}
-
-.round-info{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:8px;
-  margin:13px 0;
-}
-
-.info-box{
-  background:#15112a;
-  padding:11px 5px;
-  border-radius:10px;
-  text-align:center;
-}
-
-.info-box small{
-  display:block;
-  color:var(--muted);
-  margin-bottom:6px;
-}
-
-.info-box strong{
-  color:var(--gold);
-  font-size:14px;
-  overflow-wrap:anywhere;
-}
-
-.timer-track{
-  height:8px;
-  background:#0c0a19;
-  border-radius:10px;
-  overflow:hidden;
-  margin:12px 0;
-}
-
-.timer-bar{
-  height:100%;
-  width:100%;
-  background:linear-gradient(90deg,#8b5cf6,#ff73ae);
-  transition:width .2s linear;
-}
-
-.items{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px;
-}
-
-.item{
-  background:#17122e;
-  border:2px solid #40305f;
-  border-radius:13px;
-  padding:12px 9px;
-  text-align:center;
-  min-width:0;
-}
-
-.item.selected{
-  border-color:var(--gold);
-  background:#34264c;
-  box-shadow:0 0 12px #ffcf6640;
-}
-
-.item.disabled{
-  opacity:.6;
-}
-
-.item-icon{
-  font-size:34px;
-  margin-bottom:5px;
-}
-
-.item-name{
-  font-weight:bold;
-  margin-bottom:7px;
-}
-
-.multiplier{
-  color:var(--gold);
-  font-weight:bold;
-  font-size:14px;
-  margin-bottom:10px;
-}
-
-.item label{
-  display:block;
-  font-size:12px;
-  color:var(--muted);
-  margin-bottom:5px;
-}
-
-.item input[type=checkbox]{
-  width:19px;
-  height:19px;
-  accent-color:#b18aff;
-  margin-bottom:8px;
-}
-
-.bet-select{
-  width:100%;
-  padding:9px 3px;
-  background:#292044;
-  color:white;
-  border:1px solid #65508d;
-  border-radius:8px;
-  font-size:12px;
-}
-
-.bet-select:disabled{
-  opacity:.5;
-}
-
-.total-box{
-  margin-top:14px;
-  padding:13px;
-  border-radius:12px;
-  background:#15112a;
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.total-box strong{
-  color:var(--gold);
-}
-
-.primary{
-  width:100%;
-  border:0;
-  border-radius:12px;
+.banner h2{margin:0 0 8px}
+.banner p{font-size:13px;line-height:1.5;max-width:75%;margin:0}
+.banner-icon{position:absolute;right:16px;top:23px;font-size:50px}
+.heading{display:flex;justify-content:space-between;align-items:center;margin:18px 2px 10px}
+.heading h3{margin:0;font-size:17px}
+.muted{font-size:12px;color:#c7bddf;line-height:1.6}
+.game-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.game-card{background:#211a3e;border:1px solid #49366d;border-radius:14px;overflow:hidden}
+.art{height:100px;display:flex;justify-content:center;align-items:center;font-size:45px;position:relative}
+.greedy{background:linear-gradient(135deg,#f9b85a,#f36e95)}
+.animal{background:linear-gradient(135deg,#3dbf9b,#2378b8)}
+.lucky{background:linear-gradient(135deg,#8760f5,#df4d9e)}
+.tag{position:absolute;top:7px;left:6px;background:#17102fba;padding:4px 6px;border-radius:15px;font-size:9px}
+.card-body{padding:9px}
+.card-body h4{font-size:13px;margin:0 0 7px}
+.card-body p{font-size:10px;color:#c7bddf;min-height:30px;line-height:1.4}
+.play{
+  width:100%;padding:9px 3px;border:0;border-radius:8px;
   background:linear-gradient(120deg,#8b5cf6,#d64eaa);
-  color:white;
-  font-weight:bold;
-  padding:14px;
-  margin-top:12px;
+  color:white;font-weight:bold;font-size:11px
 }
-
-.primary:disabled{
-  opacity:.45;
-  cursor:not-allowed;
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:17px 0 12px}
+.tab{
+  background:#211a3e;border:1px solid #4b376f;color:white;
+  padding:11px 3px;border-radius:10px;font-weight:bold;font-size:12px
 }
-
-.secondary{
-  border:1px solid #72569b;
-  background:#302249;
-  color:white;
-  border-radius:9px;
-  padding:9px 12px;
+.tab.active{background:linear-gradient(120deg,#8b5cf6,#d64eaa)}
+.panel{background:#211a3e;border:1px solid #49366d;border-radius:15px;padding:14px;margin-bottom:14px}
+.panel h3{margin-top:0}
+.round-info{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:13px 0}
+.info{background:#15112a;padding:11px 3px;border-radius:9px;text-align:center}
+.info small{display:block;color:#c7bddf;margin-bottom:6px}
+.info strong{color:#ffd166;font-size:13px;overflow-wrap:anywhere}
+.track{height:8px;background:#0c0a19;border-radius:9px;overflow:hidden;margin:10px 0}
+.bar{height:100%;width:100%;background:linear-gradient(90deg,#8b5cf6,#ff73ae)}
+.items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:13px}
+.item{background:#17122e;border:2px solid #40305f;border-radius:12px;padding:10px;text-align:center}
+.item.selected{border-color:#ffd166;background:#34264c}
+.item-icon{font-size:32px;margin-bottom:5px}
+.item-name{font-weight:bold;margin-bottom:6px}
+.multiplier{color:#ffd166;font-weight:bold;margin-bottom:8px}
+.item label{display:block;font-size:11px;color:#c7bddf;margin:5px}
+.item input{width:18px;height:18px;accent-color:#b18aff}
+.bet-select{width:100%;padding:8px 2px;border:1px solid #65508d;border-radius:7px;background:#292044;color:white;font-size:12px}
+.total{display:flex;justify-content:space-between;gap:8px;background:#15112a;padding:12px;border-radius:10px;margin-top:13px}
+.total strong{color:#ffd166}
+.primary{
+  width:100%;margin-top:12px;padding:14px;border:0;border-radius:11px;
+  background:linear-gradient(120deg,#8b5cf6,#d64eaa);color:white;font-weight:bold
 }
-
-.status{
-  margin-top:12px;
-  padding:11px;
-  border-radius:10px;
-  background:#15112a;
-  line-height:1.6;
-  overflow-wrap:anywhere;
-}
-
-.status.success{
-  border:1px solid #277f53;
-}
-
-.status.error{
-  border:1px solid #9e4343;
-}
-
-.players{
-  display:grid;
-  gap:8px;
-}
-
-.player{
-  background:#17122e;
-  border-radius:10px;
-  padding:10px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
-
-.player-info{
-  min-width:0;
-  overflow-wrap:anywhere;
-}
-
-.player-name{
-  font-weight:bold;
-}
-
-.player-bets{
-  color:var(--muted);
-  font-size:12px;
-  margin-top:5px;
-  line-height:1.6;
-}
-
-.result-item{
-  font-size:23px;
-  color:var(--gold);
-  font-weight:bold;
-  margin:8px 0;
-}
-
-.history-row{
-  border-bottom:1px solid #3d3156;
-  padding:9px 0;
-  font-size:13px;
-  line-height:1.5;
-}
-
-.footer-note{
-  text-align:center;
-  font-size:11px;
-  color:#b8adce;
-  padding:15px 5px 25px;
-  line-height:1.6;
-}
-
-@media(min-width:600px){
-  .items{grid-template-columns:repeat(4,minmax(0,1fr))}
-}
-
-@media(max-width:350px){
-  .brand{font-size:17px}
-  .wallet{font-size:12px;padding:8px}
-  .item-icon{font-size:29px}
-}
+.primary:disabled{opacity:.45;cursor:not-allowed}
+.status{background:#15112a;padding:11px;border-radius:9px;font-size:12px;line-height:1.5;margin-top:10px;overflow-wrap:anywhere}
+.success{border:1px solid #277f53}
+.error{border:1px solid #9e4343}
+.player{background:#17122e;padding:10px;border-radius:9px;margin-top:8px;font-size:12px}
+.result-item{font-size:21px;color:#ffd166;font-weight:bold;margin:9px 0}
+.history-row{border-bottom:1px solid #3d3156;padding:9px 0;font-size:12px;line-height:1.5}
+.footer{text-align:center;color:#b8adce;font-size:11px;line-height:1.6;padding:15px 5px 25px}
+@media(min-width:600px){.items{grid-template-columns:repeat(4,1fr)}.art{height:130px}}
+@media(max-width:380px){.brand{font-size:16px}.wallet{font-size:11px;padding:8px}.back{font-size:11px;padding:8px}.art{height:78px;font-size:37px}.card-body{padding:6px}}
 </style>
 </head>
 
@@ -368,294 +102,296 @@ button{
 
 <header class="header">
   <div class="brand">🎮 Pawan<span>Voice</span></div>
+  <button class="back" id="homeButton">⌂ Home</button>
   <div class="wallet">🪙 <span id="coins">100,000</span></div>
 </header>
 
 <main class="container">
 
-  <section class="banner">
-    <h2>🎉 PawanVoice Games</h2>
-    <p>
-      Play together in live rounds. Select multiple items,
-      choose a separate bet for each item and follow the shared result.
-    </p>
-  </section>
+<section class="banner">
+  <div class="banner-icon">🎮</div>
+  <h2>🎉 PawanVoice Games</h2>
+  <p>Play live rounds with friends! Choose your game, select items and see the round result.</p>
+</section>
 
-  <div class="tabs">
-    <button class="tab active" data-game="greedy">👶 Greedy Baby</button>
-    <button class="tab" data-game="animal">🐯 Animal</button>
-    <button class="tab" data-game="lucky">🎡 Lucky Spin</button>
+<div class="heading">
+  <h3>🔥 Popular Games</h3>
+  <span class="muted">3 Games</span>
+</div>
+
+<section class="game-grid">
+
+  <article class="game-card">
+    <div class="art greedy">
+      <span class="tag">LIVE ROUND</span>👶🍼
+    </div>
+    <div class="card-body">
+      <h4>Greedy Baby</h4>
+      <p>Choose items and join a round.</p>
+      <button class="play" data-game="greedy">▶ Play Now</button>
+    </div>
+  </article>
+
+  <article class="game-card">
+    <div class="art animal">
+      <span class="tag">MULTIPLAYER</span>🐯🦊
+    </div>
+    <div class="card-body">
+      <h4>Animal Party</h4>
+      <p>Pick an animal for the round.</p>
+      <button class="play" data-game="animal">▶ Play Now</button>
+    </div>
+  </article>
+
+  <article class="game-card">
+    <div class="art lucky">
+      <span class="tag">LUCKY SPIN</span>🎡✨
+    </div>
+    <div class="card-body">
+      <h4>Lucky Spin</h4>
+      <p>Join the lucky round.</p>
+      <button class="play" data-game="lucky">▶ Play Now</button>
+    </div>
+  </article>
+
+</section>
+
+<div class="tabs">
+  <button class="tab active" data-tab="greedy">👶 Greedy Baby</button>
+  <button class="tab" data-tab="animal">🐯 Animal</button>
+  <button class="tab" data-tab="lucky">🎡 Lucky Spin</button>
+</div>
+
+<section class="panel" id="livePanel">
+  <h2 id="gameTitle">👶 Greedy Baby</h2>
+  <div class="muted">Select items and choose your bet amount.</div>
+
+  <div class="round-info">
+    <div class="info">
+      <small>Round</small>
+      <strong id="round">Waiting</strong>
+    </div>
+    <div class="info">
+      <small>Time left</small>
+      <strong id="timer">--</strong>
+    </div>
+    <div class="info">
+      <small>Players</small>
+      <strong id="playerCount">0</strong>
+    </div>
   </div>
 
-  <section class="panel">
-    <div class="game-title" id="gameTitle">👶 Greedy Baby</div>
-    <div class="muted" id="gameDescription">
-      Select one or more items and choose your bet.
-    </div>
+  <div class="track"><div class="bar" id="timerBar"></div></div>
+  <div class="muted" id="roundStatus">Connecting to game server…</div>
+</section>
 
-    <div class="round-info">
-      <div class="info-box">
-        <small>Round</small>
-        <strong id="roundNumber">Waiting</strong>
-      </div>
-      <div class="info-box">
-        <small>Time left</small>
-        <strong id="timer">--</strong>
-      </div>
-      <div class="info-box">
-        <small>Players</small>
-        <strong id="playerCount">0</strong>
-      </div>
-    </div>
+<section class="panel">
+  <h3>🎯 Choose Your Items</h3>
+  <div class="muted">Select items and choose a bet for each one.</div>
 
-    <div class="timer-track">
-      <div class="timer-bar" id="timerBar"></div>
-    </div>
+  <div class="items" id="items"></div>
 
-    <div class="muted" id="roundStatus">
-      Connecting to PawanVoice server…
-    </div>
-  </section>
-
-  <section class="panel">
-    <h3 style="margin-top:0">Choose your items</h3>
-    <div class="muted">
-      You can choose multiple items. Each selected item has its own bet.
-      A bet is final after submission for that round.
-    </div>
-
-    <div class="items" id="items"></div>
-
-    <div class="total-box">
-      <span>Total bet</span>
-      <strong id="totalBet">0 coins</strong>
-    </div>
-
-    <button class="primary" id="joinButton" disabled>
-      Submit Bets
-    </button>
-
-    <div class="status" id="message">
-      Connecting…
-    </div>
-  </section>
-
-  <section class="panel">
-    <h3 style="margin-top:0">🏆 Round Result</h3>
-    <div id="result" class="muted">
-      Waiting for the result…
-    </div>
-  </section>
-
-  <section class="panel">
-    <h3 style="margin-top:0">👥 Live Players</h3>
-    <div class="players" id="players">
-      <div class="muted">No bets submitted yet.</div>
-    </div>
-  </section>
-
-  <section class="panel">
-    <h3 style="margin-top:0">📜 Recent Results</h3>
-    <div id="history" class="muted">No results yet.</div>
-  </section>
-
-  <div class="footer-note">
-    PawanVoice virtual-coin game. Coins have no cash value.
-    Results are decided by the server.
+  <div class="total">
+    <span>Total Bet</span>
+    <strong id="totalBet">0 coins</strong>
   </div>
+
+  <button class="primary" id="submitBet" disabled>Submit Bets</button>
+  <div class="status" id="message">Connecting to server…</div>
+</section>
+
+<section class="panel">
+  <h3>🏆 Round Result</h3>
+  <div id="result" class="muted">Waiting for the result…</div>
+</section>
+
+<section class="panel">
+  <h3>👥 Live Players</h3>
+  <div id="players" class="muted">No players yet.</div>
+</section>
+
+<section class="panel">
+  <h3>📜 Recent Results</h3>
+  <div id="history" class="muted">No results yet.</div>
+</section>
+
+<div class="footer">
+  PawanVoice Games · Virtual coins only.<br>
+  Live games and balances require matching server-side game events.
+</div>
 
 </main>
 
 <script>
 "use strict";
 
-/* =====================================
-   CONNECTION AND USER
-   ===================================== */
-
 const SERVER_URL = "https://pawanvoice-1.onrender.com";
-
 const params = new URLSearchParams(location.search);
 
 const roomId = params.get("room") || "PV100";
-const userId = params.get("userid") || ("guest_" + cryptoRandom());
+const userId = params.get("userid") ||
+  ("guest_" + Math.random().toString(36).slice(2,10));
 const userName = params.get("name") || "Guest";
 const userDp = params.get("dp") || "";
-
-function cryptoRandom(){
-  return Math.random().toString(36).slice(2,10);
-}
 
 const socket = io(SERVER_URL,{
   transports:["websocket","polling"],
   reconnection:true,
-  reconnectionAttempts:Infinity,
   timeout:20000
 });
+
+const $ = id => document.getElementById(id);
+const gameNames = {
+  greedy:"👶 Greedy Baby",
+  animal:"🐯 Animal Party",
+  lucky:"🎡 Lucky Spin"
+};
 
 let currentGame = "greedy";
 let currentState = null;
 let currentItems = [];
+let selectedBets = {};
 let myCoins = 100000;
 let myRoundId = null;
-let myBetsSubmitted = false;
-let selectedBets = {};
-let countdownTimer = null;
-let latestResult = null;
+let submitted = false;
+let timerInterval = null;
 
-const gameNames = {
-  greedy:"👶 Greedy Baby",
-  animal:"🐯 Animal",
-  lucky:"🎡 Lucky Spin"
-};
+const fmt = n => Math.floor(Number(n)||0).toLocaleString("en-IN");
 
-const $ = id => document.getElementById(id);
-
-function fmt(n){
-  return Math.floor(Number(n)||0).toLocaleString("en-IN");
+function message(text,type=""){
+  $("message").textContent=text;
+  $("message").className="status"+(type?" "+type:"");
 }
 
-function setMessage(text,type=""){
-  $("message").textContent = text;
-  $("message").className = "status" + (type ? " " + type : "");
-}
-
-function updateWallet(coins){
-  if(coins === undefined || coins === null) return;
-  myCoins = Math.max(0,Number(coins)||0);
-  $("coins").textContent = fmt(myCoins);
-  updateTotal();
-}
-
-function isRoundOpen(){
-  return Boolean(
+function roundOpen(){
+  return !!(
     currentState &&
     currentState.active &&
-    currentState.status === "running" &&
-    currentState.game === currentGame &&
-    Date.now() < Number(currentState.endAt || 0)
+    currentState.status==="running" &&
+    currentState.game===currentGame &&
+    Date.now()<Number(currentState.endAt||0)
   );
 }
 
-/* =====================================
-   TABS
-   ===================================== */
+function updateWallet(value){
+  if(value===undefined || value===null)return;
+  myCoins=Math.max(0,Number(value)||0);
+  $("coins").textContent=fmt(myCoins);
+  updateTotal();
+}
 
-document.querySelectorAll(".tab").forEach(button=>{
+$("homeButton").addEventListener("click",()=>{
+  const home=params.get("home");
+  if(home){location.href=home;return;}
+  if(history.length>1){history.back();return;}
+  location.href="index.html";
+});
+
+function selectGame(game){
+  if(!gameNames[game])return;
+
+  currentGame=game;
+  selectedBets={};
+  submitted=false;
+  myRoundId=null;
+
+  document.querySelectorAll("[data-tab]").forEach(button=>{
+    button.classList.toggle("active",button.dataset.tab===game);
+  });
+
+  $("gameTitle").textContent=gameNames[game];
+  $("result").textContent="Waiting for the result…";
+
+  renderItems();
+  updateRound();
+  updateTotal();
+
+  if(socket.connected){
+    socket.emit("game:open",{roomId,gameId:game,userId});
+  }
+}
+
+document.querySelectorAll("[data-tab]").forEach(button=>{
+  button.addEventListener("click",()=>selectGame(button.dataset.tab));
+});
+
+document.querySelectorAll("[data-game]").forEach(button=>{
   button.addEventListener("click",()=>{
-    currentGame = button.dataset.game;
-    selectedBets = {};
-    myBetsSubmitted = false;
-    myRoundId = null;
-
-    document.querySelectorAll(".tab").forEach(tab=>{
-      tab.classList.toggle("active",tab===button);
-    });
-
-    $("gameTitle").textContent = gameNames[currentGame];
-    $("gameDescription").textContent =
-      "Select one or more items and choose a separate bet for each.";
-
-    renderItems();
-    updateTotal();
-    updateRoundUI();
-
-    if(socket.connected){
-      socket.emit("game:open",{
-        roomId,
-        gameId:currentGame,
-        userId
-      });
-    }
+    selectGame(button.dataset.game);
+    $("livePanel").scrollIntoView({behavior:"smooth"});
   });
 });
 
-/* =====================================
-   RENDER ITEMS
-   ===================================== */
-
 function renderItems(){
-  const root = $("items");
-  root.innerHTML = "";
+  const root=$("items");
+  root.innerHTML="";
 
   if(!currentItems.length){
-    root.innerHTML =
-      '<div class="muted">Waiting for game items from server…</div>';
+    root.innerHTML='<div class="muted">Waiting for game items from server…</div>';
     return;
   }
 
   currentItems.forEach(item=>{
-    const itemId = String(item.id);
-    const selected = Boolean(selectedBets[itemId]);
+    const id=String(item.id);
+    const selected=Object.prototype.hasOwnProperty.call(selectedBets,id);
 
-    const card = document.createElement("div");
-    card.className = "item" + (selected ? " selected" : "");
+    const card=document.createElement("div");
+    card.className="item"+(selected?" selected":"");
 
-    const icon = document.createElement("div");
-    icon.className = "item-icon";
-    icon.textContent = item.icon || "🎁";
+    const icon=document.createElement("div");
+    icon.className="item-icon";
+    icon.textContent=item.icon||"🎁";
 
-    const name = document.createElement("div");
-    name.className = "item-name";
-    name.textContent = item.name || itemId;
+    const name=document.createElement("div");
+    name.className="item-name";
+    name.textContent=item.name||id;
 
-    const multiplier = document.createElement("div");
-    multiplier.className = "multiplier";
-    multiplier.textContent = "×" + Number(item.multiplier || 1);
+    const multiplier=document.createElement("div");
+    multiplier.className="multiplier";
+    multiplier.textContent="×"+Number(item.multiplier||1);
 
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = selected;
-    checkbox.disabled = !isRoundOpen() || myBetsSubmitted;
-    checkbox.setAttribute("aria-label","Select " + item.name);
+    const checkbox=document.createElement("input");
+    checkbox.type="checkbox";
+    checkbox.checked=selected;
+    checkbox.disabled=!roundOpen()||submitted;
 
-    const label = document.createElement("label");
-    label.textContent = "Select item";
+    const label=document.createElement("label");
+    label.textContent="Select item";
 
-    const betLabel = document.createElement("label");
-    betLabel.textContent = "Bet amount";
+    const betLabel=document.createElement("label");
+    betLabel.textContent="Bet amount";
 
-    const select = document.createElement("select");
-    select.className = "bet-select";
-    select.disabled = !selected || !isRoundOpen() || myBetsSubmitted;
+    const select=document.createElement("select");
+    select.className="bet-select";
+    select.disabled=!selected||!roundOpen()||submitted;
 
     [100000,200000,500000].forEach(amount=>{
-      const option = document.createElement("option");
-      option.value = String(amount);
-      option.textContent = fmt(amount);
+      const option=document.createElement("option");
+      option.value=String(amount);
+      option.textContent=fmt(amount)+" coins";
       select.appendChild(option);
     });
 
-    select.value = String(
-      selectedBets[itemId] || 100000
-    );
+    select.value=String(selectedBets[id]||100000);
 
     checkbox.addEventListener("change",()=>{
       if(checkbox.checked){
-        selectedBets[itemId] = Number(select.value)||100000;
+        selectedBets[id]=Number(select.value)||100000;
       }else{
-        delete selectedBets[itemId];
+        delete selectedBets[id];
       }
-
       renderItems();
       updateTotal();
     });
 
     select.addEventListener("change",()=>{
-      if(selectedBets[itemId]){
-        selectedBets[itemId] = Number(select.value);
+      if(selectedBets[id]){
+        selectedBets[id]=Number(select.value);
         updateTotal();
       }
     });
 
-    card.appendChild(icon);
-    card.appendChild(name);
-    card.appendChild(multiplier);
-    card.appendChild(checkbox);
-    card.appendChild(label);
-    card.appendChild(betLabel);
-    card.appendChild(select);
-
+    card.append(icon,name,multiplier,checkbox,label,betLabel,select);
     root.appendChild(card);
   });
 
@@ -663,55 +399,44 @@ function renderItems(){
 }
 
 function updateTotal(){
-  const total = Object.values(selectedBets)
-    .reduce((sum,amount)=>sum+(Number(amount)||0),0);
+  const total=Object.values(selectedBets)
+    .reduce((sum,value)=>sum+(Number(value)||0),0);
 
-  $("totalBet").textContent = fmt(total) + " coins";
+  $("totalBet").textContent=fmt(total)+" coins";
 
-  const canSubmit =
+  $("submitBet").disabled=!(
     socket.connected &&
-    isRoundOpen() &&
-    !myBetsSubmitted &&
-    total > 0 &&
-    total <= myCoins;
-
-  $("joinButton").disabled = !canSubmit;
-
-  if(total > myCoins){
-    setMessage("Not enough coins for these bets.","error");
-  }else if(!myBetsSubmitted && isRoundOpen()){
-    setMessage("Select your items and submit before the round closes.");
-  }
+    roundOpen() &&
+    !submitted &&
+    total>0 &&
+    total<=myCoins
+  );
 }
 
-/* =====================================
-   SUBMIT MULTIPLE BETS
-   ===================================== */
-
-$("joinButton").addEventListener("click",()=>{
-  if(!isRoundOpen()){
-    setMessage("The round is closed. Wait for the next round.","error");
+$("submitBet").addEventListener("click",()=>{
+  if(!roundOpen()){
+    message("Round is closed. Wait for the next round.","error");
     return;
   }
 
-  const bets = Object.entries(selectedBets).map(([itemId,amount])=>({
+  const bets=Object.entries(selectedBets).map(([itemId,amount])=>({
     itemId,
     amount:Number(amount)
   }));
 
   if(!bets.length){
-    setMessage("Select at least one item.","error");
+    message("Please select at least one item.","error");
     return;
   }
 
-  const total = bets.reduce((sum,b)=>sum+b.amount,0);
+  const total=bets.reduce((sum,bet)=>sum+bet.amount,0);
 
-  if(total > myCoins){
-    setMessage("Not enough coins.","error");
+  if(total>myCoins){
+    message("Not enough coins.","error");
     return;
   }
 
-  $("joinButton").disabled = true;
+  $("submitBet").disabled=true;
 
   socket.emit("game:join",{
     roomId,
@@ -723,199 +448,160 @@ $("joinButton").addEventListener("click",()=>{
   });
 });
 
-/* =====================================
-   ROUND UI
-   ===================================== */
-
-function updateRoundUI(){
-  const state = currentState;
+function updateRound(){
+  const state=currentState;
 
   if(!state || !state.active){
-    $("roundNumber").textContent = "Waiting";
-    $("roundStatus").textContent = "Waiting for a round to start…";
-    $("playerCount").textContent = "0";
-    $("timer").textContent = "--";
-    $("timerBar").style.width = "0%";
-    $("joinButton").disabled = true;
+    $("round").textContent="Waiting";
+    $("timer").textContent="--";
+    $("playerCount").textContent="0";
+    $("timerBar").style.width="0%";
+    $("roundStatus").textContent="Waiting for the server to start a round…";
+    $("submitBet").disabled=true;
     return;
   }
 
-  $("roundNumber").textContent = "#" + state.roundNumber;
-  $("playerCount").textContent = String(state.playerCount || 0);
+  $("round").textContent="#"+(state.roundNumber??"—");
+  $("playerCount").textContent=String(state.playerCount||0);
 
-  if(state.game !== currentGame){
-    $("roundStatus").textContent =
-      "The room's current live game is " + (gameNames[state.game] || state.game) + ".";
-  }else if(state.status === "running"){
-    $("roundStatus").textContent =
-      myBetsSubmitted ? "Your bets are submitted." : "Round is open — submit your bets before time runs out.";
+  if(state.game!==currentGame){
+    $("roundStatus").textContent="Live game: "+(gameNames[state.game]||state.game);
+  }else if(state.status==="running"){
+    $("roundStatus").textContent=submitted?
+      "Your bets are submitted. Good luck!":
+      "Round is open. Submit your bets before time runs out.";
   }else{
-    $("roundStatus").textContent = "Round finished. Waiting for the next round…";
+    $("roundStatus").textContent="Round finished. Waiting for next round…";
   }
 
-  if(state.game === currentGame && Array.isArray(state.items)){
-    currentItems = state.items;
+  if(state.game===currentGame && Array.isArray(state.items)){
+    currentItems=state.items;
     renderItems();
   }
 
   updateTotal();
 }
 
-function startCountdown(){
-  if(countdownTimer) clearInterval(countdownTimer);
+function startTimer(){
+  if(timerInterval)clearInterval(timerInterval);
 
-  countdownTimer = setInterval(()=>{
+  timerInterval=setInterval(()=>{
     if(!currentState || !currentState.active){
-      $("timer").textContent = "--";
-      $("timerBar").style.width = "0%";
+      $("timer").textContent="--";
+      $("timerBar").style.width="0%";
       return;
     }
 
-    const remaining = Math.max(
-      0,
-      Number(currentState.endAt || 0) - Date.now()
-    );
+    const remaining=Math.max(0,Number(currentState.endAt||0)-Date.now());
+    const duration=Math.max(1,Number(currentState.duration)||15000);
 
-    $("timer").textContent = Math.ceil(remaining/1000) + "s";
+    $("timer").textContent=Math.ceil(remaining/1000)+"s";
+    $("timerBar").style.width=
+      Math.max(0,Math.min(100,remaining/duration*100))+"%";
 
-    const duration = Math.max(1,Number(currentState.duration)||15000);
-    $("timerBar").style.width =
-      Math.max(0,Math.min(100,remaining/duration*100)) + "%";
-
-    if(remaining <= 0){
-      $("roundStatus").textContent = "Bets closed — waiting for the server result…";
-      $("joinButton").disabled = true;
+    if(remaining<=0){
+      $("submitBet").disabled=true;
+      $("roundStatus").textContent="Bets closed. Waiting for result…";
     }
   },200);
 }
 
-/* =====================================
-   LIVE PLAYER LIST
-   ===================================== */
-
 function renderPlayers(players){
-  const root = $("players");
-  root.innerHTML = "";
+  const root=$("players");
+  root.innerHTML="";
 
   if(!players || !players.length){
-    root.innerHTML = '<div class="muted">No bets submitted yet.</div>';
+    root.textContent="No players yet.";
+    root.className="muted";
     return;
   }
 
+  root.className="";
+
   players.forEach(player=>{
-    const row = document.createElement("div");
-    row.className = "player";
+    const row=document.createElement("div");
+    row.className="player";
 
-    const info = document.createElement("div");
-    info.className = "player-info";
+    const name=document.createElement("strong");
+    name.textContent="👤 "+(player.name||player.userId||"Player");
 
-    const name = document.createElement("div");
-    name.className = "player-name";
-    name.textContent = player.name || player.userId || "Player";
+    const bets=document.createElement("div");
+    bets.className="muted";
 
-    const bets = document.createElement("div");
-    bets.className = "player-bets";
+    const list=player.bets||[];
+    bets.textContent=list.length?
+      list.map(b=>
+        (b.itemIcon||"🎁")+" "+(b.itemName||b.itemId)+
+        ": "+fmt(b.amount)+" coins"
+      ).join(" · "):
+      "Bets submitted";
 
-    const playerBets = player.bets || [];
-
-    bets.textContent = playerBets.length
-      ? playerBets.map(b=>
-          (b.itemIcon||"🎁") + " " +
-          (b.itemName||b.itemId) + ": " +
-          fmt(b.amount) + " ×" + b.multiplier
-        ).join(" · ")
-      : "Bets submitted";
-
-    info.appendChild(name);
-    info.appendChild(bets);
-    row.appendChild(info);
+    row.append(name,bets);
     root.appendChild(row);
   });
 }
 
-/* =====================================
-   RESULT AND HISTORY
-   ===================================== */
+function renderResult(data){
+  if(!data)return;
 
-function renderResult(result){
-  if(!result){
-    $("result").textContent = "Waiting for the result…";
-    return;
-  }
+  const root=$("result");
+  root.innerHTML="";
 
-  const winner = result.winningItem || {};
-  const winners = result.winners || [];
+  const item=data.winningItem||{};
+  const title=document.createElement("div");
+  title.className="result-item";
+  title.textContent=(item.icon||"🎉")+" "+
+    (item.name||"Round Result")+" ×"+(item.multiplier||1);
 
-  $("result").innerHTML = "";
+  const info=document.createElement("div");
+  info.className="muted";
+  info.textContent="Round #"+(data.roundNumber??"—");
 
-  const headline = document.createElement("div");
-  headline.className = "result-item";
-  headline.textContent =
-    (winner.icon || "🎉") + " " +
-    (winner.name || "Winner") +
-    " — ×" + (winner.multiplier || 1);
+  root.append(title,info);
 
-  const summary = document.createElement("div");
-  summary.className = "muted";
-  summary.textContent =
-    "Round #" + result.roundNumber +
-    " · " + winners.length + " winning player(s)";
-
-  $("result").appendChild(headline);
-  $("result").appendChild(summary);
+  const winners=data.winners||[];
 
   if(!winners.length){
-    const none = document.createElement("p");
-    none.textContent = "No one selected the winning item.";
-    $("result").appendChild(none);
+    const none=document.createElement("p");
+    none.textContent="No winning players reported.";
+    root.appendChild(none);
   }else{
-    winners.forEach(w=>{
-      const row = document.createElement("div");
-      row.className = "history-row";
-      row.textContent =
-        "🏆 " + w.name +
-        " — payout " + fmt(w.payout) +
-        " coins (winning bet " + fmt(w.stake) + ")";
-      $("result").appendChild(row);
+    winners.forEach(winner=>{
+      const row=document.createElement("div");
+      row.className="history-row";
+      row.textContent="🏆 "+(winner.name||"Player")+
+        " — payout "+fmt(winner.payout)+" coins";
+      root.appendChild(row);
     });
   }
 
-  const note = document.createElement("div");
-  note.className = "muted";
-  note.style.marginTop = "8px";
-  note.textContent =
-    "Payout is credited by the server. Bets on non-winning items are not refunded.";
-  $("result").appendChild(note);
+  addHistory(data);
 }
 
-function addHistory(result){
-  if(!result || !result.winningItem) return;
+function addHistory(data){
+  if(!data || !data.winningItem)return;
 
-  latestResult = result;
+  const row=document.createElement("div");
+  row.className="history-row";
+  row.textContent="#"+(data.roundNumber??"—")+" · "+
+    (data.winningItem.icon||"")+" "+
+    data.winningItem.name+" ×"+
+    (data.winningItem.multiplier||1);
 
-  const row = document.createElement("div");
-  row.className = "history-row";
-
-  row.textContent =
-    "#" + result.roundNumber + " · " +
-    (result.winningItem.icon || "") + " " +
-    result.winningItem.name +
-    " ×" + result.winningItem.multiplier +
-    " · " + (result.winnerCount || 0) + " winner(s)";
+  if($("history").textContent==="No results yet."){
+    $("history").innerHTML="";
+    $("history").className="";
+  }
 
   $("history").prepend(row);
 
-  while($("history").children.length > 20){
+  while($("history").children.length>20){
     $("history").lastChild.remove();
   }
 }
 
-/* =====================================
-   SOCKET EVENTS
-   ===================================== */
-
 socket.on("connect",()=>{
-  setMessage("Connected. Loading your wallet and live round.","success");
+  message("Connected to server. Loading game…","success");
 
   socket.emit("register-user",{
     userId,
@@ -930,88 +616,94 @@ socket.on("connect",()=>{
   });
 });
 
+socket.on("connect_error",()=>{
+  message("Could not connect to game server. Check the Render service.","error");
+});
+
 socket.on("disconnect",()=>{
-  setMessage("Connection lost. Reconnecting…","error");
-  $("joinButton").disabled = true;
+  message("Connection lost. Reconnecting…","error");
+  $("submitBet").disabled=true;
 });
 
 socket.on("registered",data=>{
-  if(data && data.user){
+  if(data && data.user && data.user.coins!==undefined){
     updateWallet(data.user.coins);
   }
 });
 
 socket.on("wallet",data=>{
-  if(data) updateWallet(data.coins);
+  if(data && data.coins!==undefined){
+    updateWallet(data.coins);
+  }
 });
 
 socket.on("game:open",data=>{
-  if(!data) return;
+  if(!data)return;
 
-  if(data.items && data.game === currentGame){
-    currentItems = data.items;
+  if(data.game===currentGame && Array.isArray(data.items)){
+    currentItems=data.items;
     renderItems();
   }
 
-  if(data.game && data.game !== currentGame){
-    $("roundStatus").textContent =
-      "Current live game: " + (gameNames[data.game] || data.game);
+  if(data.state){
+    currentState=data.state;
+    updateRound();
   }
 });
 
 socket.on("game:state",data=>{
-  if(!data) return;
+  if(!data)return;
 
-  /*
-    Server sends the same state to every socket
-    joined to this room's live game.
-  */
-  currentState = data;
+  if(data.roomId && String(data.roomId)!==String(roomId))return;
+
+  currentState=data;
 
   if(!data.active){
-    currentItems = [];
-    selectedBets = {};
-    myBetsSubmitted = false;
-    myRoundId = null;
+    currentItems=[];
+    selectedBets={};
+    submitted=false;
+    myRoundId=null;
     renderItems();
-    updateRoundUI();
+    updateRound();
     return;
   }
 
-  if(myRoundId !== data.roundId){
-    myRoundId = data.roundId;
-    myBetsSubmitted = false;
-    selectedBets = {};
+  if(myRoundId!==data.roundId){
+    myRoundId=data.roundId;
+    selectedBets={};
+    submitted=false;
   }
 
-  if(data.game === currentGame && Array.isArray(data.items)){
-    currentItems = data.items;
+  if(data.game===currentGame && Array.isArray(data.items)){
+    currentItems=data.items;
   }
 
   if(data.result){
     renderResult(data.result);
   }
 
-  renderPlayers(data.players || []);
-  updateRoundUI();
+  renderPlayers(data.players||[]);
+  updateRound();
 });
 
 socket.on("game:players",data=>{
-  if(data && currentState && data.roomId === roomId){
-    renderPlayers(data.players || []);
+  if(data && currentState &&
+     (!data.roomId || String(data.roomId)===String(roomId))){
+    renderPlayers(data.players||[]);
   }
 });
 
 socket.on("game:joined",data=>{
-  if(!data || !data.ok) return;
+  if(data && data.ok===false){
+    message(data.message||"Bet was not accepted.","error");
+    updateTotal();
+    return;
+  }
 
-  myBetsSubmitted = true;
-  setMessage(
-    "Bets accepted. Coins deducted: " + fmt(data.totalBet) + ". Good luck!",
-    "success"
-  );
+  submitted=true;
+  message("Bet accepted by server. Good luck!","success");
 
-  if(data.wallet){
+  if(data && data.wallet && data.wallet.coins!==undefined){
     updateWallet(data.wallet.coins);
   }
 
@@ -1020,30 +712,20 @@ socket.on("game:joined",data=>{
 });
 
 socket.on("game:result",data=>{
-  if(!data || data.roomId !== roomId) return;
-
+  if(!data)return;
+  if(data.roomId && String(data.roomId)!==String(roomId))return;
   renderResult(data);
-  addHistory(data);
 });
 
 socket.on("game:error",data=>{
-  const message = data && data.message
-    ? data.message
-    : "Game error.";
-
-  setMessage(message,"error");
+  message(data && data.message || "Game error.","error");
   updateTotal();
 });
 
-/* =====================================
-   INITIALIZE
-   ===================================== */
-
-$("gameTitle").textContent = gameNames[currentGame];
 renderItems();
-startCountdown();
-updateRoundUI();
-
+startTimer();
+updateRound();
 </script>
+
 </body>
-</html>
+  </html>
