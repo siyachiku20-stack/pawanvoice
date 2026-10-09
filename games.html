@@ -1,1485 +1,1235 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#17112e">
 <title>PawanVoice Games</title>
 
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
 <style>
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-:root {
-  --bg: #10101d;
-  --panel: #1b1b30;
-  --panel2: #252541;
-  --gold: #ffd66b;
-  --pink: #ff5fa2;
-  --blue: #6b9cff;
-  --green: #4ce0a0;
-  --text: #ffffff;
-  --muted: #aaaac5;
-}
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: Arial, sans-serif;
-  min-height: 100vh;
-}
-
-button {
-  border: 0;
-  cursor: pointer;
-  font: inherit;
-}
-
-button:disabled {
-  opacity: .4;
-  cursor: not-allowed;
-}
-
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  padding: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #19192c;
-  border-bottom: 1px solid #343451;
-}
-
-.brand {
-  font-weight: 900;
-  font-size: 20px;
-  color: var(--gold);
-}
-
-.wallet {
-  background: #292943;
-  border: 1px solid #58516a;
-  padding: 9px 12px;
-  border-radius: 22px;
-  font-size: 13px;
-  font-weight: bold;
-}
-
-.page {
-  max-width: 620px;
-  margin: auto;
-  padding: 14px;
-  padding-bottom: 35px;
-}
-
-.welcome {
-  padding: 18px;
-  border-radius: 18px;
-  background: linear-gradient(130deg, #5c277c, #263e83, #173c54);
-  margin-bottom: 16px;
-}
-
-.welcome h2 {
-  margin: 0 0 7px;
-}
-
-.welcome p {
-  margin: 0;
-  color: #e0dcf5;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.connection {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 12px;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.dot {
-  height: 8px;
-  width: 8px;
-  border-radius: 50%;
-  background: #ff6262;
-}
-
-.dot.online {
-  background: var(--green);
-}
-
-.section-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 20px 0 12px;
-  font-size: 17px;
-  font-weight: bold;
-}
-
-.section-title small {
-  font-size: 11px;
-  font-weight: normal;
-  color: var(--muted);
-}
-
-.game-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.game-card {
-  min-width: 0;
-  background: var(--panel);
-  border: 2px solid transparent;
-  border-radius: 15px;
-  padding: 12px 5px;
-  text-align: center;
-  color: white;
-  transition: .15s;
-}
-
-.game-card.active {
-  border-color: var(--gold);
-  background: #302840;
-}
-
-.game-icon {
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 42px;
-}
-
-.game-name {
-  font-weight: bold;
-  font-size: 12px;
-  margin-top: 7px;
-}
-
-.game-status {
-  margin-top: 5px;
-  font-size: 10px;
-  color: var(--green);
-}
-
-.game-panel {
-  margin-top: 16px;
-  background: var(--panel);
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid #343451;
-}
-
-.game-header {
-  padding: 15px;
-  background: linear-gradient(110deg, #382457, #24345e);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.game-header h2 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.round-info {
-  text-align: right;
-  font-size: 11px;
-  color: #ddd9f2;
-  line-height: 1.7;
-}
-
-.timer-box {
-  text-align: center;
-  padding: 15px;
-  background: #161629;
-}
-
-.timer {
-  font-size: 32px;
-  font-weight: 900;
-  color: var(--gold);
-}
-
-.timer-label {
-  margin-top: 4px;
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.progress {
-  height: 5px;
-  background: #33334b;
-  margin-top: 12px;
-  overflow: hidden;
-  border-radius: 10px;
-}
-
-.progress-bar {
-  height: 100%;
-  width: 100%;
-  background: var(--green);
-  transition: width .3s linear;
-}
-
-.result-box {
-  padding: 13px;
-  margin: 12px;
-  text-align: center;
-  border-radius: 12px;
-  background: #25253d;
-  border: 1px solid #3c3c5a;
-}
-
-.result-icon {
-  font-size: 36px;
-}
-
-.result-title {
-  font-weight: bold;
-  margin-top: 5px;
-}
-
-.result-detail {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 5px;
-}
-
-.items-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  padding: 12px;
-}
-
-.bet-item {
-  position: relative;
-  min-width: 0;
-  min-height: 95px;
-  padding: 9px 3px;
-  border-radius: 12px;
-  color: white;
-  background: var(--panel2);
-  border: 2px solid #383854;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.bet-item.selected {
-  border-color: var(--gold);
-  background: #40364b;
-}
-
-.bet-item.winner {
-  border-color: var(--green);
-  background: #174c3b;
-}
-
-.item-emoji {
-  font-size: 29px;
-}
-
-.item-name {
-  font-size: 10px;
-  margin-top: 5px;
-  font-weight: bold;
-  text-align: center;
-  overflow-wrap: anywhere;
-}
-
-.multiplier {
-  margin-top: 4px;
-  font-size: 10px;
-  color: var(--gold);
-}
-
-.selected-amount {
-  font-size: 10px;
-  color: var(--green);
-  margin-top: 4px;
-}
-
-.betting-section {
-  padding: 12px;
-  border-top: 1px solid #343451;
-}
-
-.label {
-  color: var(--muted);
-  font-size: 12px;
-  margin-bottom: 9px;
-}
-
-.amount-options {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.amount-btn {
-  border: 1px solid #454560;
-  border-radius: 10px;
-  background: #25253d;
-  color: white;
-  padding: 11px 3px;
-  font-weight: bold;
-  font-size: 12px;
-}
-
-.amount-btn.active {
-  border-color: var(--gold);
-  color: var(--gold);
-  background: #3c3044;
-}
-
-.primary-btn {
-  width: 100%;
-  padding: 14px;
-  margin-top: 12px;
-  border-radius: 12px;
-  background: linear-gradient(100deg, #ffcf5c, #ff9e52);
-  color: #35220b;
-  font-weight: 900;
-}
-
-.secondary-btn {
-  background: #30304b;
-  color: white;
-  border: 1px solid #454560;
-  border-radius: 10px;
-  padding: 10px 12px;
-}
-
-.notice {
-  padding: 0 12px 12px;
-  font-size: 11px;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  padding: 12px;
-}
-
-.stat {
-  padding: 12px 5px;
-  border-radius: 11px;
-  background: #25253d;
-  text-align: center;
-}
-
-.stat strong {
-  display: block;
-  font-size: 16px;
-  color: var(--gold);
-}
-
-.stat span {
-  font-size: 10px;
-  color: var(--muted);
-}
-
-.list {
-  padding: 0 12px 12px;
-}
-
-.list-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 11px 0;
-  border-bottom: 1px solid #303047;
-  font-size: 12px;
-}
-
-.list-row:last-child {
-  border-bottom: 0;
-}
-
-.muted {
-  color: var(--muted);
-}
-
-.green {
-  color: var(--green);
-}
-
-.gold {
-  color: var(--gold);
-}
-
-.bottom-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translate(-50%, 20px);
-  max-width: 90%;
-  z-index: 100;
-  background: #292943;
-  border: 1px solid #555570;
-  padding: 12px 18px;
-  border-radius: 12px;
-  font-size: 13px;
-  opacity: 0;
-  pointer-events: none;
-  transition: .2s;
-  text-align: center;
-}
-
-.toast.show {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-@media (max-width: 380px) {
-  .game-grid {
-    gap: 6px;
-  }
-
-  .game-card {
-    padding: 10px 2px;
-  }
-
-  .game-icon {
-    font-size: 34px;
-    height: 52px;
-  }
-
-  .game-name {
-    font-size: 10px;
-  }
-
-  .items-grid {
-    gap: 5px;
-    padding: 8px;
-  }
-
-  .bet-item {
-    min-height: 82px;
-  }
+*{box-sizing:border-box}
+:root{
+ --bg:#100d20;
+ --panel:#201a39;
+ --panel2:#2b2350;
+ --pink:#ff4fa3;
+ --purple:#855bff;
+ --cyan:#44e5ff;
+ --gold:#ffd66b;
+ --text:#fff;
+ --muted:#b9b2d2;
+}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Arial,Helvetica,sans-serif;
+ min-height:100vh;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}
+.top{
+ padding:16px;background:linear-gradient(135deg,#35216c,#17112e);
+ position:sticky;top:0;z-index:10;
+ border-bottom:1px solid #ffffff16;
+}
+.toprow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{font-weight:900;font-size:22px}
+.brand span{color:var(--cyan)}
+.coins{
+ background:#ffffff12;border:1px solid #ffffff20;
+ padding:8px 12px;border-radius:25px;color:var(--gold);
+ font-size:13px;font-weight:bold
+}
+.sub{font-size:12px;color:var(--muted);margin-top:7px}
+.connection{font-size:11px;color:var(--muted);margin-top:8px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#888;margin-right:5px}
+.dot.on{background:#43eea5}
+.wrap{padding:14px;max-width:850px;margin:auto;padding-bottom:95px}
+.hero{
+ background:linear-gradient(130deg,#7b36e9,#ec398b);
+ border-radius:22px;padding:20px;min-height:155px;
+ display:flex;align-items:center;justify-content:space-between;gap:10px;
+ box-shadow:0 12px 35px #9d39d633;
+}
+.hero h1{font-size:25px;margin:0 0 8px}
+.hero p{font-size:12px;line-height:1.5;margin:0 0 14px;color:#fffde9}
+.primary{
+ border:0;background:#fff;color:#6424a7;
+ border-radius:25px;padding:11px 17px;font-weight:800
+}
+.heroemoji{font-size:67px;filter:drop-shadow(0 5px 6px #0003)}
+.sectionhead{display:flex;align-items:center;justify-content:space-between;margin:24px 0 12px}
+.sectionhead h2{font-size:17px;margin:0}
+.smallmuted{font-size:11px;color:var(--muted)}
+.search{
+ width:100%;border:1px solid #ffffff20;background:var(--panel);
+ color:#fff;border-radius:13px;padding:13px;margin:18px 0 4px;outline:none
+}
+.categories{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px}
+.chip{
+ border:1px solid #ffffff1d;background:var(--panel);color:var(--muted);
+ border-radius:22px;padding:9px 14px;white-space:nowrap;font-size:12px
+}
+.chip.active{background:#7546dc;color:white;border-color:#a48aff}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{
+ background:var(--panel);border:1px solid #ffffff0c;
+ border-radius:18px;overflow:hidden;min-width:0;
+ transition:transform .15s;
+}
+.card:active{transform:scale(.98)}
+.cover{
+ min-height:108px;display:flex;align-items:center;justify-content:center;
+ font-size:57px;position:relative
+}
+.c1{background:linear-gradient(135deg,#ff7b58,#ffbe55)}
+.c2{background:linear-gradient(135deg,#2878e7,#5fd4ff)}
+.c3{background:linear-gradient(135deg,#823fe3,#ee72d1)}
+.c4{background:linear-gradient(135deg,#00a887,#70e7a0)}
+.c5{background:linear-gradient(135deg,#bd356d,#ff8cbb)}
+.c6{background:linear-gradient(135deg,#3753b9,#8b9cff)}
+.c7{background:linear-gradient(135deg,#e7a52b,#ffdf78)}
+.c8{background:linear-gradient(135deg,#a43ee5,#56aaff)}
+.tag{
+ position:absolute;top:9px;left:9px;background:#0005;
+ padding:5px 7px;border-radius:8px;font-size:9px;font-weight:bold
+}
+.cardbody{padding:12px}
+.cardbody h3{font-size:14px;margin:0 0 6px}
+.cardbody p{font-size:11px;color:var(--muted);margin:0 0 12px;min-height:25px;line-height:1.4}
+.cardfoot{display:flex;justify-content:space-between;align-items:center;gap:5px}
+.players{font-size:10px;color:#bcb3d5}
+.playbtn{
+ border:0;border-radius:10px;background:linear-gradient(135deg,var(--purple),var(--pink));
+ color:white;font-size:11px;font-weight:bold;padding:9px 13px
+}
+.panel{
+ background:var(--panel);border:1px solid #ffffff12;
+ padding:15px;border-radius:17px;margin-top:15px
+}
+.panel h3{font-size:15px;margin:0 0 12px}
+.roomrow{
+ display:flex;align-items:center;justify-content:space-between;gap:10px;
+ padding:12px 0;border-bottom:1px solid #ffffff10
+}
+.roomrow:last-child{border-bottom:0}
+.roomtitle{font-size:13px;font-weight:bold}
+.roommeta{font-size:10px;color:var(--muted);margin-top:5px}
+.actionbtn{
+ background:#3a2c68;color:white;border:1px solid #ffffff1b;
+ border-radius:11px;padding:10px 12px;font-size:12px;font-weight:bold
+}
+.empty{color:var(--muted);font-size:12px;padding:12px 0}
+.bottom{
+ position:fixed;bottom:0;left:0;right:0;z-index:15;
+ background:#19132cf5;border-top:1px solid #ffffff18;
+ display:flex;justify-content:space-around;padding:11px 4px calc(11px + env(safe-area-inset-bottom))
+}
+.bottom button{border:0;background:none;color:var(--muted);font-size:10px}
+.bottom button strong{display:block;font-size:21px;margin-bottom:3px}
+.bottom button.active{color:var(--pink)}
+.screen{display:none}
+.screen.active{display:block}
+.back{
+ background:transparent;border:0;color:white;font-size:14px;
+ padding:8px 0 15px
+}
+.gamehead{display:flex;align-items:center;gap:12px}
+.gameicon{
+ width:62px;height:62px;display:grid;place-items:center;
+ font-size:38px;background:var(--panel2);border-radius:17px
+}
+.gamehead h2{font-size:19px;margin:0 0 6px}
+.gameboard{
+ background:#19142e;border:1px solid #ffffff17;border-radius:18px;
+ padding:14px;margin-top:15px;min-height:260px
+}
+.center{text-align:center}
+.bigbtn{
+ border:0;background:linear-gradient(120deg,var(--purple),var(--pink));
+ border-radius:13px;padding:13px;color:white;font-weight:bold;width:100%;margin-top:10px
+}
+.secondarybtn{
+ border:1px solid #ffffff22;background:#33284f;color:white;
+ border-radius:12px;padding:10px 13px
+}
+.statusmsg{font-size:12px;color:var(--muted);line-height:1.6;margin:12px 0}
+input[type=text]{
+ width:100%;background:#120e24;color:white;border:1px solid #ffffff22;
+ border-radius:11px;padding:12px;outline:none;margin:5px 0
+}
+.chatbox{
+ max-height:160px;overflow-y:auto;background:#100d20;border-radius:12px;
+ padding:10px;margin-top:10px;font-size:12px
+}
+.chatline{padding:5px 0;overflow-wrap:anywhere}
+.chatline b{color:var(--cyan)}
+.row{display:flex;gap:8px;align-items:center}
+.row>*{min-width:0}
+.row input{flex:1}
+.row button{flex-shrink:0}
+canvas{display:block;max-width:100%;border-radius:12px;margin:auto;background:#090d1a}
+.tile2048{
+ display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+ max-width:340px;margin:12px auto;background:#524b60;padding:7px;border-radius:12px
+}
+.tile2048 div{
+ aspect-ratio:1;display:grid;place-items:center;border-radius:7px;
+ background:#776f80;font-size:19px;font-weight:900;color:#fff
+}
+.tile2048 .v2{background:#eee4da;color:#51473c}
+.tile2048 .v4{background:#eddfc7;color:#51473c}
+.tile2048 .v8{background:#f2a65a}
+.tile2048 .v16{background:#f17d53}
+.tile2048 .v32{background:#ed5e45}
+.tile2048 .v64{background:#e9422c}
+.tile2048 .v128,.tile2048 .v256,.tile2048 .v512{background:#e7cb62;color:#322b22;font-size:15px}
+#fruitCanvas{touch-action:manipulation}
+.snakecontrols{display:grid;grid-template-columns:repeat(3,55px);gap:6px;justify-content:center;margin-top:12px}
+.snakecontrols button{height:42px;border:0;border-radius:10px;background:#3c3066;color:white;font-size:18px}
+.hidden{display:none!important}
+.notice{font-size:11px;color:var(--muted);line-height:1.6}
+@media(min-width:600px){
+ .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .cover{min-height:125px}
+ .hero h1{font-size:30px}
 }
 </style>
 </head>
 
 <body>
 
-<header class="topbar">
-  <div class="brand">🎮 PawanVoice</div>
-  <div class="wallet">🪙 <span id="walletCoins">Loading...</span></div>
+<header class="top">
+ <div class="toprow">
+  <div>
+   <div class="brand">🎙️ Pawan<span>Voice</span></div>
+   <div class="sub">Play • Meet Friends • Have Fun</div>
+  </div>
+  <div class="coins">🪙 <span id="coinDisplay">0</span></div>
+ </div>
+ <div class="connection"><span id="connectionDot" class="dot"></span><span id="connectionText">Connecting to server...</span></div>
 </header>
 
-<main class="page">
+<main class="wrap">
 
-  <section class="welcome">
-    <h2>🎉 Online Games</h2>
-    <p>
-      Play with other users in real-time. Select a game, choose an item,
-      place your bet and watch the round result.
-    </p>
+<!-- HOME / GAMES LOBBY -->
+<section id="homeScreen" class="screen active">
+ <div class="hero">
+  <div>
+   <h1>Game Zone 🎮</h1>
+   <p>दोस्तों के साथ खेलो और मज़े करो!</p>
+   <button class="primary" onclick="scrollGames()">Play Now →</button>
+  </div>
+  <div class="heroemoji">🕹️</div>
+ </div>
 
-    <div class="connection">
-      <span class="dot" id="connectionDot"></span>
-      <span id="connectionText">Connecting to game server...</span>
-    </div>
-  </section>
+ <div class="sectionhead">
+  <h2>🔥 Popular Games</h2>
+  <span class="smallmuted">Play anytime</span>
+ </div>
 
-  <div class="section-title">
-    <span>🔥 Choose Your Game</span>
-    <small>LIVE GAMES</small>
+ <input class="search" id="gameSearch" type="text" placeholder="🔎 Search games..." oninput="renderGames()">
+
+ <div class="categories" id="categories">
+  <button class="chip active" data-category="all">All Games</button>
+  <button class="chip" data-category="board">Board</button>
+  <button class="chip" data-category="casual">Casual</button>
+  <button class="chip" data-category="card">Card</button>
+  <button class="chip" data-category="arcade">Arcade</button>
+  <button class="chip" data-category="puzzle">Puzzle</button>
+ </div>
+
+ <div class="grid" id="gameGrid"></div>
+
+ <div class="panel">
+  <h3>🌐 Online Game Rooms</h3>
+  <div class="notice">दूसरे खिलाड़ियों के बनाए हुए उपलब्ध गेम रूम यहाँ दिखेंगे।</div>
+  <div id="lobbyRooms"><div class="empty">Loading rooms...</div></div>
+  <button class="actionbtn" onclick="refreshLobby()" style="width:100%;margin-top:10px">↻ Refresh Rooms</button>
+ </div>
+</section>
+
+<!-- FRIENDS -->
+<section id="friendsScreen" class="screen">
+ <div class="sectionhead"><h2>👥 Play with Friends</h2></div>
+ <div class="panel">
+  <h3>Join a Game Room</h3>
+  <input id="joinRoomId" type="text" placeholder="Enter game room ID">
+  <button class="bigbtn" onclick="joinById()">Join Room</button>
+  <p class="notice">रूम ID आपको गेम रूम बनाने वाले दोस्त से मिलेगी।</p>
+ </div>
+ <div class="panel">
+  <h3>🟢 Active Rooms</h3>
+  <div id="friendRooms"><div class="empty">No rooms loaded yet.</div></div>
+ </div>
+</section>
+
+<!-- PROFILE -->
+<section id="profileScreen" class="screen">
+ <div class="sectionhead"><h2>👤 Player Profile</h2></div>
+ <div class="panel">
+  <div class="gamehead">
+   <div class="gameicon">🙂</div>
+   <div>
+    <h2 id="profileName">Guest Player</h2>
+    <div class="smallmuted">PawanVoice Gamer</div>
+    <div class="smallmuted" id="profileId"></div>
+   </div>
+  </div>
+  <div style="margin-top:20px">
+   <label class="smallmuted" for="playerName">Your display name</label>
+   <input id="playerName" type="text" maxlength="40" placeholder="Enter your name">
+   <button class="bigbtn" onclick="saveProfile()">Save Name</button>
+  </div>
+ </div>
+ <div class="panel">
+  <h3>🎮 Game Stats</h3>
+  <div class="roomrow"><span>Games Played</span><b id="gamesPlayed">0</b></div>
+  <div class="roomrow"><span>Local Best Score</span><b id="bestScore">0</b></div>
+  <p class="notice">ये आँकड़े इस डिवाइस के ब्राउज़र में सेव होते हैं। यह सर्वर पर सेव की गई स्थायी प्रोफ़ाइल नहीं है।</p>
+ </div>
+</section>
+
+<!-- GAME SCREEN -->
+<section id="playScreen" class="screen">
+ <button class="back" onclick="leaveCurrentGame()">← Back to Games</button>
+
+ <div class="gamehead">
+  <div class="gameicon" id="playIcon">🎮</div>
+  <div>
+   <h2 id="playTitle">Game</h2>
+   <div class="smallmuted" id="playDescription">Have fun!</div>
+   <div class="smallmuted" id="gameRoomInfo">Not in an online room</div>
+  </div>
+ </div>
+
+ <div class="gameboard" id="gameBoard"></div>
+
+ <div class="panel" id="multiplayerPanel">
+  <h3>🌐 Online Multiplayer</h3>
+  <div id="multiplayerStatus" class="statusmsg">Create a room or join a room to play online.</div>
+
+  <div class="row">
+   <button class="secondarybtn" style="flex:1" onclick="createGameRoom()">＋ Create Room</button>
+   <button class="secondarybtn" style="flex:1" onclick="showJoinInput()">↗ Join Room</button>
   </div>
 
-  <section class="game-grid">
-
-    <button class="game-card active" data-game="greedy" onclick="selectGame('greedy')">
-      <div class="game-icon">🐻</div>
-      <div class="game-name">Greedy Baby</div>
-      <div class="game-status">● Live Game</div>
-    </button>
-
-    <button class="game-card" data-game="animal" onclick="selectGame('animal')">
-      <div class="game-icon">🐯</div>
-      <div class="game-name">Animal Party</div>
-      <div class="game-status">● Live Game</div>
-    </button>
-
-    <button class="game-card" data-game="lucky" onclick="selectGame('lucky')">
-      <div class="game-icon">🎡</div>
-      <div class="game-name">Lucky Spin</div>
-      <div class="game-status">● Live Game</div>
-    </button>
-
-  </section>
-
-  <section class="game-panel">
-
-    <div class="game-header">
-      <div>
-        <h2 id="currentGameName">🐻 Greedy Baby</h2>
-        <div class="muted" style="font-size:11px;margin-top:5px">
-          Choose an item to place your bet
-        </div>
-      </div>
-
-      <div class="round-info">
-        <div>Round</div>
-        <strong id="roundNumber">Waiting...</strong>
-        <div id="playerCount">0 players</div>
-      </div>
-    </div>
-
-    <div class="timer-box">
-      <div class="timer" id="timer">--</div>
-      <div class="timer-label" id="timerLabel">Waiting for server round</div>
-      <div class="progress">
-        <div class="progress-bar" id="progressBar"></div>
-      </div>
-    </div>
-
-    <div class="result-box">
-      <div class="result-icon" id="resultIcon">🎲</div>
-      <div class="result-title" id="resultTitle">Waiting for result</div>
-      <div class="result-detail" id="resultDetail">
-        The game result will appear here.
-      </div>
-    </div>
-
-    <div class="section-title" style="padding:0 12px;margin:12px 0 0">
-      <span>🎯 Select Your Item</span>
-      <small id="betStatus">No bet selected</small>
-    </div>
-
-    <div class="items-grid" id="itemsGrid"></div>
-
-    <div class="betting-section">
-      <div class="label">Select bet amount</div>
-
-      <div class="amount-options">
-        <button class="amount-btn active" data-amount="100000"
-          onclick="selectAmount(100000)">🪙 1 Lakh</button>
-
-        <button class="amount-btn" data-amount="200000"
-          onclick="selectAmount(200000)">🪙 2 Lakh</button>
-
-        <button class="amount-btn" data-amount="500000"
-          onclick="selectAmount(500000)">🪙 5 Lakh</button>
-      </div>
-
-      <button class="primary-btn" id="placeBetBtn" onclick="placeBet()">
-        🎯 PLACE BET
-      </button>
-    </div>
-
-    <div class="notice">
-      Game rounds and balances depend on the server. Your bet is submitted
-      only when the server accepts it. Never rely on the display alone
-      as proof that a bet was accepted.
-    </div>
-
-  </section>
-
-  <section class="game-panel">
-    <div class="section-title" style="padding:14px;margin:0">
-      <span>📊 Game Information</span>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat">
-        <strong id="statPlayers">0</strong>
-        <span>Players</span>
-      </div>
-      <div class="stat">
-        <strong id="statBets">0</strong>
-        <span>Your Bets</span>
-      </div>
-      <div class="stat">
-        <strong id="statWins">0</strong>
-        <span>Your Wins</span>
-      </div>
-    </div>
-
-    <div class="list">
-      <div class="list-row">
-        <span class="muted">Selected game</span>
-        <strong id="infoGame">Greedy Baby</strong>
-      </div>
-
-      <div class="list-row">
-        <span class="muted">Your user ID</span>
-        <strong id="infoUser">Guest</strong>
-      </div>
-
-      <div class="list-row">
-        <span class="muted">Last round result</span>
-        <strong id="lastResult">Not available</strong>
-      </div>
-
-      <div class="list-row">
-        <span class="muted">Connection</span>
-        <strong id="serverState">Connecting</strong>
-      </div>
-    </div>
-  </section>
-
-  <section class="game-panel">
-    <div class="section-title" style="padding:14px;margin:0">
-      <span>🏆 Recent Results</span>
-      <small>THIS SESSION</small>
-    </div>
-    <div class="list" id="historyList">
-      <div class="list-row muted">No results received yet.</div>
-    </div>
-  </section>
-
-  <div class="bottom-actions">
-    <button class="secondary-btn" onclick="goHome()">🏠 Home</button>
-    <button class="secondary-btn" onclick="reconnectSocket()">🔄 Reconnect</button>
+  <div id="joinInputArea" class="hidden" style="margin-top:10px">
+   <input id="playJoinRoomId" type="text" placeholder="Enter Room ID">
+   <button class="bigbtn" onclick="joinPlayRoom()">Join This Room</button>
   </div>
+
+  <div class="roomrow">
+   <div>
+    <div class="roomtitle">Room ID</div>
+    <div id="currentRoomId" class="roommeta">Not created</div>
+   </div>
+   <button class="actionbtn" onclick="copyRoomId()">Copy ID</button>
+  </div>
+
+  <div id="onlinePlayers"><div class="empty">No multiplayer room joined.</div></div>
+
+  <div class="row" style="margin-top:12px">
+   <button class="secondarybtn" style="flex:1" onclick="setReady()">✓ Ready</button>
+   <button class="secondarybtn" style="flex:1" onclick="startOnlineGame()">▶ Start Online</button>
+  </div>
+
+  <div id="onlineChat" class="chatbox">
+   <div class="empty">Game chat will appear here.</div>
+  </div>
+  <div class="row" style="margin-top:8px">
+   <input id="onlineChatInput" type="text" maxlength="500" placeholder="Write a message...">
+   <button class="actionbtn" onclick="sendGameChat()">Send</button>
+  </div>
+ </div>
+</section>
 
 </main>
 
-<div class="toast" id="toast"></div>
+<nav class="bottom">
+ <button class="active" data-screen="homeScreen" onclick="showScreen('homeScreen',this)"><strong>🏠</strong>Home</button>
+ <button data-screen="homeScreen" onclick="showScreen('homeScreen',this)"><strong>🎮</strong>Games</button>
+ <button data-screen="friendsScreen" onclick="showScreen('friendsScreen',this)"><strong>👥</strong>Friends</button>
+ <button data-screen="profileScreen" onclick="showScreen('profileScreen',this)"><strong>👤</strong>Profile</button>
+</nav>
 
 <script>
 "use strict";
 
-/*
-  PawanVoice Games client
+/* =====================================================
+   PAWANVOICE GAMES
+   Socket.IO server: same origin as this HTML page
+===================================================== */
 
-  Uses the existing PawanVoice Socket.IO server.
-  Server-side game state and wallet are authoritative.
-*/
-
-const SERVER_URL = "https://pawanvoice-1.onrender.com";
-
-const params = new URLSearchParams(location.search);
-
-const roomId = params.get("room") || "PV100";
-const userId =
-  params.get("userid") ||
-  params.get("userId") ||
-  localStorage.getItem("pv_user_id") ||
-  localStorage.getItem("pv_userId") ||
-  localStorage.getItem("pawanUserId") ||
-  localStorage.getItem("pawanId") ||
-  ("PV" + Math.floor(10000000 + Math.random() * 90000000));
-
-const userName =
-  params.get("name") ||
-  localStorage.getItem("pv_user_name") ||
-  localStorage.getItem("pv_name") ||
-  "Guest";
-
-const userDp =
-  params.get("dp") ||
-  localStorage.getItem("pv_user_dp") ||
-  "";
-
-const GAME_CONFIG = {
-  greedy: {
-    name: "Greedy Baby",
-    icon: "🐻",
-    items: [
-      {id:"bear", name:"Bear", icon:"🐻", multiplier:"2x"},
-      {id:"rabbit", name:"Rabbit", icon:"🐰", multiplier:"2x"},
-      {id:"fox", name:"Fox", icon:"🦊", multiplier:"3x"},
-      {id:"panda", name:"Panda", icon:"🐼", multiplier:"3x"},
-      {id:"lion", name:"Lion", icon:"🦁", multiplier:"4x"},
-      {id:"monkey", name:"Monkey", icon:"🐵", multiplier:"4x"},
-      {id:"pig", name:"Pig", icon:"🐷", multiplier:"5x"},
-      {id:"tiger", name:"Tiger", icon:"🐯", multiplier:"5x"}
-    ]
-  },
-
-  animal: {
-    name: "Animal Party",
-    icon: "🐯",
-    items: [
-      {id:"lion", name:"Lion", icon:"🦁", multiplier:"2x"},
-      {id:"tiger", name:"Tiger", icon:"🐯", multiplier:"2x"},
-      {id:"monkey", name:"Monkey", icon:"🐵", multiplier:"3x"},
-      {id:"rabbit", name:"Rabbit", icon:"🐰", multiplier:"3x"},
-      {id:"fox", name:"Fox", icon:"🦊", multiplier:"4x"},
-      {id:"panda", name:"Panda", icon:"🐼", multiplier:"4x"},
-      {id:"bear", name:"Bear", icon:"🐻", multiplier:"5x"},
-      {id:"pig", name:"Pig", icon:"🐷", multiplier:"5x"}
-    ]
-  },
-
-  lucky: {
-    name: "Lucky Spin",
-    icon: "🎡",
-    items: [
-      {id:"red", name:"Red", icon:"🔴", multiplier:"2x"},
-      {id:"blue", name:"Blue", icon:"🔵", multiplier:"2x"},
-      {id:"green", name:"Green", icon:"🟢", multiplier:"3x"},
-      {id:"yellow", name:"Yellow", icon:"🟡", multiplier:"3x"},
-      {id:"purple", name:"Purple", icon:"🟣", multiplier:"4x"},
-      {id:"star", name:"Star", icon:"⭐", multiplier:"5x"},
-      {id:"crown", name:"Crown", icon:"👑", multiplier:"8x"},
-      {id:"diamond", name:"Diamond", icon:"💎", multiplier:"10x"}
-    ]
-  }
-};
+const SERVER_URL = window.location.origin;
 
 let socket = null;
-let selectedGame = "greedy";
-let selectedAmount = 100000;
-let selectedItem = null;
-let currentGameState = null;
-let walletBalance = null;
-let roundEndTime = 0;
-let roundDuration = 15;
-let lastRoundId = "";
-let myBetCount = 0;
-let myWinCount = 0;
-let receivedResults = [];
-let reconnectTimer = null;
+let connected = false;
+let activeCategory = "all";
+let currentGame = null;
+let currentGameRoom = null;
+let isGameHost = false;
+let readyState = false;
+let localGameRunning = false;
+let snakeTimer = null;
+let snakeState = null;
+let game2048 = null;
+let fruitTimer = null;
+let fruitState = null;
+let currentScore = 0;
+let gameStartedAt = 0;
+let lastActionAt = 0;
+let profile = loadProfile();
+let gameCatalog = [
+ {id:"greedy-baby",name:"Greedy Baby",emoji:"👶",category:"casual",description:"Fun casual game with friends",players:8,cover:"c1",local:true},
+ {id:"ludo",name:"Ludo",emoji:"🎲",category:"board",description:"Classic board game",players:4,cover:"c2"},
+ {id:"uno",name:"UNO",emoji:"🃏",category:"card",description:"Colorful card game",players:8,cover:"c3"},
+ {id:"carrom",name:"Carrom",emoji:"⚫",category:"board",description:"Aim and pocket coins",players:4,cover:"c4"},
+ {id:"chess",name:"Chess",emoji:"♟️",category:"board",description:"Classic strategy game",players:2,cover:"c5"},
+ {id:"snake",name:"Snake",emoji:"🐍",category:"arcade",description:"Collect food and grow",players:1,cover:"c6",local:true},
+ {id:"2048",name:"2048",emoji:"🔢",category:"puzzle",description:"Merge tiles to reach 2048",players:1,cover:"c7",local:true},
+ {id:"fruit-cut",name:"Fruit Cut",emoji:"🍉",category:"arcade",description:"Tap the fruit for points",players:1,cover:"c8",local:true}
+];
 
-const el = id => document.getElementById(id);
-
-function formatMoney(value) {
-  const n = Number(value);
-
-  if (!Number.isFinite(n)) return "0";
-
-  if (Math.abs(n) >= 10000000) {
-    return (n / 10000000).toFixed(2).replace(/\.00$/,"") + " Cr";
-  }
-
-  if (Math.abs(n) >= 100000) {
-    return (n / 100000).toFixed(2).replace(/\.00$/,"") + " L";
-  }
-
-  return Math.floor(n).toLocaleString("en-IN");
-}
-
-function safeText(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
-let toastTimer;
-
-function showToast(message) {
-  const box = el("toast");
-  box.textContent = String(message || "");
-  box.classList.add("show");
-
-  clearTimeout(toastTimer);
-
-  toastTimer = setTimeout(() => {
-    box.classList.remove("show");
-  }, 2600);
-}
-
-function setConnection(online, message) {
-  el("connectionDot").classList.toggle("online", !!online);
-  el("connectionText").textContent = message;
-  el("serverState").textContent = online ? "Connected" : "Disconnected";
-  el("serverState").className = online ? "green" : "";
-}
-
-function renderWallet(value) {
-  if (value === undefined || value === null || value === "") return;
-
-  let coins = value;
-
-  if (typeof value === "object") {
-    coins =
-      value.coins ??
-      value.wallet ??
-      value.balance ??
-      value.gold ??
-      value.amount;
-  }
-
-  const parsed = Number(coins);
-
-  if (!Number.isFinite(parsed)) return;
-
-  walletBalance = parsed;
-  el("walletCoins").textContent = formatMoney(parsed);
-
-  try {
-    localStorage.setItem("pv_coins", String(parsed));
-  } catch (_) {}
-}
-
-function renderGameCards() {
-  document.querySelectorAll(".game-card").forEach(card => {
-    card.classList.toggle(
-      "active",
-      card.dataset.game === selectedGame
-    );
-  });
-}
-
-function renderItems(itemsFromServer) {
-  const config = GAME_CONFIG[selectedGame];
-  let items = config.items;
-
-  if (Array.isArray(itemsFromServer) && itemsFromServer.length) {
-    items = itemsFromServer.map((item, index) => {
-      const id =
-        item.id ??
-        item.itemId ??
-        item.key ??
-        item.name ??
-        ("item" + index);
-
-      const fallback = config.items.find(
-        x => String(x.id) === String(id)
-      );
-
-      return {
-        id: String(id),
-        name: item.name ?? item.label ?? fallback?.name ?? String(id),
-        icon: item.icon ?? item.emoji ?? fallback?.icon ?? "🎯",
-        multiplier:
-          item.multiplier !== undefined
-            ? String(item.multiplier).includes("x")
-              ? String(item.multiplier)
-              : String(item.multiplier) + "x"
-            : fallback?.multiplier ?? "2x"
-      };
-    });
-  }
-
-  const grid = el("itemsGrid");
-  grid.innerHTML = "";
-
-  items.forEach(item => {
-    const button = document.createElement("button");
-    button.className = "bet-item";
-    button.dataset.item = item.id;
-
-    if (selectedItem === item.id) {
-      button.classList.add("selected");
-    }
-
-    button.innerHTML = `
-      <span class="item-emoji">${safeText(item.icon)}</span>
-      <span class="item-name">${safeText(item.name)}</span>
-      <span class="multiplier">${safeText(item.multiplier)}</span>
-      <span class="selected-amount"></span>
-    `;
-
-    button.addEventListener("click", () => {
-      selectedItem = item.id;
-      renderItems(items);
-      updateBetStatus();
-    });
-
-    grid.appendChild(button);
-  });
-
-  updateBetStatus();
-}
-
-function updateBetStatus() {
-  const item = GAME_CONFIG[selectedGame].items.find(
-    x => String(x.id) === String(selectedItem)
-  );
-
-  el("betStatus").textContent = selectedItem
-    ? "Selected: " + (item?.name || selectedItem)
-    : "No bet selected";
-
-  document.querySelectorAll(".bet-item").forEach(button => {
-    const isSelected = button.dataset.item === String(selectedItem);
-    button.classList.toggle("selected", isSelected);
-
-    const amountLabel = button.querySelector(".selected-amount");
-
-    if (amountLabel) {
-      amountLabel.textContent = isSelected
-        ? formatMoney(selectedAmount)
-        : "";
-    }
-  });
-}
-
-function selectAmount(amount) {
-  selectedAmount = Number(amount);
-
-  document.querySelectorAll(".amount-btn").forEach(button => {
-    button.classList.toggle(
-      "active",
-      Number(button.dataset.amount) === selectedAmount
-    );
-  });
-
-  updateBetStatus();
-}
-
-function selectGame(gameId) {
-  if (!GAME_CONFIG[gameId]) return;
-
-  selectedGame = gameId;
-  selectedItem = null;
-
-  const config = GAME_CONFIG[gameId];
-
-  el("currentGameName").textContent = config.icon + " " + config.name;
-  el("infoGame").textContent = config.name;
-
-  renderGameCards();
-  renderItems();
-  resetResultDisplay();
-
-  if (socket && socket.connected) {
-    openSelectedGame();
-  } else {
-    showToast("Connecting to game server...");
-  }
-}
-
-function resetResultDisplay() {
-  el("resultIcon").textContent = "🎲";
-  el("resultTitle").textContent = "Waiting for result";
-  el("resultDetail").textContent = "The game result will appear here.";
-}
-
-function openSelectedGame() {
-  if (!socket || !socket.connected) return;
-
-  const payload = {
-    roomId,
-    gameId: selectedGame,
-    game: selectedGame,
-    userId,
-    name: userName,
-    dp: userDp
+function loadProfile(){
+ try{
+  const saved=JSON.parse(localStorage.getItem("pv_games_profile")||"{}");
+  return {
+   userId:saved.userId||("PV"+Math.random().toString(36).slice(2,10).toUpperCase()),
+   name:saved.name||"Guest Player",
+   coins:0,
+   gamesPlayed:Number(saved.gamesPlayed)||0,
+   bestScore:Number(saved.bestScore)||0
   };
-
-  socket.emit("game:open", payload);
-
-  // Compatibility with servers that use the alternate event name.
-  socket.emit("game-start", payload);
+ }catch(e){
+  return {userId:"PV"+Date.now().toString(36),name:"Guest Player",coins:0,gamesPlayed:0,bestScore:0};
+ }
 }
 
-function selectFirstAvailableItem() {
-  if (!selectedItem) {
-    selectedItem = GAME_CONFIG[selectedGame].items[0].id;
-    renderItems();
-  }
+function saveLocalProfile(){
+ try{
+  localStorage.setItem("pv_games_profile",JSON.stringify(profile));
+ }catch(e){}
+ updateProfileUI();
 }
 
-function placeBet() {
-  if (!socket || !socket.connected) {
-    showToast("Game server is disconnected.");
-    return;
-  }
-
-  if (!currentGameState) {
-    showToast("Wait for the server game round.");
-    return;
-  }
-
-  const status = String(
-    currentGameState.status || ""
-  ).toLowerCase();
-
-  if (
-    currentGameState.active === false ||
-    status === "finished" ||
-    status === "closed" ||
-    status === "complete"
-  ) {
-    showToast("This round has ended. Wait for the next round.");
-    return;
-  }
-
-  if (roundEndTime && Date.now() >= roundEndTime) {
-    showToast("Betting time has ended.");
-    return;
-  }
-
-  if (!selectedItem) {
-    showToast("First select an item.");
-    return;
-  }
-
-  if (walletBalance !== null && walletBalance < selectedAmount) {
-    showToast("Your coin balance is insufficient.");
-    return;
-  }
-
-  const payload = {
-    roomId,
-    gameId: selectedGame,
-    game: selectedGame,
-    userId,
-    name: userName,
-    dp: userDp,
-    bets: [{
-      itemId: selectedItem,
-      amount: selectedAmount
-    }]
-  };
-
-  /*
-    Server remains responsible for validating the bet and deducting
-    the coins. The client does not fake a successful bet.
-  */
-
-  socket.emit("game:join", payload);
-
-  myBetCount++;
-  el("statBets").textContent = String(myBetCount);
-
-  el("placeBetBtn").disabled = true;
-  el("placeBetBtn").textContent = "⏳ BET SUBMITTED";
-
-  showToast("Bet sent. Waiting for server confirmation...");
+function updateProfileUI(){
+ document.getElementById("profileName").textContent=profile.name;
+ document.getElementById("playerName").value=profile.name;
+ document.getElementById("profileId").textContent="ID: "+profile.userId;
+ document.getElementById("coinDisplay").textContent=Number(profile.coins||0).toLocaleString("en-IN");
+ document.getElementById("gamesPlayed").textContent=profile.gamesPlayed||0;
+ document.getElementById("bestScore").textContent=profile.bestScore||0;
 }
 
-function normalizeGameState(data) {
-  if (!data || typeof data !== "object") return null;
-
-  const state = {...data};
-
-  state.gameId =
-    state.gameId ??
-    state.game ??
-    selectedGame;
-
-  state.game = state.game ?? state.gameId;
-
-  state.endAt =
-    state.endAt ??
-    state.endsAt ??
-    state.endTime ??
-    0;
-
-  state.duration =
-    Number(state.duration) ||
-    Number(state.roundDuration) ||
-    15;
-
-  state.roundNumber =
-    state.roundNumber ??
-    state.round ??
-    state.roundId ??
-    "?";
-
-  state.playerCount =
-    Number(state.playerCount) ||
-    (Array.isArray(state.players) ? state.players.length : 0);
-
-  if (!state.items || !Array.isArray(state.items)) {
-    state.items = [];
-  }
-
-  return state;
+function saveProfile(){
+ const name=document.getElementById("playerName").value.trim().slice(0,40);
+ if(!name){alert("Please enter your name.");return;}
+ profile.name=name;
+ saveLocalProfile();
+ if(socket&&connected){
+  socket.emit("user:register",{userId:profile.userId,name:profile.name});
+ }
+ alert("Name saved on this device.");
 }
 
-function handleGameState(rawState) {
-  const state = normalizeGameState(rawState);
-
-  if (!state) return;
-
-  const stateGame = String(state.gameId || selectedGame);
-
-  if (GAME_CONFIG[stateGame] && stateGame !== selectedGame) {
-    return;
-  }
-
-  currentGameState = state;
-
-  if (state.roundId !== undefined) {
-    lastRoundId = String(state.roundId);
-  } else if (state.roundNumber !== undefined) {
-    lastRoundId = String(state.roundNumber);
-  }
-
-  el("roundNumber").textContent = String(state.roundNumber);
-  el("playerCount").textContent =
-    String(state.playerCount) + " players";
-  el("statPlayers").textContent = String(state.playerCount);
-
-  roundDuration = state.duration || 15;
-
-  let endAt = Number(state.endAt);
-
-  if (endAt > 0 && endAt < 100000000000) {
-    endAt *= 1000;
-  }
-
-  roundEndTime = endAt > Date.now()
-    ? endAt
-    : 0;
-
-  if (Array.isArray(state.items) && state.items.length) {
-    renderItems(state.items);
-  } else {
-    renderItems();
-  }
-
-  const status = String(state.status || "").toLowerCase();
-
-  if (
-    status === "finished" ||
-    status === "complete" ||
-    status === "closed"
-  ) {
-    el("timerLabel").textContent = "Round finished";
-    el("timer").textContent = "DONE";
-    el("progressBar").style.width = "0%";
-    el("placeBetBtn").disabled = true;
-    el("placeBetBtn").textContent = "ROUND FINISHED";
-  } else {
-    el("timerLabel").textContent = "Round in progress";
-    el("placeBetBtn").disabled = false;
-    el("placeBetBtn").textContent = "🎯 PLACE BET";
-  }
-
-  if (state.result) {
-    handleGameResult(state.result);
-  }
-
-  if (state.wallet !== undefined) {
-    renderWallet(state.wallet);
-  }
-
-  if (state.coins !== undefined) {
-    renderWallet(state.coins);
-  }
+function showScreen(id,button){
+ stopLocalGames();
+ document.querySelectorAll(".screen").forEach(el=>el.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll(".bottom button").forEach(el=>el.classList.remove("active"));
+ if(button)button.classList.add("active");
+ if(id==="friendsScreen")refreshLobby();
+ window.scrollTo(0,0);
 }
 
-function updateTimer() {
-  if (!roundEndTime) {
-    if (!currentGameState) {
-      el("timer").textContent = "--";
-      el("progressBar").style.width = "0%";
-    }
-    return;
-  }
-
-  const remaining = Math.max(
-    0,
-    Math.ceil((roundEndTime - Date.now()) / 1000)
-  );
-
-  el("timer").textContent = String(remaining);
-
-  const percent = Math.max(
-    0,
-    Math.min(100, (remaining / roundDuration) * 100)
-  );
-
-  el("progressBar").style.width = percent + "%";
-
-  if (remaining <= 0) {
-    el("timerLabel").textContent = "Waiting for result...";
-    el("placeBetBtn").disabled = true;
-    el("placeBetBtn").textContent = "WAITING FOR RESULT";
-  }
+function scrollGames(){
+ document.getElementById("gameGrid").scrollIntoView({behavior:"smooth",block:"start"});
 }
 
-function handleGameResult(data) {
-  if (!data) return;
+function renderGames(){
+ const q=(document.getElementById("gameSearch").value||"").trim().toLowerCase();
+ const grid=document.getElementById("gameGrid");
+ const filtered=gameCatalog.filter(g=>
+  (activeCategory==="all"||g.category===activeCategory)&&
+  (g.name.toLowerCase().includes(q)||g.description.toLowerCase().includes(q))
+ );
 
-  let result = data;
+ grid.innerHTML="";
+ if(!filtered.length){
+  grid.innerHTML='<div class="empty">No games found.</div>';
+  return;
+ }
 
-  if (typeof data === "string") {
-    result = {winningItem: data};
-  }
-
-  const winningItem =
-    result.winningItem ??
-    result.winnerItem ??
-    result.itemId ??
-    result.winner ??
-    result.result ??
-    result.color ??
-    result.animal;
-
-  const item = GAME_CONFIG[selectedGame].items.find(
-    x => String(x.id) === String(winningItem) ||
-         String(x.name).toLowerCase() === String(winningItem).toLowerCase()
-  );
-
-  const resultIcon = item?.icon || result.icon || "🏆";
-  const resultName = item?.name || String(winningItem || "Round result");
-
-  el("resultIcon").textContent = resultIcon;
-  el("resultTitle").textContent = "🏆 Winner: " + resultName;
-
-  let detail = "Round " + String(
-    result.roundNumber ?? currentGameState?.roundNumber ?? "?"
-  );
-
-  if (Array.isArray(result.winners)) {
-    detail += " · " + result.winners.length + " winner(s)";
-  } else if (Array.isArray(result.results)) {
-    detail += " · " + result.results.length + " result(s)";
-  }
-
-  el("resultDetail").textContent = detail;
-  el("lastResult").textContent = resultName;
-
-  addHistory(resultName, result);
-
-  const myUserId = String(userId);
-
-  const winners = result.winners || result.results || [];
-
-  const isWinner = Array.isArray(winners) && winners.some(winner => {
-    return String(
-      winner.userId ??
-      winner.userid ??
-      winner.id ??
-      ""
-    ) === myUserId;
-  });
-
-  if (isWinner) {
-    myWinCount++;
-    el("statWins").textContent = String(myWinCount);
-  }
-
-  if (result.wallet !== undefined) {
-    renderWallet(result.wallet);
-  }
-
-  if (result.coins !== undefined) {
-    renderWallet(result.coins);
-  }
-
-  el("placeBetBtn").disabled = false;
-  el("placeBetBtn").textContent = "🎯 PLACE BET";
-}
-
-function addHistory(resultName, data) {
-  receivedResults.unshift({
-    name: resultName,
-    round: data.roundNumber ?? currentGameState?.roundNumber ?? "?",
-    time: new Date().toLocaleTimeString()
-  });
-
-  receivedResults = receivedResults.slice(0, 8);
-
-  el("historyList").innerHTML = receivedResults.map(item => `
-    <div class="list-row">
-      <span>
-        <strong>${safeText(item.name)}</strong>
-        <br>
-        <small class="muted">Round ${safeText(item.round)}</small>
-      </span>
-      <span class="muted">${safeText(item.time)}</span>
+ filtered.forEach(g=>{
+  const card=document.createElement("article");
+  card.className="card";
+  card.innerHTML=`
+   <div class="cover ${g.cover}">
+    <span class="tag">${g.players===1?"SINGLE PLAYER":"MULTIPLAYER"}</span>
+    <span>${g.emoji}</span>
+   </div>
+   <div class="cardbody">
+    <h3>${escapeHTML(g.name)}</h3>
+    <p>${escapeHTML(g.description)}</p>
+    <div class="cardfoot">
+     <span class="players">👥 Up to ${g.players}</span>
+     <button class="playbtn">PLAY ▶</button>
     </div>
-  `).join("");
+   </div>`;
+  card.querySelector("button").addEventListener("click",()=>openGame(g.id));
+  grid.appendChild(card);
+ });
 }
 
-function handleSocketError(error) {
-  let message = "Game server error.";
+document.querySelectorAll(".chip").forEach(chip=>{
+ chip.addEventListener("click",()=>{
+  document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+  chip.classList.add("active");
+  activeCategory=chip.dataset.category;
+  renderGames();
+ });
+});
 
-  if (typeof error === "string") {
-    message = error;
-  } else if (error && error.message) {
-    message = error.message;
-  } else if (error && error.error) {
-    message = error.error;
+function escapeHTML(value){
+ return String(value).replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+/* ---------------- SOCKET CONNECTION ---------------- */
+
+function connectSocket(){
+ if(typeof io!=="function"){
+  setConnection(false,"Socket.IO library failed to load");
+  return;
+ }
+
+ try{
+  socket=io(SERVER_URL,{
+   transports:["websocket","polling"],
+   reconnection:true,
+   reconnectionAttempts:Infinity,
+   timeout:10000
+  });
+
+  socket.on("connect",()=>{
+   connected=true;
+   setConnection(true,"Online server connected");
+   socket.emit("user:register",{
+    userId:profile.userId,
+    name:profile.name
+   });
+   socket.emit("game:lobby:join");
+   refreshLobby();
+   if(currentGameRoom){
+    // A reconnect does not automatically restore game membership.
+    setMultiplayerStatus("Reconnected. Rejoin your game room if needed.");
+   }
+  });
+
+  socket.on("disconnect",()=>{
+   connected=false;
+   setConnection(false,"Disconnected — reconnecting...");
+  });
+
+  socket.on("connect_error",()=>{
+   setConnection(false,"Server unavailable — local games still work");
+  });
+
+  socket.on("server:ready",()=>{});
+
+  socket.on("game:lobby",data=>{
+   if(data&&Array.isArray(data.rooms))renderLobbyRooms(data.rooms);
+  });
+
+  socket.on("game:lobbyUpdate",()=>{
+   refreshLobby();
+  });
+
+  socket.on("game:created",data=>{
+   if(!data||!data.success)return;
+   currentGameRoom=data.room;
+   isGameHost=true;
+   readyState=false;
+   updateGameRoomUI();
+   setMultiplayerStatus("Room created. Share the Room ID with friends.");
+  });
+
+  socket.on("game:joined",data=>{
+   if(!data||!data.success)return;
+   currentGameRoom=data.room;
+   isGameHost=data.room.hostId===profile.userId;
+   readyState=false;
+   updateGameRoomUI();
+   setMultiplayerStatus("Joined online game room.");
+  });
+
+  socket.on("game:error",data=>{
+   setMultiplayerStatus(data&&data.message?data.message:"Game error.");
+   alert(data&&data.message?data.message:"Game error.");
+  });
+
+  socket.on("game:roomUpdate",room=>{
+   if(currentGameRoom&&room&&room.id===currentGameRoom.id){
+    currentGameRoom=room;
+    isGameHost=room.hostId===profile.userId;
+    updateGameRoomUI();
+   }
+  });
+
+  socket.on("game:playerJoined",()=>{
+   refreshLobby();
+  });
+
+  socket.on("game:playerLeft",()=>{
+   refreshLobby();
+  });
+
+  socket.on("game:playerReady",data=>{
+   appendGameChat((data.userId||"Player")+" is "+(data.ready?"ready":"not ready")+".");
+  });
+
+  socket.on("game:started",data=>{
+   if(data&&data.room){
+    currentGameRoom=data.room;
+    updateGameRoomUI();
+   }
+   setMultiplayerStatus("Online game started. Game-specific multiplayer rules must be implemented for each game.");
+   appendGameChat("🎮 Online game started!");
+  });
+
+  socket.on("game:action",event=>{
+   handleRemoteGameAction(event);
+  });
+
+  socket.on("game:scoreUpdate",data=>{
+   if(data)appendGameChat("🏆 "+data.name+": "+data.score+" points");
+  });
+
+  socket.on("game:chatMessage",data=>{
+   if(data)appendGameChat((data.name||"Player")+": "+data.message);
+  });
+
+  socket.on("game:finished",data=>{
+   setMultiplayerStatus("Game finished.");
+   if(data&&data.winner)appendGameChat("🏆 Winner: "+data.winner.name);
+  });
+
+ }catch(e){
+  setConnection(false,"Could not connect");
+ }
+}
+
+function setConnection(ok,message){
+ document.getElementById("connectionDot").classList.toggle("on",ok);
+ document.getElementById("connectionText").textContent=message;
+}
+
+function setMultiplayerStatus(message){
+ document.getElementById("multiplayerStatus").textContent=message;
+}
+
+/* ---------------- LOBBY ---------------- */
+
+async function refreshLobby(){
+ const box=document.getElementById("lobbyRooms");
+ try{
+  const response=await fetch(SERVER_URL+"/api/games/rooms",{cache:"no-store"});
+  if(!response.ok)throw new Error("Server unavailable");
+  const data=await response.json();
+  renderLobbyRooms(data.rooms||[]);
+ }catch(e){
+  box.innerHTML='<div class="empty">Server rooms are unavailable. Local games can still be played.</div>';
+ }
+}
+
+function renderLobbyRooms(rooms){
+ const boxes=[
+  document.getElementById("lobbyRooms"),
+  document.getElementById("friendRooms")
+ ];
+ boxes.forEach(box=>{
+  if(!box)return;
+  box.innerHTML="";
+  if(!rooms.length){
+   box.innerHTML='<div class="empty">No active game rooms. Create a room and invite friends!</div>';
+   return;
   }
-
-  showToast(message);
-
-  el("placeBetBtn").disabled = false;
-  el("placeBetBtn").textContent = "🎯 PLACE BET";
+  rooms.forEach(room=>{
+   const row=document.createElement("div");
+   row.className="roomrow";
+   const details=document.createElement("div");
+   details.innerHTML=
+    '<div class="roomtitle">'+escapeHTML(room.gameName||room.gameId)+'</div>'+
+    '<div class="roommeta">ID: '+escapeHTML(room.id)+' · '+Number(room.playerCount||0)+'/'+Number(room.maxPlayers||8)+' players · '+escapeHTML(room.status||"waiting")+'</div>';
+   const button=document.createElement("button");
+   button.className="actionbtn";
+   button.textContent="Join";
+   button.onclick=()=>joinGameRoom(room.id);
+   row.append(details,button);
+   box.appendChild(row);
+  });
+ });
 }
 
-function connectSocket() {
-  if (typeof io !== "function") {
-    setConnection(false, "Socket.IO library failed to load");
-    showToast("Socket.IO library failed to load.");
-    return;
+/* ---------------- OPEN GAME ---------------- */
+
+function openGame(id){
+ const game=gameCatalog.find(g=>g.id===id);
+ if(!game)return;
+
+ stopLocalGames();
+ currentGame=game;
+ currentScore=0;
+ gameStartedAt=Date.now();
+ currentGameRoom=null;
+ isGameHost=false;
+ readyState=false;
+
+ document.getElementById("playIcon").textContent=game.emoji;
+ document.getElementById("playTitle").textContent=game.name;
+ document.getElementById("playDescription").textContent=game.description;
+ document.getElementById("gameRoomInfo").textContent="Local game";
+ document.getElementById("onlinePlayers").innerHTML='<div class="empty">Create a room to invite players.</div>';
+ document.getElementById("onlineChat").innerHTML='<div class="empty">Game chat will appear here.</div>';
+ document.getElementById("joinInputArea").classList.add("hidden");
+ setMultiplayerStatus(connected?"Ready to create or join an online room.":"Server unavailable. You can still play supported local games.");
+
+ showScreen("playScreen",null);
+ document.querySelectorAll(".bottom button").forEach(b=>b.classList.remove("active"));
+
+ const board=document.getElementById("gameBoard");
+ board.innerHTML="";
+
+ if(id==="snake")startSnake(board);
+ else if(id==="2048")start2048(board);
+ else if(id==="fruit-cut")startFruit(board);
+ else if(id==="greedy-baby")startGreedyBaby(board);
+ else startOnlineGameInfo(board,game);
+}
+
+function leaveCurrentGame(){
+ stopLocalGames();
+ if(socket&&connected&&currentGameRoom){
+  socket.emit("game:leave");
+ }
+ currentGameRoom=null;
+ currentGame=null;
+ isGameHost=false;
+ showScreen("homeScreen",document.querySelector('.bottom button[data-screen="homeScreen"]'));
+ refreshLobby();
+}
+
+function stopLocalGames(){
+ localGameRunning=false;
+ if(snakeTimer){clearInterval(snakeTimer);snakeTimer=null;}
+ if(fruitTimer){clearInterval(fruitTimer);fruitTimer=null;}
+}
+
+/* ---------------- ONLINE ROOM CONTROLS ---------------- */
+
+function createGameRoom(){
+ if(!currentGame){alert("Select a game first.");return;}
+ if(!socket||!connected){alert("Server connection is not available. Try again when connected.");return;}
+ socket.emit("game:create",{
+  gameId:currentGame.id,
+  maxPlayers:currentGame.players
+ });
+}
+
+function showJoinInput(){
+ document.getElementById("joinInputArea").classList.toggle("hidden");
+}
+
+function joinPlayRoom(){
+ const id=document.getElementById("playJoinRoomId").value.trim();
+ if(!id){alert("Enter a room ID.");return;}
+ joinGameRoom(id);
+}
+
+function joinById(){
+ const id=document.getElementById("joinRoomId").value.trim();
+ if(!id){alert("Enter a room ID.");return;}
+ if(!socket||!connected){alert("Connect to the server first.");return;}
+ const matching=gameCatalog.find(g=>g.id);
+ if(!currentGame){
+  currentGame=matching;
+  document.getElementById("playIcon").textContent=matching.emoji;
+  document.getElementById("playTitle").textContent=matching.name;
+  document.getElementById("playDescription").textContent=matching.description;
+  document.getElementById("gameBoard").innerHTML='<div class="statusmsg">Joined game room. Game rules depend on the selected game.</div>';
+  showScreen("playScreen",null);
+ }
+ joinGameRoom(id);
+}
+
+function joinGameRoom(id){
+ if(!socket||!connected){
+  alert("Server connection is not available.");
+  return;
+ }
+ if(!currentGame){
+  alert("Open a game first, then join its room.");
+  return;
+ }
+ socket.emit("game:join",{roomId:id});
+}
+
+function updateGameRoomUI(){
+ const room=currentGameRoom;
+ document.getElementById("currentRoomId").textContent=room?room.id:"Not created";
+ document.getElementById("gameRoomInfo").textContent=room
+  ?("Room "+room.id+" · "+(room.status||"waiting"))
+  :"Local game";
+
+ const box=document.getElementById("onlinePlayers");
+ box.innerHTML="";
+ if(!room||!Array.isArray(room.players)||!room.players.length){
+  box.innerHTML='<div class="empty">Waiting for players...</div>';
+  return;
+ }
+ room.players.forEach(player=>{
+  const row=document.createElement("div");
+  row.className="roomrow";
+  const name=document.createElement("div");
+  name.innerHTML='<div class="roomtitle">'+escapeHTML(player.name||"Player")+(player.userId===room.hostId?" 👑":"")+'</div>'+
+   '<div class="roommeta">'+(player.ready?"🟢 Ready":"⚪ Not ready")+'</div>';
+  const score=document.createElement("span");
+  score.className="players";
+  score.textContent=Number(player.score||0)+" pts";
+  row.append(name,score);
+  box.appendChild(row);
+ });
+}
+
+function copyRoomId(){
+ if(!currentGameRoom){alert("Create or join a room first.");return;}
+ const id=currentGameRoom.id;
+ if(navigator.clipboard&&navigator.clipboard.writeText){
+  navigator.clipboard.writeText(id).then(()=>alert("Room ID copied: "+id)).catch(()=>prompt("Copy Room ID:",id));
+ }else{
+  prompt("Copy Room ID:",id);
+ }
+}
+
+function setReady(){
+ if(!currentGameRoom||!socket||!connected){
+  alert("Create or join a room first.");
+  return;
+ }
+ readyState=!readyState;
+ socket.emit("game:ready",{ready:readyState});
+ setMultiplayerStatus(readyState?"You are ready.":"You are not ready.");
+}
+
+function startOnlineGame(){
+ if(!currentGameRoom||!socket||!connected){
+  alert("Create or join a room first.");
+  return;
+ }
+ if(!isGameHost){
+  alert("Only the room host can start the online game.");
+  return;
+ }
+ socket.emit("game:start");
+}
+
+function sendGameChat(){
+ const input=document.getElementById("onlineChatInput");
+ const message=input.value.trim();
+ if(!message)return;
+ if(!currentGameRoom||!socket||!connected){
+  alert("Join a game room first.");
+  return;
+ }
+ socket.emit("game:chat",{message});
+ input.value="";
+}
+
+document.getElementById("onlineChatInput").addEventListener("keydown",e=>{
+ if(e.key==="Enter")sendGameChat();
+});
+
+function appendGameChat(message){
+ const box=document.getElementById("onlineChat");
+ const empty=box.querySelector(".empty");
+ if(empty)box.innerHTML="";
+ const line=document.createElement("div");
+ line.className="chatline";
+ line.textContent=message;
+ box.appendChild(line);
+ box.scrollTop=box.scrollHeight;
+}
+
+function handleRemoteGameAction(event){
+ if(!event)return;
+ // Example relay receiver for multiplayer game-specific messages.
+ // Add each game's authoritative move handling here.
+ appendGameChat("🎮 "+(event.playerName||"Player")+" made a move.");
+}
+
+function emitGameAction(action,data){
+ if(socket&&connected&&currentGameRoom){
+  socket.emit("game:action",{action,data});
+ }
+}
+
+function submitScore(){
+ if(!currentGame)return;
+ profile.gamesPlayed=(profile.gamesPlayed||0)+1;
+ profile.bestScore=Math.max(profile.bestScore||0,currentScore||0);
+ saveLocalProfile();
+ if(socket&&connected&&currentGameRoom){
+  socket.emit("game:score",{score:currentScore});
+ }
+}
+
+/* =====================================================
+   SNAKE - PLAYABLE LOCAL GAME
+===================================================== */
+
+function startSnake(board){
+ board.innerHTML=`
+  <div class="center">
+   <h3>🐍 Snake</h3>
+   <div class="statusmsg">Arrow buttons से साँप चलाएँ और खाना इकट्ठा करें।</div>
+   <p>Score: <b id="snakeScore">0</b></p>
+   <canvas id="snakeCanvas" width="300" height="300"></canvas>
+   <button class="bigbtn" id="snakeStart">▶ Start / Restart</button>
+   <div class="snakecontrols">
+    <span></span><button data-dir="up">▲</button><span></span>
+    <button data-dir="left">◀</button><button data-dir="down">▼</button><button data-dir="right">▶</button>
+   </div>
+  </div>`;
+
+ const canvas=document.getElementById("snakeCanvas");
+ const ctx=canvas.getContext("2d");
+ const size=15;
+ const cells=20;
+ let snake,dir,food,score,over;
+
+ function reset(){
+  snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];
+  dir={x:1,y:0};
+  food=randomFood();
+  score=0;over=false;
+  currentScore=0;
+  localGameRunning=true;
+  document.getElementById("snakeScore").textContent=0;
+  draw();
+  if(snakeTimer)clearInterval(snakeTimer);
+  snakeTimer=setInterval(tick,125);
+ }
+
+ function randomFood(){
+  return {x:Math.floor(Math.random()*cells),y:Math.floor(Math.random()*cells)};
+ }
+
+ function draw(){
+  ctx.fillStyle="#0b1220";ctx.fillRect(0,0,300,300);
+  ctx.fillStyle="#ffcf70";
+  ctx.fillRect(food.x*size+2,food.y*size+2,size-4,size-4);
+  snake.forEach((p,i)=>{
+   ctx.fillStyle=i===0?"#44e5ff":"#8a62ff";
+   ctx.fillRect(p.x*size+1,p.y*size+1,size-2,size-2);
+  });
+  if(over){
+   ctx.fillStyle="#000a";ctx.fillRect(0,0,300,300);
+   ctx.fillStyle="#fff";ctx.font="bold 23px Arial";ctx.textAlign="center";
+   ctx.fillText("GAME OVER",150,140);
+   ctx.font="16px Arial";ctx.fillText("Score: "+score,150,170);
   }
+ }
 
-  if (socket) {
-    try {
-      socket.removeAllListeners();
-      socket.disconnect();
-    } catch (_) {}
+ function tick(){
+  if(over)return;
+  const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+  if(head.x<0||head.y<0||head.x>=cells||head.y>=cells||
+     snake.some((p,i)=>i>0&&p.x===head.x&&p.y===head.y)){
+   over=true;clearInterval(snakeTimer);snakeTimer=null;draw();submitScore();return;
   }
+  snake.unshift(head);
+  if(head.x===food.x&&head.y===food.y){
+   score+=10;currentScore=score;
+   document.getElementById("snakeScore").textContent=score;
+   food=randomFood();
+   emitGameAction("snake:score",{score});
+  }else snake.pop();
+  draw();
+ }
 
-  setConnection(false, "Connecting to game server...");
+ function change(d){
+  if(d==="up"&&dir.y!==1)dir={x:0,y:-1};
+  if(d==="down"&&dir.y!==-1)dir={x:0,y:1};
+  if(d==="left"&&dir.x!==1)dir={x:-1,y:0};
+  if(d==="right"&&dir.x!==-1)dir={x:1,y:0};
+ }
 
-  socket = io(SERVER_URL, {
-    transports: ["websocket", "polling"],
-    reconnection: true,
-    reconnectionAttempts: Infinity,
-    reconnectionDelay: 1000,
-    reconnectionDelayMax: 5000,
-    timeout: 20000
-  });
-
-  socket.on("connect", () => {
-    setConnection(true, "Connected to game server");
-    showToast("Connected to PawanVoice server.");
-
-    const registration = {
-      userId,
-      name: userName,
-      dp: userDp
-    };
-
-    socket.emit("register-user", registration);
-    socket.emit("register", registration);
-
-    openSelectedGame();
-  });
-
-  socket.on("disconnect", () => {
-    setConnection(false, "Reconnecting...");
-    el("placeBetBtn").disabled = true;
-    el("placeBetBtn").textContent = "RECONNECTING";
-  });
-
-  socket.on("connect_error", error => {
-    setConnection(false, "Connection failed");
-    console.error("PawanVoice connection error:", error.message);
-  });
-
-  socket.on("registered", data => {
-    if (!data) return;
-
-    if (data.wallet !== undefined) renderWallet(data.wallet);
-    if (data.coins !== undefined) renderWallet(data.coins);
-    if (data.balance !== undefined) renderWallet(data.balance);
-
-    if (data.user) {
-      if (data.user.coins !== undefined) {
-        renderWallet(data.user.coins);
-      }
-
-      if (data.user.wallet !== undefined) {
-        renderWallet(data.user.wallet);
-      }
-    }
-  });
-
-  socket.on("wallet", renderWallet);
-
-  socket.on("game:open", handleGameState);
-  socket.on("game:opened", handleGameState);
-  socket.on("game:state", handleGameState);
-
-  socket.on("game:players", data => {
-    if (!data) return;
-
-    const count = Number(
-      data.playerCount ??
-      data.count ??
-      (Array.isArray(data.players) ? data.players.length : 0)
-    );
-
-    if (Number.isFinite(count)) {
-      el("playerCount").textContent = count + " players";
-      el("statPlayers").textContent = String(count);
-    }
-  });
-
-  socket.on("game:joined", data => {
-    if (data && data.error) {
-      handleSocketError(data);
-      return;
-    }
-
-    el("placeBetBtn").disabled = false;
-    el("placeBetBtn").textContent = "🎯 PLACE BET";
-
-    if (data && data.wallet !== undefined) {
-      renderWallet(data.wallet);
-    }
-
-    if (data && data.coins !== undefined) {
-      renderWallet(data.coins);
-    }
-
-    showToast(
-      data && data.message
-        ? data.message
-        : "Server received your bet."
-    );
-  });
-
-  socket.on("game:result", handleGameResult);
-  socket.on("game:error", handleSocketError);
-
-  socket.on("error-message", handleSocketError);
+ board.querySelectorAll("[data-dir]").forEach(b=>b.onclick=()=>change(b.dataset.dir));
+ document.getElementById("snakeStart").onclick=reset;
+ document.onkeydown=e=>{
+  if(!document.getElementById("snakeCanvas"))return;
+  const map={ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right"};
+  if(map[e.key]){e.preventDefault();change(map[e.key]);}
+ };
+ reset();
 }
 
-function reconnectSocket() {
-  showToast("Reconnecting...");
+/* =====================================================
+   2048 - PLAYABLE LOCAL GAME
+===================================================== */
 
-  if (socket) {
-    try {
-      socket.disconnect();
-    } catch (_) {}
+function start2048(board){
+ board.innerHTML=`
+  <div class="center">
+   <h3>🔢 2048</h3>
+   <p class="statusmsg">एक जैसी संख्याओं को मिलाकर 2048 बनाएँ।</p>
+   <p>Score: <b id="score2048">0</b></p>
+   <div id="grid2048" class="tile2048"></div>
+   <div class="row" style="justify-content:center;flex-wrap:wrap">
+    <button class="secondarybtn" data-move="up">▲</button>
+    <button class="secondarybtn" data-move="left">◀</button>
+    <button class="secondarybtn" data-move="down">▼</button>
+    <button class="secondarybtn" data-move="right">▶</button>
+   </div>
+   <button class="bigbtn" id="restart2048">↻ Restart</button>
+  </div>`;
+
+ let grid,score;
+ function reset(){
+  grid=Array(16).fill(0);score=0;addTile();addTile();render();
+ }
+ function addTile(){
+  const empty=grid.map((v,i)=>v===0?i:-1).filter(i=>i>=0);
+  if(empty.length)grid[empty[Math.floor(Math.random()*empty.length)]]=Math.random()<.9?2:4;
+ }
+ function render(){
+  const el=document.getElementById("grid2048");
+  el.innerHTML="";
+  grid.forEach(v=>{
+   const tile=document.createElement("div");
+   tile.textContent=v||"";
+   if(v)tile.classList.add("v"+Math.min(v,512));
+   el.appendChild(tile);
+  });
+  document.getElementById("score2048").textContent=score;
+  currentScore=score;
+ }
+ function collapse(arr){
+  let line=arr.filter(v=>v);
+  for(let i=0;i<line.length-1;i++){
+   if(line[i]===line[i+1]){
+    line[i]*=2;score+=line[i];line.splice(i+1,1);
+   }
   }
-
-  connectSocket();
-}
-
-function goHome() {
-  location.href = "index.html";
-}
-
-function initialize() {
-  el("infoUser").textContent = userId;
-
-  try {
-    const savedCoins = localStorage.getItem("pv_coins");
-
-    if (savedCoins !== null) {
-      renderWallet(savedCoins);
-    } else {
-      el("walletCoins").textContent = "Server";
-    }
-  } catch (_) {
-    el("walletCoins").textContent = "Server";
+  while(line.length<4)line.push(0);
+  return line;
+ }
+ function move(direction){
+  const old=grid.join(",");
+  for(let r=0;r<4;r++){
+   let indices=[];
+   for(let c=0;c<4;c++)indices.push(direction==="left"||direction==="right"?r*4+c:c*4+r);
+   let values=indices.map(i=>grid[i]);
+   if(direction==="right"||direction==="down")values.reverse();
+   values=collapse(values);
+   if(direction==="right"||direction==="down")values.reverse();
+   indices.forEach((index,j)=>grid[index]=values[j]);
   }
-
-  renderGameCards();
-  renderItems();
-
-  setInterval(updateTimer, 250);
-
-  connectSocket();
+  if(grid.join(",")!==old){
+   addTile();render();
+   emitGameAction("2048:move",{direction,grid,score});
+   if(grid.every(v=>v!==0)&&!canMove()){
+    setTimeout(()=>alert("Game over! Score: "+score),50);
+    submitScore();
+   }
+  }
+ }
+ function canMove(){
+  for(let r=0;r<4;r++)for(let c=0;c<4;c++){
+   const i=r*4+c;
+   if(grid[i]===0)return true;
+   if(c<3&&grid[i]===grid[i+1])return true;
+   if(r<3&&grid[i]===grid[i+4])return true;
+  }
+  return false;
+ }
+ board.querySelectorAll("[data-move]").forEach(b=>b.onclick=()=>move(b.dataset.move));
+ document.getElementById("restart2048").onclick=reset;
+ board.onkeydown=e=>{};
+ document.onkeydown=e=>{
+  if(!document.getElementById("grid2048"))return;
+  const map={ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right"};
+  if(map[e.key]){e.preventDefault();move(map[e.key]);}
+ };
+ reset();
 }
 
-initialize();
+/* =====================================================
+   FRUIT CUT - PLAYABLE LOCAL GAME
+===================================================== */
+
+function startFruit(board){
+ board.innerHTML=`
+  <div class="center">
+   <h3>🍉 Fruit Cut</h3>
+   <div class="statusmsg">फल पर टैप करें और अंक पाएँ।</div>
+   <p>Score: <b id="fruitScore">0</b> · Time: <b id="fruitTime">30</b>s</p>
+   <canvas id="fruitCanvas" width="320" height="300"></canvas>
+   <button class="bigbtn" id="fruitStart">▶ Start Game</button>
+  </div>`;
+
+ const canvas=document.getElementById("fruitCanvas");
+ const ctx=canvas.getContext("2d");
+ let fruits=[],score=0,time=30,running=false,lastSpawn=0;
+
+ function draw(){
+  ctx.clearRect(0,0,320,300);
+  ctx.fillStyle="#11152a";ctx.fillRect(0,0,320,300);
+  fruits.forEach(f=>{
+   ctx.font="34px Arial";ctx.textAlign="center";
+   ctx.fillText(f.emoji,f.x,f.y);
+  });
+ }
+
+ function spawn(){
+  const choices=["🍉","🍊","🍎","🍓","🍍","🍇"];
+  fruits.push({
+   x:25+Math.random()*270,
+   y:40+Math.random()*220,
+   emoji:choices[Math.floor(Math.random()*choices.length)],
+   born:Date.now()
+  });
+ }
+
+ function start(){
+  if(fruitTimer)clearInterval(fruitTimer);
+  score=0;time=30;fruits=[];running=true;currentScore=0;
+  document.getElementById("fruitScore").textContent=0;
+  document.getElementById("fruitTime").textContent=30;
+  spawn();draw();
+  fruitTimer=setInterval(()=>{
+   if(!running)return;
+   time--;
+   if(Math.random()<.7)spawn();
+   fruits=fruits.filter(f=>Date.now()-f.born<2500);
+   document.getElementById("fruitTime").textContent=time;
+   draw();
+   if(time<=0){
+    running=false;clearInterval(fruitTimer);fruitTimer=null;
+    alert("Time up! Your score: "+score);
+    submitScore();
+   }
+  },1000);
+ }
+
+ canvas.onclick=e=>{
+  if(!running)return;
+  const rect=canvas.getBoundingClientRect();
+  const x=(e.clientX-rect.left)*canvas.width/rect.width;
+  const y=(e.clientY-rect.top)*canvas.height/rect.height;
+  let hit=-1;
+  for(let i=fruits.length-1;i>=0;i--){
+   if(Math.hypot(fruits[i].x-x,fruits[i].y-y)<28){hit=i;break;}
+  }
+  if(hit>=0){
+   fruits.splice(hit,1);score+=10;currentScore=score;
+   document.getElementById("fruitScore").textContent=score;
+   emitGameAction("fruit-cut:score",{score});
+   draw();
+  }
+ };
+
+ document.getElementById("fruitStart").onclick=start;
+ draw();
+}
+
+/* =====================================================
+   GREEDY BABY - SIMPLE PLAYABLE LOCAL MINI GAME
+===================================================== */
+
+function startGreedyBaby(board){
+ board.innerHTML=`
+  <div class="center">
+   <h3>👶 Greedy Baby</h3>
+   <div class="statusmsg">बच्चे को खाना खिलाएँ। हर सही टैप पर अंक मिलेंगे!</div>
+   <div id="babyScene" style="background:linear-gradient(#6e43bd,#36215d);border-radius:16px;padding:22px;margin:12px 0">
+    <div id="babyFace" style="font-size:85px">👶</div>
+    <div style="font-size:28px;margin:12px">🍎 🍌 🍓</div>
+   </div>
+   <p>Score: <b id="babyScore">0</b> · Time: <b id="babyTime">20</b>s</p>
+   <div class="row">
+    <button class="secondarybtn" style="flex:1" data-food="🍎">🍎 Apple</button>
+    <button class="secondarybtn" style="flex:1" data-food="🍌">🍌 Banana</button>
+    <button class="secondarybtn" style="flex:1" data-food="🍓">🍓 Berry</button>
+   </div>
+   <button class="bigbtn" id="babyStart">▶ Start Game</button>
+  </div>`;
+
+ let score=0,time=20,running=false,expected="🍎",timer=null;
+
+ function start(){
+  if(timer)clearInterval(timer);
+  score=0;time=20;running=true;expected="🍎";currentScore=0;
+  document.getElementById("babyScore").textContent=0;
+  document.getElementById("babyTime").textContent=20;
+  document.getElementById("babyFace").textContent="😋";
+  timer=setInterval(()=>{
+   time--;
+   document.getElementById("babyTime").textContent=time;
+   if(time<=0){
+    clearInterval(timer);timer=null;running=false;
+    document.getElementById("babyFace").textContent="😴";
+    alert("Game over! Score: "+score);
+    submitScore();
+   }
+  },1000);
+ }
+
+ board.querySelectorAll("[data-food]").forEach(btn=>{
+  btn.onclick=()=>{
+   if(!running){alert("Press Start Game first.");return;}
+   const food=btn.dataset.food;
+   if(food===expected){
+    score+=10;currentScore=score;
+    document.getElementById("babyScore").textContent=score;
+    document.getElementById("babyFace").textContent="😄";
+    expected=["🍎","🍌","🍓"][Math.floor(Math.random()*3)];
+    emitGameAction("greedy-baby:score",{score,food});
+   }else{
+    document.getElementById("babyFace").textContent="🤔";
+   }
+  };
+ });
+
+ document.getElementById("babyStart").onclick=start;
+}
+
+/* =====================================================
+   BOARD / CARD GAMES
+===================================================== */
+
+function startOnlineGameInfo(board,game){
+ board.innerHTML=`
+  <div class="center">
+   <div style="font-size:65px">${game.emoji}</div>
+   <h3>${escapeHTML(game.name)}</h3>
+   <p class="statusmsg">${escapeHTML(game.description)}</p>
+   <p class="notice">इस गेम के लिए ऑनलाइन रूम बनाया जा सकता है। पूर्ण मल्टीप्लेयर गेमप्ले के लिए नियम, चालें और गेम बोर्ड का अलग लॉजिक जोड़ना होगा।</p>
+   <button class="bigbtn" id="createFromBoard">＋ Create Online Room</button>
+  </div>`;
+ document.getElementById("createFromBoard").onclick=createGameRoom;
+}
+
+/* ---------------- INIT ---------------- */
+
+updateProfileUI();
+renderGames();
+connectSocket();
+refreshLobby();
 </script>
 
 </body>
