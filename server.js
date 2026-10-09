@@ -3605,7 +3605,250 @@ function finishLiveGame(state) {
     }
   );
 
+/* =========================================================
+   LIVE GAME SOCKET EVENTS
+   ========================================================= */
 
+/* OPEN GAME */
+
+socket.on("game:open", (data = {}) => {
+  const userId = String(
+    data.userId ||
+    socketUsers[socket.id] ||
+    ""
+  );
+
+  const user = getGameUser(userId);
+
+  if (!user) {
+    sendGameError(socket, "Please register before playing.");
+    return;
+  }
+
+  const roomId = String(
+    data.roomId ||
+    data.room ||
+    ""
+  );
+
+  const room = rooms[roomId];
+
+  if (!room) {
+    sendGameError(socket, "Room not found.");
+    return;
+  }
+
+  const config = getGameConfig(
+    data.gameId ||
+    data.game ||
+    "greedy"
+  );
+
+  if (!config) {
+    sendGameError(socket, "Game not found.");
+    return;
+  }
+
+  socket.join(`room:${roomId}`);
+
+  const state = getLiveGame(roomId, config.id);
+
+  if (!state.current || state.current.status !== "playing") {
+    startLiveGameRound(state);
+  }
+
+  socket.emit("game:opened", {
+    ok: true,
+    state: gamePublicState(state)
+  });
+
+  socket.emit("game-opened", {
+    ok: true,
+    state: gamePublicState(state)
+  });
+
+  broadcastGameState(state);
+});
+
+
+/* JOIN / PLACE BET */
+
+socket.on("game:join", (data = {}) => {
+  const userId = String(
+    data.userId ||
+    socketUsers[socket.id] ||
+    ""
+  );
+
+  const user = getGameUser(userId);
+
+  if (!user) {
+    sendGameError(socket, "Please register before playing.");
+    return;
+  }
+
+  const roomId = String(
+    data.roomId ||
+    data.room ||
+    ""
+  );
+
+  if (!rooms[roomId]) {
+    sendGameError(socket, "Room not found.");
+    return;
+  }
+
+  const config = getGameConfig(
+    data.gameId ||
+    data.game ||
+    "greedy"
+  );
+
+  if (!config) {
+    sendGameError(socket, "Game not found.");
+    return;
+  }
+
+  const state = getLiveGame(roomId, config.id);
+
+  if (!state.current || state.current.status !== "playing") {
+    sendGameError(socket, "This round has ended. Please try the next round.");
+    return;
+  }
+
+  const round = state.current;
+
+  if (Date.now() >= round.endsAt) {
+    finishLiveGame(state);
+    sendGameError(socket, "Betting time has ended.");
+    return;
+  }
+
+  /* One bet submission per user per round. */
+
+  if (round.players[userId]) {
+    sendGameError(socket, "You have already placed your bet this round.");
+    return;
+  }
+
+  let requestedBets = [];
+
+  if (Array.isArray(data.bets)) {
+    requestedBets = data.bets;
+  } else {
+    requestedBets = [{
+      itemId: data.itemId,
+      itemIndex: data.itemIndex,
+      amount: data.amount || data.betAmount || 100000
+    }];
+  }
+
+  if (!requestedBets.length || requestedBets.length > 8) {
+    sendGameError(socket, "Select at least one valid item.");
+    return;
+  }
+
+  const bets = [];
+  let totalBet = 0;
+
+  for (const requested of requestedBets) {
+    const item = requested.itemId
+      ? config.items.find(
+          item => item.id === String(requested.itemId)
+        )
+      : config.items[
+          Math.floor(safeNumber(requested.itemIndex, -1))
+        ];
+
+    const amount = safeNumber(
+      requested.amount,
+      0
+    );
+
+    if (!item) {
+      sendGameError(socket, "Invalid game item.");
+      return;
+    }
+
+    if (!LIVE_GAME_BET_OPTIONS.includes(amount)) {
+      sendGameError(socket, "Invalid bet amount.");
+      return;
+    }
+
+    bets.push({
+      itemId: item.id,
+      itemName: item.name,
+      amount
+    });
+
+    totalBet += amount;
+  }
+
+  if (user.coins < totalBet) {
+    sendGameError(socket, "Not enough coins.");
+    return;
+  }
+
+  /* Deduct coins only after all bets have been validated. */
+
+  user.coins -= totalBet;
+  user.updatedAt = Date.now();
+
+  round.players[userId] = {
+    userId: user.id,
+    name: user.name,
+    dp: user.dp,
+    bets,
+    totalBet,
+    createdAt: Date.now()
+  };
+
+  increaseTask(userId, "task_07");
+
+  socket.emit("wallet", {
+    coins: user.coins,
+    diamonds: user.diamonds
+  });
+
+  socket.emit("game:wallet", {
+    coins: user.coins,
+    diamonds: user.diamonds
+  });
+
+  socket.emit("game:joined", {
+    ok: true,
+    totalBet,
+    bets,
+    wallet: {
+      coins: user.coins,
+      diamonds: user.diamonds
+    }
+  });
+
+  socket.emit("game-joined", {
+    ok: true,
+    totalBet,
+    bets
+  });
+
+  broadcastGameState(state);
+});
+
+
+/* COMPATIBILITY WITH OLDER GAME BUTTONS */
+
+socket.on("game-start", (data = {}) => {
+  const gameId =
+    data.gameId ||
+    data.game ||
+    "greedy";
+
+  socket.emit("game-start-result", {
+    ok: true,
+    gameId: getGameConfig(gameId)?.id || gameId,
+    message: "Open the game using game:open."
+  });
+});
   /* WEBRTC ANSWER */
 
   socket.on(
