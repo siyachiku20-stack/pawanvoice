@@ -4401,44 +4401,6 @@ io.on("connection",(socket)=>{
 
         ownerId:
           String(
-            data.userId ||
-            socketUsers[socket.id] ||
-            ""
-          ),
-
-        status:
-          "started",
-
-        createdAt:
-          Date.now()
-
-      };
-
-
-      increaseTask(
-        String(
-          data.userId ||
-          socketUsers[socket.id] ||
-          ""
-        ),
-        "task_07"
-      );
-
-
-      io.to(
-        `room:${roomId}`
-      ).emit(
-        "game-started",
-        games[roomId].current
-      );
-
-    }
-  );
-
-
-  /* =========================================================
-     OLD GAME ACTION COMPATIBILITY
-     ========================================================= */
 
   /* WEBRTC OFFER */
 
