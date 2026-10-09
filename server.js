@@ -2230,6 +2230,311 @@ io.on("connection",(socket)=>{
     socket.id
   );
 
+/* =========================================================
+   PAWANVOICE LIVE GAMES - SHARED GAME SYSTEM
+   ========================================================= */
+
+const LIVE_GAME_BET_OPTIONS = [
+  100000,
+  200000,
+  500000
+];
+
+const LIVE_GAME_CONFIG = {
+  greedy: {
+    id: "greedy",
+    name: "Greedy Baby",
+    duration: 15000,
+    items: [
+      { id: "apple", name: "Apple", icon: "🍎", multiplier: 2 },
+      { id: "banana", name: "Banana", icon: "🍌", multiplier: 2 },
+      { id: "grapes", name: "Grapes", icon: "🍇", multiplier: 3 },
+      { id: "watermelon", name: "Watermelon", icon: "🍉", multiplier: 3 },
+      { id: "cake", name: "Cake", icon: "🍰", multiplier: 5 },
+      { id: "candy", name: "Candy", icon: "🍬", multiplier: 5 },
+      { id: "diamond", name: "Diamond", icon: "💎", multiplier: 10 },
+      { id: "crown", name: "Crown", icon: "👑", multiplier: 20 }
+    ]
+  },
+
+  animal: {
+    id: "animal",
+    name: "Animal Party",
+    duration: 15000,
+    items: [
+      { id: "cat", name: "Cat", icon: "🐱", multiplier: 2 },
+      { id: "dog", name: "Dog", icon: "🐶", multiplier: 2 },
+      { id: "rabbit", name: "Rabbit", icon: "🐰", multiplier: 3 },
+      { id: "fox", name: "Fox", icon: "🦊", multiplier: 3 },
+      { id: "tiger", name: "Tiger", icon: "🐯", multiplier: 5 },
+      { id: "panda", name: "Panda", icon: "🐼", multiplier: 5 },
+      { id: "lion", name: "Lion", icon: "🦁", multiplier: 10 },
+      { id: "unicorn", name: "Unicorn", icon: "🦄", multiplier: 20 }
+    ]
+  },
+
+  lucky: {
+    id: "lucky",
+    name: "Lucky Wheel",
+    duration: 15000,
+    items: [
+      { id: "one", name: "1", icon: "1️⃣", multiplier: 2 },
+      { id: "two", name: "2", icon: "2️⃣", multiplier: 2 },
+      { id: "three", name: "3", icon: "3️⃣", multiplier: 3 },
+      { id: "four", name: "4", icon: "4️⃣", multiplier: 3 },
+      { id: "five", name: "5", icon: "5️⃣", multiplier: 5 },
+      { id: "six", name: "6", icon: "6️⃣", multiplier: 5 },
+      { id: "seven", name: "7", icon: "7️⃣", multiplier: 10 },
+      { id: "eight", name: "8", icon: "8️⃣", multiplier: 20 }
+    ]
+  }
+};
+
+const liveGames = {};
+
+function getGameUser(userId) {
+  const id = String(userId || "").trim();
+
+  if (!id) return null;
+
+  return users[id] || null;
+}
+
+function sendGameError(socket, message) {
+  socket.emit("game:error", {
+    ok: false,
+    message
+  });
+
+  socket.emit("game-error", {
+    ok: false,
+    message
+  });
+}
+
+function getGameConfig(gameId) {
+  const aliases = {
+    "greedy-baby": "greedy",
+    "greedy baby": "greedy",
+    "animal-party": "animal",
+    "animal party": "animal",
+    "lucky-wheel": "lucky",
+    "lucky wheel": "lucky",
+    "wheel": "lucky"
+  };
+
+  const id = String(gameId || "greedy")
+    .trim()
+    .toLowerCase();
+
+  return LIVE_GAME_CONFIG[aliases[id] || id] || null;
+}
+
+function getLiveGame(roomId, gameId) {
+  const room = String(roomId || "");
+  const config = getGameConfig(gameId);
+
+  if (!room || !config) return null;
+
+  const key = `${room}_${config.id}`;
+
+  if (!liveGames[key]) {
+    liveGames[key] = {
+      key,
+      roomId: room,
+      gameId: config.id,
+      current: null,
+      roundNumber: 0,
+      timer: null
+    };
+  }
+
+  return liveGames[key];
+}
+
+function gamePublicState(state) {
+  if (!state) return null;
+
+  const config = getGameConfig(state.gameId);
+  const round = state.current;
+
+  return {
+    roomId: state.roomId,
+    gameId: state.gameId,
+    gameName: config ? config.name : state.gameId,
+    roundNumber: state.roundNumber,
+    status: round ? round.status : "waiting",
+    endsAt: round ? round.endsAt : null,
+    winningItem: round ? round.winningItem : null,
+
+    items: config ? config.items : [],
+
+    betOptions: LIVE_GAME_BET_OPTIONS,
+
+    players: round
+      ? Object.values(round.players).map(player => ({
+          userId: player.userId,
+          name: player.name,
+          dp: player.dp,
+          bets: player.bets,
+          totalBet: player.totalBet
+        }))
+      : []
+  };
+}
+
+function broadcastGameState(state) {
+  if (!state) return;
+
+  const publicState = gamePublicState(state);
+
+  io.to(`room:${state.roomId}`).emit(
+    "game:state",
+    publicState
+  );
+
+  io.to(`room:${state.roomId}`).emit(
+    "game-state",
+    publicState
+  );
+}
+
+function startLiveGameRound(state) {
+  if (!state) return;
+
+  if (
+    state.current &&
+    state.current.status === "playing"
+  ) {
+    return;
+  }
+
+  const config = getGameConfig(state.gameId);
+
+  if (!config) return;
+
+  if (state.timer) {
+    clearTimeout(state.timer);
+    state.timer = null;
+  }
+
+  state.roundNumber++;
+
+  state.current = {
+    roundId: randomId("round_"),
+    number: state.roundNumber,
+    status: "playing",
+    startedAt: Date.now(),
+    endsAt: Date.now() + config.duration,
+    players: {},
+    winningItem: null
+  };
+
+  broadcastGameState(state);
+
+  state.timer = setTimeout(() => {
+    finishLiveGame(state);
+  }, config.duration);
+}
+
+function finishLiveGame(state) {
+  if (!state || !state.current) return;
+
+  const round = state.current;
+
+  if (round.status !== "playing") return;
+
+  const config = getGameConfig(state.gameId);
+
+  if (!config || !config.items.length) return;
+
+  round.status = "finished";
+
+  const winningIndex = crypto.randomInt(
+    0,
+    config.items.length
+  );
+
+  const winner = config.items[winningIndex];
+
+  round.winningItem = winner;
+
+  const results = [];
+
+  Object.values(round.players).forEach(player => {
+    const user = getGameUser(player.userId);
+
+    let payout = 0;
+
+    player.bets.forEach(bet => {
+      if (bet.itemId === winner.id) {
+        payout += bet.amount * winner.multiplier;
+      }
+    });
+
+    if (user && payout > 0) {
+      addCoins(user, payout);
+      addExp(user, Math.max(1, Math.floor(payout / 1000)));
+
+      const socketId = userSockets[user.id];
+
+      if (socketId) {
+        io.to(socketId).emit("wallet", {
+          coins: user.coins,
+          diamonds: user.diamonds
+        });
+
+        io.to(socketId).emit("game:wallet", {
+          coins: user.coins,
+          diamonds: user.diamonds
+        });
+      }
+    }
+
+    results.push({
+      userId: player.userId,
+      name: player.name,
+      totalBet: player.totalBet,
+      payout,
+      net: payout - player.totalBet,
+      won: payout > 0
+    });
+  });
+
+  const result = {
+    roomId: state.roomId,
+    gameId: state.gameId,
+    roundNumber: round.number,
+    roundId: round.roundId,
+    winningItem: winner,
+    results,
+    finishedAt: Date.now()
+  };
+
+  io.to(`room:${state.roomId}`).emit(
+    "game:result",
+    result
+  );
+
+  io.to(`room:${state.roomId}`).emit(
+    "game-result",
+    result
+  );
+
+  broadcastGameState(state);
+
+  state.timer = setTimeout(() => {
+    state.current = null;
+
+    const room = rooms[state.roomId];
+
+    if (room && roomMemberCount(room) > 0) {
+      startLiveGameRound(state);
+    } else {
+      broadcastGameState(state);
+    }
+  }, 5000);
+    }
   /* REGISTER */
 
   socket.on(
