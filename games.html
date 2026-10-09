@@ -2,1435 +2,1048 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PawanVoice Games</title>
 
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
 <style>
-*{
-  box-sizing:border-box;
+*{box-sizing:border-box}
+
+:root{
+  --bg:#100d24;
+  --card:#211a3e;
+  --purple:#8b5cf6;
+  --pink:#f472b6;
+  --gold:#ffd166;
+  --text:#fff;
+  --muted:#c7bddf;
+  --green:#35d07f;
+  --red:#ff7070;
 }
 
 body{
   margin:0;
+  background:linear-gradient(160deg,#17102f,#080817);
+  color:var(--text);
   font-family:Arial,sans-serif;
-  background:#100b20;
-  color:#fff;
 }
 
-.app{
-  width:100%;
-  max-width:600px;
-  margin:auto;
-  min-height:100vh;
-  padding-bottom:30px;
+button,select{
+  font:inherit;
 }
 
-/* HEADER */
+button{
+  cursor:pointer;
+}
 
 .header{
   padding:15px;
-  background:#19112e;
-  border-bottom:1px solid #382951;
+  background:#19132f;
+  border-bottom:1px solid #3c2b62;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
   position:sticky;
   top:0;
   z-index:10;
 }
 
-.header-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.logo{
-  font-size:21px;
-  font-weight:800;
-}
-
-.connection{
-  font-size:11px;
-  padding:6px 9px;
-  border-radius:20px;
-  background:#173c2a;
-  color:#69ffad;
-}
-
-.coins{
-  margin-top:10px;
-  padding:11px;
-  text-align:center;
-  border-radius:12px;
-  background:#251a40;
-  color:#ffd65a;
+.brand{
+  font-size:20px;
   font-weight:bold;
 }
 
-/* GAME TABS */
-
-.tabs{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  padding:12px;
+.brand span{
+  color:#c4a4ff;
 }
 
-.tabs::-webkit-scrollbar{
-  display:none;
+.wallet{
+  background:#34244f;
+  border:1px solid #7550a7;
+  border-radius:20px;
+  padding:9px 13px;
+  color:var(--gold);
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:14px;
+}
+
+.banner{
+  background:linear-gradient(120deg,#4e248e,#9a3b9b,#e76b93);
+  padding:19px;
+  border-radius:17px;
+  margin-bottom:15px;
+}
+
+.banner h2{
+  margin:0 0 7px;
+}
+
+.banner p{
+  margin:0;
+  font-size:13px;
+  line-height:1.6;
+}
+
+.tabs{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin:15px 0;
 }
 
 .tab{
-  flex:none;
-  border:1px solid #463361;
-  background:#211736;
+  background:#211a3e;
+  border:1px solid #4b376f;
   color:white;
-  border-radius:22px;
-  padding:10px 14px;
-  font-size:13px;
+  border-radius:12px;
+  padding:12px 4px;
+  font-weight:bold;
 }
 
 .tab.active{
-  background:#7046d7;
-  border-color:#8e6bea;
+  background:linear-gradient(135deg,#8b5cf6,#c044a0);
+  border-color:#e2c5ff;
 }
 
-/* GAME CARD */
-
-.game{
-  margin:0 12px;
-  border:1px solid #3c2d55;
-  border-radius:20px;
-  overflow:hidden;
-  background:#19132c;
-}
-
-.game-top{
-  padding:16px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  background:#241a3c;
+.panel{
+  background:rgba(33,26,62,.96);
+  border:1px solid #49366d;
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:14px;
 }
 
 .game-title{
   font-size:21px;
-  font-weight:800;
-}
-
-.live{
-  color:#65ffad;
-  font-size:11px;
   font-weight:bold;
 }
 
-/* ROUND */
+.muted{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
 
-.round{
+.round-info{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin:13px 0;
+}
+
+.info-box{
+  background:#15112a;
+  padding:11px 5px;
+  border-radius:10px;
   text-align:center;
-  padding:15px;
-  background:#130e22;
 }
 
-.round-number{
-  color:#999;
-  font-size:12px;
+.info-box small{
+  display:block;
+  color:var(--muted);
+  margin-bottom:6px;
 }
 
-.timer{
-  font-size:32px;
-  font-weight:900;
-  color:#ffd35a;
-  margin-top:4px;
+.info-box strong{
+  color:var(--gold);
+  font-size:14px;
+  overflow-wrap:anywhere;
 }
 
-.reward{
-  margin-top:8px;
-  font-size:20px;
-  color:#ffd65a;
-  font-weight:bold;
+.timer-track{
+  height:8px;
+  background:#0c0a19;
+  border-radius:10px;
+  overflow:hidden;
+  margin:12px 0;
 }
 
-/* ITEMS */
+.timer-bar{
+  height:100%;
+  width:100%;
+  background:linear-gradient(90deg,#8b5cf6,#ff73ae);
+  transition:width .2s linear;
+}
 
 .items{
-  padding:13px;
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:9px;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
 }
 
 .item{
-  min-height:82px;
-  border:1px solid #493766;
-  border-radius:15px;
-  background:#281d43;
-  color:#fff;
-  cursor:pointer;
-  font-size:29px;
-}
-
-.item-name{
-  display:block;
-  margin-top:5px;
-  font-size:10px;
-  color:#aaa;
+  background:#17122e;
+  border:2px solid #40305f;
+  border-radius:13px;
+  padding:12px 9px;
+  text-align:center;
+  min-width:0;
 }
 
 .item.selected{
-  border:3px solid #ffd34f;
-  background:#39285a;
+  border-color:var(--gold);
+  background:#34264c;
+  box-shadow:0 0 12px #ffcf6640;
 }
 
-.item.winner{
-  border:3px solid #59ff9e;
-  background:#19492f;
+.item.disabled{
+  opacity:.6;
 }
 
-/* PLAYERS */
-
-.players{
-  padding:0 13px 13px;
+.item-icon{
+  font-size:34px;
+  margin-bottom:5px;
 }
 
-.players-title{
-  color:#999;
+.item-name{
+  font-weight:bold;
+  margin-bottom:7px;
+}
+
+.multiplier{
+  color:var(--gold);
+  font-weight:bold;
+  font-size:14px;
+  margin-bottom:10px;
+}
+
+.item label{
+  display:block;
   font-size:12px;
+  color:var(--muted);
+  margin-bottom:5px;
+}
+
+.item input[type=checkbox]{
+  width:19px;
+  height:19px;
+  accent-color:#b18aff;
   margin-bottom:8px;
 }
 
-.player-list{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
+.bet-select{
+  width:100%;
+  padding:9px 3px;
+  background:#292044;
+  color:white;
+  border:1px solid #65508d;
+  border-radius:8px;
+  font-size:12px;
 }
 
-.player{
-  padding:7px 9px;
-  background:#281d42;
-  border:1px solid #45345f;
-  border-radius:10px;
-  font-size:11px;
-}
-
-/* STATUS */
-
-.status{
-  text-align:center;
-  min-height:38px;
-  padding:8px 12px;
-  color:#aaa;
-  font-size:13px;
-}
-
-/* BUTTON */
-
-.join{
-  width:calc(100% - 26px);
-  margin:0 13px 14px;
-  min-height:48px;
-  border:0;
-  border-radius:14px;
-  background:#7046d7;
-  color:#fff;
-  font-size:16px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.join:disabled{
+.bet-select:disabled{
   opacity:.5;
 }
 
-/* RESULT */
-
-.result{
-  display:none;
-  margin:0 13px 14px;
+.total-box{
+  margin-top:14px;
   padding:13px;
-  text-align:center;
-  border-radius:13px;
-  background:#183b29;
-  color:#70ffb0;
+  border-radius:12px;
+  background:#15112a;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.total-box strong{
+  color:var(--gold);
+}
+
+.primary{
+  width:100%;
+  border:0;
+  border-radius:12px;
+  background:linear-gradient(120deg,#8b5cf6,#d64eaa);
+  color:white;
+  font-weight:bold;
+  padding:14px;
+  margin-top:12px;
+}
+
+.primary:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.secondary{
+  border:1px solid #72569b;
+  background:#302249;
+  color:white;
+  border-radius:9px;
+  padding:9px 12px;
+}
+
+.status{
+  margin-top:12px;
+  padding:11px;
+  border-radius:10px;
+  background:#15112a;
+  line-height:1.6;
+  overflow-wrap:anywhere;
+}
+
+.status.success{
+  border:1px solid #277f53;
+}
+
+.status.error{
+  border:1px solid #9e4343;
+}
+
+.players{
+  display:grid;
+  gap:8px;
+}
+
+.player{
+  background:#17122e;
+  border-radius:10px;
+  padding:10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.player-info{
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+
+.player-name{
   font-weight:bold;
 }
 
-/* NOTICE */
-
-.notice{
-  margin:13px;
-  padding:10px;
-  text-align:center;
-  border-radius:10px;
-  background:#201733;
-  color:#888;
-  font-size:11px;
+.player-bets{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:5px;
+  line-height:1.6;
 }
 
-@media(max-width:400px){
+.result-item{
+  font-size:23px;
+  color:var(--gold);
+  font-weight:bold;
+  margin:8px 0;
+}
 
-  .items{
-    grid-template-columns:repeat(2,1fr);
-  }
+.history-row{
+  border-bottom:1px solid #3d3156;
+  padding:9px 0;
+  font-size:13px;
+  line-height:1.5;
+}
 
+.footer-note{
+  text-align:center;
+  font-size:11px;
+  color:#b8adce;
+  padding:15px 5px 25px;
+  line-height:1.6;
+}
+
+@media(min-width:600px){
+  .items{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+
+@media(max-width:350px){
+  .brand{font-size:17px}
+  .wallet{font-size:12px;padding:8px}
+  .item-icon{font-size:29px}
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<header class="header">
+  <div class="brand">🎮 Pawan<span>Voice</span></div>
+  <div class="wallet">🪙 <span id="coins">100,000</span></div>
+</header>
 
-  <div class="header">
+<main class="container">
 
-    <div class="header-row">
+  <section class="banner">
+    <h2>🎉 PawanVoice Games</h2>
+    <p>
+      Play together in live rounds. Select multiple items,
+      choose a separate bet for each item and follow the shared result.
+    </p>
+  </section>
 
-      <div class="logo">
-        🎮 PawanVoice Games
-      </div>
+  <div class="tabs">
+    <button class="tab active" data-game="greedy">👶 Greedy Baby</button>
+    <button class="tab" data-game="animal">🐯 Animal</button>
+    <button class="tab" data-game="lucky">🎡 Lucky Spin</button>
+  </div>
 
-      <div
-        class="connection"
-        id="connection">
-        ● CONNECTING
-      </div>
-
+  <section class="panel">
+    <div class="game-title" id="gameTitle">👶 Greedy Baby</div>
+    <div class="muted" id="gameDescription">
+      Select one or more items and choose your bet.
     </div>
 
-    <div class="coins">
-      🪙 Coins:
-      <span id="coins">100000</span>
+    <div class="round-info">
+      <div class="info-box">
+        <small>Round</small>
+        <strong id="roundNumber">Waiting</strong>
+      </div>
+      <div class="info-box">
+        <small>Time left</small>
+        <strong id="timer">--</strong>
+      </div>
+      <div class="info-box">
+        <small>Players</small>
+        <strong id="playerCount">0</strong>
+      </div>
     </div>
 
+    <div class="timer-track">
+      <div class="timer-bar" id="timerBar"></div>
+    </div>
+
+    <div class="muted" id="roundStatus">
+      Connecting to PawanVoice server…
+    </div>
+  </section>
+
+  <section class="panel">
+    <h3 style="margin-top:0">Choose your items</h3>
+    <div class="muted">
+      You can choose multiple items. Each selected item has its own bet.
+      A bet is final after submission for that round.
+    </div>
+
+    <div class="items" id="items"></div>
+
+    <div class="total-box">
+      <span>Total bet</span>
+      <strong id="totalBet">0 coins</strong>
+    </div>
+
+    <button class="primary" id="joinButton" disabled>
+      Submit Bets
+    </button>
+
+    <div class="status" id="message">
+      Connecting…
+    </div>
+  </section>
+
+  <section class="panel">
+    <h3 style="margin-top:0">🏆 Round Result</h3>
+    <div id="result" class="muted">
+      Waiting for the result…
+    </div>
+  </section>
+
+  <section class="panel">
+    <h3 style="margin-top:0">👥 Live Players</h3>
+    <div class="players" id="players">
+      <div class="muted">No bets submitted yet.</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h3 style="margin-top:0">📜 Recent Results</h3>
+    <div id="history" class="muted">No results yet.</div>
+  </section>
+
+  <div class="footer-note">
+    PawanVoice virtual-coin game. Coins have no cash value.
+    Results are decided by the server.
   </div>
 
-
-  <!-- GAME TABS -->
-
-  <div
-    class="tabs"
-    id="tabs">
-  </div>
-
-
-  <!-- GAME -->
-
-  <div id="gameArea"></div>
-
-
-  <div class="notice">
-    Live Room Game • PawanVoice
-  </div>
-
-</div>
-
+</main>
 
 <script>
+"use strict";
 
-/* =========================================
-   PAWANVOICE GAME SYSTEM
-   ONLY 3 GAMES
-========================================= */
+/* =====================================
+   CONNECTION AND USER
+   ===================================== */
 
-const SERVER_URL =
-"https://pawanvoice-1.onrender.com";
+const SERVER_URL = "https://pawanvoice-1.onrender.com";
 
+const params = new URLSearchParams(location.search);
 
-const socket = io(
-  SERVER_URL,
-  {
-    transports:["websocket","polling"]
-  }
-);
+const roomId = params.get("room") || "PV100";
+const userId = params.get("userid") || ("guest_" + cryptoRandom());
+const userName = params.get("name") || "Guest";
+const userDp = params.get("dp") || "";
 
-
-/* =========================================
-   USER / ROOM
-========================================= */
-
-const params =
-new URLSearchParams(
-  window.location.search
-);
-
-const roomId =
-params.get("room") || "PV100";
-
-const userId =
-params.get("userid") ||
-("user_" + Math.floor(
-  Math.random()*999999
-));
-
-const userName =
-params.get("name") ||
-"Guest";
-
-
-/* =========================================
-   ONLY 3 GAMES
-========================================= */
-
-const games = [
-
-  {
-    id:"greedy",
-
-    title:"👶 Greedy Baby",
-
-    subtitle:"8 Items • Live Round",
-
-    items:[
-      ["🍒","Baby 1"],
-      ["🍋","Baby 2"],
-      ["🍇","Baby 3"],
-      ["🍉","Baby 4"],
-      ["🥝","Baby 5"],
-      ["🍎","Baby 6"],
-      ["🔔","Baby 7"],
-      ["⭐","Baby 8"]
-    ]
-  },
-
-
-  {
-    id:"animal",
-
-    title:"🐯 Animal",
-
-    subtitle:"8 Animals • Live Round",
-
-    items:[
-      ["🐯","Tiger"],
-      ["🐰","Rabbit"],
-      ["🐼","Panda"],
-      ["🦁","Lion"],
-      ["🐘","Elephant"],
-      ["🐵","Monkey"],
-      ["🐸","Frog"],
-      ["🐲","Dragon"]
-    ]
-  },
-
-
-  {
-    id:"lucky",
-
-    title:"🎡 Lucky Spin",
-
-    subtitle:"8 Slots • Live Round",
-
-    items:[
-      ["🍒","Cherry"],
-      ["🍋","Lemon"],
-      ["💎","Diamond"],
-      ["👑","Crown"],
-      ["🎁","Gift"],
-      ["⭐","Star"],
-      ["🔥","Fire"],
-      ["💰","Jackpot"]
-    ]
-  }
-
-];
-
-
-/* =========================================
-   VARIABLES
-========================================= */
-
-let currentGame =
-"greedy";
-
-let selectedItem =
-null;
-
-let currentState =
-null;
-
-let players =
-[];
-
-let timerInterval =
-null;
-
-
-/* =========================================
-   ELEMENTS
-========================================= */
-
-const tabs =
-document.getElementById(
-  "tabs"
-);
-
-const gameArea =
-document.getElementById(
-  "gameArea"
-);
-
-
-/* =========================================
-   GET GAME
-========================================= */
-
-function getGame(){
-
-  return games.find(
-    game =>
-      game.id === currentGame
-  );
-
+function cryptoRandom(){
+  return Math.random().toString(36).slice(2,10);
 }
 
+const socket = io(SERVER_URL,{
+  transports:["websocket","polling"],
+  reconnection:true,
+  reconnectionAttempts:Infinity,
+  timeout:20000
+});
 
-/* =========================================
-   GAME TABS
-========================================= */
+let currentGame = "greedy";
+let currentState = null;
+let currentItems = [];
+let myCoins = 100000;
+let myRoundId = null;
+let myBetsSubmitted = false;
+let selectedBets = {};
+let countdownTimer = null;
+let latestResult = null;
 
-function renderTabs(){
+const gameNames = {
+  greedy:"👶 Greedy Baby",
+  animal:"🐯 Animal",
+  lucky:"🎡 Lucky Spin"
+};
 
-  tabs.innerHTML = "";
+const $ = id => document.getElementById(id);
 
-  games.forEach(
-    game => {
-
-      const button =
-        document.createElement(
-          "button"
-        );
-
-      button.className =
-        "tab";
-
-      if(
-        game.id ===
-        currentGame
-      ){
-
-        button.classList.add(
-          "active"
-        );
-
-      }
-
-      button.textContent =
-        game.title;
-
-      button.onclick =
-        function(){
-
-          currentGame =
-            game.id;
-
-          selectedItem =
-            null;
-
-          stopTimer();
-
-          renderTabs();
-
-          renderGame();
-
-          openGame();
-
-        };
-
-      tabs.appendChild(
-        button
-      );
-
-    }
-  );
-
+function fmt(n){
+  return Math.floor(Number(n)||0).toLocaleString("en-IN");
 }
 
-
-/* =========================================
-   RENDER GAME
-========================================= */
-
-function renderGame(){
-
-  const game =
-    getGame();
-
-  selectedItem =
-    null;
-
-  let html = "";
-
-  html += `
-    <div class="game">
-
-      <div class="game-top">
-
-        <div>
-
-          <div class="game-title">
-            ${game.title}
-          </div>
-
-          <div
-            style="
-              font-size:12px;
-              color:#999;
-              margin-top:3px;
-            "
-          >
-            ${game.subtitle}
-          </div>
-
-        </div>
-
-        <div class="live">
-          ● LIVE
-        </div>
-
-      </div>
-
-
-      <div class="round">
-
-        <div class="round-number">
-          Round
-          <span id="roundNumber">
-            --
-          </span>
-        </div>
-
-        <div
-          class="timer"
-          id="timer"
-        >
-          00:00
-        </div>
-
-        <div class="reward">
-
-          🪙 Reward:
-          <span id="reward">
-            0
-          </span>
-
-        </div>
-
-      </div>
-
-
-      <div class="items">
-  `;
-
-
-  game.items.forEach(
-    (item,index) => {
-
-      html += `
-
-        <button
-          class="item"
-          data-index="${index}"
-        >
-
-          ${item[0]}
-
-          <span class="item-name">
-            ${item[1]}
-          </span>
-
-        </button>
-
-      `;
-
-    }
-  );
-
-
-  html += `
-      </div>
-
-
-      <div class="players">
-
-        <div class="players-title">
-          👥 Players
-        </div>
-
-        <div
-          class="player-list"
-          id="playerList"
-        >
-        </div>
-
-      </div>
-
-
-      <div
-        class="status"
-        id="status"
-      >
-        Choose one item to join this round.
-      </div>
-
-
-      <button
-        class="join"
-        id="joinButton"
-      >
-        🎮 JOIN ROUND
-      </button>
-
-
-      <div
-        class="result"
-        id="result"
-      >
-      </div>
-
-    </div>
-  `;
-
-
-  gameArea.innerHTML =
-    html;
-
-
-  /* ITEM CLICK */
-
-  document
-    .querySelectorAll(
-      ".item"
-    )
-    .forEach(
-      button => {
-
-        button.onclick =
-          function(){
-
-            if(
-              currentState &&
-              currentState.phase ===
-              "closed"
-            ){
-
-              return;
-
-            }
-
-            document
-              .querySelectorAll(
-                ".item"
-              )
-              .forEach(
-                item =>
-                  item.classList
-                    .remove(
-                      "selected"
-                    )
-              );
-
-            button.classList
-              .add(
-                "selected"
-              );
-
-            selectedItem =
-              Number(
-                button.dataset.index
-              );
-
-            document
-              .getElementById(
-                "status"
-              )
-              .textContent =
-              "Selected " +
-              getGame().items[
-                selectedItem
-              ][1] +
-              ". Tap JOIN ROUND.";
-
-          };
-
-      }
-    );
-
-
-  /* JOIN */
-
-  document
-    .getElementById(
-      "joinButton"
-    )
-    .onclick =
-      joinRound;
-
-
-  updatePlayers();
-
+function setMessage(text,type=""){
+  $("message").textContent = text;
+  $("message").className = "status" + (type ? " " + type : "");
 }
 
+function updateWallet(coins){
+  if(coins === undefined || coins === null) return;
+  myCoins = Math.max(0,Number(coins)||0);
+  $("coins").textContent = fmt(myCoins);
+  updateTotal();
+}
 
-/* =========================================
-   OPEN GAME
-========================================= */
+function isRoundOpen(){
+  return Boolean(
+    currentState &&
+    currentState.active &&
+    currentState.status === "running" &&
+    currentState.game === currentGame &&
+    Date.now() < Number(currentState.endAt || 0)
+  );
+}
 
-function openGame(){
+/* =====================================
+   TABS
+   ===================================== */
 
-  if(
-    !socket.connected
-  ){
+document.querySelectorAll(".tab").forEach(button=>{
+  button.addEventListener("click",()=>{
+    currentGame = button.dataset.game;
+    selectedBets = {};
+    myBetsSubmitted = false;
+    myRoundId = null;
 
-    return;
+    document.querySelectorAll(".tab").forEach(tab=>{
+      tab.classList.toggle("active",tab===button);
+    });
 
-  }
+    $("gameTitle").textContent = gameNames[currentGame];
+    $("gameDescription").textContent =
+      "Select one or more items and choose a separate bet for each.";
 
-  socket.emit(
-    "game:open",
-    {
-      roomId:
+    renderItems();
+    updateTotal();
+    updateRoundUI();
+
+    if(socket.connected){
+      socket.emit("game:open",{
         roomId,
-
-      gameId:
-        currentGame
+        gameId:currentGame,
+        userId
+      });
     }
-  );
+  });
+});
 
-}
+/* =====================================
+   RENDER ITEMS
+   ===================================== */
 
+function renderItems(){
+  const root = $("items");
+  root.innerHTML = "";
 
-/* =========================================
-   JOIN ROUND
-========================================= */
-
-function joinRound(){
-
-  if(
-    selectedItem === null
-  ){
-
-    document
-      .getElementById(
-        "status"
-      )
-      .textContent =
-      "⚠️ Pehle ek item select karo.";
-
+  if(!currentItems.length){
+    root.innerHTML =
+      '<div class="muted">Waiting for game items from server…</div>';
     return;
-
   }
 
+  currentItems.forEach(item=>{
+    const itemId = String(item.id);
+    const selected = Boolean(selectedBets[itemId]);
 
-  socket.emit(
-    "game:join",
-    {
+    const card = document.createElement("div");
+    card.className = "item" + (selected ? " selected" : "");
 
-      roomId:
-        roomId,
+    const icon = document.createElement("div");
+    icon.className = "item-icon";
+    icon.textContent = item.icon || "🎁";
 
-      gameId:
-        currentGame,
+    const name = document.createElement("div");
+    name.className = "item-name";
+    name.textContent = item.name || itemId;
 
-      itemIndex:
-        selectedItem,
+    const multiplier = document.createElement("div");
+    multiplier.className = "multiplier";
+    multiplier.textContent = "×" + Number(item.multiplier || 1);
 
-      userId:
-        userId,
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = selected;
+    checkbox.disabled = !isRoundOpen() || myBetsSubmitted;
+    checkbox.setAttribute("aria-label","Select " + item.name);
 
-      name:
-        userName
+    const label = document.createElement("label");
+    label.textContent = "Select item";
 
-    }
-  );
+    const betLabel = document.createElement("label");
+    betLabel.textContent = "Bet amount";
 
+    const select = document.createElement("select");
+    select.className = "bet-select";
+    select.disabled = !selected || !isRoundOpen() || myBetsSubmitted;
 
-  const status =
-    document.getElementById(
-      "status"
+    [100000,200000,500000].forEach(amount=>{
+      const option = document.createElement("option");
+      option.value = String(amount);
+      option.textContent = fmt(amount);
+      select.appendChild(option);
+    });
+
+    select.value = String(
+      selectedBets[itemId] || 100000
     );
 
-  if(status){
-
-    status.textContent =
-      "✅ Joining live round...";
-
-  }
-
-}
-
-
-/* =========================================
-   PLAYERS
-========================================= */
-
-function updatePlayers(){
-
-  const box =
-    document.getElementById(
-      "playerList"
-    );
-
-  if(!box){
-
-    return;
-
-  }
-
-  box.innerHTML = "";
-
-
-  if(
-    !players ||
-    players.length === 0
-  ){
-
-    box.innerHTML =
-      `
-        <span class="player">
-          Waiting for players...
-        </span>
-      `;
-
-    return;
-
-  }
-
-
-  players.forEach(
-    player => {
-
-      const element =
-        document.createElement(
-          "span"
-        );
-
-      element.className =
-        "player";
-
-      element.textContent =
-        "👤 " +
-        (
-          player.name ||
-          "Guest"
-        );
-
-      box.appendChild(
-        element
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================================
-   CONNECTION
-========================================= */
-
-socket.on(
-  "connect",
-  function(){
-
-    document
-      .getElementById(
-        "connection"
-      )
-      .textContent =
-      "● CONNECTED";
-
-    openGame();
-
-  }
-);
-
-
-socket.on(
-  "disconnect",
-  function(){
-
-    document
-      .getElementById(
-        "connection"
-      )
-      .textContent =
-      "● OFFLINE";
-
-  }
-);
-
-
-/* =========================================
-   GAME STATE
-========================================= */
-
-socket.on(
-  "game:state",
-  function(data){
-
-    if(!data){
-
-      return;
-
-    }
-
-
-    if(
-      data.gameId !==
-      currentGame
-    ){
-
-      return;
-
-    }
-
-
-    currentState =
-      data;
-
-
-    players =
-      data.players || [];
-
-
-    updatePlayers();
-
-
-    const round =
-      document.getElementById(
-        "roundNumber"
-      );
-
-    const reward =
-      document.getElementById(
-        "reward"
-      );
-
-    const timer =
-      document.getElementById(
-        "timer"
-      );
-
-
-    if(round){
-
-      round.textContent =
-        data.round ||
-        "--";
-
-    }
-
-
-    if(reward){
-
-      reward.textContent =
-        Number(
-          data.reward || 0
-        ).toLocaleString(
-          "en-IN"
-        );
-
-    }
-
-
-    if(
-      timer &&
-      typeof data.remaining ===
-      "number"
-    ){
-
-      timer.textContent =
-        formatTime(
-          data.remaining
-        );
-
-    }
-
-
-    if(
-      data.phase ===
-      "closed"
-    ){
-
-      const status =
-        document.getElementById(
-          "status"
-        );
-
-      if(status){
-
-        status.textContent =
-          "Round closed. Result coming...";
-
+    checkbox.addEventListener("change",()=>{
+      if(checkbox.checked){
+        selectedBets[itemId] = Number(select.value)||100000;
+      }else{
+        delete selectedBets[itemId];
       }
 
-    }
+      renderItems();
+      updateTotal();
+    });
 
-  }
-);
-
-
-/* =========================================
-   GAME PLAYERS
-========================================= */
-
-socket.on(
-  "game:players",
-  function(data){
-
-    if(!data){
-
-      return;
-
-    }
-
-
-    if(
-      data.gameId !==
-      currentGame
-    ){
-
-      return;
-
-    }
-
-
-    players =
-      data.players || [];
-
-
-    updatePlayers();
-
-  }
-);
-
-
-/* =========================================
-   JOIN SUCCESS
-========================================= */
-
-socket.on(
-  "game:joined",
-  function(data){
-
-    if(!data){
-
-      return;
-
-    }
-
-
-    if(
-      data.gameId !==
-      currentGame
-    ){
-
-      return;
-
-    }
-
-
-    const status =
-      document.getElementById(
-        "status"
-      );
-
-    if(status){
-
-      status.textContent =
-        "🎮 You joined the live round!";
-
-    }
-
-
-    const button =
-      document.getElementById(
-        "joinButton"
-      );
-
-    if(button){
-
-      button.disabled =
-        true;
-
-    }
-
-  }
-);
-
-
-/* =========================================
-   RESULT
-========================================= */
-
-socket.on(
-  "game:result",
-  function(data){
-
-    if(!data){
-
-      return;
-
-    }
-
-
-    if(
-      data.gameId !==
-      currentGame
-    ){
-
-      return;
-
-    }
-
-
-    const result =
-      document.getElementById(
-        "result"
-      );
-
-
-    if(result){
-
-      result.style.display =
-        "block";
-
-      result.textContent =
-        "🏆 Winner: " +
-        (
-          data.winnerName ||
-          "Player"
-        ) +
-        " • 🪙 " +
-        Number(
-          data.reward || 0
-        ).toLocaleString(
-          "en-IN"
-        );
-
-    }
-
-
-    /* winner item */
-
-    document
-      .querySelectorAll(
-        ".item"
-      )
-      .forEach(
-        item =>
-          item.classList
-            .remove(
-              "winner"
-            )
-      );
-
-
-    if(
-      typeof data.winnerIndex ===
-      "number"
-    ){
-
-      const winner =
-        document.querySelector(
-          '.item[data-index="' +
-          data.winnerIndex +
-          '"]'
-        );
-
-      if(winner){
-
-        winner.classList
-          .add(
-            "winner"
-          );
-
+    select.addEventListener("change",()=>{
+      if(selectedBets[itemId]){
+        selectedBets[itemId] = Number(select.value);
+        updateTotal();
       }
+    });
 
-    }
+    card.appendChild(icon);
+    card.appendChild(name);
+    card.appendChild(multiplier);
+    card.appendChild(checkbox);
+    card.appendChild(label);
+    card.appendChild(betLabel);
+    card.appendChild(select);
 
+    root.appendChild(card);
+  });
 
-    const status =
-      document.getElementById(
-        "status"
-      );
-
-
-    if(status){
-
-      status.textContent =
-        "🏆 Round finished! Next round starting...";
-
-    }
-
-
-    const join =
-      document.getElementById(
-        "joinButton"
-      );
-
-
-    if(join){
-
-      join.disabled =
-        false;
-
-    }
-
-
-    selectedItem =
-      null;
-
-  }
-);
-
-
-/* =========================================
-   ERROR
-========================================= */
-
-socket.on(
-  "game:error",
-  function(data){
-
-    const status =
-      document.getElementById(
-        "status"
-      );
-
-    if(status){
-
-      status.textContent =
-        "⚠️ " +
-        (
-          data?.message ||
-          "Game error"
-        );
-
-    }
-
-  }
-);
-
-
-/* =========================================
-   TIMER FALLBACK
-========================================= */
-
-function startLocalTimer(){
-
-  stopTimer();
-
-  timerInterval =
-    setInterval(
-      function(){
-
-        if(
-          !currentState ||
-          typeof currentState.remaining !==
-          "number"
-        ){
-
-          return;
-
-        }
-
-
-        if(
-          currentState.remaining <=
-          0
-        ){
-
-          return;
-
-        }
-
-
-        currentState.remaining--;
-
-        const timer =
-          document.getElementById(
-            "timer"
-          );
-
-        if(timer){
-
-          timer.textContent =
-            formatTime(
-              currentState.remaining
-            );
-
-        }
-
-      },
-      1000
-    );
-
+  updateTotal();
 }
 
+function updateTotal(){
+  const total = Object.values(selectedBets)
+    .reduce((sum,amount)=>sum+(Number(amount)||0),0);
 
-function stopTimer(){
+  $("totalBet").textContent = fmt(total) + " coins";
 
-  if(
-    timerInterval
-  ){
+  const canSubmit =
+    socket.connected &&
+    isRoundOpen() &&
+    !myBetsSubmitted &&
+    total > 0 &&
+    total <= myCoins;
 
-    clearInterval(
-      timerInterval
-    );
+  $("joinButton").disabled = !canSubmit;
 
-    timerInterval =
-      null;
-
+  if(total > myCoins){
+    setMessage("Not enough coins for these bets.","error");
+  }else if(!myBetsSubmitted && isRoundOpen()){
+    setMessage("Select your items and submit before the round closes.");
   }
-
 }
 
+/* =====================================
+   SUBMIT MULTIPLE BETS
+   ===================================== */
 
-function formatTime(
-  seconds
-){
+$("joinButton").addEventListener("click",()=>{
+  if(!isRoundOpen()){
+    setMessage("The round is closed. Wait for the next round.","error");
+    return;
+  }
 
-  seconds =
-    Math.max(
+  const bets = Object.entries(selectedBets).map(([itemId,amount])=>({
+    itemId,
+    amount:Number(amount)
+  }));
+
+  if(!bets.length){
+    setMessage("Select at least one item.","error");
+    return;
+  }
+
+  const total = bets.reduce((sum,b)=>sum+b.amount,0);
+
+  if(total > myCoins){
+    setMessage("Not enough coins.","error");
+    return;
+  }
+
+  $("joinButton").disabled = true;
+
+  socket.emit("game:join",{
+    roomId,
+    gameId:currentGame,
+    userId,
+    name:userName,
+    dp:userDp,
+    bets
+  });
+});
+
+/* =====================================
+   ROUND UI
+   ===================================== */
+
+function updateRoundUI(){
+  const state = currentState;
+
+  if(!state || !state.active){
+    $("roundNumber").textContent = "Waiting";
+    $("roundStatus").textContent = "Waiting for a round to start…";
+    $("playerCount").textContent = "0";
+    $("timer").textContent = "--";
+    $("timerBar").style.width = "0%";
+    $("joinButton").disabled = true;
+    return;
+  }
+
+  $("roundNumber").textContent = "#" + state.roundNumber;
+  $("playerCount").textContent = String(state.playerCount || 0);
+
+  if(state.game !== currentGame){
+    $("roundStatus").textContent =
+      "The room's current live game is " + (gameNames[state.game] || state.game) + ".";
+  }else if(state.status === "running"){
+    $("roundStatus").textContent =
+      myBetsSubmitted ? "Your bets are submitted." : "Round is open — submit your bets before time runs out.";
+  }else{
+    $("roundStatus").textContent = "Round finished. Waiting for the next round…";
+  }
+
+  if(state.game === currentGame && Array.isArray(state.items)){
+    currentItems = state.items;
+    renderItems();
+  }
+
+  updateTotal();
+}
+
+function startCountdown(){
+  if(countdownTimer) clearInterval(countdownTimer);
+
+  countdownTimer = setInterval(()=>{
+    if(!currentState || !currentState.active){
+      $("timer").textContent = "--";
+      $("timerBar").style.width = "0%";
+      return;
+    }
+
+    const remaining = Math.max(
       0,
-      Number(seconds) || 0
+      Number(currentState.endAt || 0) - Date.now()
     );
 
+    $("timer").textContent = Math.ceil(remaining/1000) + "s";
 
-  const minutes =
-    Math.floor(
-      seconds / 60
-    );
+    const duration = Math.max(1,Number(currentState.duration)||15000);
+    $("timerBar").style.width =
+      Math.max(0,Math.min(100,remaining/duration*100)) + "%";
 
-
-  const secs =
-    seconds % 60;
-
-
-  return (
-    String(minutes)
-      .padStart(2,"0")
-    +
-    ":"
-    +
-    String(secs)
-      .padStart(2,"0")
-  );
-
+    if(remaining <= 0){
+      $("roundStatus").textContent = "Bets closed — waiting for the server result…";
+      $("joinButton").disabled = true;
+    }
+  },200);
 }
 
+/* =====================================
+   LIVE PLAYER LIST
+   ===================================== */
 
-/* =========================================
-   START
-========================================= */
+function renderPlayers(players){
+  const root = $("players");
+  root.innerHTML = "";
 
-renderTabs();
+  if(!players || !players.length){
+    root.innerHTML = '<div class="muted">No bets submitted yet.</div>';
+    return;
+  }
 
-renderGame();
+  players.forEach(player=>{
+    const row = document.createElement("div");
+    row.className = "player";
+
+    const info = document.createElement("div");
+    info.className = "player-info";
+
+    const name = document.createElement("div");
+    name.className = "player-name";
+    name.textContent = player.name || player.userId || "Player";
+
+    const bets = document.createElement("div");
+    bets.className = "player-bets";
+
+    const playerBets = player.bets || [];
+
+    bets.textContent = playerBets.length
+      ? playerBets.map(b=>
+          (b.itemIcon||"🎁") + " " +
+          (b.itemName||b.itemId) + ": " +
+          fmt(b.amount) + " ×" + b.multiplier
+        ).join(" · ")
+      : "Bets submitted";
+
+    info.appendChild(name);
+    info.appendChild(bets);
+    row.appendChild(info);
+    root.appendChild(row);
+  });
+}
+
+/* =====================================
+   RESULT AND HISTORY
+   ===================================== */
+
+function renderResult(result){
+  if(!result){
+    $("result").textContent = "Waiting for the result…";
+    return;
+  }
+
+  const winner = result.winningItem || {};
+  const winners = result.winners || [];
+
+  $("result").innerHTML = "";
+
+  const headline = document.createElement("div");
+  headline.className = "result-item";
+  headline.textContent =
+    (winner.icon || "🎉") + " " +
+    (winner.name || "Winner") +
+    " — ×" + (winner.multiplier || 1);
+
+  const summary = document.createElement("div");
+  summary.className = "muted";
+  summary.textContent =
+    "Round #" + result.roundNumber +
+    " · " + winners.length + " winning player(s)";
+
+  $("result").appendChild(headline);
+  $("result").appendChild(summary);
+
+  if(!winners.length){
+    const none = document.createElement("p");
+    none.textContent = "No one selected the winning item.";
+    $("result").appendChild(none);
+  }else{
+    winners.forEach(w=>{
+      const row = document.createElement("div");
+      row.className = "history-row";
+      row.textContent =
+        "🏆 " + w.name +
+        " — payout " + fmt(w.payout) +
+        " coins (winning bet " + fmt(w.stake) + ")";
+      $("result").appendChild(row);
+    });
+  }
+
+  const note = document.createElement("div");
+  note.className = "muted";
+  note.style.marginTop = "8px";
+  note.textContent =
+    "Payout is credited by the server. Bets on non-winning items are not refunded.";
+  $("result").appendChild(note);
+}
+
+function addHistory(result){
+  if(!result || !result.winningItem) return;
+
+  latestResult = result;
+
+  const row = document.createElement("div");
+  row.className = "history-row";
+
+  row.textContent =
+    "#" + result.roundNumber + " · " +
+    (result.winningItem.icon || "") + " " +
+    result.winningItem.name +
+    " ×" + result.winningItem.multiplier +
+    " · " + (result.winnerCount || 0) + " winner(s)";
+
+  $("history").prepend(row);
+
+  while($("history").children.length > 20){
+    $("history").lastChild.remove();
+  }
+}
+
+/* =====================================
+   SOCKET EVENTS
+   ===================================== */
+
+socket.on("connect",()=>{
+  setMessage("Connected. Loading your wallet and live round.","success");
+
+  socket.emit("register-user",{
+    userId,
+    name:userName,
+    dp:userDp
+  });
+
+  socket.emit("game:open",{
+    roomId,
+    gameId:currentGame,
+    userId
+  });
+});
+
+socket.on("disconnect",()=>{
+  setMessage("Connection lost. Reconnecting…","error");
+  $("joinButton").disabled = true;
+});
+
+socket.on("registered",data=>{
+  if(data && data.user){
+    updateWallet(data.user.coins);
+  }
+});
+
+socket.on("wallet",data=>{
+  if(data) updateWallet(data.coins);
+});
+
+socket.on("game:open",data=>{
+  if(!data) return;
+
+  if(data.items && data.game === currentGame){
+    currentItems = data.items;
+    renderItems();
+  }
+
+  if(data.game && data.game !== currentGame){
+    $("roundStatus").textContent =
+      "Current live game: " + (gameNames[data.game] || data.game);
+  }
+});
+
+socket.on("game:state",data=>{
+  if(!data) return;
+
+  /*
+    Server sends the same state to every socket
+    joined to this room's live game.
+  */
+  currentState = data;
+
+  if(!data.active){
+    currentItems = [];
+    selectedBets = {};
+    myBetsSubmitted = false;
+    myRoundId = null;
+    renderItems();
+    updateRoundUI();
+    return;
+  }
+
+  if(myRoundId !== data.roundId){
+    myRoundId = data.roundId;
+    myBetsSubmitted = false;
+    selectedBets = {};
+  }
+
+  if(data.game === currentGame && Array.isArray(data.items)){
+    currentItems = data.items;
+  }
+
+  if(data.result){
+    renderResult(data.result);
+  }
+
+  renderPlayers(data.players || []);
+  updateRoundUI();
+});
+
+socket.on("game:players",data=>{
+  if(data && currentState && data.roomId === roomId){
+    renderPlayers(data.players || []);
+  }
+});
+
+socket.on("game:joined",data=>{
+  if(!data || !data.ok) return;
+
+  myBetsSubmitted = true;
+  setMessage(
+    "Bets accepted. Coins deducted: " + fmt(data.totalBet) + ". Good luck!",
+    "success"
+  );
+
+  if(data.wallet){
+    updateWallet(data.wallet.coins);
+  }
+
+  renderItems();
+  updateTotal();
+});
+
+socket.on("game:result",data=>{
+  if(!data || data.roomId !== roomId) return;
+
+  renderResult(data);
+  addHistory(data);
+});
+
+socket.on("game:error",data=>{
+  const message = data && data.message
+    ? data.message
+    : "Game error.";
+
+  setMessage(message,"error");
+  updateTotal();
+});
+
+/* =====================================
+   INITIALIZE
+   ===================================== */
+
+$("gameTitle").textContent = gameNames[currentGame];
+renderItems();
+startCountdown();
+updateRoundUI();
 
 </script>
-
 </body>
 </html>
