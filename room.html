@@ -1,13 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#100d24">
 <title>PawanVoice Room</title>
 
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
 <style>
+:root{
+  --bg:#100d24;
+  --panel:#1d1738;
+  --panel2:#292047;
+  --pink:#ff4eab;
+  --purple:#a66bff;
+  --gold:#ffcf68;
+  --text:#fff;
+  --muted:#b9b0d4;
+  --green:#49e4a4;
+  --danger:#ff5577;
+}
+
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
@@ -15,1453 +29,1393 @@
 
 html,body{
   margin:0;
-  padding:0;
-  width:100%;
   min-height:100%;
-  font-family:Arial,sans-serif;
-  background:#12081f;
-  color:#fff;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
 }
 
 body{
   overflow-x:hidden;
 }
 
-button,
-input,
-select{
+button,input,textarea{
   font:inherit;
 }
 
 button{
-  border:0;
   cursor:pointer;
+  border:0;
+}
+
+button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
 }
 
 .app{
   width:100%;
-  max-width:520px;
-  min-height:100vh;
+  max-width:650px;
   margin:auto;
-  position:relative;
+  min-height:100vh;
+  padding-bottom:90px;
   background:
-    radial-gradient(circle at top,#4c176d 0,#24103d 35%,#12081f 80%);
-  overflow:hidden;
+    radial-gradient(ellipse at top,#37235e 0%,#17102e 42%,#100d24 100%);
 }
 
-/* ================= HEADER ================= */
+/* HEADER */
 
 .header{
-  height:70px;
-  padding:8px 10px;
   display:flex;
   align-items:center;
   gap:9px;
-  background:linear-gradient(90deg,#42106e,#8d1fa7);
+  padding:12px;
+  background:rgba(13,9,29,.94);
   position:sticky;
   top:0;
   z-index:20;
+  border-bottom:1px solid #ffffff14;
 }
 
-.back,
-.head-btn{
+.icon-btn{
   width:38px;
   height:38px;
-  flex:none;
-  border-radius:50%;
-  background:#ffffff20;
-  color:#fff;
+  border-radius:13px;
+  background:#ffffff12;
+  color:white;
+  font-size:20px;
+  flex-shrink:0;
 }
 
-.back{
-  font-size:25px;
+.room-small-dp{
+  width:43px;
+  height:43px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#ff59b9,#8b61ff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  font-size:23px;
+  flex-shrink:0;
 }
 
-.head-btn{
-  font-size:17px;
-}
-
-.room-dp{
-  width:46px;
-  height:46px;
-  flex:none;
-  border-radius:50%;
+.room-small-dp img,
+.room-banner img,
+.avatar img,
+.profile-avatar img{
+  width:100%;
+  height:100%;
   object-fit:cover;
-  border:2px solid #ffd54f;
 }
 
-.room-title{
+.header-info{
   flex:1;
   min-width:0;
 }
 
-.room-title b{
-  display:block;
-  font-size:16px;
-  white-space:nowrap;
+.header-title{
+  font-weight:800;
+  font-size:15px;
   overflow:hidden;
   text-overflow:ellipsis;
+  white-space:nowrap;
 }
 
-.room-title small{
-  color:#ddd;
-  font-size:10px;
-}
-
-/* ================= TOP ================= */
-
-.top-info{
-  padding:10px;
-}
-
-.stats{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:5px;
-  padding:10px 12px;
-  border-radius:14px;
-  background:#ffffff0c;
-  border:1px solid #ffffff12;
-}
-
-.stats span{
+.header-sub{
   font-size:11px;
-  color:#ddd;
+  color:var(--muted);
+  margin-top:5px;
 }
 
-.stats b{
-  color:#fff;
-}
-
-/* ================= BANNER ================= */
-
-.room-banner{
-  margin:0 10px;
-  min-height:68px;
-  border-radius:17px;
-  padding:12px;
+.header-actions{
   display:flex;
-  align-items:center;
-  background:
-    linear-gradient(135deg,#7020b0,#e52c7b);
-  box-shadow:0 8px 25px #0006;
+  gap:5px;
 }
 
-.room-banner b{
+.header-actions button{
+  min-width:36px;
+  height:36px;
+  border-radius:12px;
+  background:#ffffff12;
+  color:white;
   font-size:17px;
 }
 
-.room-banner small{
-  display:block;
-  margin-top:4px;
-  color:#f8dfff;
-}
+/* ROOM BANNER */
 
-/* ================= SEATS ================= */
-
-.seats{
-  padding:15px 10px 6px;
-}
-
-.host-wrap{
-  display:flex;
-  justify-content:center;
-  margin-bottom:14px;
-}
-
-.seat-row{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
-  margin-top:9px;
-}
-
-.seat{
-  width:100%;
-  min-width:0;
-  text-align:center;
+.room-banner{
+  margin:12px;
+  min-height:105px;
+  border-radius:20px;
+  overflow:hidden;
   position:relative;
-  cursor:pointer;
-}
-
-.avatar{
-  width:58px;
-  height:58px;
-  border-radius:50%;
-  object-fit:cover;
-  background:#29133d;
-  border:2px solid #8667ed;
-}
-
-.seat.host .avatar{
-  width:72px;
-  height:72px;
-  border-color:#ffd54f;
-}
-
-.seat.my-seat .avatar{
-  border-color:#00e5ff;
-  box-shadow:0 0 15px #00e5ff77;
-}
-
-.seat-num{
-  position:absolute;
-  top:-3px;
-  left:calc(50% - 31px);
-  background:#000b;
-  padding:2px 6px;
-  border-radius:10px;
-  font-size:8px;
-  z-index:3;
-}
-
-.seat-name{
-  margin-top:4px;
-  font-size:11px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.seat.my-seat .seat-name{
-  color:#00e5ff;
-  font-weight:bold;
-}
-
-.seat-id{
-  display:inline-block;
-  max-width:100%;
-  margin-top:2px;
-  color:#bca9d5;
-  font-size:8px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  cursor:pointer;
-  text-decoration:underline;
-}
-
-.seat-id:hover{
-  color:#ffd54f;
-}
-
-.mic-dot{
-  position:absolute;
-  right:calc(50% - 34px);
-  bottom:30px;
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  background:#25d366;
   display:flex;
   align-items:center;
-  justify-content:center;
-  font-size:10px;
+  padding:15px;
+  gap:13px;
+  background:linear-gradient(125deg,#7139bd,#c73d9a,#412d88);
+  border:1px solid #ffffff20;
 }
 
-.empty .avatar{
-  opacity:.42;
+.banner-image{
+  position:absolute;
+  inset:0;
+  opacity:.25;
 }
 
-/* ================= FEATURES ================= */
-
-.features-box{
-  padding:10px;
-}
-
-.features-button{
+.banner-image img{
   width:100%;
-  min-height:54px;
-  border-radius:16px;
-  color:#fff;
-  background:linear-gradient(135deg,#8e24aa,#e91e63);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 16px;
-  font-weight:bold;
+  height:100%;
+  object-fit:cover;
 }
 
-.features-button .left{
-  display:flex;
-  align-items:center;
-  gap:10px;
+.banner-content{
+  position:relative;
+  z-index:1;
+  flex:1;
+  min-width:0;
 }
 
-.main-icon{
-  font-size:24px;
+.banner-label{
+  font-size:10px;
+  letter-spacing:1.5px;
+  opacity:.85;
 }
 
-.arrow{
-  transition:.2s;
+.banner-title{
+  font-size:20px;
+  font-weight:900;
+  margin-top:7px;
+  overflow-wrap:anywhere;
 }
 
-.features-button.open .arrow{
-  transform:rotate(180deg);
+.banner-sub{
+  margin-top:7px;
+  font-size:12px;
+  color:#fffde8;
 }
 
-.features-panel{
-  display:none;
-  margin-top:8px;
-  padding:9px;
-  border-radius:16px;
-  background:#ffffff09;
-  border:1px solid #ffffff12;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
+.banner-edit{
+  position:relative;
+  z-index:2;
+  padding:9px 11px;
+  border-radius:12px;
+  color:white;
+  background:#ffffff24;
 }
 
-.features-panel.show{
-  display:grid;
-}
-
-.feature-item{
-  min-height:70px;
-  border-radius:13px;
-  background:#ffffff0d;
-  border:1px solid #ffffff10;
-  color:#fff;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-}
-
-.feature-item:active{
-  transform:scale(.94);
-}
-
-.feature-item .ico{
-  font-size:23px;
-  margin-bottom:4px;
-}
-
-.feature-item span{
-  font-size:9px;
-  text-align:center;
-}
-
-/* ================= EXP ================= */
+/* EXP */
 
 .exp-card{
-  margin:5px 10px 12px;
-  padding:12px;
-  border-radius:16px;
-  background:#ffffff08;
-  border:1px solid #ffffff12;
+  margin:0 12px 12px;
+  padding:13px;
+  border-radius:17px;
+  background:linear-gradient(110deg,#38265e,#211a43);
+  border:1px solid #ffffff10;
 }
 
-.exp-head{
+.exp-top{
   display:flex;
   justify-content:space-between;
+  gap:10px;
   font-size:12px;
+  align-items:center;
 }
 
-.exp-bar{
-  height:8px;
-  margin:9px 0;
-  border-radius:10px;
-  background:#ffffff14;
+.exp-top strong{
+  color:var(--gold);
+}
+
+.exp-track{
+  margin-top:10px;
+  height:7px;
+  background:#ffffff15;
+  border-radius:20px;
   overflow:hidden;
 }
 
-.exp-fill{
+.exp-progress{
   height:100%;
-  width:0%;
-  border-radius:10px;
-  background:linear-gradient(90deg,#ffcc33,#ff4d8d);
+  width:25%;
+  background:linear-gradient(90deg,#ff8f47,#ffdc70);
+  border-radius:20px;
 }
 
-.tops{
+/* TOP USERS */
+
+.top-users{
   display:flex;
   justify-content:center;
-  gap:30px;
-  margin-top:10px;
+  gap:24px;
+  padding:8px 12px 15px;
 }
 
 .top-user{
   text-align:center;
-  font-size:9px;
+  width:76px;
 }
 
-.top-user img{
-  width:38px;
-  height:38px;
-  display:block;
+.top-crown{
+  font-size:20px;
+  height:25px;
+}
+
+.top-avatar{
+  width:53px;
+  height:53px;
   margin:auto;
   border-radius:50%;
-  object-fit:cover;
-  border:2px solid #ffd54f;
+  padding:3px;
+  background:linear-gradient(135deg,#ffe69a,#ff62bf,#9c70ff);
+  position:relative;
 }
 
-/* ================= CHAT ================= */
-
-.chat-area{
-  margin:0 10px 78px;
-}
-
-.chat-list{
-  height:190px;
-  overflow-y:auto;
-  padding:9px;
-  border-radius:15px;
-  background:#0004;
-}
-
-.msg{
-  padding:5px 3px;
-  font-size:12px;
-}
-
-.msg b{
-  color:#ffd54f;
-}
-
-.system{
-  color:#bda9ff;
-}
-
-/* ================= BOTTOM ================= */
-
-.bottom{
-  position:fixed;
-  left:50%;
-  bottom:0;
-  transform:translateX(-50%);
+.top-avatar .avatar{
   width:100%;
-  max-width:520px;
-  padding:8px;
+  height:100%;
+  border:2px solid var(--bg);
+}
+
+.top-name{
+  font-size:11px;
+  margin-top:7px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.top-score{
+  font-size:10px;
+  color:var(--gold);
+  margin-top:4px;
+}
+
+/* SECTION */
+
+.section-title{
+  padding:5px 14px 12px;
   display:flex;
-  gap:6px;
-  z-index:30;
-  background:#170b29ee;
-  backdrop-filter:blur(12px);
+  align-items:center;
+  justify-content:space-between;
+}
+
+.section-title strong{
+  font-size:15px;
+}
+
+.section-title span{
+  font-size:11px;
+  color:var(--muted);
+}
+
+/* SEATS */
+
+.seats-container{
+  padding:0 9px 14px;
+}
+
+.seat-owner-row{
+  display:flex;
+  justify-content:center;
+  margin-bottom:13px;
+}
+
+.seats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px 4px;
+}
+
+.seat{
+  min-width:0;
+  text-align:center;
+  position:relative;
+  padding:0 2px;
+}
+
+.avatar-wrap{
+  width:61px;
+  height:61px;
+  max-width:100%;
+  margin:auto;
+  position:relative;
+}
+
+.seat.owner .avatar-wrap{
+  width:75px;
+  height:75px;
+}
+
+.avatar{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  background:linear-gradient(140deg,#9e63ed,#ef60b2);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+  font-size:25px;
+  border:2px solid #ffffff25;
+}
+
+.seat.occupied .avatar{
+  border-color:#ffcf76;
+}
+
+.seat.owner .avatar{
+  border:3px solid var(--gold);
+  box-shadow:0 0 16px #ffcf7635;
+}
+
+.seat-number{
+  position:absolute;
+  left:-3px;
+  bottom:0;
+  background:#57447d;
+  border:1px solid #ffffff30;
+  color:white;
+  font-size:10px;
+  min-width:20px;
+  height:20px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  border-radius:50%;
+}
+
+.mic-badge{
+  position:absolute;
+  right:-3px;
+  bottom:0;
+  min-width:21px;
+  height:21px;
+  border-radius:50%;
+  background:#302447;
+  border:1px solid #ffffff20;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+}
+
+.mic-badge.active{
+  background:#138d64;
+}
+
+.seat-name{
+  margin-top:7px;
+  font-size:11px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.seat-level{
+  margin-top:4px;
+  font-size:9px;
+  color:var(--gold);
+}
+
+.seat-action{
+  margin-top:6px;
+  padding:5px 9px;
+  border-radius:10px;
+  background:#ffffff12;
+  color:#fff;
+  font-size:10px;
+}
+
+.owner-tag{
+  position:absolute;
+  top:-8px;
+  right:-8px;
+  background:linear-gradient(90deg,#ffcc69,#ff8e52);
+  color:#4a2147;
+  font-weight:900;
+  font-size:9px;
+  border-radius:8px;
+  padding:3px 6px;
+}
+
+/* FEATURES */
+
+.features{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:9px 6px;
+  padding:8px 12px 16px;
+}
+
+.feature{
+  min-width:0;
+  background:linear-gradient(145deg,#30224d,#201938);
+  border:1px solid #ffffff0e;
+  border-radius:15px;
+  padding:12px 3px 10px;
+  color:white;
+  text-align:center;
+  min-height:82px;
+}
+
+.feature-icon{
+  font-size:25px;
+  margin-bottom:7px;
+}
+
+.feature-name{
+  font-size:10px;
+  line-height:1.25;
+  overflow-wrap:anywhere;
+}
+
+.feature.highlight{
+  background:linear-gradient(145deg,#7a3ea8,#4b2e88);
+}
+
+/* CHAT */
+
+.chat-panel{
+  margin:0 12px;
+  padding:12px;
+  border-radius:18px;
+  background:#1a1530d9;
+  border:1px solid #ffffff10;
+}
+
+.chat-heading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-weight:800;
+  font-size:13px;
+  margin-bottom:10px;
+}
+
+.chat-heading button{
+  color:white;
+  background:#ffffff12;
+  border-radius:10px;
+  padding:7px 10px;
+}
+
+.chat-messages{
+  height:155px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  padding:3px 0;
+  scrollbar-width:thin;
+}
+
+.chat-message{
+  font-size:12px;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+
+.chat-message .chat-name{
+  color:#e4a6ff;
+  font-weight:800;
+  margin-right:5px;
+}
+
+.chat-message .chat-text{
+  color:#fff;
+}
+
+.chat-message.system{
+  color:#ffd777;
+}
+
+.chat-message.gift-message{
+  color:#ff9acb;
+}
+
+.chat-input-row{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-top:12px;
 }
 
 .chat-input{
   flex:1;
   min-width:0;
-}
-
-.chat-input input{
-  width:100%;
-  height:43px;
-  padding:0 14px;
+  padding:12px;
+  background:#ffffff0d;
+  color:white;
+  border:1px solid #ffffff17;
+  border-radius:13px;
   outline:none;
-  color:#fff;
-  border-radius:22px;
-  border:1px solid #ffffff18;
-  background:#ffffff12;
 }
 
-.control{
-  width:43px;
-  height:43px;
-  flex:none;
-  border-radius:50%;
-  color:#fff;
-  background:#ffffff12;
-  font-size:17px;
+.chat-input::placeholder{
+  color:#aaa0c3;
 }
 
-.control.active{
-  background:#8e24aa;
+.chat-send{
+  padding:12px 15px;
+  color:white;
+  background:linear-gradient(100deg,#a452f3,#ed4ba9);
+  border-radius:13px;
+  font-weight:800;
 }
 
-.send{
-  background:#e91e63;
+.small-control{
+  padding:10px;
+  background:#ffffff10;
+  border-radius:12px;
+  color:white;
 }
 
-/* ================= MODAL ================= */
+/* EMOJI */
+
+.emoji-panel{
+  display:none;
+  margin-top:10px;
+  padding:10px;
+  border-radius:13px;
+  background:#2a2044;
+}
+
+.emoji-panel.open{
+  display:block;
+}
+
+.emoji-grid{
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  gap:6px;
+}
+
+.emoji-grid button{
+  background:transparent;
+  color:white;
+  padding:7px 0;
+  font-size:22px;
+}
+
+/* BOTTOM BAR */
+
+.bottom-bar{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:650px;
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  gap:5px;
+  padding:10px 7px calc(10px + env(safe-area-inset-bottom));
+  background:#110d24f5;
+  border-top:1px solid #ffffff18;
+  z-index:30;
+  backdrop-filter:blur(14px);
+}
+
+.bottom-btn{
+  min-width:0;
+  flex:1;
+  color:white;
+  background:transparent;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  font-size:20px;
+  padding:3px 1px;
+}
+
+.bottom-btn span{
+  font-size:9px;
+  white-space:nowrap;
+}
+
+.bottom-btn.active{
+  color:#ff9cdd;
+}
+
+.bottom-btn.mic-on{
+  color:var(--green);
+}
+
+/* MODALS */
 
 .modal{
+  display:none;
   position:fixed;
   inset:0;
-  display:none;
+  z-index:100;
+  background:#05030bc9;
   align-items:flex-end;
   justify-content:center;
-  z-index:100;
-  background:#000b;
+  padding:12px;
 }
 
 .modal.show{
   display:flex;
 }
 
-.sheet{
+.modal-card{
   width:100%;
-  max-width:520px;
-  max-height:90vh;
-  overflow-y:auto;
-  padding:16px;
-  border-radius:22px 22px 0 0;
-  background:linear-gradient(180deg,#32104e,#16091f);
+  max-width:600px;
+  max-height:88vh;
+  overflow:auto;
+  background:linear-gradient(155deg,#30234d,#171129);
+  border:1px solid #ffffff18;
+  border-radius:23px;
+  padding:17px;
+  box-shadow:0 15px 50px #0008;
 }
 
-.sheet-head{
+.modal-head{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin-bottom:12px;
+  gap:10px;
+  margin-bottom:15px;
 }
 
-.sheet-head h3{
+.modal-head h3{
+  font-size:17px;
   margin:0;
 }
 
-.close{
+.close-btn{
+  background:#ffffff15;
+  color:white;
   width:34px;
   height:34px;
-  border-radius:50%;
-  color:#fff;
-  background:#ffffff15;
+  border-radius:11px;
+  font-size:20px;
 }
 
 .field{
-  margin:9px 0;
+  margin-bottom:13px;
 }
 
 .field label{
   display:block;
-  margin-bottom:5px;
-  color:#bbb;
   font-size:12px;
+  color:#d7cce9;
+  margin-bottom:7px;
 }
 
 .field input,
+.field textarea,
 .field select{
   width:100%;
-  height:44px;
-  padding:0 12px;
-  outline:none;
-  color:#fff;
-  border-radius:11px;
   border:1px solid #ffffff18;
-  background:#ffffff10;
+  border-radius:12px;
+  background:#ffffff0b;
+  color:white;
+  padding:12px;
+  outline:none;
 }
 
 .field select option{
-  color:#000;
+  background:#241b3e;
+  color:white;
 }
 
-.field input[type=file]{
-  padding:10px;
+.field textarea{
+  min-height:80px;
+  resize:vertical;
 }
 
-.primary,
-.secondary{
+.primary-btn{
   width:100%;
-  height:44px;
+  padding:13px;
+  border-radius:13px;
+  color:white;
+  font-weight:800;
+  background:linear-gradient(100deg,#9d4ff0,#ed4fa9);
+}
+
+.secondary-btn{
+  padding:11px 14px;
   border-radius:12px;
-  color:#fff;
-  font-weight:bold;
-}
-
-.primary{
-  background:#e91e63;
-}
-
-.secondary{
-  margin-top:7px;
   background:#ffffff12;
+  color:white;
 }
 
-/* ================= USER PROFILE ================= */
+.button-row{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
 
-.profile-card{
+.button-row button{
+  flex:1;
+}
+
+.profile-top{
   text-align:center;
-  padding:5px 5px 14px;
+  padding:12px 0 18px;
 }
 
-.profile-avatar-wrap{
-  position:relative;
-  display:inline-block;
-}
-
-.profile-card img{
-  width:92px;
-  height:92px;
-  object-fit:cover;
+.profile-avatar{
+  width:90px;
+  height:90px;
   border-radius:50%;
-  border:3px solid #ffd54f;
+  background:linear-gradient(130deg,#b24fff,#ff4fa7);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:40px;
+  overflow:hidden;
+  margin:0 auto 12px;
+  border:3px solid var(--gold);
 }
 
-.profile-name{
-  margin-top:8px;
-  font-size:20px;
-  font-weight:bold;
+.profile-top h2{
+  margin:5px 0;
+  font-size:19px;
 }
 
 .profile-id{
-  margin-top:4px;
-  color:#bbb;
-  font-size:11px;
-}
-
-.profile-id-btn{
-  display:inline-block;
-  margin-top:5px;
-  padding:5px 10px;
-  color:#ffd54f;
-  border-radius:15px;
-  background:#ffffff0d;
-  cursor:pointer;
-}
-
-.profile-level{
-  margin-top:8px;
-  color:#ddd;
-  font-size:11px;
+  color:#d1c3eb;
+  font-size:12px;
 }
 
 .profile-stats{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:6px;
-  margin-top:12px;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin:14px 0;
 }
 
-.profile-stat{
-  padding:9px 3px;
-  border-radius:11px;
+.stat{
   background:#ffffff0d;
+  padding:12px 4px;
+  text-align:center;
+  border-radius:12px;
 }
 
-.profile-stat b{
+.stat strong{
+  display:block;
+  font-size:16px;
+}
+
+.stat span{
+  font-size:10px;
+  color:#c5b7df;
+  margin-top:5px;
+  display:block;
+}
+
+.gift-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:9px;
+}
+
+.gift-item{
+  background:#ffffff0c;
+  border:1px solid #ffffff12;
+  color:white;
+  border-radius:13px;
+  padding:11px 3px;
+  text-align:center;
+}
+
+.gift-item.selected{
+  border-color:#ff8cd5;
+  background:#b3439633;
+}
+
+.gift-icon{
+  font-size:29px;
+}
+
+.gift-name{
+  font-size:10px;
+  margin-top:6px;
+  overflow-wrap:anywhere;
+}
+
+.gift-price{
+  color:var(--gold);
+  font-size:10px;
+  margin-top:5px;
+}
+
+.gift-target{
+  width:100%;
+  background:#ffffff0d;
+  color:white;
+  border-radius:12px;
+  padding:11px;
+  margin:12px 0;
+}
+
+.info-box{
+  background:#ffffff0b;
+  border-radius:14px;
+  padding:13px;
+  margin-bottom:10px;
+  font-size:13px;
+  line-height:1.7;
+  overflow-wrap:anywhere;
+}
+
+.setting-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+
+.setting-tile{
+  padding:13px;
+  background:#ffffff0c;
+  color:white;
+  border-radius:13px;
+  text-align:left;
+}
+
+.setting-tile strong{
   display:block;
   font-size:13px;
 }
 
-.profile-stat span{
-  color:#aaa;
-  font-size:8px;
-}
-
-.profile-feature-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:7px;
-  margin-top:12px;
-}
-
-.profile-feature{
-  min-height:65px;
-  padding:6px 3px;
-  border-radius:12px;
-  color:#fff;
-  background:#ffffff0d;
-  border:1px solid #ffffff10;
-}
-
-.profile-feature .pf-icon{
+.setting-tile span{
   display:block;
-  font-size:23px;
+  font-size:11px;
+  color:#c3b6db;
+  margin-top:5px;
 }
-
-.profile-feature small{
-  font-size:8px;
-  color:#ddd;
-}
-
-.profile-actions{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:7px;
-  margin-top:12px;
-}
-
-.profile-actions button{
-  min-height:40px;
-  border-radius:10px;
-  color:#fff;
-  background:#ffffff12;
-  font-size:10px;
-}
-
-/* ================= GIFTS ================= */
-
-.gifts-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:7px;
-}
-
-.gift{
-  padding:8px;
-  text-align:center;
-  border-radius:12px;
-  background:#ffffff0d;
-  border:1px solid #ffffff10;
-}
-
-.gift-icon{
-  font-size:27px;
-}
-
-.gift-name{
-  margin-top:3px;
-  font-size:9px;
-}
-
-.gift-price{
-  margin-top:3px;
-  color:#ffd54f;
-  font-size:9px;
-}
-
-/* ================= OPTIONS ================= */
-
-.option-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:9px;
-}
-
-.option{
-  padding:13px 5px;
-  text-align:center;
-  border-radius:13px;
-  background:#ffffff0d;
-}
-
-.option div{
-  margin-bottom:5px;
-  font-size:25px;
-}
-
-/* ================= DP ================= */
-
-.dp-upload{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin:8px 0 12px;
-}
-
-.dp-preview{
-  width:100px;
-  height:100px;
-  object-fit:cover;
-  border-radius:50%;
-  border:3px solid #ffd54f;
-}
-
-/* ================= TOAST ================= */
 
 .toast{
   position:fixed;
   left:50%;
-  bottom:75px;
+  bottom:95px;
   transform:translateX(-50%);
-  display:none;
   z-index:200;
-  padding:10px 15px;
-  border-radius:20px;
-  background:#000e;
+  background:#35264e;
+  border:1px solid #ffffff25;
+  padding:12px 16px;
+  border-radius:13px;
   font-size:12px;
+  max-width:90%;
+  text-align:center;
+  display:none;
 }
 
 .toast.show{
   display:block;
 }
 
-/* ================= EMOJI ================= */
-
-.emoji-panel{
-  display:none;
-  position:fixed;
-  left:50%;
-  bottom:60px;
-  transform:translateX(-50%);
-  width:100%;
-  max-width:520px;
-  padding:10px;
-  z-index:50;
-  background:#251035;
-  border-top:1px solid #ffffff15;
+.connection-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#ff536f;
+  display:inline-block;
+  margin-right:5px;
 }
 
-.emoji-panel.show{
-  display:block;
+.connection-dot.connected{
+  background:#47e2a1;
 }
 
-.emoji-list{
-  display:grid;
-  grid-template-columns:repeat(8,1fr);
-  gap:5px;
+.empty-note{
+  color:#b8aacf;
+  font-size:12px;
+  text-align:center;
+  padding:12px;
 }
 
-.emoji-list button{
-  height:38px;
-  color:#fff;
-  border-radius:9px;
-  background:#ffffff0d;
-}
-
-/* ================= MOBILE ================= */
-
-@media(max-width:380px){
-  .profile-feature-grid{
-    grid-template-columns:repeat(3,1fr);
+@media(max-width:360px){
+  .features{
+    grid-template-columns:repeat(3,minmax(0,1fr));
   }
 
-  .control{
-    width:39px;
+  .avatar-wrap{
+    width:52px;
+    height:52px;
   }
 
-  .bottom{
-    gap:4px;
+  .seat.owner .avatar-wrap{
+    width:68px;
+    height:68px;
+  }
+
+  .top-users{
+    gap:14px;
+  }
+
+  .gift-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+
+  .header{
+    gap:6px;
+    padding:9px;
+  }
+
+  .header-actions button{
+    min-width:31px;
   }
 }
 </style>
 </head>
 
 <body>
-
 <div class="app">
 
-<!-- ================= HEADER ================= -->
+  <!-- HEADER -->
+  <header class="header">
+    <button class="icon-btn" id="backBtn" aria-label="Back">‹</button>
 
-<header class="header">
+    <div class="room-small-dp" id="headerRoomDp">🎙️</div>
 
-  <button class="back" onclick="goBack()">‹</button>
-
-  <img
-    id="roomDp"
-    class="room-dp"
-    src="https://i.pravatar.cc/200?img=12"
-    onclick="openRoomInfo()">
-
-  <div class="room-title">
-    <b id="roomName">PawanVoice Room</b>
-    <small>
-      ID:
-      <span id="roomIdText">200001</span>
-    </small>
-  </div>
-
-  <button class="head-btn" onclick="inviteRoom()">📨</button>
-
-  <button class="head-btn" onclick="openRoomSettings()">⚙️</button>
-
-</header>
-
-<!-- ================= TOP INFO ================= -->
-
-<div class="top-info">
-
-  <div class="stats">
-
-    <span>
-      👥
-      <b id="onlineCount">0/9</b>
-    </span>
-
-    <span>
-      🎤
-      <b id="voiceStatus">Ready</b>
-    </span>
-
-    <span>
-      ⭐
-      <b id="roomLevel">1</b>
-    </span>
-
-  </div>
-
-</div>
-
-<!-- ================= ROOM BANNER ================= -->
-
-<div class="room-banner">
-
-  <div>
-
-    <b id="bannerName">Welcome to PawanVoice</b>
-
-    <small id="bannerSub">
-      Have fun • Make friends • Enjoy voice chat
-    </small>
-
-  </div>
-
-</div>
-
-<!-- ================= 9 SEATS ================= -->
-
-<section class="seats">
-
-  <!-- HOST -->
-
-  <div class="host-wrap">
-
-    <div
-      id="seat0"
-      class="seat host empty"
-      onclick="seatClick(0)">
-
-      <span class="seat-num">HOST</span>
-
-      <img
-        class="avatar"
-        src="https://i.pravatar.cc/150?img=12">
-
-      <div class="seat-name">Empty</div>
-
-      <div class="seat-id" onclick="event.stopPropagation()">
-        ID: —
+    <div class="header-info">
+      <div class="header-title" id="headerRoomName">PawanVoice Room</div>
+      <div class="header-sub">
+        ID: <span id="headerRoomId">PV100</span>
+        ·
+        <span id="onlineCount">1</span> online
       </div>
-
-      <span class="mic-dot">🎙</span>
-
     </div>
 
+    <div class="header-actions">
+      <button id="shareBtn" title="Share">↗</button>
+      <button id="roomInfoBtn" title="Room information">ⓘ</button>
+      <button id="roomSettingsBtn" title="Settings">⚙</button>
+    </div>
+  </header>
+
+  <!-- ROOM BANNER -->
+  <section class="room-banner">
+    <div class="banner-image" id="bannerImage"></div>
+
+    <div class="banner-content">
+      <div class="banner-label">✦ PAWANVOICE ✦</div>
+      <div class="banner-title" id="bannerRoomName">Welcome to the Room</div>
+      <div class="banner-sub">
+        🎙️ Voice · 💬 Chat · 🎁 Gifts
+      </div>
+    </div>
+
+    <button class="banner-edit" id="bannerEditBtn">✎ Edit</button>
+  </section>
+
+  <!-- EXP -->
+  <section class="exp-card">
+    <div class="exp-top">
+      <span>🚀 Room EXP</span>
+      <strong id="roomExpText">Level 1 · 0 EXP</strong>
+    </div>
+    <div class="exp-track">
+      <div class="exp-progress" id="roomExpProgress"></div>
+    </div>
+  </section>
+
+  <!-- TOP USERS -->
+  <section class="top-users" id="topUsers">
+    <div class="top-user">
+      <div class="top-crown">👑</div>
+      <div class="top-avatar"><div class="avatar">🎙️</div></div>
+      <div class="top-name">Room Host</div>
+      <div class="top-score">⭐ 0</div>
+    </div>
+    <div class="top-user">
+      <div class="top-crown">🥈</div>
+      <div class="top-avatar"><div class="avatar">🙂</div></div>
+      <div class="top-name">Guest</div>
+      <div class="top-score">⭐ 0</div>
+    </div>
+    <div class="top-user">
+      <div class="top-crown">🥉</div>
+      <div class="top-avatar"><div class="avatar">😊</div></div>
+      <div class="top-name">Guest</div>
+      <div class="top-score">⭐ 0</div>
+    </div>
+  </section>
+
+  <!-- SEATS -->
+  <div class="section-title">
+    <strong>🎙️ Voice Seats</strong>
+    <span id="seatCount">0 / 9 occupied</span>
   </div>
 
-  <!-- ROW 1 -->
+  <section class="seats-container">
+    <div class="seat-owner-row" id="ownerSeat"></div>
+    <div class="seats-grid" id="seatsGrid"></div>
+  </section>
 
-  <div class="seat-row">
-
-    <div
-      id="seat1"
-      class="seat empty"
-      onclick="seatClick(1)">
-
-      <span class="seat-num">1</span>
-      <img class="avatar" src="https://i.pravatar.cc/150?img=1">
-      <div class="seat-name">Empty</div>
-      <div class="seat-id">ID: —</div>
-      <span class="mic-dot">🎙</span>
-
-    </div>
-
-    <div
-      id="seat2"
-      class="seat empty"
-      onclick="seatClick(2)">
-
-      <span class="seat-num">2</span>
-      <img class="avatar" src="https://i.pravatar.cc/150?img=2">
-      <div class="seat-name">Empty</div>
-      <div class="seat-id">ID: —</div>
-      <span class="mic-dot">🎙</span>
-
-    </div>
-
-    <div
-      id="seat3"
-      class="seat empty"
-      onclick="seatClick(3)">
-
-      <span class="seat-num">3</span>
-      <img class="avatar" src="https://i.pravatar.cc/150?img=3">
-      <div class="seat-name">Empty</div>
-      <div class="seat-id">ID: —</div>
-      <span class="mic-dot">🎙</span>
-
-    </div>
-
-    <div
-      id="seat4"
-      class="seat empty"
-      onclick="seatClick(4)">
-
-      <span class="seat-num">4</span>
-      <img class="avatar" src="https://i.pravatar.cc/150?img=4">
-      <div class="seat-name">Empty</div>
-      <div class="seat-id">ID: —</div>
-      <span class="mic-dot">🎙</span>
-
-    </div>
-
+  <!-- FEATURES -->
+  <div class="section-title">
+    <strong>✨ Room Features</strong>
+    <span>Explore</span>
   </div>
 
-  <!-- ROW 2 -->
+  <section class="features">
+    <button class="feature highlight" data-feature="support">
+      <div class="feature-icon">💖</div>
+      <div class="feature-name">Room Support</div>
+    </button>
 
-  <div class="seat-row">
+    <button class="feature" data-feature="wheel">
+      <div class="feature-icon">🎡</div>
+      <div class="feature-name">Lucky Wheel</div>
+    </button>
 
-    <div
-      id="seat5"
-      class="seat empty"
-      onclick="seatClick(5)">
+    <button class="feature" data-feature="bounty">
+      <div class="feature-icon">🎯</div>
+      <div class="feature-name">Bounty Hunter</div>
+    </button>
 
-      <span class="seat-num">5</span>
-      <img class="avatar" src="https://i.pravatar.cc/150?img=5">
-      <div class="seat-name">Empty</div>
-      <div class="seat-id">ID: —</div>
-      <span class="mic-dot">🎙</span>
+    <button class="feature" data-feature="reward">
+      <div class="feature-icon">🎁</div>
+      <div class="feature-name">Room Reward</div>
+    </button>
 
+    <button class="feature" data-feature="daily">
+      <div class="feature-icon">📅</div>
+      <div class="feature-name">Daily Reward</div>
+    </button>
+
+    <button class="feature" data-feature="games">
+      <div class="feature-icon">🎮</div>
+      <div class="feature-name">Games</div>
+    </button>
+
+    <button class="feature" data-feature="exclusive">
+      <div class="feature-icon">👑</div>
+      <div class="feature-name">Exclusive Benefits</div>
+    </button>
+
+    <button class="feature highlight" id="openGiftsFeature">
+      <div class="feature-icon">🎁</div>
+      <div class="feature-name">Send Gifts</div>
+    </button>
+
+    <button class="feature" data-feature="invite">
+      <div class="feature-icon">👥</div>
+      <div class="feature-name">Invite Friends</div>
+    </button>
+
+    <button class="feature" data-feature="ranking">
+      <div class="feature-icon">🏆</div>
+      <div class="feature-name">Room Ranking</div>
+    </button>
+
+    <button class="feature" data-feature="cp">
+      <div class="feature-icon">💑</div>
+      <div class="feature-name">CP Space</div>
+    </button>
+
+    <button class="feature" data-feature="members">
+      <div class="feature-icon">👤</div>
+      <div class="feature-name">Room Members</div>
+    </button>
+  </section>
+
+  <!-- CHAT -->
+  <section class="chat-panel">
+    <div class="chat-heading">
+      <span>💬 Room Chat</span>
+      <button id="clearChatBtn">Clear view</button>
     </div>
 
-    <div
-      id="seat6"
-      class="seat empty"
-      onclick="seatClick(6)">
-
-      <span class="seat-num">6</span>
-      <img class="avatar" src="https://i.pravatar.cc/150?img=6">
-      <div class="seat-name">Empty</div>
-      <div class="seat-id">ID: —</div>
-      <span class="mic-dot">🎙</span>
-
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-message system">
+        PawanVoice Room में आपका स्वागत है।
+      </div>
     </div>
 
-    <div
-      id="seat7"
-      class="seat empty"
-      onclick="seatClick(7)">
-
-      <span class="seat-num">7</span>
-      <img class="avatar" src="https://i.pravatar.cc/150?img=7">
-      <div class="seat-name">Empty</div>
-      <div class="seat-id">ID: —</div>
-      <span class="mic-dot">🎙</span>
-
+    <div class="emoji-panel" id="emojiPanel">
+      <div class="emoji-grid" id="emojiGrid"></div>
     </div>
 
-    <div
-      id="seat8"
-      class="seat empty"
-      onclick="seatClick(8)">
-
-      <span class="seat-num">8</span>
-      <img class="avatar" src="https://i.pravatar.cc/150?img=8">
-      <div class="seat-name">Empty</div>
-      <div class="seat-id">ID: —</div>
-      <span class="mic-dot">🎙</span>
-
+    <div class="chat-input-row">
+      <button class="small-control" id="emojiToggle" title="Emoji">😊</button>
+      <input
+        class="chat-input"
+        id="chatInput"
+        type="text"
+        maxlength="1000"
+        placeholder="Message लिखें..."
+        autocomplete="off"
+      >
+      <button class="chat-send" id="sendChatBtn">Send</button>
     </div>
+  </section>
 
-  </div>
+</div>
 
-</section>
-
-<!-- ================= FEATURES ================= -->
-
-<div class="features-box">
-
-  <button
-    id="featuresButton"
-    class="features-button"
-    onclick="toggleRoomFeatures()">
-
-    <div class="left">
-      <span class="main-icon">✨</span>
-      <span>Room Features</span>
-    </div>
-
-    <span class="arrow">▼</span>
-
+<!-- BOTTOM CONTROLS -->
+<nav class="bottom-bar">
+  <button class="bottom-btn" id="micBtn">
+    <b id="micIcon">🎙️</b>
+    <span id="micLabel">Mic Off</span>
   </button>
 
-  <div
-    id="featuresPanel"
-    class="features-panel">
-
-    <button class="feature-item" onclick="roomSupport()">
-      <div class="ico">💜</div>
-      <span>Room Support</span>
-    </button>
-
-    <button class="feature-item" onclick="luckyWheel()">
-      <div class="ico">🎡</div>
-      <span>Lucky Wheel</span>
-    </button>
-
-    <button class="feature-item" onclick="bountyHunter()">
-      <div class="ico">🎯</div>
-      <span>Bounty Hunter</span>
-    </button>
-
-    <button class="feature-item" onclick="roomReward()">
-      <div class="ico">🎁</div>
-      <span>Room Reward</span>
-    </button>
-
-    <button class="feature-item" onclick="dailyReward()">
-      <div class="ico">📅</div>
-      <span>Daily Reward</span>
-    </button>
-
-    <button class="feature-item" onclick="openGames()">
-      <div class="ico">🎮</div>
-      <span>Games</span>
-    </button>
-
-    <button class="feature-item" onclick="openExclusive()">
-      <div class="ico">👑</div>
-      <span>Exclusive</span>
-    </button>
-
-    <button class="feature-item" onclick="openGifts()">
-      <div class="ico">🎀</div>
-      <span>Gifts</span>
-    </button>
-
-    <button class="feature-item" onclick="inviteRoom()">
-      <div class="ico">📨</div>
-      <span>Invite</span>
-    </button>
-
-    <button class="feature-item" onclick="openRoomInfo()">
-      <div class="ico">ℹ️</div>
-      <span>Room Info</span>
-    </button>
-
-  </div>
-
-</div>
-
-<!-- ================= EXP ================= -->
-
-<div class="exp-card">
-
-  <div class="exp-head">
-    <b>🚀 Room EXP</b>
-    <span id="roomExpText">0 EXP</span>
-  </div>
-
-  <div class="exp-bar">
-    <div id="roomExpFill" class="exp-fill"></div>
-  </div>
-
-  <div class="tops">
-
-    <div class="top-user">
-      <img id="top1dp" src="https://i.pravatar.cc/100?img=11">
-      <span id="top1name">TOP 1</span>
-    </div>
-
-    <div class="top-user">
-      <img id="top2dp" src="https://i.pravatar.cc/100?img=12">
-      <span id="top2name">TOP 2</span>
-    </div>
-
-    <div class="top-user">
-      <img id="top3dp" src="https://i.pravatar.cc/100?img=13">
-      <span id="top3name">TOP 3</span>
-    </div>
-
-  </div>
-
-</div>
-
-<!-- ================= CHAT ================= -->
-
-<div class="chat-area">
-
-  <div id="chatList" class="chat-list"></div>
-
-</div>
-
-<!-- ================= EMOJI ================= -->
-
-<div id="emojiPanel" class="emoji-panel">
-
-  <div class="emoji-list">
-
-    <button onclick="addEmoji('😀')">😀</button>
-    <button onclick="addEmoji('😂')">😂</button>
-    <button onclick="addEmoji('😍')">😍</button>
-    <button onclick="addEmoji('😘')">😘</button>
-    <button onclick="addEmoji('🥰')">🥰</button>
-    <button onclick="addEmoji('❤️')">❤️</button>
-    <button onclick="addEmoji('💖')">💖</button>
-    <button onclick="addEmoji('🔥')">🔥</button>
-    <button onclick="addEmoji('🎉')">🎉</button>
-    <button onclick="addEmoji('😂')">🤣</button>
-    <button onclick="addEmoji('👍')">👍</button>
-    <button onclick="addEmoji('👏')">👏</button>
-    <button onclick="addEmoji('🥳')">🥳</button>
-    <button onclick="addEmoji('😎')">😎</button>
-    <button onclick="addEmoji('💯')">💯</button>
-    <button onclick="addEmoji('🎁')">🎁</button>
-
-  </div>
-
-</div>
-
-<!-- ================= BOTTOM ================= -->
-
-<div class="bottom">
-
-  <div class="chat-input">
-
-    <input
-      id="chatInput"
-      placeholder="Say something..."
-      onkeydown="if(event.key==='Enter')sendChat()">
-
-  </div>
-
-  <button class="control" onclick="toggleEmoji()">😊</button>
-
-  <button
-    id="micBtn"
-    class="control"
-    onclick="toggleMic()">
-    🎙
+  <button class="bottom-btn" id="speakerBtn">
+    <b id="speakerIcon">🔊</b>
+    <span id="speakerLabel">Speaker</span>
   </button>
 
-  <button
-    id="speakerBtn"
-    class="control active"
-    onclick="toggleSpeaker()">
-    🔊
+  <button class="bottom-btn" id="takeSeatBtn">
+    <b>🪑</b>
+    <span id="seatActionLabel">Take Seat</span>
   </button>
 
-  <button class="control" onclick="openGifts()">🎁</button>
+  <button class="bottom-btn" id="bottomGiftBtn">
+    <b>🎁</b>
+    <span>Gifts</span>
+  </button>
 
-  <button class="control send" onclick="sendChat()">➤</button>
+  <button class="bottom-btn" id="bottomMoreBtn">
+    <b>☰</b>
+    <span>More</span>
+  </button>
+</nav>
 
-</div>
-
-</div>
-
-<!-- ===================================================== -->
 <!-- PROFILE MODAL -->
-<!-- ===================================================== -->
-
-<div
-  id="profileModal"
-  class="modal"
-  onclick="outsideClose(event,'profileModal')">
-
-  <div class="sheet">
-
-    <div class="sheet-head">
-
+<div class="modal" id="profileModal">
+  <div class="modal-card">
+    <div class="modal-head">
       <h3>👤 User Profile</h3>
-
-      <button
-        class="close"
-        onclick="closeModal('profileModal')">
-        ×
-      </button>
-
+      <button class="close-btn" data-close="profileModal">×</button>
     </div>
 
-    <div id="profileContent"></div>
-
-  </div>
-
-</div>
-
-<!-- ===================================================== -->
-<!-- FEATURE MODAL -->
-<!-- ===================================================== -->
-
-<div
-  id="featureModal"
-  class="modal"
-  onclick="outsideClose(event,'featureModal')">
-
-  <div class="sheet">
-
-    <div class="sheet-head">
-
-      <h3 id="featureTitle">Feature</h3>
-
-      <button
-        class="close"
-        onclick="closeModal('featureModal')">
-        ×
-      </button>
-
+    <div class="profile-top">
+      <div class="profile-avatar" id="profileAvatar">🙂</div>
+      <h2 id="profileName">Guest</h2>
+      <div class="profile-id">ID: <span id="profileId">100052</span></div>
     </div>
 
-    <div id="featureContent"></div>
-
-  </div>
-
-</div>
-
-<!-- ===================================================== -->
-<!-- ROOM SETTINGS -->
-<!-- ===================================================== -->
-
-<div
-  id="settingsModal"
-  class="modal"
-  onclick="outsideClose(event,'settingsModal')">
-
-  <div class="sheet">
-
-    <div class="sheet-head">
-
-      <h3>⚙️ Room Settings</h3>
-
-      <button
-        class="close"
-        onclick="closeModal('settingsModal')">
-        ×
-      </button>
-
-    </div>
-
-    <div class="field">
-
-      <label>Room Name</label>
-
-      <input
-        id="editRoomName"
-        maxlength="40">
-
-    </div>
-
-    <div class="field">
-
-      <label>Room DP</label>
-
-      <div class="dp-upload">
-
-        <img
-          id="roomDpPreview"
-          class="dp-preview"
-          src="https://i.pravatar.cc/200?img=12">
-
+    <div class="profile-stats">
+      <div class="stat">
+        <strong id="profileLevel">1</strong>
+        <span>Level</span>
       </div>
-
-      <input
-        id="roomDpFile"
-        type="file"
-        accept="image/*"
-        onchange="previewRoomDp(event)">
-
+      <div class="stat">
+        <strong id="profileCoins">0</strong>
+        <span>Coins</span>
+      </div>
+      <div class="stat">
+        <strong id="profileDiamonds">0</strong>
+        <span>Diamonds</span>
+      </div>
     </div>
 
-    <div class="field">
-
-      <label>Room DP URL</label>
-
-      <input
-        id="editRoomDp"
-        placeholder="https://...">
-
+    <div class="info-box" id="profileExtra">
+      PawanVoice Member
     </div>
 
-    <div class="field">
-
-      <label>Category</label>
-
-      <select id="editCategory">
-
-        <option>General</option>
-        <option>Music</option>
-        <option>Friends</option>
-        <option>Love</option>
-        <option>Games</option>
-        <option>Party</option>
-        <option>VIP</option>
-
-      </select>
-
+    <div class="button-row">
+      <button class="secondary-btn" id="followBtn">＋ Follow</button>
+      <button class="secondary-btn" id="profileGiftBtn">🎁 Gift</button>
     </div>
 
-    <div class="field">
-
-      <label>Room Type</label>
-
-      <select id="roomPrivacy">
-
-        <option value="public">Public</option>
-        <option value="private">Private</option>
-
-      </select>
-
+    <div class="button-row">
+      <button class="secondary-btn" id="profileCpBtn">💑 CP Request</button>
+      <button class="secondary-btn" id="profileMessageBtn">💬 Message</button>
     </div>
 
-    <button
-      class="primary"
-      onclick="saveRoomSettings()">
-      Save Room
-    </button>
-
+    <div id="adminActions" style="display:none;margin-top:12px">
+      <div class="button-row">
+        <button class="secondary-btn" id="adminMuteBtn">🔇 Mute</button>
+        <button class="secondary-btn" id="adminKickBtn">🚪 Kick</button>
+      </div>
+    </div>
   </div>
-
 </div>
 
-<!-- ===================================================== -->
-<!-- ROOM INFO -->
-<!-- ===================================================== -->
+<!-- GIFTS MODAL -->
+<div class="modal" id="giftModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>🎁 Gift Store</h3>
+      <button class="close-btn" data-close="giftModal">×</button>
+    </div>
 
-<div
-  id="roomInfoModal"
-  class="modal"
-  onclick="outsideClose(event,'roomInfoModal')">
+    <div class="info-box">
+      Coins: <strong id="giftCoins">0</strong>
+      <br>
+      Gift चुनें और भेजें।
+    </div>
 
-  <div class="sheet">
+    <label style="font-size:12px;color:#d7cce9">Receiver</label>
+    <select id="giftReceiver" class="gift-target">
+      <option value="">Room में सभी को</option>
+    </select>
 
-    <div class="sheet-head">
+    <div class="gift-grid" id="giftGrid"></div>
 
-      <h3>ℹ️ Room Information</h3>
+    <div class="field" style="margin-top:13px">
+      <label>Quantity</label>
+      <select id="giftQuantity">
+        <option value="1">1 Gift</option>
+        <option value="5">5 Gifts</option>
+        <option value="10">10 Gifts</option>
+        <option value="99">99 Gifts</option>
+      </select>
+    </div>
 
-      <button
-        class="close"
-        onclick="closeModal('roomInfoModal')">
-        ×
+    <div class="info-box">
+      Selected: <strong id="selectedGiftName">कोई Gift नहीं</strong>
+      <br>
+      Total: <strong id="selectedGiftPrice">0</strong> Coins
+    </div>
+
+    <button class="primary-btn" id="sendGiftBtn">🎁 Send Gift</button>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal" id="settingsModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>⚙️ Room Settings</h3>
+      <button class="close-btn" data-close="settingsModal">×</button>
+    </div>
+
+    <div class="field">
+      <label>Room Name</label>
+      <input id="settingRoomName" maxlength="80" placeholder="Room का नाम">
+    </div>
+
+    <div class="field">
+      <label>Room DP / Banner Image</label>
+      <input id="settingRoomDp" type="file" accept="image/*">
+    </div>
+
+    <div class="info-box">
+      केवल Room Owner रूम का नाम और DP बदल सकता है।
+      <br>
+      बड़ी फोटो के बजाय छोटी फोटो चुनें।
+    </div>
+
+    <button class="primary-btn" id="saveRoomSettingsBtn">Save Settings</button>
+  </div>
+</div>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="modal" id="editProfileModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>✏️ My Profile</h3>
+      <button class="close-btn" data-close="editProfileModal">×</button>
+    </div>
+
+    <div class="field">
+      <label>Name</label>
+      <input id="editName" maxlength="50" placeholder="अपना नाम">
+    </div>
+
+    <div class="field">
+      <label>Profile Photo</label>
+      <input id="editDp" type="file" accept="image/*">
+    </div>
+
+    <div class="field">
+      <label>Gender</label>
+      <select id="editGender">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <button class="primary-btn" id="saveProfileBtn">Save Profile</button>
+  </div>
+</div>
+
+<!-- ROOM INFO MODAL -->
+<div class="modal" id="infoModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>ⓘ Room Information</h3>
+      <button class="close-btn" data-close="infoModal">×</button>
+    </div>
+
+    <div class="info-box">
+      Room Name: <strong id="infoRoomName"></strong>
+      <br>
+      Room ID: <strong id="infoRoomId"></strong>
+      <br>
+      Owner ID: <strong id="infoOwnerId">—</strong>
+      <br>
+      Online Members: <strong id="infoOnlineCount">0</strong>
+      <br>
+      Occupied Seats: <strong id="infoSeatCount">0 / 9</strong>
+      <br>
+      Connection: <strong id="infoConnection">Connecting...</strong>
+    </div>
+
+    <button class="primary-btn" id="copyRoomIdBtn">Copy Room ID</button>
+  </div>
+</div>
+
+<!-- MORE MODAL -->
+<div class="modal" id="moreModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>☰ More Options</h3>
+      <button class="close-btn" data-close="moreModal">×</button>
+    </div>
+
+    <div class="setting-grid">
+      <button class="setting-tile" data-more="profile">
+        <strong>👤 My Profile</strong>
+        <span>नाम और फोटो बदलें</span>
       </button>
 
-    </div>
-
-    <div id="roomInfoContent"></div>
-
-  </div>
-
-</div>
-
-<!-- ===================================================== -->
-<!-- GIFT MODAL -->
-<!-- ===================================================== -->
-
-<div
-  id="giftModal"
-  class="modal"
-  onclick="outsideClose(event,'giftModal')">
-
-  <div class="sheet">
-
-    <div class="sheet-head">
-
-      <h3>🎁 Gifts</h3>
-
-      <button
-        class="close"
-        onclick="closeModal('giftModal')">
-        ×
+      <button class="setting-tile" data-more="settings">
+        <strong>⚙️ Room Settings</strong>
+        <span>नाम और DP बदलें</span>
       </button>
 
-    </div>
+      <button class="setting-tile" data-more="games">
+        <strong>🎮 Games</strong>
+        <span>Games पेज खोलें</span>
+      </button>
 
-    <div id="giftBalance"
-         style="margin-bottom:10px;color:#ffd54f">
-      🪙 Coins: 0
-    </div>
+      <button class="setting-tile" data-more="invite">
+        <strong>👥 Invite</strong>
+        <span>Room लिंक शेयर करें</span>
+      </button>
 
-    <div
-      id="giftsGrid"
-      class="gifts-grid">
-    </div>
+      <button class="setting-tile" data-more="members">
+        <strong>👤 Members</strong>
+        <span>Online यूज़र देखें</span>
+      </button>
 
+      <button class="setting-tile" data-more="leave">
+        <strong>🚪 Leave Room</strong>
+        <span>रूम से बाहर जाएँ</span>
+      </button>
+    </div>
   </div>
-
 </div>
 
-<div id="toast" class="toast"></div>
+<!-- FEATURE MODAL -->
+<div class="modal" id="featureModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 id="featureModalTitle">Room Feature</h3>
+      <button class="close-btn" data-close="featureModal">×</button>
+    </div>
 
-<!-- ===================================================== -->
-<!-- SOCKET.IO -->
-<!-- ===================================================== -->
+    <div class="info-box" id="featureModalBody"></div>
 
-<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <button class="primary-btn" id="featureActionBtn">OK</button>
+  </div>
+</div>
 
-<!-- ===================================================== -->
-<!-- FIREBASE -->
-<!-- ===================================================== -->
+<div class="toast" id="toast"></div>
 
 <script type="module">
-
 import {
   initializeApp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -1476,3219 +1430,2088 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
 /* =====================================================
-   FIREBASE CONFIG
+   FIREBASE CONFIGURATION
+
+   यहाँ अपने असली Firebase config की जानकारी डालें।
+   Placeholder values रहने पर Firebase काम नहीं करेगा।
 ===================================================== */
 
-const PV_FIREBASE_DB =
-  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com";
-
 const firebaseConfig = {
-  apiKey:"YOUR_API_KEY",
-  authDomain:"pawanvoice-68c5e.firebaseapp.com",
-  databaseURL:PV_FIREBASE_DB,
-  projectId:"pawanvoice-68c5e",
-  storageBucket:"pawanvoice-68c5e.appspot.com",
-  messagingSenderId:"YOUR_MESSAGING_SENDER_ID",
-  appId:"YOUR_APP_ID"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "pawanvoice-68c5e.firebaseapp.com",
+  databaseURL: "https://pawanvoice-68c5e-default-rtdb.firebaseio.com",
+  projectId: "pawanvoice-68c5e",
+  storageBucket: "pawanvoice-68c5e.firebasestorage.app",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
 let firebaseApp = null;
 let db = null;
+let firebaseReady = false;
 
-try{
+try {
+  const configured =
+    firebaseConfig.apiKey !== "YOUR_API_KEY" &&
+    firebaseConfig.messagingSenderId !== "YOUR_MESSAGING_SENDER_ID" &&
+    firebaseConfig.appId !== "YOUR_APP_ID";
 
-  firebaseApp = initializeApp(firebaseConfig);
-  db = getDatabase(firebaseApp);
-
-}catch(error){
-
-  console.log("Firebase init:",error);
-
+  if (configured) {
+    firebaseApp = initializeApp(firebaseConfig);
+    db = getDatabase(firebaseApp);
+    firebaseReady = true;
+  }
+} catch (error) {
+  console.error("Firebase initialization failed:", error);
 }
 
 /* =====================================================
-   GLOBAL USER
+   URL / USER / ROOM
 ===================================================== */
 
-let USER = {
-  userId:"",
-  id:"",
-  name:"Guest",
-  dp:"https://i.pravatar.cc/200?img=12",
-  gender:"Male",
+const params = new URLSearchParams(location.search);
 
-  level:1,
-  exp:0,
-
-  coins:0,
-  diamonds:0,
-
-  following:0,
-  followers:0,
-  visitors:0,
-
-  vipLevel:0,
-  vipExp:0,
-
-  avatarFrame:"",
-  badge:"",
-  medal:"",
-
-  familyName:"",
-  familyId:"",
-  familyMembers:0,
-  familyExp:0,
-
-  cpName:"",
-  cpId:"",
-
-  eventCount:0,
-
-  muted:false
-};
-
-/* =====================================================
-   ROOM
-===================================================== */
-
-let ROOM = {
-  id:"",
-  name:"PawanVoice Room",
-  dp:"https://i.pravatar.cc/200?img=12",
-
-  owner:"",
-  ownerId:"",
-  ownerName:"",
-  ownerDp:"",
-
-  category:"General",
-  privacy:"public",
-
-  maxSeats:9,
-
-  seats:Array(9).fill(null),
-
-  users:{},
-  members:{},
-
-  roomExp:0,
-
-  topUsers:[],
-
-  admins:{},
-  mutedUsers:{},
-
-  messages:[]
-};
-
-let ROOM_ID = "";
-let socket = null;
-let mySeat = -1;
-let micOn = false;
-let speakerOn = true;
-let localStream = null;
-let selectedProfileUserId = "";
-
-/* =====================================================
-   URL DATA
-===================================================== */
-
-const params =
-  new URLSearchParams(location.search);
-
-ROOM_ID =
+const ROOM_ID = (
   params.get("room") ||
   params.get("roomId") ||
-  "PV100";
+  "PV100"
+).slice(0, 60);
 
-const urlUserId =
+const DEFAULT_USER_ID =
   params.get("userid") ||
   params.get("userId") ||
-  "";
+  localStorage.getItem("pv_user_id") ||
+  "100052";
 
-const urlName =
-  params.get("name") ||
-  "";
+const storedProfile = readJSON("pv_profile", {});
 
-const urlDp =
-  params.get("dp") ||
-  "";
+const user = {
+  userId: String(DEFAULT_USER_ID),
+  name: params.get("name") || storedProfile.name || "Pawan",
+  dp: params.get("dp") || storedProfile.dp || "",
+  gender: storedProfile.gender || "Male",
+  level: Number(storedProfile.level || 1),
+  coins: Number(storedProfile.coins || 0),
+  diamonds: Number(storedProfile.diamonds || 0),
+  following: Number(storedProfile.following || 0)
+};
 
-/* =====================================================
-   STORAGE USER
-===================================================== */
+localStorage.setItem("pv_user_id", user.userId);
 
-function loadLocalUser(){
+const room = {
+  id: ROOM_ID,
+  name: "PawanVoice Room",
+  dp: "",
+  ownerId: null,
+  seats: Array.from({length:9}, (_,i) => ({
+    seat:i+1,
+    userId:null,
+    socketId:null,
+    name:"",
+    dp:"",
+    micOn:false,
+    muted:false
+  })),
+  users: [],
+  chat: [],
+  createdAt: Date.now()
+};
 
-  try{
+let socket = null;
+let joinedRoom = false;
+let microphoneStream = null;
+let micEnabled = false;
+let speakerEnabled = true;
+let selectedProfile = null;
+let selectedGift = null;
+let mutedByOwner = false;
+let firebaseRoomListener = null;
+let firebaseUserListener = null;
+let pendingRoomDp = "";
+let isUpdatingFromServer = false;
 
-    const saved =
-      JSON.parse(
-        localStorage.getItem("pawanvoice_user") || "{}"
-      );
+const peerConnections = new Map();
+const remoteAudioElements = new Map();
+const pendingIceCandidates = new Map();
 
-    if(saved && typeof saved === "object"){
+const RTC_CONFIG = {
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" },
+    { urls: "stun:stun1.l.google.com:19302" }
+  ]
+};
 
-      USER = {
-        ...USER,
-        ...saved
-      };
-
-    }
-
-  }catch(e){
-
-    console.log(e);
-
+function readJSON(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
   }
+}
 
-  if(urlUserId){
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[char]);
+}
 
-    USER.userId = urlUserId;
-    USER.id = urlUserId;
+function toast(message) {
+  const element = document.getElementById("toast");
+  element.textContent = message;
+  element.classList.add("show");
 
-  }
+  clearTimeout(toast.timer);
 
-  if(urlName){
-    USER.name = urlName;
-  }
+  toast.timer = setTimeout(() => {
+    element.classList.remove("show");
+  }, 2600);
+}
 
-  if(urlDp){
-    USER.dp = urlDp;
-  }
+function showModal(id) {
+  document.getElementById(id)?.classList.add("show");
+}
 
-  if(!USER.userId){
+function closeModal(id) {
+  document.getElementById(id)?.classList.remove("show");
+}
 
-    USER.userId =
-      "PV" +
-      Math.floor(
-        10000000 +
-        Math.random()*89999999
-      );
-
-    USER.id = USER.userId;
-
-  }
-
-  if(!USER.id){
-    USER.id = USER.userId;
-  }
-
-  localStorage.setItem(
-    "pawanvoice_user",
-    JSON.stringify(USER)
+function currentSeat() {
+  return room.seats.find(
+    seat => seat.socketId === socket?.id ||
+      (
+        seat.userId === user.userId &&
+        seat.userId !== null
+      )
   );
+}
 
+function isOwner() {
+  return String(room.ownerId || "") === String(user.userId);
+}
+
+function getAvatarHTML(dp, fallback = "🙂") {
+  if (dp) {
+    return `<img src="${escapeHTML(dp)}" alt="Avatar">`;
+  }
+
+  return escapeHTML(fallback);
 }
 
 /* =====================================================
-   SAVE USER
+   PROFILE STORAGE
 ===================================================== */
 
-async function saveUserFirebase(){
+function saveLocalProfile() {
+  localStorage.setItem("pv_profile", JSON.stringify(user));
+}
 
-  localStorage.setItem(
-    "pawanvoice_user",
-    JSON.stringify(USER)
-  );
+async function saveUserToFirebase() {
+  if (!firebaseReady) {
+    saveLocalProfile();
+    return;
+  }
 
-  if(!db || !USER.userId) return;
+  try {
+    await update(ref(db, "users/" + user.userId), {
+      userId: user.userId,
+      name: user.name,
+      dp: user.dp,
+      gender: user.gender,
+      level: user.level,
+      coins: user.coins,
+      diamonds: user.diamonds,
+      updatedAt: Date.now()
+    });
 
-  try{
+    saveLocalProfile();
+  } catch (error) {
+    console.error("User profile save failed:", error);
+    toast("Profile Firebase में सेव नहीं हुआ।");
+  }
+}
 
-    await update(
-      ref(db,"users/"+USER.userId),
-      USER
+async function loadUserFromFirebase() {
+  if (!firebaseReady) return;
+
+  try {
+    const snapshot = await get(ref(db, "users/" + user.userId));
+
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+
+      user.name = params.get("name") || data.name || user.name;
+      user.dp = params.get("dp") || data.dp || user.dp;
+      user.gender = data.gender || user.gender;
+      user.level = Number(data.level || user.level);
+      user.coins = Number(data.coins ?? user.coins);
+      user.diamonds = Number(data.diamonds ?? user.diamonds);
+
+      saveLocalProfile();
+      renderProfile();
+      renderSeats();
+      registerSocketUser();
+    }
+  } catch (error) {
+    console.error("User profile load failed:", error);
+  }
+}
+
+/* =====================================================
+   SOCKET CONNECTION
+===================================================== */
+
+function connectSocket() {
+  if (!window.io) {
+    toast("Socket.IO लोड नहीं हुआ।");
+    return;
+  }
+
+  socket = window.io("https://pawanvoice-1.onrender.com", {
+    transports: ["websocket", "polling"],
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 1000,
+    timeout: 20000
+  });
+
+  socket.on("connect", () => {
+    setConnection(true);
+
+    registerSocketUser();
+
+    socket.emit("room:join", {
+      roomId: ROOM_ID,
+      room: ROOM_ID,
+      userId: user.userId,
+      userid: user.userId,
+      name: user.name,
+      dp: user.dp
+    });
+
+    toast("Server से कनेक्शन हो गया।");
+  });
+
+  socket.on("disconnect", () => {
+    setConnection(false);
+    joinedRoom = false;
+  });
+
+  socket.on("connect_error", error => {
+    console.error("Socket connection error:", error.message);
+    setConnection(false);
+  });
+
+  socket.on("room:joined", handleRoomJoined);
+  socket.on("roomJoined", handleRoomJoined);
+
+  socket.on("room:update", handleRoomUpdate);
+  socket.on("roomUpdate", handleRoomUpdate);
+  socket.on("roomState", handleRoomUpdate);
+
+  socket.on("user:joined", data => {
+    addSystemMessage((data?.user?.name || "User") + " room में आया।");
+  });
+
+  socket.on("userJoined", data => {
+    if (data?.user?.name) {
+      addSystemMessage(data.user.name + " room में आया।");
+    }
+  });
+
+  socket.on("user:left", handleUserLeft);
+  socket.on("userLeft", handleUserLeft);
+
+  socket.on("seat:taken", data => {
+    if (data?.seat) {
+      updateOneSeat(data.seat);
+    }
+  });
+
+  socket.on("seatTaken", data => {
+    if (data?.seat) {
+      updateOneSeat(data.seat);
+    }
+  });
+
+  socket.on("seat:left", () => renderSeats());
+  socket.on("seatLeft", () => renderSeats());
+
+  socket.on("mic:updated", data => {
+    if (!data) return;
+
+    const seat = room.seats.find(
+      item => item.userId === data.userId ||
+        item.seat === Number(data.seat)
     );
 
-  }catch(error){
-
-    console.log("save user:",error);
-
-  }
-
-}
-
-/* =====================================================
-   LOAD USER FIREBASE
-===================================================== */
-
-async function loadFirebaseUser(){
-
-  if(!db || !USER.userId) return;
-
-  try{
-
-    const snap =
-      await get(
-        ref(db,"users/"+USER.userId)
-      );
-
-    if(snap.exists()){
-
-      USER = {
-        ...USER,
-        ...snap.val()
-      };
-
-      localStorage.setItem(
-        "pawanvoice_user",
-        JSON.stringify(USER)
-      );
-
+    if (seat) {
+      seat.micOn = !!data.micOn;
+      renderSeats();
     }
+  });
 
-  }catch(error){
+  socket.on("micUpdated", data => {
+    if (!data) return;
 
-    console.log("load user:",error);
-
-  }
-
-}
-
-/* =====================================================
-   NORMALIZE ROOM
-===================================================== */
-
-function normalizeRoom(data){
-
-  if(!data) return ROOM;
-
-  const seats =
-    Array.isArray(data.seats)
-      ? data.seats.slice(0,9)
-      : Array(9).fill(null);
-
-  while(seats.length < 9){
-    seats.push(null);
-  }
-
-  return {
-
-    ...ROOM,
-    ...data,
-
-    id:data.id || ROOM_ID,
-
-    name:
-      data.name ||
-      data.roomName ||
-      "PawanVoice Room",
-
-    dp:
-      data.dp ||
-      "https://i.pravatar.cc/200?img=12",
-
-    maxSeats:9,
-
-    seats:seats,
-
-    users:data.users || {},
-
-    members:data.members || {},
-
-    messages:Array.isArray(data.messages)
-      ? data.messages
-      : [],
-
-    roomExp:Number(data.roomExp || 0),
-
-    topUsers:
-      Array.isArray(data.topUsers)
-        ? data.topUsers
-        : []
-
-  };
-
-}
-
-/* =====================================================
-   LOAD ROOM
-===================================================== */
-
-async function loadRoomFirebase(){
-
-  if(!db) return;
-
-  try{
-
-    const snap =
-      await get(
-        ref(db,"rooms/"+ROOM_ID)
-      );
-
-    if(snap.exists()){
-
-      ROOM =
-        normalizeRoom(snap.val());
-
-    }else{
-
-      ROOM.id = ROOM_ID;
-
-      ROOM.owner =
-        USER.userId;
-
-      ROOM.ownerId =
-        USER.userId;
-
-      ROOM.ownerName =
-        USER.name;
-
-      ROOM.ownerDp =
-        USER.dp;
-
-      ROOM.name =
-        ROOM.name;
-
-      await set(
-        ref(db,"rooms/"+ROOM_ID),
-        ROOM
-      );
-
-    }
-
-    renderRoom();
-
-  }catch(error){
-
-    console.log("room load:",error);
-
-  }
-
-}
-
-/* =====================================================
-   LISTEN ROOM
-===================================================== */
-
-function listenRoom(){
-
-  if(!db) return;
-
-  onValue(
-    ref(db,"rooms/"+ROOM_ID),
-    snap=>{
-
-      if(snap.exists()){
-
-        ROOM =
-          normalizeRoom(snap.val());
-
-        renderRoom();
-
-      }
-
-    }
-  );
-
-}
-
-/* =====================================================
-   SAVE ROOM
-===================================================== */
-
-async function saveRoom(){
-
-  if(!db) return;
-
-  try{
-
-    await set(
-      ref(db,"rooms/"+ROOM_ID),
-      ROOM
+    const seat = room.seats.find(
+      item => item.userId === data.userId ||
+        item.seat === Number(data.seat)
     );
 
-  }catch(error){
+    if (seat) {
+      seat.micOn = !!data.micOn;
+      renderSeats();
+    }
+  });
 
-    console.log(error);
+  socket.on("chat:message", handleIncomingChat);
+  socket.on("chatMessage", handleIncomingChat);
+  socket.on("chat", handleIncomingChat);
 
-  }
+  socket.on("gift:received", handleIncomingGift);
+  socket.on("receiveGift", handleIncomingGift);
+  socket.on("gift", handleIncomingGift);
 
+  socket.on("profile:updated", data => {
+    if (data?.success) {
+      renderProfile();
+    }
+  });
+
+  socket.on("room:muted", data => {
+    mutedByOwner = !!data?.muted;
+
+    if (mutedByOwner && micEnabled) {
+      stopMicrophone();
+    }
+
+    toast(mutedByOwner
+      ? "Room owner ने आपका Mic बंद किया।"
+      : "आपका Mic unmute किया गया।");
+  });
+
+  socket.on("userMuted", data => {
+    mutedByOwner = !!data?.muted;
+
+    if (mutedByOwner && micEnabled) {
+      stopMicrophone();
+    }
+  });
+
+  socket.on("room:kicked", data => {
+    stopMicrophone();
+    cleanupPeerConnections();
+    joinedRoom = false;
+
+    toast(data?.message || "आपको रूम से हटाया गया।");
+
+    setTimeout(() => {
+      location.href = "index.html";
+    }, 1200);
+  });
+
+  socket.on("error:message", data => {
+    toast(data?.message || "Server error");
+  });
+
+  socket.on("seat:error", data => {
+    toast(data?.message || "Seat उपलब्ध नहीं है।");
+  });
+
+  socket.on("mic:error", data => {
+    toast(data?.message || "Mic चालू नहीं हुआ।");
+  });
+
+  socket.on("chat:error", data => {
+    toast(data?.message || "Chat भेजने में समस्या।");
+  });
+
+  socket.on("gift:error", data => {
+    toast(data?.message || "Gift भेजने में समस्या।");
+  });
+
+  socket.on("webrtc:offer", handleWebRTCOffer);
+  socket.on("webrtc:answer", handleWebRTCAnswer);
+  socket.on("webrtc:ice", handleWebRTCIce);
+
+  socket.on("voice:offer", handleWebRTCOffer);
+  socket.on("voice:answer", handleWebRTCAnswer);
+  socket.on("voice:ice", handleWebRTCIce);
+
+  socket.on("server:shutdown", () => {
+    toast("Server बंद हो रहा है।");
+  });
 }
 
-/* =====================================================
-   SOCKET
-===================================================== */
+function setConnection(connected) {
+  const info = document.getElementById("infoConnection");
 
-function connectSocket(){
-
-  try{
-
-    socket =
-      io(
-        "https://pawanvoice-1.onrender.com",
-        {
-          transports:["websocket","polling"]
-        }
-      );
-
-    socket.on("connect",()=>{
-
-      console.log("Socket connected");
-
-      socket.emit(
-        "joinRoom",
-        {
-          roomId:ROOM_ID,
-          userId:USER.userId,
-          name:USER.name,
-          dp:USER.dp,
-          level:USER.level
-        }
-      );
-
-    });
-
-    socket.on("roomState",state=>{
-
-      if(state){
-
-        ROOM =
-          normalizeRoom(state);
-
-        renderRoom();
-
-      }
-
-    });
-
-    socket.on("chat",message=>{
-
-      addChatMessage(message);
-
-    });
-
-    socket.on("gift",data=>{
-
-      showToast(
-        "🎁 "+(data?.giftName || "Gift received")
-      );
-
-    });
-
-    socket.on("userJoined",data=>{
-
-      showToast(
-        "👋 "+(data?.name || "Someone")+" joined"
-      );
-
-    });
-
-    socket.on("userLeft",data=>{
-
-      showToast(
-        "👋 "+(data?.name || "User")+" left"
-      );
-
-    });
-
-    socket.on("connect_error",err=>{
-
-      console.log("Socket error:",err);
-
-    });
-
-  }catch(error){
-
-    console.log(error);
-
+  if (info) {
+    info.textContent = connected ? "Connected" : "Disconnected";
+    info.style.color = connected ? "#49e4a4" : "#ff5577";
   }
-
 }
 
-/* =====================================================
-   SYNC USER TO ROOM
-===================================================== */
+function registerSocketUser() {
+  if (!socket?.connected) return;
 
-async function syncUserIntoRoom(){
+  socket.emit("user:register", {
+    userId: user.userId,
+    name: user.name,
+    dp: user.dp
+  });
+}
 
-  if(!USER.userId) return;
+function handleRoomJoined(data) {
+  if (!data?.success) return;
 
-  let found = false;
+  joinedRoom = true;
 
-  for(let i=0;i<ROOM.seats.length;i++){
+  if (data.room) {
+    handleRoomUpdate(data.room);
+  }
 
-    const s =
-      ROOM.seats[i];
+  addSystemMessage("आप रूम में जुड़ गए हैं।");
+}
 
-    if(
-      s &&
-      String(s.userId) ===
-      String(USER.userId)
-    ){
+function handleRoomUpdate(data) {
+  if (!data || String(data.id || data.roomId || "") !== ROOM_ID) {
+    if (!data || !data.seats) return;
+  }
 
-      found = true;
-      mySeat = i;
+  isUpdatingFromServer = true;
 
-      ROOM.seats[i] = {
+  room.id = data.id || data.roomId || ROOM_ID;
+  room.name = data.name || room.name;
+  room.dp = data.dp ?? room.dp;
+  room.ownerId = data.ownerId ?? room.ownerId;
 
-        ...s,
+  if (Array.isArray(data.seats)) {
+    room.seats = Array.from({length:9}, (_, index) => {
+      const incoming = data.seats[index] || {};
 
-        userId:USER.userId,
-        id:USER.userId,
-
-        name:USER.name,
-        dp:USER.dp,
-
-        level:USER.level,
-        exp:USER.exp,
-
-        coins:USER.coins,
-        diamonds:USER.diamonds,
-
-        avatarFrame:USER.avatarFrame || "",
-        badge:USER.badge || "",
-        medal:USER.medal || "",
-
-        vipLevel:USER.vipLevel || 0,
-
-        familyName:USER.familyName || "",
-        familyId:USER.familyId || "",
-
-        cpName:USER.cpName || "",
-        cpId:USER.cpId || ""
+      return {
+        seat: Number(incoming.seat || index + 1),
+        userId: incoming.userId ?? null,
+        socketId: incoming.socketId ?? null,
+        name: incoming.name || "",
+        dp: incoming.dp || "",
+        micOn: !!incoming.micOn,
+        muted: !!incoming.muted
       };
-
-      break;
-
-    }
-
+    });
   }
 
-  if(!found){
-
-    for(let i=0;i<9;i++){
-
-      if(!ROOM.seats[i]){
-
-        ROOM.seats[i] = {
-
-          userId:USER.userId,
-          id:USER.userId,
-
-          name:USER.name,
-          dp:USER.dp,
-
-          level:USER.level,
-          exp:USER.exp,
-
-          coins:USER.coins,
-          diamonds:USER.diamonds,
-
-          avatarFrame:USER.avatarFrame || "",
-          badge:USER.badge || "",
-          medal:USER.medal || "",
-
-          vipLevel:USER.vipLevel || 0,
-
-          familyName:USER.familyName || "",
-          familyId:USER.familyId || "",
-
-          cpName:USER.cpName || "",
-          cpId:USER.cpId || "",
-
-          muted:false
-        };
-
-        mySeat = i;
-
-        break;
-
-      }
-
-    }
-
+  if (Array.isArray(data.users)) {
+    room.users = data.users;
   }
-
-  ROOM.users =
-    ROOM.users || {};
-
-  ROOM.members =
-    ROOM.members || {};
-
-  ROOM.users[USER.userId] = {
-
-    userId:USER.userId,
-    id:USER.userId,
-    name:USER.name,
-    dp:USER.dp,
-
-    level:USER.level,
-    exp:USER.exp,
-
-    coins:USER.coins,
-    diamonds:USER.diamonds,
-
-    avatarFrame:USER.avatarFrame || "",
-    badge:USER.badge || "",
-    medal:USER.medal || "",
-
-    vipLevel:USER.vipLevel || 0,
-
-    familyName:USER.familyName || "",
-    familyId:USER.familyId || "",
-
-    cpName:USER.cpName || "",
-    cpId:USER.cpId || ""
-  };
-
-  ROOM.members[USER.userId] =
-    ROOM.users[USER.userId];
-
-  await saveRoom();
 
   renderRoom();
+  isUpdatingFromServer = false;
 
+  if (joinedRoom && micEnabled) {
+    startPeerConnections();
+  }
+}
+
+function handleUserLeft(data) {
+  if (!data) return;
+
+  if (data.socketId) {
+    closePeer(data.socketId);
+  }
+
+  addSystemMessage("एक यूज़र रूम से चला गया।");
+}
+
+function updateOneSeat(incoming) {
+  const index = Number(incoming.seat) - 1;
+
+  if (index < 0 || index >= 9) return;
+
+  room.seats[index] = {
+    ...room.seats[index],
+    ...incoming
+  };
+
+  renderSeats();
+  renderTopUsers();
 }
 
 /* =====================================================
-   ESCAPE HTML
+   FIREBASE ROOM SYNC
+
+   The server owns live seats and socket state.
+   Firebase stores room details and provides a backup
+   for room name / picture.
 ===================================================== */
 
-function esc(value){
+async function saveRoomDetailsToFirebase() {
+  if (!firebaseReady) return;
 
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
+  try {
+    await update(ref(db, "rooms/" + ROOM_ID), {
+      id: ROOM_ID,
+      name: room.name,
+      dp: room.dp || "",
+      ownerId: room.ownerId || user.userId,
+      updatedAt: Date.now()
+    });
+  } catch (error) {
+    console.error("Room detail save failed:", error);
+    toast("Firebase में Room settings सेव नहीं हुईं।");
+  }
 }
 
-/* =====================================================
-   FIND USER
-===================================================== */
+async function loadRoomDetailsFromFirebase() {
+  if (!firebaseReady) return;
 
-function findRoomUser(userId){
+  try {
+    const snapshot = await get(ref(db, "rooms/" + ROOM_ID));
 
-  if(!userId) return null;
+    if (snapshot.exists()) {
+      const data = snapshot.val();
 
-  const id =
-    String(userId);
+      room.name = data.name || room.name;
+      room.dp = data.dp || room.dp;
 
-  for(const s of ROOM.seats || []){
-
-    if(
-      s &&
-      String(
-        s.userId ||
-        s.id ||
-        ""
-      ) === id
-    ){
-
-      return s;
-
+      renderRoom();
     }
-
+  } catch (error) {
+    console.error("Room details load failed:", error);
   }
+}
 
-  if(
-    ROOM.users &&
-    ROOM.users[id]
-  ){
+function listenFirebaseRoom() {
+  if (!firebaseReady) return;
 
-    return ROOM.users[id];
+  firebaseRoomListener = onValue(
+    ref(db, "rooms/" + ROOM_ID),
+    snapshot => {
+      if (!snapshot.exists()) return;
 
-  }
+      const data = snapshot.val();
 
-  if(
-    ROOM.members &&
-    ROOM.members[id]
-  ){
+      // Avoid overwriting live seat state from Firebase.
+      if (data.name) room.name = data.name;
+      if (data.dp !== undefined) room.dp = data.dp || "";
 
-    return ROOM.members[id];
-
-  }
-
-  if(
-    String(USER.userId) === id
-  ){
-
-    return USER;
-
-  }
-
-  return null;
-
+      renderRoom();
+    },
+    error => console.error("Firebase room listener:", error)
+  );
 }
 
 /* =====================================================
    RENDER ROOM
 ===================================================== */
 
-function renderRoom(){
+function renderRoom() {
+  document.getElementById("headerRoomName").textContent = room.name;
+  document.getElementById("bannerRoomName").textContent = room.name;
+  document.getElementById("headerRoomId").textContent = ROOM_ID;
 
-  const roomName =
-    ROOM.name ||
-    "PawanVoice Room";
+  const roomDp = document.getElementById("headerRoomDp");
+  roomDp.innerHTML = room.dp
+    ? `<img src="${escapeHTML(room.dp)}" alt="Room DP">`
+    : "🎙️";
 
-  const roomDp =
-    ROOM.dp ||
-    "https://i.pravatar.cc/200?img=12";
+  document.getElementById("bannerImage").innerHTML = room.dp
+    ? `<img src="${escapeHTML(room.dp)}" alt="Room banner">`
+    : "";
 
-  document.getElementById("roomName").textContent =
-    roomName;
+  const count = Array.isArray(room.users) ? room.users.length : 0;
 
-  document.getElementById("bannerName").textContent =
-    roomName;
+  document.getElementById("onlineCount").textContent = count;
 
-  document.getElementById("roomIdText").textContent =
-    ROOM.id || ROOM_ID;
+  const occupied = room.seats.filter(seat => seat.userId).length;
 
-  document.getElementById("roomDp").src =
-    roomDp;
-
-  document.getElementById("roomDpPreview").src =
-    roomDp;
-
-  document.getElementById("onlineCount").textContent =
-    countOnline()+"/9";
+  document.getElementById("seatCount").textContent =
+    occupied + " / 9 occupied";
 
   document.getElementById("roomExpText").textContent =
-    Number(ROOM.roomExp || 0)+" EXP";
+    "Level " + Math.max(1, user.level) + " · " + (occupied * 100) + " EXP";
 
-  document.getElementById("roomLevel").textContent =
-    getRoomLevel(
-      Number(ROOM.roomExp || 0)
-    );
+  document.getElementById("roomExpProgress").style.width =
+    Math.min(100, occupied * 11) + "%";
 
-  const exp =
-    Number(ROOM.roomExp || 0);
+  document.getElementById("infoRoomName").textContent = room.name;
+  document.getElementById("infoRoomId").textContent = ROOM_ID;
+  document.getElementById("infoOwnerId").textContent = room.ownerId || "—";
+  document.getElementById("infoOnlineCount").textContent = count;
+  document.getElementById("infoSeatCount").textContent = occupied + " / 9";
 
-  const percent =
-    Math.min(
-      100,
-      (exp % 10000) / 100
-    );
-
-  document.getElementById("roomExpFill").style.width =
-    percent+"%";
-
-  for(let i=0;i<9;i++){
-
-    renderSeat(i);
-
-  }
-
+  renderSeats();
   renderTopUsers();
-
-  renderChat();
-
+  renderProfile();
+  renderGiftReceiver();
+  updateBottomControls();
 }
 
-/* =====================================================
-   COUNT ONLINE
-===================================================== */
+function renderSeats() {
+  const ownerContainer = document.getElementById("ownerSeat");
+  const grid = document.getElementById("seatsGrid");
 
-function countOnline(){
+  ownerContainer.innerHTML = "";
+  grid.innerHTML = "";
 
-  let count = 0;
+  room.seats.forEach((seat, index) => {
+    const owner = index === 0;
 
-  for(const s of ROOM.seats || []){
+    const element = document.createElement("div");
 
-    if(s && (s.userId || s.id)){
-      count++;
-    }
+    element.className =
+      "seat" +
+      (seat.userId ? " occupied" : "") +
+      (owner ? " owner" : "");
 
-  }
+    const isMe =
+      seat.userId === user.userId ||
+      seat.socketId === socket?.id;
 
-  return count;
+    const canAdmin = isOwner() && seat.userId && !isMe;
 
-}
+    const avatarFallback = seat.userId
+      ? "🙂"
+      : "＋";
 
-/* =====================================================
-   RENDER SEAT
-===================================================== */
-
-function renderSeat(index){
-
-  const el =
-    document.getElementById(
-      "seat"+index
-    );
-
-  if(!el) return;
-
-  const user =
-    ROOM.seats[index];
-
-  if(!user){
-
-    el.classList.add("empty");
-
-    el.classList.remove("my-seat");
-
-    const img =
-      el.querySelector(".avatar");
-
-    img.src =
-      "https://i.pravatar.cc/150?img="+
-      ((index%9)+1);
-
-    el.querySelector(".seat-name")
-      .textContent =
-      "Empty";
-
-    el.querySelector(".seat-id")
-      .textContent =
-      "ID: —";
-
-    return;
-
-  }
-
-  el.classList.remove("empty");
-
-  const userId =
-    user.userId ||
-    user.id ||
-    "";
-
-  if(
-    String(userId) ===
-    String(USER.userId)
-  ){
-
-    el.classList.add("my-seat");
-
-  }else{
-
-    el.classList.remove("my-seat");
-
-  }
-
-  const img =
-    el.querySelector(".avatar");
-
-  img.src =
-    user.dp ||
-    "https://i.pravatar.cc/150?img=12";
-
-  img.onclick =
-    function(event){
-
-      event.stopPropagation();
-
-      openUserProfile(userId);
-
-    };
-
-  const name =
-    el.querySelector(".seat-name");
-
-  name.textContent =
-    user.name ||
-    "Guest";
-
-  name.onclick =
-    function(event){
-
-      event.stopPropagation();
-
-      openUserProfile(userId);
-
-    };
-
-  const idEl =
-    el.querySelector(".seat-id");
-
-  idEl.textContent =
-    "ID: "+(userId || "—");
-
-  idEl.onclick =
-    function(event){
-
-      event.stopPropagation();
-
-      openUserProfile(userId);
-
-    };
-
-  const mic =
-    el.querySelector(".mic-dot");
-
-  mic.textContent =
-    user.muted
-      ? "🔇"
-      : "🎙";
-
-}
-
-/* =====================================================
-   SEAT CLICK
-===================================================== */
-
-window.seatClick =
-async function(index){
-
-  const user =
-    ROOM.seats[index];
-
-  if(user){
-
-    openUserProfile(
-      user.userId ||
-      user.id
-    );
-
-    return;
-
-  }
-
-  if(mySeat >= 0){
-
-    showToast(
-      "आप पहले से seat पर हैं"
-    );
-
-    return;
-
-  }
-
-  ROOM.seats[index] = {
-
-    userId:USER.userId,
-    id:USER.userId,
-
-    name:USER.name,
-    dp:USER.dp,
-
-    level:USER.level,
-    exp:USER.exp,
-
-    coins:USER.coins,
-    diamonds:USER.diamonds,
-
-    avatarFrame:USER.avatarFrame || "",
-    badge:USER.badge || "",
-    medal:USER.medal || "",
-
-    vipLevel:USER.vipLevel || 0,
-
-    familyName:USER.familyName || "",
-    familyId:USER.familyId || "",
-
-    cpName:USER.cpName || "",
-    cpId:USER.cpId || "",
-
-    muted:false
-  };
-
-  mySeat = index;
-
-  await saveRoom();
-
-  if(socket){
-
-    socket.emit(
-      "sit",
-      {
-        roomId:ROOM_ID,
-        seat:index,
-        user:{
-          userId:USER.userId,
-          id:USER.userId,
-          name:USER.name,
-          dp:USER.dp,
-          level:USER.level
-        }
-      }
-    );
-
-  }
-
-  renderRoom();
-
-};
-
-/* =====================================================
-   USER PROFILE
-===================================================== */
-
-window.openUserProfile =
-async function(userId){
-
-  if(!userId){
-
-    showToast("User ID नहीं मिला");
-
-    return;
-
-  }
-
-  selectedProfileUserId =
-    String(userId);
-
-  let user =
-    findRoomUser(userId);
-
-  if(!user){
-
-    user = {
-
-      userId:String(userId),
-      id:String(userId),
-
-      name:"PawanVoice User",
-
-      dp:"https://i.pravatar.cc/200?img=12",
-
-      level:1,
-      exp:0,
-
-      coins:0,
-      diamonds:0,
-
-      following:0,
-      followers:0,
-      visitors:0,
-
-      vipLevel:0,
-
-      avatarFrame:"",
-      badge:"",
-      medal:"",
-
-      familyName:"",
-      familyId:"",
-      familyMembers:0,
-      familyExp:0,
-
-      cpName:"",
-      cpId:"",
-
-      eventCount:0
-    };
-
-  }
-
-  if(db){
-
-    try{
-
-      const snap =
-        await get(
-          ref(
-            db,
-            "users/"+String(userId)
-          )
-        );
-
-      if(snap.exists()){
-
-        user = {
-          ...user,
-          ...snap.val()
-        };
-
-      }
-
-    }catch(error){
-
-      console.log(
-        "profile load:",
-        error
-      );
-
-    }
-
-  }
-
-  const isMe =
-    String(user.userId || user.id) ===
-    String(USER.userId);
-
-  const following =
-    Number(user.following || 0);
-
-  const followers =
-    Number(user.followers || 0);
-
-  const visitors =
-    Number(user.visitors || 0);
-
-  const level =
-    Number(user.level || 1);
-
-  const exp =
-    Number(user.exp || 0);
-
-  const vip =
-    Number(user.vipLevel || 0);
-
-  const cpText =
-    user.cpName
-      ? esc(user.cpName)
-      : "No CP";
-
-  const familyText =
-    user.familyName
-      ? esc(user.familyName)
-      : "Not Joined";
-
-  const frame =
-    user.avatarFrame
-      ? esc(user.avatarFrame)
-      : "No Frame";
-
-  const badge =
-    user.badge
-      ? esc(user.badge)
-      : "No Badge";
-
-  const eventCount =
-    Number(user.eventCount || 0);
-
-  document.getElementById(
-    "profileContent"
-  ).innerHTML = `
-
-    <div class="profile-card">
-
-      <div class="profile-avatar-wrap">
-
-        <img
-          src="${esc(
-            user.dp ||
-            "https://i.pravatar.cc/200?img=12"
-          )}"
-          onerror="this.src='https://i.pravatar.cc/200?img=12'">
-
-      </div>
-
-      <div class="profile-name">
-        ${esc(user.name || "Guest")}
-      </div>
-
-      <div class="profile-id">
-        User ID
-      </div>
-
-      <div
-        class="profile-id-btn"
-        onclick="copyUserId('${esc(
-          user.userId || user.id
-        )}')">
-
-        🆔 ${
-          esc(
-            user.userId ||
-            user.id ||
-            "Unknown"
-          )
-        }
-
-        📋
-
-      </div>
-
-      <div class="profile-level">
-
-        ⭐ Level ${level}
-        •
-        EXP ${exp}
-        •
-        VIP ${vip}
-
-      </div>
-
-      <div class="profile-stats">
-
-        <div class="profile-stat">
-          <b>${following}</b>
-          <span>Following</span>
+    element.innerHTML = `
+      <div class="avatar-wrap">
+        <div class="avatar">
+          ${getAvatarHTML(seat.dp, avatarFallback)}
         </div>
 
-        <div class="profile-stat">
-          <b>${followers}</b>
-          <span>Followers</span>
-        </div>
+        ${owner ? '<span class="owner-tag">HOST</span>' : ""}
 
-        <div class="profile-stat">
-          <b>${visitors}</b>
-          <span>Visitors</span>
-        </div>
+        <span class="seat-number">${seat.seat}</span>
 
-        <div class="profile-stat">
-          <b>${Number(user.coins || 0)}</b>
-          <span>Coins</span>
-        </div>
-
+        <span class="mic-badge ${seat.micOn ? "active" : ""}">
+          ${seat.muted ? "🔇" : (seat.micOn ? "🎙️" : "🔕")}
+        </span>
       </div>
 
-      <div class="profile-feature-grid">
-
-        <button
-          class="profile-feature"
-          onclick="profileCP()">
-
-          <span class="pf-icon">💞</span>
-          <small>CP</small>
-          <small>${cpText}</small>
-
-        </button>
-
-        <button
-          class="profile-feature"
-          onclick="profileFamily()">
-
-          <span class="pf-icon">👨‍👩‍👧</span>
-          <small>Family</small>
-          <small>${familyText}</small>
-
-        </button>
-
-        <button
-          class="profile-feature"
-          onclick="profileFrame()">
-
-          <span class="pf-icon">✨</span>
-          <small>Frame</small>
-          <small>${frame}</small>
-
-        </button>
-
-        <button
-          class="profile-feature"
-          onclick="profileBadge()">
-
-          <span class="pf-icon">🏅</span>
-          <small>Badge</small>
-          <small>${badge}</small>
-
-        </button>
-
-        <button
-          class="profile-feature"
-          onclick="profileEvents()">
-
-          <span class="pf-icon">🎯</span>
-          <small>Events</small>
-          <small>${eventCount} Active</small>
-
-        </button>
-
-        <button
-          class="profile-feature"
-          onclick="profileRanking()">
-
-          <span class="pf-icon">🏆</span>
-          <small>Ranking</small>
-          <small>View Rank</small>
-
-        </button>
-
-        <button
-          class="profile-feature"
-          onclick="profileVIP()">
-
-          <span class="pf-icon">👑</span>
-          <small>VIP</small>
-          <small>VIP ${vip}</small>
-
-        </button>
-
-        <button
-          class="profile-feature"
-          onclick="profileLevel()">
-
-          <span class="pf-icon">⭐</span>
-          <small>Level</small>
-          <small>${level}</small>
-
-        </button>
-
+      <div class="seat-name">
+        ${escapeHTML(seat.name || ("Seat " + seat.seat))}
       </div>
 
-      <div class="profile-actions">
-
-        ${
-          isMe
-          ? `
-          <button
-            onclick="openMyProfile()">
-            ✏️ Edit
-          </button>
-          `
-          : `
-          <button
-            onclick="followUser('${esc(
-              user.userId || user.id
-            )}')">
-            ❤️ Follow
-          </button>
-          `
-        }
-
-        <button
-          onclick="privateChat('${esc(
-            user.userId || user.id
-          )}')">
-          💬 Chat
-        </button>
-
-        <button
-          onclick="giftUser('${esc(
-            user.userId || user.id
-          )}')">
-          🎁 Gift
-        </button>
-
-        <button
-          onclick="viewFullProfile('${esc(
-            user.userId || user.id
-          )}')">
-          👤 Profile
-        </button>
-
-        <button
-          onclick="copyUserId('${esc(
-            user.userId || user.id
-          )}')">
-          🆔 Copy ID
-        </button>
-
-        <button
-          onclick="reportUser('${esc(
-            user.userId || user.id
-          )}')">
-          🚨 Report
-        </button>
-
+      <div class="seat-level">
+        ${seat.userId ? "ID: " + escapeHTML(seat.userId) : "Empty"}
       </div>
 
-      ${
-        isAdmin()
-        && !isMe
-        ? `
-
-        <div class="profile-actions">
-
-          <button
-            onclick="muteUser('${esc(
-              user.userId || user.id
-            )}')">
-
-            🔇 Mute
-
-          </button>
-
-          <button
-            onclick="kickUser('${esc(
-              user.userId || user.id
-            )}')">
-
-            🚪 Kick
-
-          </button>
-
-        </div>
-
-        `
-        : ""
-      }
-
-    </div>
-  `;
-
-  openModal("profileModal");
-
-};
-
-/* =====================================================
-   COPY ID
-===================================================== */
-
-window.copyUserId =
-async function(id){
-
-  try{
-
-    await navigator.clipboard.writeText(
-      String(id)
-    );
-
-    showToast(
-      "🆔 User ID copied"
-    );
-
-  }catch(e){
-
-    showToast(
-      "ID: "+id
-    );
-
-  }
-
-};
-
-/* =====================================================
-   PROFILE ACTIONS
-===================================================== */
-
-window.profileCP =
-function(){
-
-  showFeature(
-    "💞 CP Space",
-    `
-      <div class="option-grid">
-
-        <div class="option">
-          <div>💞</div>
-          <b>CP</b>
-          <small>No CP</small>
-        </div>
-
-        <div class="option">
-          <div>❤️</div>
-          <b>Love</b>
-          <small>Build CP</small>
-        </div>
-
-        <div class="option">
-          <div>💎</div>
-          <b>Points</b>
-          <small>0</small>
-        </div>
-
-      </div>
-
-      <button
-        class="primary"
-        style="margin-top:12px"
-        onclick="sendCPRequest()">
-
-        💞 Send CP Request
-
+      <button class="seat-action">
+        ${seat.userId ? (isMe ? "You" : "Profile") : "Take Seat"}
       </button>
-    `
-  );
-
-};
-
-window.profileFamily =
-function(){
-
-  showFeature(
-    "👨‍👩‍👧 Family",
-    `
-      <div class="option-grid">
-
-        <div class="option">
-          <div>👨‍👩‍👧</div>
-          <b>Family</b>
-          <small>Not Joined</small>
-        </div>
-
-        <div class="option">
-          <div>👥</div>
-          <b>Members</b>
-          <small>0</small>
-        </div>
-
-        <div class="option">
-          <div>⭐</div>
-          <b>EXP</b>
-          <small>0</small>
-        </div>
-
-      </div>
-    `
-  );
-
-};
-
-window.profileFrame =
-function(){
-
-  showFeature(
-    "✨ Frames",
-    `
-      <div class="option-grid">
-
-        <div class="option">
-          <div>✨</div>
-          <b>Avatar Frame</b>
-          <small>Current</small>
-        </div>
-
-        <div class="option">
-          <div>🌈</div>
-          <b>Special</b>
-          <small>Locked</small>
-        </div>
-
-        <div class="option">
-          <div>👑</div>
-          <b>VIP Frame</b>
-          <small>VIP</small>
-        </div>
-
-      </div>
-    `
-  );
-
-};
-
-window.profileBadge =
-function(){
-
-  showFeature(
-    "🏅 Badge & Medal",
-    `
-      <div class="option-grid">
-
-        <div class="option">
-          <div>🏅</div>
-          <b>Badge</b>
-          <small>Available</small>
-        </div>
-
-        <div class="option">
-          <div>🥇</div>
-          <b>Medal</b>
-          <small>Level Medal</small>
-        </div>
-
-        <div class="option">
-          <div>⭐</div>
-          <b>Achievement</b>
-          <small>View</small>
-        </div>
-
-      </div>
-    `
-  );
-
-};
-
-window.profileEvents =
-function(){
-
-  showFeature(
-    "🎯 Events",
-    `
-      <div class="option-grid">
-
-        <div class="option">
-          <div>🎯</div>
-          <b>Events</b>
-          <small>Active</small>
-        </div>
-
-        <div class="option">
-          <div>🎁</div>
-          <b>Rewards</b>
-          <small>Claim</small>
-        </div>
-
-        <div class="option">
-          <div>🔥</div>
-          <b>Activity</b>
-          <small>View</small>
-        </div>
-
-      </div>
-    `
-  );
-
-};
-
-window.profileRanking =
-function(){
-
-  showFeature(
-    "🏆 Ranking",
-    `
-      <div class="option-grid">
-
-        <div class="option">
-          <div>👑</div>
-          <b>Rich King</b>
-          <small>View Rank</small>
-        </div>
-
-        <div class="option">
-          <div>💞</div>
-          <b>CP Rank</b>
-          <small>View Rank</small>
-        </div>
-
-        <div class="option">
-          <div>🎤</div>
-          <b>Voice Rank</b>
-          <small>View Rank</small>
-        </div>
-
-      </div>
-    `
-  );
-
-};
-
-window.profileVIP =
-function(){
-
-  showFeature(
-    "👑 VIP",
-    `
-      <div style="text-align:center;padding:10px">
-
-        <div style="font-size:55px">
-          👑
-        </div>
-
-        <h2>
-          VIP ${Number(USER.vipLevel || 0)}
-        </h2>
-
-        <p style="color:#bbb">
-          VIP rewards, frames and special privileges
-        </p>
-
-      </div>
-    `
-  );
-
-};
-
-window.profileLevel =
-function(){
-
-  showFeature(
-    "⭐ Level & EXP",
-    `
-      <div style="padding:10px">
-
-        <h2>
-          Level ${Number(USER.level || 1)}
-        </h2>
-
-        <p>
-          EXP: ${Number(USER.exp || 0)}
-        </p>
-
-        <div class="exp-bar">
-
-          <div
-            class="exp-fill"
-            style="
-              width:${Math.min(
-                100,
-                Number(USER.exp || 0)%1000/10
-              )}%
-            ">
-          </div>
-
-        </div>
-
-        <p style="color:#bbb">
-          Level बढ़ाने के लिए chat, voice,
-          gifts और daily activities करें।
-        </p>
-
-      </div>
-    `
-  );
-
-};
-
-window.sendCPRequest =
-function(){
-
-  showToast(
-    "💞 CP request sent"
-  );
-
-};
-
-window.followUser =
-async function(userId){
-
-  if(
-    String(userId) ===
-    String(USER.userId)
-  ){
-
-    showToast(
-      "आप खुद को follow नहीं कर सकते"
-    );
-
-    return;
-
-  }
-
-  USER.following =
-    Number(USER.following || 0)+1;
-
-  await saveUserFirebase();
-
-  showToast(
-    "❤️ Followed"
-  );
-
-};
-
-window.privateChat =
-function(userId){
-
-  closeModal("profileModal");
-
-  showToast(
-    "💬 Private chat खोलने के लिए Inbox module connect करें"
-  );
-
-};
-
-window.giftUser =
-function(userId){
-
-  closeModal("profileModal");
-
-  openGifts(userId);
-
-};
-
-window.viewFullProfile =
-function(userId){
-
-  showToast(
-    "👤 Profile ID: "+userId
-  );
-
-};
-
-window.reportUser =
-function(userId){
-
-  showToast(
-    "🚨 Report submitted"
-  );
-
-};
-
-/* =====================================================
-   ADMIN
-===================================================== */
-
-function isAdmin(){
-
-  return (
-    String(USER.userId) ===
-      String(ROOM.ownerId || ROOM.owner)
-    ||
-    !!(
-      ROOM.admins &&
-      ROOM.admins[USER.userId]
-    )
-  );
-
-}
-
-window.muteUser =
-async function(userId){
-
-  if(!isAdmin()){
-
-    showToast(
-      "Only owner/admin"
-    );
-
-    return;
-
-  }
-
-  ROOM.mutedUsers =
-    ROOM.mutedUsers || {};
-
-  ROOM.mutedUsers[userId] = true;
-
-  for(let i=0;i<ROOM.seats.length;i++){
-
-    const s =
-      ROOM.seats[i];
-
-    if(
-      s &&
-      String(s.userId || s.id) ===
-      String(userId)
-    ){
-
-      ROOM.seats[i].muted = true;
-
+    `;
+
+    const action = element.querySelector(".seat-action");
+
+    action.addEventListener("click", () => {
+      if (!seat.userId) {
+        takeSeat(seat.seat);
+      } else if (isMe) {
+        openEditProfile();
+      } else {
+        openProfile(seat);
+      }
+    });
+
+    element.querySelector(".avatar").addEventListener("click", () => {
+      if (!seat.userId) {
+        takeSeat(seat.seat);
+      } else {
+        openProfile(seat);
+      }
+    });
+
+    if (canAdmin) {
+      element.addEventListener("contextmenu", event => {
+        event.preventDefault();
+        openProfile(seat);
+      });
     }
 
-  }
-
-  await saveRoom();
-
-  closeModal("profileModal");
-
-  renderRoom();
-
-  showToast(
-    "🔇 User muted"
-  );
-
-};
-
-window.kickUser =
-async function(userId){
-
-  if(!isAdmin()){
-
-    showToast(
-      "Only owner/admin"
-    );
-
-    return;
-
-  }
-
-  for(let i=0;i<ROOM.seats.length;i++){
-
-    const s =
-      ROOM.seats[i];
-
-    if(
-      s &&
-      String(s.userId || s.id) ===
-      String(userId)
-    ){
-
-      ROOM.seats[i] = null;
-
+    if (owner) {
+      ownerContainer.appendChild(element);
+    } else {
+      grid.appendChild(element);
     }
-
-  }
-
-  if(ROOM.users){
-    delete ROOM.users[userId];
-  }
-
-  if(ROOM.members){
-    delete ROOM.members[userId];
-  }
-
-  await saveRoom();
-
-  closeModal("profileModal");
-
-  renderRoom();
-
-  showToast(
-    "🚪 User removed"
-  );
-
-};
-
-/* =====================================================
-   ROOM FEATURES
-===================================================== */
-
-window.toggleRoomFeatures =
-function(){
-
-  const panel =
-    document.getElementById(
-      "featuresPanel"
-    );
-
-  const button =
-    document.getElementById(
-      "featuresButton"
-    );
-
-  panel.classList.toggle("show");
-
-  button.classList.toggle("open");
-
-};
-
-window.roomSupport =
-function(){
-
-  showFeature(
-    "💜 Room Support",
-    `
-      <div style="text-align:center;padding:15px">
-
-        <div style="font-size:55px">💜</div>
-
-        <h2>Support this Room</h2>
-
-        <p style="color:#bbb">
-          Room को support करें और Room EXP बढ़ाएँ।
-        </p>
-
-        <button
-          class="primary"
-          onclick="addRoomExp(100)">
-          💜 Support +100 EXP
-        </button>
-
-      </div>
-    `
-  );
-
-};
-
-window.luckyWheel =
-function(){
-
-  showFeature(
-    "🎡 Lucky Wheel",
-    `
-      <div style="text-align:center;padding:15px">
-
-        <div
-          style="
-            font-size:85px;
-            animation:spin 1s linear infinite;
-          ">
-          🎡
-        </div>
-
-        <h2>Lucky Wheel</h2>
-
-        <button
-          class="primary"
-          onclick="spinWheel()">
-          🎡 SPIN
-        </button>
-
-      </div>
-    `
-  );
-
-};
-
-window.spinWheel =
-function(){
-
-  const rewards=[
-    "🪙 100 Coins",
-    "🪙 500 Coins",
-    "💎 10 Diamonds",
-    "🎁 Gift",
-    "✨ Frame",
-    "⭐ EXP"
-  ];
-
-  const reward =
-    rewards[
-      Math.floor(
-        Math.random()*rewards.length
-      )
-    ];
-
-  showToast(
-    "🎡 "+reward
-  );
-
-};
-
-window.bountyHunter =
-function(){
-
-  showFeature(
-    "🎯 Bounty Hunter",
-    `
-      <div style="text-align:center;padding:10px">
-
-        <div style="font-size:55px">🎯</div>
-
-        <h2>Today's Bounty</h2>
-
-        <p>
-          Chat और voice activity पूरी करें।
-        </p>
-
-        <button
-          class="primary"
-          onclick="addRoomExp(200)">
-          🎯 Complete +200 EXP
-        </button>
-
-      </div>
-    `
-  );
-
-};
-
-window.roomReward =
-function(){
-
-  showFeature(
-    "🎁 Room Reward",
-    `
-      <div class="option-grid">
-
-        <div class="option">
-          <div>🪙</div>
-          <b>Coins</b>
-          <small>Reward</small>
-        </div>
-
-        <div class="option">
-          <div>💎</div>
-          <b>Diamond</b>
-          <small>Reward</small>
-        </div>
-
-        <div class="option">
-          <div>🎁</div>
-          <b>Gift</b>
-          <small>Reward</small>
-        </div>
-
-      </div>
-
-      <button
-        class="primary"
-        style="margin-top:12px"
-        onclick="claimRoomReward()">
-        🎁 Claim
-      </button>
-    `
-  );
-
-};
-
-window.claimRoomReward =
-function(){
-
-  USER.coins =
-    Number(USER.coins || 0)+1000;
-
-  saveUserFirebase();
-
-  showToast(
-    "🎁 1,000 Coins received"
-  );
-
-};
-
-window.dailyReward =
-function(){
-
-  showFeature(
-    "📅 Daily Reward",
-    `
-      <div class="option-grid">
-
-        <div class="option">
-          <div>1️⃣</div>
-          <b>Day 1</b>
-          <small>1 Lakh Coins</small>
-        </div>
-
-        <div class="option">
-          <div>2️⃣</div>
-          <b>Day 2</b>
-          <small>2 Lakh Coins</small>
-        </div>
-
-        <div class="option">
-          <div>3️⃣</div>
-          <b>Day 3</b>
-          <small>Frame + 3 Lakh</small>
-        </div>
-
-        <div class="option">
-          <div>4️⃣</div>
-          <b>Day 4</b>
-          <small>4 Lakh Coins</small>
-        </div>
-
-        <div class="option">
-          <div>5️⃣</div>
-          <b>Day 5</b>
-          <small>Gift + 5 Lakh</small>
-        </div>
-
-        <div class="option">
-          <div>6️⃣</div>
-          <b>Day 6</b>
-          <small>Diamond + 6 Lakh</small>
-        </div>
-
-        <div class="option">
-          <div>7️⃣</div>
-          <b>Day 7</b>
-          <small>VIP + 7 Lakh</small>
-        </div>
-
-      </div>
-    `
-  );
-
-};
-
-window.openGames =
-function(){
-
-  showFeature(
-    "🎮 Games",
-    `
-      <div class="option-grid">
-
-        <div class="option">
-          <div>🎡</div>
-          <b>Lucky Wheel</b>
-        </div>
-
-        <div class="option">
-          <div>🎯</div>
-          <b>Bounty</b>
-        </div>
-
-        <div class="option">
-          <div>🎲</div>
-          <b>Dice</b>
-        </div>
-
-      </div>
-    `
-  );
-
-};
-
-window.openExclusive =
-function(){
-
-  showFeature(
-    "👑 Exclusive Benefits",
-    `
-      <div class="option-grid">
-
-        <div class="option">
-          <div>👑</div>
-          <b>VIP</b>
-          <small>Benefits</small>
-        </div>
-
-        <div class="option">
-          <div>✨</div>
-          <b>Frame</b>
-          <small>Special</small>
-        </div>
-
-        <div class="option">
-          <div>🚀</div>
-          <b>Room EXP</b>
-          <small>Boost</small>
-        </div>
-
-      </div>
-    `
-  );
-
-};
-
-/* =====================================================
-   ROOM EXP
-===================================================== */
-
-async function addRoomExp(amount){
-
-  ROOM.roomExp =
-    Number(ROOM.roomExp || 0) +
-    Number(amount || 0);
-
-  await saveRoom();
-
-  renderRoom();
-
-  showToast(
-    "🚀 Room EXP +"+amount
-  );
-
-}
-
-function getRoomLevel(exp){
-
-  return Math.max(
-    1,
-    Math.floor(
-      Number(exp || 0)/10000
-    )+1
-  );
-
-}
-
-/* =====================================================
-   ROOM INFO
-===================================================== */
-
-window.openRoomInfo =
-function(){
-
-  document.getElementById(
-    "roomInfoContent"
-  ).innerHTML = `
-
-    <div class="option-grid">
-
-      <div class="option">
-        <div>🏠</div>
-        <b>Room</b>
-        <small>${esc(ROOM.name)}</small>
-      </div>
-
-      <div class="option">
-        <div>🆔</div>
-        <b>Room ID</b>
-        <small>${esc(ROOM.id || ROOM_ID)}</small>
-      </div>
-
-      <div class="option">
-        <div>👥</div>
-        <b>Online</b>
-        <small>${countOnline()}/9</small>
-      </div>
-
-      <div class="option">
-        <div>📂</div>
-        <b>Category</b>
-        <small>${esc(ROOM.category || "General")}</small>
-      </div>
-
-      <div class="option">
-        <div>🎤</div>
-        <b>Type</b>
-        <small>${esc(ROOM.privacy || "public")}</small>
-      </div>
-
-      <div class="option">
-        <div>🚀</div>
-        <b>EXP</b>
-        <small>${Number(ROOM.roomExp || 0)}</small>
-      </div>
-
-    </div>
-  `;
-
-  openModal("roomInfoModal");
-
-};
-
-/* =====================================================
-   ROOM SETTINGS
-===================================================== */
-
-window.openRoomSettings =
-function(){
-
-  document.getElementById(
-    "editRoomName"
-  ).value =
-    ROOM.name || "";
-
-  document.getElementById(
-    "editRoomDp"
-  ).value =
-    ROOM.dp || "";
-
-  document.getElementById(
-    "editCategory"
-  ).value =
-    ROOM.category || "General";
-
-  document.getElementById(
-    "roomPrivacy"
-  ).value =
-    ROOM.privacy || "public";
-
-  document.getElementById(
-    "roomDpPreview"
-  ).src =
-    ROOM.dp ||
-    "https://i.pravatar.cc/200?img=12";
-
-  openModal(
-    "settingsModal"
-  );
-
-};
-
-let selectedRoomDp =
-  "";
-
-window.previewRoomDp =
-function(event){
-
-  const file =
-    event.target.files?.[0];
-
-  if(!file) return;
-
-  const reader =
-    new FileReader();
-
-  reader.onload =
-    function(){
-
-      selectedRoomDp =
-        reader.result;
-
-      document.getElementById(
-        "roomDpPreview"
-      ).src =
-        selectedRoomDp;
-
-    };
-
-  reader.readAsDataURL(file);
-
-};
-
-window.saveRoomSettings =
-async function(){
-
-  if(
-    String(USER.userId) !==
-    String(ROOM.ownerId || ROOM.owner)
-  ){
-
-    showToast(
-      "Only room owner can change settings"
-    );
-
-    return;
-
-  }
-
-  ROOM.name =
-    document.getElementById(
-      "editRoomName"
-    ).value.trim() ||
-    "PawanVoice Room";
-
-  const url =
-    document.getElementById(
-      "editRoomDp"
-    ).value.trim();
-
-  ROOM.dp =
-    selectedRoomDp ||
-    url ||
-    ROOM.dp;
-
-  ROOM.category =
-    document.getElementById(
-      "editCategory"
-    ).value;
-
-  ROOM.privacy =
-    document.getElementById(
-      "roomPrivacy"
-    ).value;
-
-  await saveRoom();
-
-  renderRoom();
-
-  closeModal(
-    "settingsModal"
-  );
-
-  showToast(
-    "✅ Room updated"
-  );
-
-};
-
-/* =====================================================
-   INVITE
-===================================================== */
-
-window.inviteRoom =
-async function(){
-
-  const link =
-    location.origin+
-    location.pathname+
-    "?room="+
-    encodeURIComponent(
-      ROOM.id || ROOM_ID
-    );
-
-  try{
-
-    await navigator.clipboard.writeText(
-      link
-    );
-
-    showToast(
-      "📨 Room link copied"
-    );
-
-  }catch(e){
-
-    showToast(
-      link
-    );
-
-  }
-
-};
-
-/* =====================================================
-   GIFTS - 200
-===================================================== */
-
-const giftEmojis = [
-  "🌹","❤️","💖","💋","🌸","🌺","🌷","🍫",
-  "🎁","💎","👑","💍","🧸","🎂","🍰","🍓",
-  "🍒","🍉","🍕","🍔","🍟","🍿","☕","🍹",
-  "🎈","🎉","🎊","🎀","🦋","🐻","🐼","🐰",
-  "🐱","🐶","🦄","🐯","🦁","🐨","🐸","🐵",
-  "🔥","⚡","🌈","⭐","🌙","☀️","✨","💫",
-  "🚗","🏎️","🏍️","✈️","🚀","🛳️","🏰","💰"
-];
-
-const gifts = [];
-
-for(let i=1;i<=200;i++){
-
-  gifts.push({
-
-    id:"gift"+i,
-
-    name:
-      "Gift "+i,
-
-    emoji:
-      giftEmojis[
-        (i-1)%
-        giftEmojis.length
-      ],
-
-    price:
-      i<=20
-        ? i*10
-        : i<=50
-        ? i*50
-        : i<=100
-        ? i*100
-        : i*500
-
   });
 
+  updateBottomControls();
+}
+
+function renderTopUsers() {
+  const container = document.getElementById("topUsers");
+
+  const occupied = room.seats.filter(seat => seat.userId);
+
+  const sorted = occupied.slice(0, 3);
+
+  const defaults = [
+    { name:"Room Host", dp:"", userId:"", score:0 },
+    { name:"Waiting", dp:"", userId:"", score:0 },
+    { name:"Waiting", dp:"", userId:"", score:0 }
+  ];
+
+  const medals = ["👑","🥈","🥉"];
+
+  container.innerHTML = "";
+
+  for (let i = 0; i < 3; i++) {
+    const seat = sorted[i];
+    const item = seat || defaults[i];
+
+    const element = document.createElement("div");
+    element.className = "top-user";
+
+    element.innerHTML = `
+      <div class="top-crown">${medals[i]}</div>
+      <div class="top-avatar">
+        <div class="avatar">
+          ${getAvatarHTML(item.dp, seat ? "🙂" : "＋")}
+        </div>
+      </div>
+      <div class="top-name">${escapeHTML(item.name || "Waiting")}</div>
+      <div class="top-score">⭐ ${seat ? 1 : 0}</div>
+    `;
+
+    element.addEventListener("click", () => {
+      if (seat) openProfile(seat);
+    });
+
+    container.appendChild(element);
+  }
+}
+
+function renderProfile() {
+  document.getElementById("profileName").textContent = user.name;
+  document.getElementById("profileId").textContent = user.userId;
+  document.getElementById("profileLevel").textContent = user.level;
+  document.getElementById("profileCoins").textContent =
+    Number(user.coins).toLocaleString("en-IN");
+  document.getElementById("profileDiamonds").textContent =
+    Number(user.diamonds).toLocaleString("en-IN");
+
+  document.getElementById("profileAvatar").innerHTML =
+    getAvatarHTML(user.dp, "🙂");
+
+  document.getElementById("profileExtra").textContent =
+    "Gender: " + user.gender + " · PawanVoice Member";
+}
+
+function updateBottomControls() {
+  const seat = currentSeat();
+
+  document.getElementById("takeSeatBtn").classList.toggle(
+    "active",
+    !!seat
+  );
+
+  document.getElementById("seatActionLabel").textContent =
+    seat ? "Leave Seat" : "Take Seat";
+
+  document.getElementById("micBtn").classList.toggle(
+    "mic-on",
+    micEnabled
+  );
+
+  document.getElementById("micIcon").textContent =
+    micEnabled ? "🎙️" : "🔇";
+
+  document.getElementById("micLabel").textContent =
+    micEnabled ? "Mic On" : "Mic Off";
+
+  document.getElementById("speakerIcon").textContent =
+    speakerEnabled ? "🔊" : "🔈";
+
+  document.getElementById("speakerLabel").textContent =
+    speakerEnabled ? "Speaker On" : "Speaker Off";
 }
 
 /* =====================================================
-   OPEN GIFTS
+   TAKE / LEAVE SEAT
 ===================================================== */
 
-window.openGifts =
-function(targetUserId=""){
-
-  if(targetUserId){
-
-    selectedProfileUserId =
-      String(targetUserId);
-
-  }else{
-
-    selectedProfileUserId =
-      "";
-
-  }
-
-  document.getElementById(
-    "giftBalance"
-  ).textContent =
-    "🪙 Coins: "+
-    Number(USER.coins || 0);
-
-  const grid =
-    document.getElementById(
-      "giftsGrid"
-    );
-
-  grid.innerHTML =
-    gifts.map(g=>`
-
-      <button
-        class="gift"
-        onclick="sendGift('${g.id}')">
-
-        <div class="gift-icon">
-          ${g.emoji}
-        </div>
-
-        <div class="gift-name">
-          ${esc(g.name)}
-        </div>
-
-        <div class="gift-price">
-          🪙 ${g.price}
-        </div>
-
-      </button>
-
-    `).join("");
-
-  openModal("giftModal");
-
-};
-
-/* =====================================================
-   SEND GIFT
-===================================================== */
-
-window.sendGift =
-async function(giftId){
-
-  const gift =
-    gifts.find(
-      g=>g.id === giftId
-    );
-
-  if(!gift) return;
-
-  const price =
-    Number(gift.price);
-
-  if(
-    Number(USER.coins || 0) <
-    price
-  ){
-
-    showToast(
-      "🪙 Coins कम हैं"
-    );
-
+function takeSeat(seatNumber) {
+  if (!socket?.connected || !joinedRoom) {
+    toast("पहले Room Server से कनेक्ट होने दें।");
     return;
-
   }
 
-  USER.coins =
-    Number(USER.coins || 0) -
-    price;
+  const existing = currentSeat();
 
-  await saveUserFirebase();
-
-  const target =
-    selectedProfileUserId ||
-    getFirstGiftTarget();
-
-  if(socket){
-
-    socket.emit(
-      "gift",
-      {
-        roomId:ROOM_ID,
-
-        giftId:gift.id,
-
-        giftName:gift.name,
-
-        emoji:gift.emoji,
-
-        price:gift.price,
-
-        fromUserId:USER.userId,
-
-        fromName:USER.name,
-
-        toUserId:target
-      }
-    );
-
+  if (existing) {
+    toast("आप पहले से Seat " + existing.seat + " पर हैं।");
+    return;
   }
 
-  await addRoomExp(
-    Math.max(
-      1,
-      Math.floor(price/10)
-    )
-  );
+  socket.emit("seat:take", {
+    seat: Number(seatNumber),
+    seatNumber: Number(seatNumber)
+  });
+}
 
-  document.getElementById(
-    "giftBalance"
-  ).textContent =
-    "🪙 Coins: "+
-    Number(USER.coins || 0);
+function leaveSeat() {
+  if (!socket?.connected) return;
 
-  showToast(
-    gift.emoji+
-    " "+
-    gift.name+
-    " sent"
-  );
+  stopMicrophone();
 
-};
+  socket.emit("seat:leave");
+  socket.emit("leaveSeat");
 
-function getFirstGiftTarget(){
+  toast("आपने सीट छोड़ दी।");
+}
 
-  for(const s of ROOM.seats || []){
+document.getElementById("takeSeatBtn").addEventListener("click", () => {
+  if (currentSeat()) {
+    leaveSeat();
+  } else {
+    const emptySeat = room.seats.find(seat => !seat.userId);
 
-    if(
-      s &&
-      String(s.userId || s.id) !==
-      String(USER.userId)
-    ){
-
-      return s.userId || s.id;
-
+    if (!emptySeat) {
+      toast("सभी सीटें भरी हुई हैं।");
+      return;
     }
 
+    takeSeat(emptySeat.seat);
+  }
+});
+
+/* =====================================================
+   MICROPHONE / WEBRTC
+===================================================== */
+
+async function startMicrophone() {
+  if (mutedByOwner) {
+    toast("Room Owner ने आपका Mic बंद किया है।");
+    return;
   }
 
-  return "";
+  if (!currentSeat()) {
+    toast("पहले किसी खाली सीट पर बैठें।");
+    return;
+  }
 
+  if (!navigator.mediaDevices?.getUserMedia) {
+    toast("इस ब्राउज़र में Mic उपलब्ध नहीं है। HTTPS पर खोलें।");
+    return;
+  }
+
+  try {
+    microphoneStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      },
+      video: false
+    });
+
+    micEnabled = true;
+
+    socket?.emit("mic:toggle", {
+      enabled: true
+    });
+
+    updateBottomControls();
+
+    await startPeerConnections();
+
+    toast("Mic चालू है।");
+  } catch (error) {
+    console.error("Microphone error:", error);
+
+    micEnabled = false;
+    updateBottomControls();
+
+    if (error.name === "NotAllowedError") {
+      toast("Mic permission Allow करें।");
+    } else {
+      toast("Mic चालू नहीं हो सका।");
+    }
+  }
 }
+
+function stopMicrophone() {
+  if (microphoneStream) {
+    microphoneStream.getTracks().forEach(track => track.stop());
+    microphoneStream = null;
+  }
+
+  micEnabled = false;
+
+  peerConnections.forEach(pc => {
+    pc.getSenders().forEach(sender => {
+      if (sender.track?.kind === "audio") {
+        try {
+          pc.removeTrack(sender);
+        } catch {}
+      }
+    });
+  });
+
+  if (socket?.connected) {
+    socket.emit("mic:toggle", {
+      enabled: false
+    });
+  }
+
+  updateBottomControls();
+}
+
+async function toggleMicrophone() {
+  if (micEnabled) {
+    stopMicrophone();
+    toast("Mic बंद है।");
+  } else {
+    await startMicrophone();
+  }
+}
+
+document.getElementById("micBtn").addEventListener(
+  "click",
+  toggleMicrophone
+);
+
+async function startPeerConnections() {
+  if (!socket?.connected || !microphoneStream) return;
+
+  const others = room.users.filter(
+    member => member.socketId &&
+      member.socketId !== socket.id &&
+      member.userId !== user.userId
+  );
+
+  for (const member of others) {
+    if (!peerConnections.has(member.socketId)) {
+      await createPeerConnection(member.socketId, true);
+    }
+  }
+}
+
+async function createPeerConnection(targetId, createOffer) {
+  if (!targetId || targetId === socket?.id) return null;
+
+  if (peerConnections.has(targetId)) {
+    return peerConnections.get(targetId);
+  }
+
+  const pc = new RTCPeerConnection(RTC_CONFIG);
+
+  peerConnections.set(targetId, pc);
+
+  if (microphoneStream) {
+    microphoneStream.getTracks().forEach(track => {
+      pc.addTrack(track, microphoneStream);
+    });
+  }
+
+  pc.onicecandidate = event => {
+    if (!event.candidate || !socket?.connected) return;
+
+    socket.emit("webrtc:ice", {
+      targetId,
+      candidate: event.candidate
+    });
+  };
+
+  pc.ontrack = event => {
+    let audio = remoteAudioElements.get(targetId);
+
+    if (!audio) {
+      audio = document.createElement("audio");
+      audio.autoplay = true;
+      audio.playsInline = true;
+      audio.dataset.peer = targetId;
+
+      document.body.appendChild(audio);
+
+      remoteAudioElements.set(targetId, audio);
+    }
+
+    audio.srcObject = event.streams[0];
+    audio.muted = !speakerEnabled;
+
+    audio.play().catch(() => {
+      toast("दूसरे यूज़र की आवाज़ सुनने के लिए स्क्रीन पर टैप करें।");
+    });
+  };
+
+  pc.onconnectionstatechange = () => {
+    if (
+      pc.connectionState === "failed" ||
+      pc.connectionState === "closed" ||
+      pc.connectionState === "disconnected"
+    ) {
+      if (pc.connectionState === "failed") {
+        closePeer(targetId);
+      }
+    }
+  };
+
+  if (createOffer && microphoneStream) {
+    try {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+
+      socket.emit("webrtc:offer", {
+        targetId,
+        offer: pc.localDescription
+      });
+    } catch (error) {
+      console.error("Offer failed:", error);
+    }
+  }
+
+  return pc;
+}
+
+async function handleWebRTCOffer(data) {
+  if (!data?.from || !data.offer) return;
+
+  try {
+    const pc = await createPeerConnection(data.from, false);
+
+    if (!pc) return;
+
+    await pc.setRemoteDescription(
+      new RTCSessionDescription(data.offer)
+    );
+
+    const candidates = pendingIceCandidates.get(data.from) || [];
+
+    for (const candidate of candidates) {
+      await pc.addIceCandidate(candidate).catch(console.error);
+    }
+
+    pendingIceCandidates.delete(data.from);
+
+    if (microphoneStream) {
+      microphoneStream.getTracks().forEach(track => {
+        const exists = pc.getSenders().some(
+          sender => sender.track === track
+        );
+
+        if (!exists) pc.addTrack(track, microphoneStream);
+      });
+    }
+
+    const answer = await pc.createAnswer();
+
+    await pc.setLocalDescription(answer);
+
+    socket.emit("webrtc:answer", {
+      targetId: data.from,
+      answer: pc.localDescription
+    });
+  } catch (error) {
+    console.error("WebRTC offer error:", error);
+  }
+}
+
+async function handleWebRTCAnswer(data) {
+  if (!data?.from || !data.answer) return;
+
+  const pc = peerConnections.get(data.from);
+
+  if (!pc) return;
+
+  try {
+    await pc.setRemoteDescription(
+      new RTCSessionDescription(data.answer)
+    );
+
+    const candidates = pendingIceCandidates.get(data.from) || [];
+
+    for (const candidate of candidates) {
+      await pc.addIceCandidate(candidate).catch(console.error);
+    }
+
+    pendingIceCandidates.delete(data.from);
+  } catch (error) {
+    console.error("WebRTC answer error:", error);
+  }
+}
+
+async function handleWebRTCIce(data) {
+  if (!data?.from || !data.candidate) return;
+
+  const candidate = new RTCIceCandidate(data.candidate);
+  const pc = peerConnections.get(data.from);
+
+  if (!pc || !pc.remoteDescription) {
+    const list = pendingIceCandidates.get(data.from) || [];
+    list.push(candidate);
+    pendingIceCandidates.set(data.from, list);
+    return;
+  }
+
+  try {
+    await pc.addIceCandidate(candidate);
+  } catch (error) {
+    console.error("ICE candidate error:", error);
+  }
+}
+
+function closePeer(targetId) {
+  const pc = peerConnections.get(targetId);
+
+  if (pc) {
+    try {
+      pc.close();
+    } catch {}
+
+    peerConnections.delete(targetId);
+  }
+
+  const audio = remoteAudioElements.get(targetId);
+
+  if (audio) {
+    audio.srcObject = null;
+    audio.remove();
+    remoteAudioElements.delete(targetId);
+  }
+
+  pendingIceCandidates.delete(targetId);
+}
+
+function cleanupPeerConnections() {
+  Array.from(peerConnections.keys()).forEach(closePeer);
+}
+
+document.getElementById("speakerBtn").addEventListener("click", () => {
+  speakerEnabled = !speakerEnabled;
+
+  remoteAudioElements.forEach(audio => {
+    audio.muted = !speakerEnabled;
+
+    if (speakerEnabled) {
+      audio.play().catch(() => {});
+    }
+  });
+
+  updateBottomControls();
+
+  toast(speakerEnabled ? "Speaker चालू है।" : "Speaker बंद है।");
+});
 
 /* =====================================================
    CHAT
 ===================================================== */
 
-window.sendChat =
-function(){
+function addSystemMessage(message) {
+  addChatElement({
+    system: true,
+    message
+  });
+}
 
-  const input =
-    document.getElementById(
-      "chatInput"
-    );
+function addChatElement(item) {
+  const container = document.getElementById("chatMessages");
 
-  const text =
-    input.value.trim();
+  const element = document.createElement("div");
 
-  if(!text) return;
+  if (item.system) {
+    element.className = "chat-message system";
+    element.textContent = item.message || "";
+  } else {
+    element.className =
+      "chat-message" + (item.isGift ? " gift-message" : "");
 
-  const message = {
+    const name = document.createElement("span");
+    name.className = "chat-name";
+    name.textContent = (item.name || "Guest") + ":";
 
-    userId:USER.userId,
-    name:USER.name,
-    text:text,
+    const message = document.createElement("span");
+    message.className = "chat-text";
+    message.textContent = " " + (item.message || item.text || "");
 
-    time:
-      Date.now()
+    element.appendChild(name);
+    element.appendChild(message);
+  }
 
-  };
+  container.appendChild(element);
+
+  while (container.children.length > 100) {
+    container.removeChild(container.firstChild);
+  }
+
+  container.scrollTop = container.scrollHeight;
+}
+
+function handleIncomingChat(item) {
+  if (!item) return;
+
+  // Prevent duplicate rendering because the server sends
+  // compatibility events as well as the primary event.
+  const key = item.id || (
+    String(item.userId || "") + "|" +
+    String(item.timestamp || "") + "|" +
+    String(item.message || item.text || "")
+  );
+
+  if (!window._pvSeenMessages) {
+    window._pvSeenMessages = new Set();
+  }
+
+  if (window._pvSeenMessages.has(key)) return;
+
+  window._pvSeenMessages.add(key);
+
+  if (window._pvSeenMessages.size > 500) {
+    window._pvSeenMessages.clear();
+    window._pvSeenMessages.add(key);
+  }
+
+  addChatElement(item);
+}
+
+function sendChat() {
+  if (!socket?.connected || !joinedRoom) {
+    toast("Room से कनेक्ट होने दें।");
+    return;
+  }
+
+  const input = document.getElementById("chatInput");
+  const message = input.value.trim();
+
+  if (!message) return;
+
+  socket.emit("chat:send", {
+    message,
+    text: message
+  });
 
   input.value = "";
-
-  if(socket){
-
-    socket.emit(
-      "chat",
-      {
-        roomId:ROOM_ID,
-        message:message
-      }
-    );
-
-  }
-
-  addChatMessage(message);
-
-};
-
-function addChatMessage(message){
-
-  if(!message) return;
-
-  ROOM.messages =
-    ROOM.messages || [];
-
-  ROOM.messages.push(
-    message
-  );
-
-  if(
-    ROOM.messages.length > 100
-  ){
-
-    ROOM.messages =
-      ROOM.messages.slice(-100);
-
-  }
-
-  renderChat();
-
-}
-
-function renderChat(){
-
-  const list =
-    document.getElementById(
-      "chatList"
-    );
-
-  if(!list) return;
-
-  const messages =
-    ROOM.messages || [];
-
-  list.innerHTML =
-    messages.map(m=>`
-
-      <div class="msg">
-
-        <b>
-          ${esc(m.name || "Guest")}
-        </b>
-
-        :
-        ${esc(m.text || "")}
-
-      </div>
-
-    `).join("");
-
-  list.scrollTop =
-    list.scrollHeight;
-
-}
-
-/* =====================================================
-   EMOJI
-===================================================== */
-
-window.toggleEmoji =
-function(){
-
-  document.getElementById(
-    "emojiPanel"
-  ).classList.toggle("show");
-
-};
-
-window.addEmoji =
-function(emoji){
-
-  const input =
-    document.getElementById(
-      "chatInput"
-    );
-
-  input.value +=
-    emoji;
-
   input.focus();
+}
 
-};
+document.getElementById("sendChatBtn").addEventListener("click", sendChat);
+
+document.getElementById("chatInput").addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    sendChat();
+  }
+});
+
+document.getElementById("clearChatBtn").addEventListener("click", () => {
+  document.getElementById("chatMessages").innerHTML = "";
+  addSystemMessage("Chat view साफ किया गया।");
+});
+
+const EMOJIS = [
+  "😀","😁","😂","🤣","😊","😍","🥰","😘",
+  "😎","😭","😡","🥳","🤔","😴","🤗","🤩",
+  "❤️","💕","💖","💗","💓","💯","🔥","✨",
+  "👍","👎","👏","🙌","🙏","💪","🤝","👋",
+  "🎉","🎊","🎁","🎂","🌹","🌷","🌸","🌺",
+  "⭐","🌟","💎","👑","🦋","🐼","🐱","🐶"
+];
+
+function buildEmojiPanel() {
+  const grid = document.getElementById("emojiGrid");
+  grid.innerHTML = "";
+
+  EMOJIS.forEach(emoji => {
+    const button = document.createElement("button");
+    button.textContent = emoji;
+
+    button.addEventListener("click", () => {
+      const input = document.getElementById("chatInput");
+      input.value += emoji;
+      input.focus();
+    });
+
+    grid.appendChild(button);
+  });
+}
+
+document.getElementById("emojiToggle").addEventListener("click", () => {
+  document.getElementById("emojiPanel").classList.toggle("open");
+});
 
 /* =====================================================
-   MIC
+   GIFTS
 ===================================================== */
 
-window.toggleMic =
-async function(){
+const GIFT_CATALOG = [
+  ["🌹","Rose",10],
+  ["❤️","Heart",20],
+  ["🍫","Chocolate",30],
+  ["☕","Coffee",50],
+  ["🎂","Cake",100],
+  ["🌷","Tulip",150],
+  ["🧸","Teddy Bear",200],
+  ["💐","Bouquet",300],
+  ["💎","Diamond",500],
+  ["👑","Crown",800],
+  ["🎁","Gift Box",1000],
+  ["🦋","Butterfly",1200],
+  ["🐼","Panda",1500],
+  ["🐬","Dolphin",2000],
+  ["🦄","Unicorn",3000],
+  ["🚗","Luxury Car",5000],
+  ["🏰","Castle",10000],
+  ["🚀","Rocket",20000],
+  ["🛳️","Yacht",50000],
+  ["🌌","Galaxy",100000]
+];
 
-  if(micOn){
+function buildGiftGrid() {
+  const grid = document.getElementById("giftGrid");
+  grid.innerHTML = "";
 
-    stopMicrophone();
+  GIFT_CATALOG.forEach((gift, index) => {
+    const [icon, name, price] = gift;
 
-    return;
+    const button = document.createElement("button");
+    button.className = "gift-item";
+    button.innerHTML = `
+      <div class="gift-icon">${icon}</div>
+      <div class="gift-name">${escapeHTML(name)}</div>
+      <div class="gift-price">🪙 ${price.toLocaleString("en-IN")}</div>
+    `;
 
-  }
+    button.addEventListener("click", () => {
+      selectedGift = {
+        id: "gift-" + index,
+        icon,
+        name,
+        price
+      };
 
-  await startMicrophone();
-
-};
-
-async function startMicrophone(){
-
-  try{
-
-    localStream =
-      await navigator.mediaDevices
-      .getUserMedia({
-
-        audio:{
-          echoCancellation:true,
-          noiseSuppression:true,
-          autoGainControl:true
-        }
-
+      grid.querySelectorAll(".gift-item").forEach(item => {
+        item.classList.remove("selected");
       });
 
-    micOn = true;
+      button.classList.add("selected");
 
-    document.getElementById(
-      "micBtn"
-    ).classList.add("active");
+      updateSelectedGift();
+    });
 
-    document.getElementById(
-      "voiceStatus"
-    ).textContent =
-      "Voice On";
+    grid.appendChild(button);
+  });
+}
 
-    showToast(
-      "🎙 Voice system ready"
-    );
+function updateSelectedGift() {
+  const quantity = Number(
+    document.getElementById("giftQuantity").value || 1
+  );
 
-    if(socket){
+  document.getElementById("selectedGiftName").textContent =
+    selectedGift ? selectedGift.icon + " " + selectedGift.name : "कोई Gift नहीं";
 
-      socket.emit(
-        "mic",
-        {
-          roomId:ROOM_ID,
-          userId:USER.userId,
-          enabled:true
-        }
-      );
+  document.getElementById("selectedGiftPrice").textContent =
+    selectedGift
+      ? (selectedGift.price * quantity).toLocaleString("en-IN")
+      : "0";
 
+  document.getElementById("giftCoins").textContent =
+    Number(user.coins).toLocaleString("en-IN");
+}
+
+document.getElementById("giftQuantity").addEventListener(
+  "change",
+  updateSelectedGift
+);
+
+function renderGiftReceiver() {
+  const select = document.getElementById("giftReceiver");
+
+  if (!select) return;
+
+  const oldValue = select.value;
+
+  select.innerHTML = '<option value="">Room में सभी को</option>';
+
+  room.users.forEach(member => {
+    if (member.userId === user.userId) return;
+
+    const option = document.createElement("option");
+    option.value = member.userId;
+    option.textContent = member.name || member.userId;
+
+    select.appendChild(option);
+  });
+
+  if ([...select.options].some(option => option.value === oldValue)) {
+    select.value = oldValue;
+  }
+}
+
+function openGiftModal(receiverId = "") {
+  selectedGift = null;
+
+  document.getElementById("giftReceiver").value = receiverId;
+  document.getElementById("selectedGiftName").textContent = "कोई Gift नहीं";
+  document.getElementById("selectedGiftPrice").textContent = "0";
+  document.getElementById("giftCoins").textContent =
+    Number(user.coins).toLocaleString("en-IN");
+
+  document.querySelectorAll(".gift-item").forEach(item => {
+    item.classList.remove("selected");
+  });
+
+  showModal("giftModal");
+}
+
+document.getElementById("openGiftsFeature").addEventListener(
+  "click",
+  () => openGiftModal()
+);
+
+document.getElementById("bottomGiftBtn").addEventListener(
+  "click",
+  () => openGiftModal()
+);
+
+document.getElementById("profileGiftBtn").addEventListener("click", () => {
+  const receiverId = selectedProfile?.userId || "";
+  closeModal("profileModal");
+  openGiftModal(receiverId);
+});
+
+document.getElementById("sendGiftBtn").addEventListener("click", async () => {
+  if (!selectedGift) {
+    toast("पहले Gift चुनें।");
+    return;
+  }
+
+  if (!socket?.connected || !joinedRoom) {
+    toast("Room से कनेक्ट होने दें।");
+    return;
+  }
+
+  const quantity = Number(
+    document.getElementById("giftQuantity").value || 1
+  );
+
+  const total = selectedGift.price * quantity;
+
+  if (user.coins < total) {
+    toast("आपके पास पर्याप्त Coins नहीं हैं।");
+    return;
+  }
+
+  const receiverId = document.getElementById("giftReceiver").value;
+
+  const receiver = room.users.find(
+    member => member.userId === receiverId
+  );
+
+  /*
+    IMPORTANT:
+    यह client-side demo wallet है।
+    असली wallet/payment सिस्टम में coins server पर verify
+    और deduct होने चाहिए। केवल browser के इस code से
+    सुरक्षित coin transaction नहीं बनता।
+  */
+
+  user.coins -= total;
+
+  saveLocalProfile();
+  renderProfile();
+  updateSelectedGift();
+
+  await saveUserToFirebase();
+
+  socket.emit("gift:send", {
+    giftId: selectedGift.id,
+    giftName: selectedGift.name,
+    giftImage: selectedGift.icon,
+    receiverId: receiverId || "",
+    receiverName: receiver?.name || "",
+    quantity
+  });
+
+  addChatElement({
+    isGift: true,
+    name: user.name,
+    message:
+      "ने " + selectedGift.icon + " " +
+      selectedGift.name + " × " + quantity + " भेजा।"
+  });
+
+  closeModal("giftModal");
+
+  toast("Gift भेज दिया गया।");
+});
+
+function handleIncomingGift(gift) {
+  if (!gift) return;
+
+  const key = gift.id || (
+    String(gift.senderId || "") + "|" +
+    String(gift.timestamp || "")
+  );
+
+  if (!window._pvSeenGifts) {
+    window._pvSeenGifts = new Set();
+  }
+
+  if (window._pvSeenGifts.has(key)) return;
+
+  window._pvSeenGifts.add(key);
+
+  addChatElement({
+    isGift: true,
+    name: gift.senderName || "Guest",
+    message:
+      "ने 🎁 " + (gift.giftName || "Gift") +
+      " × " + Number(gift.quantity || 1) + " भेजा।"
+  });
+}
+
+/* =====================================================
+   USER PROFILE / FOLLOW / ADMIN
+===================================================== */
+
+function openProfile(seat) {
+  selectedProfile = seat;
+
+  const isMe =
+    seat.userId === user.userId ||
+    seat.socketId === socket?.id;
+
+  document.getElementById("profileName").textContent =
+    seat.name || "Guest";
+
+  document.getElementById("profileId").textContent =
+    seat.userId || "—";
+
+  document.getElementById("profileAvatar").innerHTML =
+    getAvatarHTML(seat.dp, "🙂");
+
+  document.getElementById("profileLevel").textContent =
+    isMe ? user.level : "1";
+
+  document.getElementById("profileCoins").textContent =
+    isMe ? Number(user.coins).toLocaleString("en-IN") : "—";
+
+  document.getElementById("profileDiamonds").textContent =
+    isMe ? Number(user.diamonds).toLocaleString("en-IN") : "—";
+
+  document.getElementById("profileExtra").textContent =
+    "Room Member · " + (seat.micOn ? "Mic On" : "Mic Off");
+
+  document.getElementById("followBtn").style.display =
+    isMe ? "none" : "";
+
+  document.getElementById("profileGiftBtn").style.display =
+    isMe ? "none" : "";
+
+  document.getElementById("profileCpBtn").style.display =
+    isMe ? "none" : "";
+
+  document.getElementById("profileMessageBtn").style.display =
+    isMe ? "none" : "";
+
+  document.getElementById("adminActions").style.display =
+    isOwner() && !isMe ? "block" : "none";
+
+  document.getElementById("adminMuteBtn").textContent =
+    seat.muted ? "🔊 Unmute" : "🔇 Mute";
+
+  showModal("profileModal");
+}
+
+document.getElementById("followBtn").addEventListener("click", () => {
+  if (!selectedProfile) return;
+
+  const following = readJSON("pv_following", []);
+
+  if (following.includes(selectedProfile.userId)) {
+    toast("आप पहले से Follow कर रहे हैं।");
+    return;
+  }
+
+  following.push(selectedProfile.userId);
+  localStorage.setItem("pv_following", JSON.stringify(following));
+
+  toast("Follow किया गया।");
+  closeModal("profileModal");
+});
+
+document.getElementById("profileCpBtn").addEventListener("click", () => {
+  if (!selectedProfile) return;
+
+  toast("CP Request UI तैयार है। स्थायी CP सिस्टम के लिए backend feature जोड़ना होगा।");
+});
+
+document.getElementById("profileMessageBtn").addEventListener("click", () => {
+  if (!selectedProfile) return;
+
+  closeModal("profileModal");
+
+  const input = document.getElementById("chatInput");
+  input.value = "@" + (selectedProfile.name || "Guest") + " ";
+  input.focus();
+});
+
+document.getElementById("adminMuteBtn").addEventListener("click", () => {
+  if (!selectedProfile || !socket?.connected) return;
+
+  socket.emit("room:muteUser", {
+    targetId: selectedProfile.socketId || selectedProfile.userId,
+    userId: selectedProfile.userId,
+    muted: !selectedProfile.muted
+  });
+
+  closeModal("profileModal");
+});
+
+document.getElementById("adminKickBtn").addEventListener("click", () => {
+  if (!selectedProfile || !socket?.connected) return;
+
+  const ok = confirm(
+    (selectedProfile.name || "User") + " को Room से हटाएँ?"
+  );
+
+  if (!ok) return;
+
+  socket.emit("room:kickUser", {
+    targetId: selectedProfile.socketId || selectedProfile.userId,
+    userId: selectedProfile.userId,
+    socketId: selectedProfile.socketId
+  });
+
+  closeModal("profileModal");
+});
+
+/* =====================================================
+   EDIT PROFILE
+===================================================== */
+
+function openEditProfile() {
+  document.getElementById("editName").value = user.name;
+  document.getElementById("editGender").value = user.gender;
+
+  showModal("editProfileModal");
+}
+
+async function compressImage(file, maxWidth = 400, quality = 0.72) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onerror = reject;
+
+    reader.onload = () => {
+      const img = new Image();
+
+      img.onerror = reject;
+
+      img.onload = () => {
+        const scale = Math.min(1, maxWidth / img.width);
+
+        const canvas = document.createElement("canvas");
+
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+
+        const ctx = canvas.getContext("2d");
+
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+
+      img.src = reader.result;
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById("saveProfileBtn").addEventListener("click", async () => {
+  const name = document.getElementById("editName").value.trim();
+
+  if (!name) {
+    toast("नाम लिखें।");
+    return;
+  }
+
+  user.name = name.slice(0, 50);
+  user.gender = document.getElementById("editGender").value;
+
+  const file = document.getElementById("editDp").files[0];
+
+  if (file) {
+    try {
+      user.dp = await compressImage(file);
+    } catch (error) {
+      console.error(error);
+      toast("Photo पढ़ी नहीं जा सकी।");
+      return;
     }
-
-    /*
-      छोटा delay ताकि voice system
-      properly initialize हो जाए।
-    */
-
-    await new Promise(
-      resolve =>
-        setTimeout(resolve,500)
-    );
-
-  }catch(error){
-
-    console.log(
-      "microphone:",
-      error
-    );
-
-    showToast(
-      "🎙 Microphone permission दें"
-    );
-
   }
 
+  saveLocalProfile();
+  await saveUserToFirebase();
+
+  registerSocketUser();
+
+  if (socket?.connected) {
+    socket.emit("profile:update", {
+      userId: user.userId,
+      name: user.name,
+      dp: user.dp
+    });
+  }
+
+  renderProfile();
+  renderSeats();
+
+  closeModal("editProfileModal");
+
+  toast("Profile सेव हो गया।");
+});
+
+/* =====================================================
+   ROOM SETTINGS
+===================================================== */
+
+document.getElementById("roomSettingsBtn").addEventListener("click", () => {
+  openRoomSettings();
+});
+
+document.getElementById("bannerEditBtn").addEventListener("click", () => {
+  openRoomSettings();
+});
+
+function openRoomSettings() {
+  if (!isOwner()) {
+    toast("Room Settings केवल Owner बदल सकता है।");
+    return;
+  }
+
+  document.getElementById("settingRoomName").value = room.name;
+  document.getElementById("settingRoomDp").value = "";
+
+  pendingRoomDp = "";
+
+  showModal("settingsModal");
 }
 
-function stopMicrophone(){
+document.getElementById("settingRoomDp").addEventListener("change", async event => {
+  const file = event.target.files[0];
 
-  if(localStream){
+  if (!file) return;
 
-    localStream
-      .getTracks()
-      .forEach(
-        track =>
-          track.stop()
-      );
+  try {
+    pendingRoomDp = await compressImage(file, 500, 0.65);
+  } catch (error) {
+    console.error(error);
+    toast("Room DP पढ़ी नहीं जा सकी।");
+  }
+});
 
-    localStream = null;
-
+document.getElementById("saveRoomSettingsBtn").addEventListener("click", async () => {
+  if (!isOwner()) {
+    toast("केवल Room Owner बदलाव कर सकता है।");
+    return;
   }
 
-  micOn = false;
+  const name = document.getElementById("settingRoomName").value.trim();
 
-  document.getElementById(
-    "micBtn"
-  ).classList.remove("active");
-
-  document.getElementById(
-    "voiceStatus"
-  ).textContent =
-    "Voice Off";
-
-  if(socket){
-
-    socket.emit(
-      "mic",
-      {
-        roomId:ROOM_ID,
-        userId:USER.userId,
-        enabled:false
-      }
-    );
-
+  if (!name) {
+    toast("Room का नाम लिखें।");
+    return;
   }
 
-}
+  room.name = name.slice(0, 80);
 
-/* =====================================================
-   SPEAKER
-===================================================== */
-
-window.toggleSpeaker =
-function(){
-
-  speakerOn =
-    !speakerOn;
-
-  const btn =
-    document.getElementById(
-      "speakerBtn"
-    );
-
-  btn.textContent =
-    speakerOn
-      ? "🔊"
-      : "🔇";
-
-  btn.classList.toggle(
-    "active",
-    speakerOn
-  );
-
-  showToast(
-    speakerOn
-      ? "🔊 Speaker On"
-      : "🔇 Speaker Off"
-  );
-
-};
-
-/* =====================================================
-   TOP USERS
-===================================================== */
-
-function renderTopUsers(){
-
-  let tops =
-    ROOM.topUsers || [];
-
-  if(!tops.length){
-
-    tops =
-      (ROOM.seats || [])
-      .filter(Boolean)
-      .slice(0,3);
-
+  if (pendingRoomDp) {
+    room.dp = pendingRoomDp;
   }
-
-  for(let i=0;i<3;i++){
-
-    const user =
-      tops[i];
-
-    const dp =
-      document.getElementById(
-        "top"+(i+1)+"dp"
-      );
-
-    const name =
-      document.getElementById(
-        "top"+(i+1)+"name"
-      );
-
-    if(user){
-
-      dp.src =
-        user.dp ||
-        "https://i.pravatar.cc/100?img="+
-        (11+i);
-
-      name.textContent =
-        user.name ||
-        "TOP "+(i+1);
-
-    }else{
-
-      name.textContent =
-        "TOP "+(i+1);
-
-    }
-
-  }
-
-}
-
-/* =====================================================
-   MODAL HELPERS
-===================================================== */
-
-window.openModal =
-function(id){
-
-  const el =
-    document.getElementById(id);
-
-  if(el){
-
-    el.classList.add("show");
-
-  }
-
-};
-
-window.closeModal =
-function(id){
-
-  const el =
-    document.getElementById(id);
-
-  if(el){
-
-    el.classList.remove("show");
-
-  }
-
-};
-
-window.outsideClose =
-function(event,id){
-
-  if(
-    event.target.id === id
-  ){
-
-    closeModal(id);
-
-  }
-
-};
-
-/* =====================================================
-   FEATURE
-===================================================== */
-
-function showFeature(title,html){
-
-  document.getElementById(
-    "featureTitle"
-  ).textContent =
-    title;
-
-  document.getElementById(
-    "featureContent"
-  ).innerHTML =
-    html;
-
-  openModal(
-    "featureModal"
-  );
-
-}
-
-/* =====================================================
-   MY PROFILE
-===================================================== */
-
-window.openMyProfile =
-function(){
-
-  closeModal(
-    "profileModal"
-  );
-
-  showFeature(
-    "👤 My Profile",
-    `
-      <div class="profile-card">
-
-        <img
-          src="${esc(USER.dp)}">
-
-        <div class="profile-name">
-          ${esc(USER.name)}
-        </div>
-
-        <div class="profile-id">
-          ID: ${esc(USER.userId)}
-        </div>
-
-        <div class="profile-level">
-          Level ${Number(USER.level || 1)}
-          • EXP ${Number(USER.exp || 0)}
-        </div>
-
-      </div>
-
-      <button
-        class="primary"
-        onclick="openRoomSettings()">
-
-        ⚙️ Room Settings
-
-      </button>
-    `
-  );
-
-};
-
-/* =====================================================
-   BACK
-===================================================== */
-
-window.goBack =
-function(){
-
-  if(history.length > 1){
-
-    history.back();
-
-  }else{
-
-    location.href =
-      "index.html";
-
-  }
-
-};
-
-/* =====================================================
-   TOAST
-===================================================== */
-
-let toastTimer = null;
-
-window.showToast =
-function(message){
-
-  const toast =
-    document.getElementById(
-      "toast"
-    );
-
-  toast.textContent =
-    message;
-
-  toast.classList.add(
-    "show"
-  );
-
-  clearTimeout(
-    toastTimer
-  );
-
-  toastTimer =
-    setTimeout(
-      ()=>{
-        toast.classList.remove(
-          "show"
-        );
-      },
-      2200
-    );
-
-};
-
-/* =====================================================
-   INIT
-===================================================== */
-
-async function init(){
-
-  loadLocalUser();
-
-  await loadFirebaseUser();
-
-  await loadRoomFirebase();
-
-  listenRoom();
-
-  connectSocket();
-
-  await syncUserIntoRoom();
 
   renderRoom();
 
+  if (socket?.connected) {
+    socket.emit("room:updateDetails", {
+      name: room.name,
+      dp: room.dp
+    });
+  }
+
+  await saveRoomDetailsToFirebase();
+
+  closeModal("settingsModal");
+
+  toast("Room Settings सेव कर दी गईं।");
+});
+
+/* =====================================================
+   INFO / SHARE
+===================================================== */
+
+document.getElementById("roomInfoBtn").addEventListener("click", () => {
+  showModal("infoModal");
+});
+
+document.getElementById("copyRoomIdBtn").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(ROOM_ID);
+    toast("Room ID कॉपी हो गई।");
+  } catch {
+    prompt("Room ID कॉपी करें:", ROOM_ID);
+  }
+});
+
+async function shareRoom() {
+  const url = location.origin + location.pathname +
+    "?room=" + encodeURIComponent(ROOM_ID) +
+    "&userid=" + encodeURIComponent(user.userId) +
+    "&name=" + encodeURIComponent(user.name);
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: room.name,
+        text: "मेरे PawanVoice Room में जुड़ें!",
+        url
+      });
+    } catch {}
+  } else {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast("Room Link कॉपी हो गया।");
+    } catch {
+      prompt("Room Link कॉपी करें:", url);
+    }
+  }
+}
+
+document.getElementById("shareBtn").addEventListener("click", shareRoom);
+
+document.getElementById("backBtn").addEventListener("click", () => {
+  if (history.length > 1) {
+    history.back();
+  } else {
+    location.href = "index.html";
+  }
+});
+
+/* =====================================================
+   FEATURES
+===================================================== */
+
+const FEATURE_INFO = {
+  support: {
+    title: "💖 Room Support",
+    body: "Room को support करने के लिए Gifts भेजें।"
+  },
+  wheel: {
+    title: "🎡 Lucky Wheel",
+    body: "Lucky Wheel का इंटरफ़ेस यहाँ तैयार है। वास्तविक spin और reward के लिए सुरक्षित server-side reward logic चाहिए।"
+  },
+  bounty: {
+    title: "🎯 Bounty Hunter",
+    body: "Bounty Hunter feature का पैनल। वास्तविक missions और rewards के लिए अलग game logic जोड़ना होगा।"
+  },
+  reward: {
+    title: "🎁 Room Reward",
+    body: "Room में सक्रिय रहें और community events में भाग लें। Reward claim करने के लिए server-side validation जरूरी है।"
+  },
+  daily: {
+    title: "📅 Daily Reward",
+    body: "Daily Reward panel। स्थायी 7-day reward और duplicate claim रोकने के लिए सुरक्षित backend reward system चाहिए।"
+  },
+  games: {
+    title: "🎮 Games",
+    body: "PawanVoice Games खोलें।",
+    action: "games.html"
+  },
+  exclusive: {
+    title: "👑 Exclusive Benefits",
+    body: "VIP, Frames, Badges और Exclusive Benefits का पैनल।"
+  },
+  invite: {
+    title: "👥 Invite Friends",
+    body: "Room का लिंक अपने दोस्तों के साथ शेयर करें।",
+    action: "share"
+  },
+  ranking: {
+    title: "🏆 Room Ranking",
+    body: "Room में मौजूद members की सूची और ranking देखें।",
+    action: "members"
+  },
+  cp: {
+    title: "💑 CP Space",
+    body: "CP Space का पैनल। स्थायी CP relationships के लिए backend requests जोड़नी होंगी।"
+  },
+  members: {
+    title: "👤 Room Members",
+    body: "",
+    action: "members"
+  }
+};
+
+document.querySelectorAll("[data-feature]").forEach(button => {
+  button.addEventListener("click", () => {
+    const key = button.dataset.feature;
+    openFeature(key);
+  });
+});
+
+function openFeature(key) {
+  const info = FEATURE_INFO[key];
+
+  if (!info) return;
+
+  document.getElementById("featureModalTitle").textContent = info.title;
+
+  if (key === "members" || key === "ranking") {
+    const members = room.users.map(member =>
+      "• " + (member.name || "Guest") +
+      " (ID: " + member.userId + ")"
+    );
+
+    document.getElementById("featureModalBody").textContent =
+      members.length ? members.join("\n") : "अभी कोई member नहीं मिला।";
+
+    document.getElementById("featureModalBody").style.whiteSpace = "pre-line";
+  } else {
+    document.getElementById("featureModalBody").textContent = info.body;
+    document.getElementById("featureModalBody").style.whiteSpace = "normal";
+  }
+
+  const actionButton = document.getElementById("featureActionBtn");
+
+  actionButton.textContent =
+    info.action === "games" ? "Open Games" :
+    info.action === "share" ? "Share Room" :
+    info.action === "members" ? "Close" : "OK";
+
+  actionButton.onclick = () => {
+    closeModal("featureModal");
+
+    if (info.action === "games") {
+      location.href = "games.html";
+    } else if (info.action === "share") {
+      shareRoom();
+    }
+  };
+
+  showModal("featureModal");
+}
+
+/* =====================================================
+   MORE MENU
+===================================================== */
+
+document.getElementById("bottomMoreBtn").addEventListener("click", () => {
+  showModal("moreModal");
+});
+
+document.querySelectorAll("[data-more]").forEach(button => {
+  button.addEventListener("click", () => {
+    const action = button.dataset.more;
+
+    closeModal("moreModal");
+
+    if (action === "profile") {
+      openEditProfile();
+    } else if (action === "settings") {
+      openRoomSettings();
+    } else if (action === "games") {
+      location.href = "games.html";
+    } else if (action === "invite") {
+      shareRoom();
+    } else if (action === "members") {
+      openFeature("members");
+    } else if (action === "leave") {
+      leaveRoomAndExit();
+    }
+  });
+});
+
+/* =====================================================
+   CLOSE MODALS
+===================================================== */
+
+document.querySelectorAll("[data-close]").forEach(button => {
+  button.addEventListener("click", () => {
+    closeModal(button.dataset.close);
+  });
+});
+
+document.querySelectorAll(".modal").forEach(modal => {
+  modal.addEventListener("click", event => {
+    if (event.target === modal) {
+      modal.classList.remove("show");
+    }
+  });
+});
+
+/* =====================================================
+   LEAVE ROOM
+===================================================== */
+
+function leaveRoomAndExit() {
+  stopMicrophone();
+  cleanupPeerConnections();
+
+  if (socket?.connected) {
+    socket.emit("seat:leave");
+    socket.emit("room:leave");
+  }
+
+  joinedRoom = false;
+
+  setTimeout(() => {
+    location.href = "index.html";
+  }, 200);
+}
+
+window.addEventListener("beforeunload", () => {
+  if (micEnabled) {
+    microphoneStream?.getTracks().forEach(track => track.stop());
+  }
+
+  cleanupPeerConnections();
+
+  if (socket?.connected) {
+    socket.emit("room:leave");
+  }
+});
+
+/* =====================================================
+   INITIALIZATION
+===================================================== */
+
+async function init() {
+  document.getElementById("headerRoomId").textContent = ROOM_ID;
+
+  buildEmojiPanel();
+  buildGiftGrid();
+
+  renderRoom();
+  renderProfile();
+
+  connectSocket();
+
+  await loadUserFromFirebase();
+  await loadRoomDetailsFromFirebase();
+
+  listenFirebaseRoom();
+
+  if (!firebaseReady) {
+    console.warn(
+      "Firebase config अभी placeholder है। " +
+      "Realtime room communication Socket.IO से चलेगी, " +
+      "लेकिन Firebase profile persistence चालू नहीं होगी।"
+    );
+  }
 }
 
 init();
-
 </script>
 
 </body>
- </html>     
+      </html>
