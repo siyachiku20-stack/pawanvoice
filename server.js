@@ -16,6 +16,12 @@
  - Multiplayer game rooms
  - Game lobby, ready, start, score and chat
  - Health/status APIs
+ - Compatibility with older room.html event names
+
+IMPORTANT:
+WebRTC signaling relays connection messages only.
+Actual voice transmission also requires WebRTC code in room.html.
+Room/game state is in memory and clears when the server restarts.
 =========================================================
 */
 
@@ -23,12 +29,10 @@ const express = require("express");
 const http = require("http");
 const cors = require("cors");
 const crypto = require("crypto");
-const path = require("path");
 const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
-
 const PORT = process.env.PORT || 10000;
 
 const io = new Server(server, {
@@ -134,7 +138,7 @@ const GAME_CATALOG = [
 ];
 
 // =======================================================
-// HELPERS
+// COMMON HELPERS
 // =======================================================
 
 function makeId(prefix = "") {
@@ -147,11 +151,11 @@ function cleanText(value, maxLength = 100) {
 }
 
 function safeNumber(value, min = 0, max = 1000000000) {
-    const n = Number(value);
+    const number = Number(value);
 
-    if (!Number.isFinite(n)) return min;
+    if (!Number.isFinite(number)) return min;
 
-    return Math.max(min, Math.min(max, Math.floor(n)));
+    return Math.max(min, Math.min(max, Math.floor(number)));
 }
 
 function getSocketUser(socket) {
@@ -180,8 +184,23 @@ function gameChannel(roomId) {
     return "game:" + roomId;
 }
 
+function emitError(socket, message) {
+    socket.emit("error:message", { message });
+}
+
+function clearSeat(seat) {
+    Object.assign(seat, {
+        userId: null,
+        socketId: null,
+        name: "",
+        dp: "",
+        micOn: false,
+        muted: false
+    });
+}
+
 // =======================================================
-// VOICE ROOMS
+// VOICE ROOM HELPERS
 // =======================================================
 
 function createVoiceRoom(roomId) {
@@ -191,8 +210,8 @@ function createVoiceRoom(roomId) {
         dp: "",
         ownerId: null,
 
-        seats: Array.from({ length: 9 }, (_, i) => ({
-            seat: i + 1,
+        seats: Array.from({ length: 9 }, (_, index) => ({
+            seat: index + 1,
             userId: null,
             socketId: null,
             name: "",
@@ -236,6 +255,7 @@ function publicVoiceRoom(room) {
 
         userCount: room.users.size,
         chat: room.chat.slice(-50),
+        gifts: room.gifts.slice(-30),
         createdAt: room.createdAt
     };
 }
@@ -243,11 +263,11 @@ function publicVoiceRoom(room) {
 function emitVoiceRoomUpdate(room) {
     const snapshot = publicVoiceRoom(room);
 
-    // Current event names.
+    // New event names
     io.to(roomChannel(room.id)).emit("room:update", snapshot);
     io.to(roomChannel(room.id)).emit("roomUpdate", snapshot);
 
-    // Compatibility event for older room.html versions.
+    // Compatibility with existing room.html
     io.to(roomChannel(room.id)).emit("roomState", snapshot);
 }
 
@@ -268,23 +288,8 @@ function leaveVoiceRoom(socket) {
     room.users.delete(socket.id);
 
     room.seats.forEach(seat => {
-        if (
-            seat.socketId === socket.id ||
-            (
-                seat.userId === user.userId &&
-                !Array.from(room.users.values()).some(
-                    member => member.userId === user.userId
-                )
-            )
-        ) {
-            Object.assign(seat, {
-                userId: null,
-                socketId: null,
-                name: "",
-                dp: "",
-                micOn: false,
-                muted: false
-            });
+        if (seat.socketId === socket.id) {
+            clearSeat(seat);
         }
     });
 
@@ -311,25 +316,37 @@ function leaveVoiceRoom(socket) {
 }
 
 function joinVoiceRoom(socket, data = {}) {
-    const user = getSocketUser(socket);
-
     const roomId = cleanText(
         data.roomId || data.room || data.id,
         60
     ) || "main";
 
+    // Leave the previous room first.
     leaveVoiceRoom(socket);
 
-    // Keep the profile ID stable when provided by the client.
-    if (data.userId !== undefined || data.userid !== undefined) {
-        user.userId = cleanText(
-            String(data.userId || data.userid || ""),
-            100
-        ) || user.userId;
+    const user = getSocketUser(socket);
+
+    const suppliedUserId =
+        data.userId !== undefined
+            ? data.userId
+            : data.userid;
+
+    if (suppliedUserId !== undefined) {
+        user.userId =
+            cleanText(String(suppliedUserId || ""), 100) ||
+            user.userId;
     }
 
-    user.name = cleanText(data.name, 50) || user.name || "Guest";
-    user.dp = cleanText(data.dp, 1000) || user.dp || "";
+    user.name =
+        cleanText(data.name, 50) ||
+        user.name ||
+        "Guest";
+
+    user.dp =
+        cleanText(data.dp, 1000) ||
+        user.dp ||
+        "";
+
     user.socketId = socket.id;
 
     socketUsers.set(socket.id, user);
@@ -351,17 +368,14 @@ function joinVoiceRoom(socket, data = {}) {
 
     const snapshot = publicVoiceRoom(room);
 
-    socket.emit("room:joined", {
+    const response = {
         success: true,
         room: snapshot,
         userId: user.userId
-    });
+    };
 
-    socket.emit("roomJoined", {
-        success: true,
-        room: snapshot,
-        userId: user.userId
-    });
+    socket.emit("room:joined", response);
+    socket.emit("roomJoined", response);
 
     socket.to(roomChannel(roomId)).emit("user:joined", {
         user: getPublicUser(user),
@@ -393,27 +407,33 @@ function createGameRoom(gameId, options = {}) {
 
     if (!definition) return null;
 
-    const maxPlayers = Math.min(
-        safeNumber(
-            options.maxPlayers || definition.maxPlayers,
-            1,
-            8
-        ),
-        definition.maxPlayers,
+    const requestedMaxPlayers = safeNumber(
+        options.maxPlayers || definition.maxPlayers,
+        1,
         8
     );
 
     return {
         id: cleanText(options.roomId, 60) || makeId("G"),
+
         gameId: definition.id,
         gameName: definition.name,
-        maxPlayers,
+
+        maxPlayers: Math.min(
+            requestedMaxPlayers,
+            definition.maxPlayers,
+            8
+        ),
+
         minPlayers: definition.minPlayers,
+
         hostId: null,
         status: "waiting",
+
         players: new Map(),
         state: {},
         scores: {},
+
         createdAt: Date.now(),
         updatedAt: Date.now()
     };
@@ -428,10 +448,13 @@ function publicGameRoom(game) {
         id: game.id,
         gameId: game.gameId,
         gameName: game.gameName,
+
         maxPlayers: game.maxPlayers,
         minPlayers: game.minPlayers,
+
         hostId: game.hostId,
         status: game.status,
+
         playerCount: game.players.size,
 
         players: Array.from(game.players.values()).map(player => ({
@@ -443,6 +466,7 @@ function publicGameRoom(game) {
             online: true
         })),
 
+        state: game.state,
         createdAt: game.createdAt,
         updatedAt: game.updatedAt
     };
@@ -453,8 +477,15 @@ function emitGameUpdate(game) {
 
     const snapshot = publicGameRoom(game);
 
-    io.to(gameChannel(game.id)).emit("game:roomUpdate", snapshot);
-    io.to(gameChannel(game.id)).emit("gameRoomUpdate", snapshot);
+    io.to(gameChannel(game.id)).emit(
+        "game:roomUpdate",
+        snapshot
+    );
+
+    io.to(gameChannel(game.id)).emit(
+        "gameRoomUpdate",
+        snapshot
+    );
 
     io.to("game:lobby").emit("game:lobbyUpdate", {
         roomId: game.id,
@@ -614,18 +645,22 @@ io.on("connection", socket => {
         timestamp: Date.now()
     });
 
-    // ---------------------------------------------------
+    // ===================================================
     // PROFILE
-    // ---------------------------------------------------
+    // ===================================================
 
     function updateProfile(data = {}) {
         const user = getSocketUser(socket);
 
-        if (data.userId !== undefined || data.userid !== undefined) {
-            user.userId = cleanText(
-                String(data.userId || data.userid || ""),
-                100
-            ) || user.userId;
+        const suppliedUserId =
+            data.userId !== undefined
+                ? data.userId
+                : data.userid;
+
+        if (suppliedUserId !== undefined) {
+            user.userId =
+                cleanText(String(suppliedUserId || ""), 100) ||
+                user.userId;
         }
 
         if (data.name !== undefined) {
@@ -641,7 +676,6 @@ io.on("connection", socket => {
         socketUsers.set(socket.id, user);
         onlineUsers.set(socket.id, user);
 
-        // Update profile in any currently joined voice room.
         const roomId = socket.data.voiceRoomId;
         const room = roomId ? rooms.get(roomId) : null;
 
@@ -673,40 +707,32 @@ io.on("connection", socket => {
     socket.on("profile:update", updateProfile);
     socket.on("registerUser", updateProfile);
 
-    // ---------------------------------------------------
+    // ===================================================
     // JOIN / LEAVE ROOM
-    // ---------------------------------------------------
+    // ===================================================
 
-    socket.on("room:join", data => {
+    function joinHandler(data) {
         try {
             joinVoiceRoom(socket, data || {});
         } catch (error) {
-            console.error("room:join error:", error);
+            console.error("join room error:", error);
             socket.emit("error:message", {
                 message: "Unable to join room."
             });
         }
-    });
+    }
 
-    socket.on("joinRoom", data => {
-        try {
-            joinVoiceRoom(socket, data || {});
-        } catch (error) {
-            console.error("joinRoom error:", error);
-            socket.emit("error:message", {
-                message: "Unable to join room."
-            });
-        }
-    });
+    socket.on("room:join", joinHandler);
+    socket.on("joinRoom", joinHandler);
 
     socket.on("room:leave", () => leaveVoiceRoom(socket));
     socket.on("leaveRoom", () => leaveVoiceRoom(socket));
 
-    // ---------------------------------------------------
+    // ===================================================
     // ROOM NAME / DP
-    // ---------------------------------------------------
+    // ===================================================
 
-    socket.on("room:updateDetails", data => {
+    function updateRoomDetails(data = {}) {
         const roomId = socket.data.voiceRoomId;
         const room = roomId ? rooms.get(roomId) : null;
 
@@ -715,26 +741,27 @@ io.on("connection", socket => {
         const user = getSocketUser(socket);
 
         if (room.ownerId !== user.userId) {
-            socket.emit("error:message", {
-                message: "Only the room owner can update room details."
-            });
+            emitError(socket, "Only the room owner can update room details.");
             return;
         }
 
-        if (data && data.name !== undefined) {
+        if (data.name !== undefined) {
             room.name = cleanText(data.name, 80) || room.name;
         }
 
-        if (data && data.dp !== undefined) {
+        if (data.dp !== undefined) {
             room.dp = cleanText(data.dp, 1000);
         }
 
         emitVoiceRoomUpdate(room);
-    });
+    }
 
-    // ---------------------------------------------------
+    socket.on("room:updateDetails", updateRoomDetails);
+    socket.on("updateRoomDetails", updateRoomDetails);
+
+    // ===================================================
     // SEATS
-    // ---------------------------------------------------
+    // ===================================================
 
     function takeSeat(data = {}) {
         const roomId = socket.data.voiceRoomId;
@@ -760,7 +787,9 @@ io.on("connection", socket => {
         if (!seat) return;
 
         if (seat.socketId === socket.id) {
-            socket.emit("seat:taken", { seat: { ...seat } });
+            socket.emit("seat:taken", {
+                seat: { ...seat }
+            });
             return;
         }
 
@@ -772,16 +801,10 @@ io.on("connection", socket => {
             return;
         }
 
+        // A user can occupy only one seat in a room.
         room.seats.forEach(item => {
             if (item.socketId === socket.id) {
-                Object.assign(item, {
-                    userId: null,
-                    socketId: null,
-                    name: "",
-                    dp: "",
-                    micOn: false,
-                    muted: false
-                });
+                clearSeat(item);
             }
         });
 
@@ -805,8 +828,10 @@ io.on("connection", socket => {
         emitVoiceRoomUpdate(room);
     }
 
+    // Event aliases for different room.html versions.
     socket.on("seat:take", takeSeat);
     socket.on("takeSeat", takeSeat);
+    socket.on("sit", takeSeat);
 
     function leaveSeat() {
         const roomId = socket.data.voiceRoomId;
@@ -820,23 +845,15 @@ io.on("connection", socket => {
 
         if (!seat) return;
 
-        const number = seat.seat;
-
-        Object.assign(seat, {
-            userId: null,
-            socketId: null,
-            name: "",
-            dp: "",
-            micOn: false,
-            muted: false
-        });
+        const seatNumber = seat.seat;
+        clearSeat(seat);
 
         io.to(roomChannel(roomId)).emit("seat:left", {
-            seat: number
+            seat: seatNumber
         });
 
         io.to(roomChannel(roomId)).emit("seatLeft", {
-            seat: number
+            seat: seatNumber
         });
 
         emitVoiceRoomUpdate(room);
@@ -845,9 +862,9 @@ io.on("connection", socket => {
     socket.on("seat:leave", leaveSeat);
     socket.on("leaveSeat", leaveSeat);
 
-    // ---------------------------------------------------
-    // MIC
-    // ---------------------------------------------------
+    // ===================================================
+    // MIC STATUS
+    // ===================================================
 
     function toggleMic(data = {}) {
         const roomId = socket.data.voiceRoomId;
@@ -896,10 +913,11 @@ io.on("connection", socket => {
 
     socket.on("mic:toggle", toggleMic);
     socket.on("toggleMic", toggleMic);
+    socket.on("mic", toggleMic);
 
-    // ---------------------------------------------------
-    // MUTE / KICK
-    // ---------------------------------------------------
+    // ===================================================
+    // MUTE USER
+    // ===================================================
 
     function findRoomTarget(room, targetId) {
         return room.seats.find(seat =>
@@ -908,7 +926,7 @@ io.on("connection", socket => {
         );
     }
 
-    socket.on("room:muteUser", data => {
+    function muteUser(data = {}) {
         const roomId = socket.data.voiceRoomId;
         const room = roomId ? rooms.get(roomId) : null;
 
@@ -917,14 +935,12 @@ io.on("connection", socket => {
         const actor = getSocketUser(socket);
 
         if (room.ownerId !== actor.userId) {
-            socket.emit("error:message", {
-                message: "Only the room owner can mute users."
-            });
+            emitError(socket, "Only the room owner can mute users.");
             return;
         }
 
         const targetId = cleanText(
-            data?.targetId || data?.userId || data?.socketId,
+            data.targetId || data.userId || data.socketId,
             100
         );
 
@@ -936,24 +952,31 @@ io.on("connection", socket => {
             ? !!data.muted
             : !seat.muted;
 
-        if (seat.muted) seat.micOn = false;
+        if (seat.muted) {
+            seat.micOn = false;
+        }
 
-        const targetSocket = seat.socketId;
-
-        if (targetSocket) {
-            io.to(targetSocket).emit("room:muted", {
+        if (seat.socketId) {
+            io.to(seat.socketId).emit("room:muted", {
                 muted: seat.muted
             });
 
-            io.to(targetSocket).emit("userMuted", {
+            io.to(seat.socketId).emit("userMuted", {
                 muted: seat.muted
             });
         }
 
         emitVoiceRoomUpdate(room);
-    });
+    }
 
-    socket.on("room:kickUser", data => {
+    socket.on("room:muteUser", muteUser);
+    socket.on("muteUser", muteUser);
+
+    // ===================================================
+    // KICK USER
+    // ===================================================
+
+    function kickUser(data = {}) {
         const roomId = socket.data.voiceRoomId;
         const room = roomId ? rooms.get(roomId) : null;
 
@@ -962,26 +985,25 @@ io.on("connection", socket => {
         const actor = getSocketUser(socket);
 
         if (room.ownerId !== actor.userId) {
-            socket.emit("error:message", {
-                message: "Only the room owner can kick users."
-            });
+            emitError(socket, "Only the room owner can kick users.");
             return;
         }
 
         const targetId = cleanText(
-            data?.targetId || data?.userId || data?.socketId,
+            data.targetId || data.userId || data.socketId,
             100
         );
 
         const seat = findRoomTarget(room, targetId);
 
-        let targetSocket = seat?.socketId;
+        let targetSocket = seat && seat.socketId;
 
         if (!targetSocket) {
-            const target = Array.from(room.users.values()).find(
-                member => member.userId === targetId
+            const member = Array.from(room.users.values()).find(
+                item => item.userId === targetId
             );
-            targetSocket = target?.socketId;
+
+            targetSocket = member && member.socketId;
         }
 
         if (!targetSocket || targetSocket === socket.id) return;
@@ -994,26 +1016,21 @@ io.on("connection", socket => {
                 message: "You were removed from this room."
             });
 
+            target.emit("userKicked", {
+                roomId,
+                message: "You were removed from this room."
+            });
+
             leaveVoiceRoom(target);
         }
-    });
+    }
 
-    // Compatibility names.
-    socket.on("muteUser", data => {
-        socket.emit("error:message", {
-            message: "Use room:muteUser for this server version."
-        });
-    });
+    socket.on("room:kickUser", kickUser);
+    socket.on("kickUser", kickUser);
 
-    socket.on("kickUser", data => {
-        socket.emit("error:message", {
-            message: "Use room:kickUser for this server version."
-        });
-    });
-
-    // ---------------------------------------------------
+    // ===================================================
     // ROOM CHAT
-    // ---------------------------------------------------
+    // ===================================================
 
     function sendRoomMessage(data = {}) {
         const roomId = socket.data.voiceRoomId;
@@ -1027,7 +1044,11 @@ io.on("connection", socket => {
         }
 
         const user = getSocketUser(socket);
-        const message = cleanText(data.message || data.text, 1000);
+
+        const message = cleanText(
+            data.message || data.text,
+            1000
+        );
 
         if (!message) return;
 
@@ -1046,8 +1067,13 @@ io.on("connection", socket => {
 
         room.chat.push(item);
 
-        if (room.chat.length > 100) room.chat.shift();
+        if (room.chat.length > 100) {
+            room.chat.shift();
+        }
 
+        // Compatibility events.
+        // The client should listen to only ONE of these aliases
+        // to prevent the same message appearing more than once.
         io.to(roomChannel(roomId)).emit("chat:message", item);
         io.to(roomChannel(roomId)).emit("chatMessage", item);
         io.to(roomChannel(roomId)).emit("chat", item);
@@ -1055,10 +1081,11 @@ io.on("connection", socket => {
 
     socket.on("chat:send", sendRoomMessage);
     socket.on("sendMessage", sendRoomMessage);
+    socket.on("chat", sendRoomMessage);
 
-    // ---------------------------------------------------
+    // ===================================================
     // GIFTS
-    // ---------------------------------------------------
+    // ===================================================
 
     function sendRoomGift(data = {}) {
         const roomId = socket.data.voiceRoomId;
@@ -1079,18 +1106,23 @@ io.on("connection", socket => {
             senderId: user.userId,
             senderName: user.name,
             senderDp: user.dp,
+
             giftId: cleanText(data.giftId || data.id, 60),
             giftName: cleanText(data.giftName || data.name, 80),
             giftImage: cleanText(data.giftImage || data.image, 1000),
+
             receiverId: cleanText(data.receiverId, 100),
             receiverName: cleanText(data.receiverName, 50),
+
             quantity: safeNumber(data.quantity || 1, 1, 99),
             timestamp: Date.now()
         };
 
         room.gifts.push(gift);
 
-        if (room.gifts.length > 100) room.gifts.shift();
+        if (room.gifts.length > 100) {
+            room.gifts.shift();
+        }
 
         io.to(roomChannel(roomId)).emit("gift:received", gift);
         io.to(roomChannel(roomId)).emit("receiveGift", gift);
@@ -1099,94 +1131,64 @@ io.on("connection", socket => {
 
     socket.on("gift:send", sendRoomGift);
     socket.on("sendGift", sendRoomGift);
+    socket.on("gift", sendRoomGift);
 
-    // ---------------------------------------------------
+    // ===================================================
     // WEBRTC SIGNALING
-    // ---------------------------------------------------
+    // ===================================================
 
-    function sendSignal(event, data = {}, targetKey, valueKey) {
+    function relaySignal(eventName, data = {}, valueName) {
         const targetId = cleanText(
-            data.targetId || data.to || data.target || "",
+            data.targetId || data.to || data.target,
             100
         );
 
-        if (!targetId || !io.sockets.sockets.has(targetId)) return;
+        if (!targetId) return;
 
-        io.to(targetId).emit(event, {
+        if (!io.sockets.sockets.has(targetId)) {
+            return;
+        }
+
+        const value =
+            data[valueName] ||
+            data.description ||
+            data.candidate;
+
+        if (value === undefined) return;
+
+        io.to(targetId).emit(eventName, {
             from: socket.id,
-            [valueKey]: data[valueKey] || data.description || data.candidate
+            [valueName]: value
         });
     }
 
-    socket.on("webrtc:offer", data => {
-        const targetId = cleanText(data?.targetId || data?.to, 100);
+    socket.on("webrtc:offer", data =>
+        relaySignal("webrtc:offer", data, "offer")
+    );
 
-        if (!targetId || !io.sockets.sockets.has(targetId)) return;
+    socket.on("webrtc:answer", data =>
+        relaySignal("webrtc:answer", data, "answer")
+    );
 
-        io.to(targetId).emit("webrtc:offer", {
-            from: socket.id,
-            offer: data.offer
-        });
-    });
+    socket.on("webrtc:ice", data =>
+        relaySignal("webrtc:ice", data, "candidate")
+    );
 
-    socket.on("webrtc:answer", data => {
-        const targetId = cleanText(data?.targetId || data?.to, 100);
+    socket.on("voice:offer", data =>
+        relaySignal("voice:offer", data, "offer")
+    );
 
-        if (!targetId || !io.sockets.sockets.has(targetId)) return;
+    socket.on("voice:answer", data =>
+        relaySignal("voice:answer", data, "answer")
+    );
 
-        io.to(targetId).emit("webrtc:answer", {
-            from: socket.id,
-            answer: data.answer
-        });
-    });
+    socket.on("voice:ice", data =>
+        relaySignal("voice:ice", data, "candidate")
+    );
 
-    socket.on("webrtc:ice", data => {
-        const targetId = cleanText(data?.targetId || data?.to, 100);
-
-        if (!targetId || !io.sockets.sockets.has(targetId)) return;
-
-        io.to(targetId).emit("webrtc:ice", {
-            from: socket.id,
-            candidate: data.candidate
-        });
-    });
-
-    socket.on("voice:offer", data => {
-        const targetId = cleanText(data?.targetId || data?.to, 100);
-
-        if (!targetId || !io.sockets.sockets.has(targetId)) return;
-
-        io.to(targetId).emit("voice:offer", {
-            from: socket.id,
-            offer: data.offer
-        });
-    });
-
-    socket.on("voice:answer", data => {
-        const targetId = cleanText(data?.targetId || data?.to, 100);
-
-        if (!targetId || !io.sockets.sockets.has(targetId)) return;
-
-        io.to(targetId).emit("voice:answer", {
-            from: socket.id,
-            answer: data.answer
-        });
-    });
-
-    socket.on("voice:ice", data => {
-        const targetId = cleanText(data?.targetId || data?.to, 100);
-
-        if (!targetId || !io.sockets.sockets.has(targetId)) return;
-
-        io.to(targetId).emit("voice:ice", {
-            from: socket.id,
-            candidate: data.candidate
-        });
-    });
-
-    // ---------------------------------------------------
+    // ===================================================
     // GAME LOBBY
-    // ---------------------------------------------------
+    // ===================================================
 
     function sendGameLobby() {
         socket.join("game:lobby");
@@ -1194,6 +1196,7 @@ io.on("connection", socket => {
         socket.emit("game:lobby", {
             success: true,
             games: GAME_CATALOG,
+
             rooms: Array.from(gameRooms.values()).map(game => ({
                 id: game.id,
                 gameId: game.gameId,
@@ -1208,9 +1211,9 @@ io.on("connection", socket => {
     socket.on("game:lobby:join", sendGameLobby);
     socket.on("gameLobbyJoin", sendGameLobby);
 
-    // ---------------------------------------------------
+    // ===================================================
     // CREATE GAME
-    // ---------------------------------------------------
+    // ===================================================
 
     function createGame(data = {}) {
         const user = getSocketUser(socket);
@@ -1225,7 +1228,7 @@ io.on("connection", socket => {
 
         leaveGameRoom(socket);
 
-        let game = createGameRoom(gameId, {
+        const game = createGameRoom(gameId, {
             maxPlayers: data.maxPlayers,
             roomId: data.roomId
         });
@@ -1257,17 +1260,13 @@ io.on("connection", socket => {
         socket.join(gameChannel(game.id));
         socket.data.gameRoomId = game.id;
 
-        const snapshot = publicGameRoom(game);
-
-        socket.emit("game:created", {
+        const payload = {
             success: true,
-            room: snapshot
-        });
+            room: publicGameRoom(game)
+        };
 
-        socket.emit("gameCreated", {
-            success: true,
-            room: snapshot
-        });
+        socket.emit("game:created", payload);
+        socket.emit("gameCreated", payload);
 
         emitGameUpdate(game);
     }
@@ -1275,9 +1274,9 @@ io.on("connection", socket => {
     socket.on("game:create", createGame);
     socket.on("createGame", createGame);
 
-    // ---------------------------------------------------
+    // ===================================================
     // JOIN GAME
-    // ---------------------------------------------------
+    // ===================================================
 
     function joinGame(data = {}) {
         const user = getSocketUser(socket);
@@ -1303,7 +1302,10 @@ io.on("connection", socket => {
             return;
         }
 
-        if (game.players.size >= game.maxPlayers) {
+        if (
+            !game.players.has(socket.id) &&
+            game.players.size >= game.maxPlayers
+        ) {
             socket.emit("game:error", {
                 message: "This game room is full."
             });
@@ -1330,20 +1332,19 @@ io.on("connection", socket => {
         };
 
         game.players.set(socket.id, player);
-        game.scores[user.userId] = game.scores[user.userId] || 0;
+        game.scores[user.userId] =
+            game.scores[user.userId] || 0;
 
         socket.join(gameChannel(game.id));
         socket.data.gameRoomId = game.id;
 
-        socket.emit("game:joined", {
+        const payload = {
             success: true,
             room: publicGameRoom(game)
-        });
+        };
 
-        socket.emit("gameJoined", {
-            success: true,
-            room: publicGameRoom(game)
-        });
+        socket.emit("game:joined", payload);
+        socket.emit("gameJoined", payload);
 
         socket.to(gameChannel(game.id)).emit("game:playerJoined", {
             player: {
@@ -1362,9 +1363,9 @@ io.on("connection", socket => {
     socket.on("game:leave", () => leaveGameRoom(socket));
     socket.on("leaveGame", () => leaveGameRoom(socket));
 
-    // ---------------------------------------------------
+    // ===================================================
     // GAME READY
-    // ---------------------------------------------------
+    // ===================================================
 
     function gameReady(data = {}) {
         const gameId = socket.data.gameRoomId;
@@ -1391,9 +1392,9 @@ io.on("connection", socket => {
     socket.on("game:ready", gameReady);
     socket.on("gameReady", gameReady);
 
-    // ---------------------------------------------------
+    // ===================================================
     // START GAME
-    // ---------------------------------------------------
+    // ===================================================
 
     function startGame() {
         const gameId = socket.data.gameRoomId;
@@ -1425,6 +1426,7 @@ io.on("connection", socket => {
         }
 
         game.status = "playing";
+
         game.state = {
             startedAt: Date.now(),
             round: 1
@@ -1449,9 +1451,9 @@ io.on("connection", socket => {
     socket.on("game:start", startGame);
     socket.on("startGame", startGame);
 
-    // ---------------------------------------------------
+    // ===================================================
     // GAME ACTIONS
-    // ---------------------------------------------------
+    // ===================================================
 
     function gameAction(payload = {}) {
         const gameId = socket.data.gameRoomId;
@@ -1478,7 +1480,7 @@ io.on("connection", socket => {
             serialized = JSON.stringify(
                 payload.data === undefined ? null : payload.data
             );
-        } catch {
+        } catch (error) {
             return;
         }
 
@@ -1504,9 +1506,9 @@ io.on("connection", socket => {
     socket.on("game:action", gameAction);
     socket.on("gameAction", gameAction);
 
-    // ---------------------------------------------------
+    // ===================================================
     // GAME SCORE
-    // ---------------------------------------------------
+    // ===================================================
 
     function updateGameScore(data = {}) {
         const gameId = socket.data.gameRoomId;
@@ -1534,9 +1536,9 @@ io.on("connection", socket => {
     socket.on("game:score", updateGameScore);
     socket.on("updateGameScore", updateGameScore);
 
-    // ---------------------------------------------------
+    // ===================================================
     // GAME STATE
-    // ---------------------------------------------------
+    // ===================================================
 
     socket.on("game:state", data => {
         const gameId = socket.data.gameRoomId;
@@ -1557,7 +1559,7 @@ io.on("connection", socket => {
 
         try {
             serialized = JSON.stringify(data || {});
-        } catch {
+        } catch (error) {
             return;
         }
 
@@ -1572,9 +1574,9 @@ io.on("connection", socket => {
         });
     });
 
-    // ---------------------------------------------------
-    // FINISH / RESET GAME
-    // ---------------------------------------------------
+    // ===================================================
+    // FINISH GAME
+    // ===================================================
 
     socket.on("game:finish", data => {
         const gameId = socket.data.gameRoomId;
@@ -1609,7 +1611,7 @@ io.on("connection", socket => {
             results,
             winner: results[0] || null,
             finishedAt: Date.now(),
-            details: data?.details || null
+            details: data && data.details || null
         };
 
         io.to(gameChannel(game.id)).emit("game:finished", result);
@@ -1617,6 +1619,10 @@ io.on("connection", socket => {
 
         emitGameUpdate(game);
     });
+
+    // ===================================================
+    // RESET GAME
+    // ===================================================
 
     socket.on("game:reset", () => {
         const gameId = socket.data.gameRoomId;
@@ -1644,9 +1650,9 @@ io.on("connection", socket => {
         emitGameUpdate(game);
     });
 
-    // ---------------------------------------------------
+    // ===================================================
     // GAME CHAT
-    // ---------------------------------------------------
+    // ===================================================
 
     socket.on("game:chat", data => {
         const gameId = socket.data.gameRoomId;
@@ -1655,7 +1661,7 @@ io.on("connection", socket => {
         if (!game || !game.players.has(socket.id)) return;
 
         const user = getSocketUser(socket);
-        const message = cleanText(data?.message, 500);
+        const message = cleanText(data && data.message, 500);
 
         if (!message) return;
 
@@ -1667,9 +1673,9 @@ io.on("connection", socket => {
         });
     });
 
-    // ---------------------------------------------------
+    // ===================================================
     // PING
-    // ---------------------------------------------------
+    // ===================================================
 
     socket.on("client:ping", () => {
         socket.emit("server:pong", {
@@ -1677,9 +1683,9 @@ io.on("connection", socket => {
         });
     });
 
-    // ---------------------------------------------------
+    // ===================================================
     // DISCONNECT
-    // ---------------------------------------------------
+    // ===================================================
 
     socket.on("disconnect", reason => {
         console.log("Disconnected:", socket.id, reason);
@@ -1718,7 +1724,7 @@ app.use((error, req, res, next) => {
 });
 
 // =======================================================
-// START
+// START SERVER
 // =======================================================
 
 server.listen(PORT, "0.0.0.0", () => {
