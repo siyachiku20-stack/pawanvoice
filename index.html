@@ -1989,99 +1989,186 @@ function closeModal(){
 
 
 /* =========================================================
-   EDIT PROFILE
+   EDIT PROFILE — GALLERY DP
 ========================================================= */
 
+let selectedGalleryDP = "";
+
 function editProfile(){
+  selectedGalleryDP = "";
 
-  openModal(
-    "👤 Edit Profile",
-    `
+  openModal("👤 Edit Profile", `
+    <div class="notice">
+      Gallery से फोटो चुनें या DP का URL डालें।
+    </div>
 
-      <div class="notice">
-        Name और DP बदलने पर
-        Firebase में save होगा और
-        Home/Room/Profile में sync होगा।
-      </div>
+    <div style="text-align:center;margin-bottom:12px">
+      <img id="editDPPreview"
+        src="${esc(user.dp || DEFAULT_DP)}"
+        style="width:100px;height:100px;border-radius:22px;object-fit:cover;border:2px solid #7c3aed">
+    </div>
 
-      <input
-        id="editName"
-        class="input"
-        value="${esc(user.name)}"
-        placeholder="Your Name">
+    <label for="editDPFile"
+      class="btn full"
+      style="display:block;text-align:center;margin-bottom:10px">
+      🖼️ Gallery से फोटो चुनें
+    </label>
 
-      <select
-        id="editGender"
-        class="input">
+    <input
+      id="editDPFile"
+      type="file"
+      accept="image/*"
+      style="display:block;width:100%;margin-bottom:12px;color:white"
+      onchange="previewGalleryDP(event)">
 
-        <option
-          ${user.gender==="Male"?"selected":""}>
-          Male
-        </option>
+    <input
+      id="editName"
+      class="input"
+      value="${esc(user.name || "Guest")}"
+      placeholder="Your Name"
+      maxlength="40">
 
-        <option
-          ${user.gender==="Female"?"selected":""}>
-          Female
-        </option>
+    <select id="editGender" class="input">
+      <option value="Male" ${user.gender==="Male"?"selected":""}>Male</option>
+      <option value="Female" ${user.gender==="Female"?"selected":""}>Female</option>
+      <option value="Other" ${user.gender==="Other"?"selected":""}>Other</option>
+    </select>
 
-        <option
-          ${user.gender==="Other"?"selected":""}>
-          Other
-        </option>
+    <input
+      id="editDP"
+      class="input"
+      placeholder="या DP image URL डालें">
 
-      </select>
-
-      <input
-        id="editDP"
-        class="input"
-        placeholder="DP image URL">
-
-      <button
-        class="btn full"
-        onclick="saveProfile()">
-
-        Save Profile
-
-      </button>
-
-    `
-  );
-
+    <button
+      id="saveProfileButton"
+      class="btn green full"
+      onclick="saveProfile()">
+      💾 Save Profile
+    </button>
+  `);
 }
 
+function previewGalleryDP(event){
+  const file = event.target.files && event.target.files[0];
+  if(!file) return;
 
-function saveProfile(){
-
-  user.name =
-  editName.value.trim() ||
-  "Guest";
-
-  user.gender =
-  editGender.value;
-
-
-  if(
-    editDP.value.trim()
-  ){
-
-    user.dp =
-    editDP.value.trim();
-
+  if(!file.type.startsWith("image/")){
+    toast("कृपया image चुनें");
+    return;
   }
 
+  if(file.size > 15 * 1024 * 1024){
+    toast("15 MB से छोटी फोटो चुनें");
+    return;
+  }
 
-  saveUser();
+  const reader = new FileReader();
 
-  renderUser();
+  reader.onload = function(e){
+    const img = new Image();
 
-  closeModal();
+    img.onload = function(){
+      const maxSize = 500;
+      let width = img.width;
+      let height = img.height;
 
-  toast(
-    "Profile saved"
-  );
+      if(width > height && width > maxSize){
+        height = Math.round(height * maxSize / width);
+        width = maxSize;
+      } else if(height > maxSize){
+        width = Math.round(width * maxSize / height);
+        height = maxSize;
+      }
 
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+
+      selectedGalleryDP = canvas.toDataURL("image/jpeg", 0.8);
+
+      const preview = document.getElementById("editDPPreview");
+      if(preview) preview.src = selectedGalleryDP;
+
+      toast("फोटो चुन ली गई है");
+    };
+
+    img.onerror = function(){
+      toast("फोटो खुल नहीं सकी");
+    };
+
+    img.src = e.target.result;
+  };
+
+  reader.readAsDataURL(file);
 }
 
+function saveProfile(){
+  const nameInput = document.getElementById("editName");
+  const genderInput = document.getElementById("editGender");
+  const dpInput = document.getElementById("editDP");
+  const saveButton = document.getElementById("saveProfileButton");
+
+  if(!nameInput || !genderInput || !dpInput){
+    toast("Profile form नहीं मिला");
+    return;
+  }
+
+  user.name = nameInput.value.trim() || "Guest";
+  user.gender = genderInput.value || "Male";
+
+  const dpURL = dpInput.value.trim();
+
+  if(selectedGalleryDP){
+    user.dp = selectedGalleryDP;
+  } else if(dpURL){
+    user.dp = dpURL;
+  }
+
+  user.userId = USER_ID;
+  user.id = USER_ID;
+
+  if(saveButton){
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+  }
+
+  localStorage.setItem("pv_user", JSON.stringify(user));
+  renderUser();
+
+  if(db){
+    db.ref("users/" + USER_ID)
+      .update({
+        ...user,
+        userId: USER_ID,
+        id: USER_ID,
+        updatedAt: Date.now()
+      })
+      .then(function(){
+        selectedGalleryDP = "";
+        closeModal();
+        renderUser();
+        toast("Profile Firebase में सेव हो गई");
+      })
+      .catch(function(error){
+        console.error(error);
+
+        if(saveButton){
+          saveButton.disabled = false;
+          saveButton.textContent = "💾 Save Profile";
+        }
+
+        toast("Firebase में सेव नहीं हुई");
+      });
+  } else {
+    selectedGalleryDP = "";
+    closeModal();
+    renderUser();
+    toast("Profile फोन में सेव हो गई");
+  }
+}
 
 /* =========================================================
    LEVEL
