@@ -371,6 +371,25 @@ header{background:rgba(18,15,34,.96);border-bottom:1px solid #49336b;backdrop-fi
 @media(max-width:360px){.pv-festival-home{min-height:230px;padding:15px 8px}.pv-festival-main-title{font-size:21px}.pv-festival-art{font-size:15px;right:4px}}
 
 
+
+
+/* ===== PAWANVOICE PREMIUM ID FRAMES + LEVEL STYLE ===== */
+#homeDP,#myDP{border:3px solid transparent;background:linear-gradient(#171323,#171323) padding-box,conic-gradient(from 0deg,#ffe08a,#ff56b8,#8b5cff,#49e6ff,#ffe08a) border-box;box-shadow:0 0 0 3px #8b5cf633,0 0 20px #bd70ff55;animation:pvFrameGlow 5s linear infinite}
+@keyframes pvFrameGlow{0%,100%{filter:drop-shadow(0 0 3px #a855f7)}50%{filter:drop-shadow(0 0 9px #f472b6)}}
+.profileTop .muted{display:inline-flex;align-items:center;gap:5px;margin-top:3px;padding:4px 8px;border-radius:8px;background:linear-gradient(100deg,#332047,#202039);border:1px solid #9565c7;color:#f2d8ff;font-size:11px;font-weight:900;box-shadow:inset 0 0 8px #bd70ff1a}
+#homeID,#myID{color:#ffe29a;letter-spacing:1px;text-shadow:0 0 8px #f59e0b66;font-weight:1000}
+#homeLevel,#homeVIP{display:inline-block;min-width:22px;text-align:center;padding:3px 6px;border-radius:7px;background:linear-gradient(135deg,#4c1d95,#b832a4);border:1px solid #d8a5ff;color:#fff;font-size:11px;box-shadow:0 0 9px #a855f755}
+.pv-feature-ribbon{position:relative;overflow:hidden;border-radius:16px;padding:13px;margin:8px 0;background:linear-gradient(120deg,#1f1642,#592a80,#9b286e);border:1px solid #a879ff;box-shadow:0 7px 22px #0003}
+.pv-feature-ribbon:after{content:'✦ ✧ ✦';position:absolute;right:9px;top:8px;color:#ffe5a5;opacity:.55;letter-spacing:4px}
+.pv-feature-ribbon h3{margin:0 0 5px;font-size:15px;color:#ffe8aa}.pv-feature-ribbon p{margin:0;font-size:11px;line-height:1.5;color:#eee0ff}
+.pv-social-gift-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0}
+.pv-social-gift{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:105px;padding:8px 4px;border:1px solid #624b82;border-radius:13px;background:linear-gradient(145deg,#352044,#201b30);color:#fff;text-align:center}
+.pv-social-gift span{font-size:27px;filter:drop-shadow(0 0 6px #f0abfc55)}.pv-social-gift b{font-size:10px;line-height:1.25}.pv-social-gift small{font-size:9px;color:#ffe29a}
+.pv-stat-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0}.pv-stat-chip{padding:10px 5px;text-align:center;border:1px solid #634b82;border-radius:12px;background:linear-gradient(145deg,#33213f,#201c2d)}.pv-stat-chip b{display:block;font-size:15px;color:#ffe29a}.pv-stat-chip small{font-size:9px;color:#d8c8e8}
+.pv-rocket-scene{position:relative;overflow:hidden;text-align:center;padding:18px 12px;border-radius:18px;background:radial-gradient(ellipse at 50% 100%,#ed7b3555,transparent 50%),linear-gradient(145deg,#101d46,#34206a 55%,#8e2c67);border:1px solid #a4aaff}
+.pv-rocket-emoji{display:block;font-size:58px;filter:drop-shadow(0 0 12px #ffb45b);transform:rotate(-28deg)}.pv-rocket-fly{animation:pvRocketFly 1.5s ease-in forwards}@keyframes pvRocketFly{0%{transform:translateY(0) rotate(-28deg);opacity:1}100%{transform:translate(45px,-180px) rotate(-28deg);opacity:0}}
+.pv-weekly-banner{padding:14px;border-radius:16px;background:linear-gradient(120deg,#154e70,#4f2b8a,#9a2d7b);border:1px solid #7dd3fc;margin:10px 0}.pv-weekly-banner h3{margin:0 0 5px}.pv-weekly-banner p{margin:0;font-size:11px;line-height:1.5;color:#e8e7ff}
+
 </style>
 </head>
 
@@ -558,6 +577,13 @@ header{background:rgba(18,15,34,.96);border-bottom:1px solid #49336b;backdrop-fi
         <span class="ico">🎮</span>
         <b>Games</b>
       </button>
+
+      <button class="feature" onclick="pvOpenRocketEvent()"><span class="ico">🚀</span><b>Rocket Launch</b></button>
+      <button class="feature" onclick="pvOpenWeeklyEvent()"><span class="ico">🏆</span><b>Weekly Event</b></button>
+      <button class="feature" onclick="pvClaimWelcomeReward()"><span class="ico">🎁</span><b>Welcome Gift</b></button>
+      <button class="feature" onclick="pvOpenSocialGifts('CP')"><span class="ico">💞</span><b>CP Gifts</b></button>
+      <button class="feature" onclick="pvOpenSocialGifts('Friendship')"><span class="ico">🫂</span><b>Friendship Gifts</b></button>
+      <button class="feature" onclick="pvOpenSocialGifts('Family')"><span class="ico">👨‍👩‍👧‍👦</span><b>Family Gifts</b></button>
       
     </div>
   </div>
@@ -3977,7 +4003,65 @@ renderUser();
 
 startFirebase();
 
+
+
+/* =========================================================
+   PAWANVOICE PREMIUM SOCIAL + WEEKLY + ROCKET ADD-ON
+   Preserves existing app functions. Current local actions use
+   the existing saveUser() routine; live multi-user rankings,
+   shared gifts and real rocket broadcasts need server.js events.
+========================================================= */
+const PV_SOCIAL_GIFTS = {
+  CP:[['💍','Couple Ring',5000],['💖','Heart Explosion',12000],['🌹','Love Rose',1000],['💑','Royal Couple',25000],['💘','Cupid Arrow',8000],['💎','Love Diamond',50000]],
+  Friendship:[['🤝','Bestie Bond',1000],['🧸','Friendship Teddy',2500],['🌈','Rainbow Bestie',5000],['🎁','Surprise Box',3000],['💐','Friendship Bouquet',7000],['🏆','Best Friend Trophy',15000]],
+  Family:[['🏰','Family Castle',25000],['👑','Family Crown',12000],['🚀','Family Rocket',50000],['🐉','Family Dragon',100000],['🎆','Family Celebration',8000],['💎','Family Prestige',75000]]
+};
+function pvOpenSocialGifts(type){
+  const gifts=PV_SOCIAL_GIFTS[type]||PV_SOCIAL_GIFTS.Friendship;
+  const pointsLabel=type==='CP'?'CP Points':type==='Family'?'Family EXP':'Friendship Points';
+  const current=type==='CP'?(user.cpPoints||0):type==='Family'?(user.familyExp||0):(user.friendshipPoints||0);
+  openModal((type==='CP'?'💞 CP':type==='Family'?'👨‍👩‍👧‍👦 Family':'🫂 Friendship')+' Gifts',`
+    <div class="pv-feature-ribbon"><h3>✨ Premium ${esc(type)} Gifts</h3><p>Choose a gift. Coins are deducted from this user's current wallet and the matching points are added to the local profile.</p></div>
+    <div class="pv-stat-strip"><div class="pv-stat-chip"><b>${money(user.coins||0)}</b><small>Available Coins</small></div><div class="pv-stat-chip"><b>${money(current)}</b><small>${pointsLabel}</small></div><div class="pv-stat-chip"><b>${esc(type)}</b><small>Gift Category</small></div></div>
+    <div class="pv-social-gift-grid">${gifts.map((g,i)=>`<button class="pv-social-gift" onclick="pvSendSocialGift('${type}',${i})"><span>${g[0]}</span><b>${g[1]}</b><small>🪙 ${money(g[2])}</small></button>`).join('')}</div>
+    <p class="pv-festival-hint">Note: This screen records the gift to this browser profile. To deliver gifts to another user and update everyone's rankings live, connect these actions to the Socket.IO server.</p>
+  `);
+}
+function pvSendSocialGift(type,index){
+  const g=(PV_SOCIAL_GIFTS[type]||[])[index];if(!g)return;
+  if(Number(user.coins||0)<g[2]){toast('Coins कम हैं');return;}
+  user.coins=Number(user.coins||0)-g[2];
+  if(type==='CP')user.cpPoints=Number(user.cpPoints||0)+g[2];
+  else if(type==='Family')user.familyExp=Number(user.familyExp||0)+g[2];
+  else user.friendshipPoints=Number(user.friendshipPoints||0)+g[2];
+  user.socialGiftHistory=user.socialGiftHistory||[];
+  user.socialGiftHistory.unshift({type,name:g[1],icon:g[0],price:g[2],at:Date.now()});
+  user.socialGiftHistory=user.socialGiftHistory.slice(0,50);
+  saveUser();renderUser();pvOpenSocialGifts(type);toast(g[1]+' gift sent');
+}
+function pvClaimWelcomeReward(){
+  const key='pv_welcome_reward_'+USER_ID;
+  if(localStorage.getItem(key)){openModal('🎁 Welcome Reward',`<div class="pv-feature-ribbon"><h3>Welcome to PawanVoice!</h3><p>आपका welcome reward पहले ही claim हो चुका है।</p></div><div class="reward"><span>Claim Status</span><b>✅ Claimed</b></div>`);return;}
+  user.coins=Number(user.coins||0)+50000;
+  user.avatarFrame=user.avatarFrame||'Welcome Glow Frame';
+  user.welcomeRewardClaimed=true;
+  localStorage.setItem(key,'1');saveUser();renderUser();
+  openModal('🎁 Welcome Reward',`<div class="pv-feature-ribbon"><h3>🎉 Welcome to PAWANVOICE!</h3><p>आपका starter reward आपके profile में जोड़ दिया गया है।</p></div><div class="pv-stat-strip"><div class="pv-stat-chip"><b>🪙 50,000</b><small>Welcome Coins</small></div><div class="pv-stat-chip"><b>✨ Glow Frame</b><small>Profile Frame</small></div><div class="pv-stat-chip"><b>✅ Claimed</b><small>One-time reward</small></div></div><p class="pv-festival-hint">यह reward इस browser/profile पर एक बार claim होता है। Production में इसे server-side one-time claim बनाना चाहिए।</p>`);
+}
+function pvOpenWeeklyEvent(){
+  const weekKey='pv_weekly_event_'+new Date().getFullYear()+'_'+Math.ceil((((Date.now()-new Date(new Date().getFullYear(),0,1).getTime())/86400000)+new Date(new Date().getFullYear(),0,1).getDay())/7);
+  const data=JSON.parse(localStorage.getItem(weekKey)||'{}');
+  const pts=Number(data.points||0);
+  openModal('🏆 Weekly Star Event',`<div class="pv-weekly-banner"><h3>🌟 WEEKLY STAR CHALLENGE</h3><p>Complete your weekly activities, collect points and unlock the weekly reward. The score shown here is local to this browser.</p></div><div class="pv-stat-strip"><div class="pv-stat-chip"><b>${money(pts)}</b><small>Your Event Points</small></div><div class="pv-stat-chip"><b>🪙 25,000</b><small>Claim Reward</small></div><div class="pv-stat-chip"><b>7 Days</b><small>Weekly Cycle</small></div></div><div class="reward"><span>🎁 Weekly participation reward<br><small>One claim per week</small></span><button class="btn green" onclick="pvClaimWeeklyEvent('${weekKey}')">${data.claimed?'Claimed':'Claim'}</button></div><div class="reward"><span>🎯 Add activity points<br><small>Demo action; server tracking needed for real rankings</small></span><button class="btn" onclick="pvAddWeeklyPoints('${weekKey}')">+100 Points</button></div><p class="pv-festival-hint">Live weekly leaderboard and automatic end-of-week prizes require server.js + shared database integration.</p>`);
+}
+function pvClaimWeeklyEvent(key){let d=JSON.parse(localStorage.getItem(key)||'{}');if(d.claimed){toast('Weekly reward already claimed');return;}d.claimed=true;user.coins=Number(user.coins||0)+25000;localStorage.setItem(key,JSON.stringify(d));saveUser();renderUser();pvOpenWeeklyEvent();toast('Weekly reward claimed');}
+function pvAddWeeklyPoints(key){let d=JSON.parse(localStorage.getItem(key)||'{}');d.points=Number(d.points||0)+100;localStorage.setItem(key,JSON.stringify(d));pvOpenWeeklyEvent();toast('+100 weekly points');}
+function pvOpenRocketEvent(){
+  openModal('🚀 Rocket Launch Event',`<div class="pv-rocket-scene"><span class="pv-rocket-emoji" id="pvRocketEmoji">🚀</span><h3>ROCKET LAUNCH</h3><p>Launch celebration • Room party • Special event ranking</p><button class="btn" onclick="pvLaunchRocket()">🚀 LAUNCH NOW</button></div><div class="pv-stat-strip"><div class="pv-stat-chip"><b>🎆</b><small>Launch Effects</small></div><div class="pv-stat-chip"><b>🏆</b><small>Event Ranking</small></div><div class="pv-stat-chip"><b>🎁</b><small>Rewards</small></div></div><p class="pv-festival-hint">यह अभी visual launch animation है। दूसरे users के room में live rocket broadcast करने के लिए server.js में event broadcast जोड़ना होगा।</p>`);
+}
+function pvLaunchRocket(){const r=document.getElementById('pvRocketEmoji');if(!r)return;r.classList.remove('pv-rocket-fly');void r.offsetWidth;r.classList.add('pv-rocket-fly');setTimeout(()=>{if(document.getElementById('pvRocketEmoji')){document.getElementById('pvRocketEmoji').classList.remove('pv-rocket-fly');toast('🚀 Rocket launch animation complete');}},1650);}
+
 </script>
   
 </body>
-      </html>
+    </html>
