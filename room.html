@@ -711,7 +711,7 @@ button{
 }
 
 /* ================= FESTIVE GIFT TABS ================= */
-.pv-gift-tabs{display:flex;flex-wrap:wrap;gap:7px;overflow-x:auto;padding:2px 0 10px;margin-bottom:5px;scrollbar-width:none}
+.pv-gift-tabs{display:flex;gap:7px;overflow-x:auto;padding:2px 0 10px;margin-bottom:5px;scrollbar-width:none}
 .pv-gift-tabs::-webkit-scrollbar{display:none}
 .pv-gift-tab{flex:0 0 auto;border:1px solid #ffffff24;border-radius:999px;padding:9px 12px;background:#ffffff0d;color:#eee;font-size:11px;font-weight:700;white-space:nowrap}
 .pv-gift-tab.active{background:linear-gradient(135deg,#ffb300,#ff5d2e);border-color:#ffd36a;color:#24100a;box-shadow:0 0 14px #ff8a0038}
@@ -719,6 +719,7 @@ button{
 .gift.diwali-gift{background:linear-gradient(155deg,#5a240c,#261323);border-color:#ff9d32aa;box-shadow:inset 0 0 12px #ff8c1a15}
 .gift.navratri-gift{background:linear-gradient(155deg,#45153f,#24112f);border-color:#ff70c8aa;box-shadow:inset 0 0 12px #ff4db815}
 .gift.diwali-gift .gift-name,.gift.navratri-gift .gift-name{font-weight:700;color:#fff1d1}
+.gift.social-gift{background:linear-gradient(150deg,#1d214c,#30173b);border-color:#9d8cff55}.gift.social-gift .gift-name{font-weight:700;color:#f2eaff}
 
 /* ================= OPTIONS ================= */
 
@@ -1507,14 +1508,14 @@ button{
       <button class="pv-gift-tab active" data-gift-tab="all" onclick="showGiftCategory('all',this)">🎁 All Gifts</button>
       <button class="pv-gift-tab" data-gift-tab="diwali" onclick="showGiftCategory('diwali',this)">🪔 Diwali Special</button>
       <button class="pv-gift-tab" data-gift-tab="navratri" onclick="showGiftCategory('navratri',this)">💃 Navratri Special</button>
-      <button class="pv-gift-tab" data-gift-tab="cp" onclick="showGiftCategory('cp',this)">💕 CP Gifts</button>
+      <button class="pv-gift-tab" data-gift-tab="cp" onclick="showGiftCategory('cp',this)">💑 CP Gifts</button>
       <button class="pv-gift-tab" data-gift-tab="friendship" onclick="showGiftCategory('friendship',this)">🤝 Friendship</button>
       <button class="pv-gift-tab" data-gift-tab="family" onclick="showGiftCategory('family',this)">👨‍👩‍👧 Family</button>
-      <button class="pv-gift-tab" data-gift-tab="lucky" onclick="showGiftCategory('lucky',this)">🍀 Lucky Gifts</button>
-      <button class="pv-gift-tab" data-gift-tab="vip" onclick="showGiftCategory('vip',this)">👑 VIP Gifts</button>
-      <button class="pv-gift-tab" data-gift-tab="video" onclick="showGiftCategory('video',this)">🎬 Customize Video</button>
-      <button class="pv-gift-tab" data-gift-tab="history" onclick="showGiftCategory('history',this)">📜 Gift History</button>
+      <button class="pv-gift-tab" data-gift-tab="lucky" onclick="showGiftCategory('lucky',this)">🍀 Lucky</button>
+      <button class="pv-gift-tab" data-gift-tab="vip" onclick="showGiftCategory('vip',this)">👑 VIP</button>
+      <button class="pv-gift-tab" data-gift-tab="video" onclick="showGiftCategory('video',this)">🎬 Video Gifts</button>
     </div>
+    <button type="button" class="pv-gift-tab" style="width:100%;margin:0 0 9px;background:linear-gradient(100deg,#6c2bd9,#e84c9a);border-color:#e8aaff" onclick="openFestivalLeaderboard()">🏆 Diwali × Navratri Top Gifter & Winner Rewards</button>
 
     <div id="giftCategoryCaption" class="pv-gift-caption">All gifts in one place</div>
     <div
@@ -2006,7 +2007,7 @@ function connectSocket(){
       console.log("Socket connected");
 
       socket.emit(
-        "join-room",
+        "joinRoom",
         {
           roomId:ROOM_ID,
           userId:USER.userId,
@@ -2044,16 +2045,6 @@ function connectSocket(){
       );
 
     });
-
-    socket.on("gift:success",data=>{
-      if(data && data.wallet){ USER.coins=Number(data.wallet.coins||0); saveUserFirebase(); const b=document.getElementById("giftBalance"); if(b)b.textContent="🪙 Coins: "+USER.coins.toLocaleString("en-IN"); }
-      if(data){ window.PV_GIFT_HISTORY.push(data); window.PV_GIFT_HISTORY=window.PV_GIFT_HISTORY.slice(-100); }
-      showToast("✅ Gift successfully sent");
-    });
-    socket.on("gift:error",data=>showToast("❌ "+(data?.message||"Gift send नहीं हुआ")));
-    socket.on("gift-sent",data=>{ if(data){ window.PV_GIFT_HISTORY.push(data); window.PV_GIFT_HISTORY=window.PV_GIFT_HISTORY.slice(-100); } });
-    socket.on("gift-received",data=>{ if(data){ window.PV_GIFT_HISTORY.push(data); window.PV_GIFT_HISTORY=window.PV_GIFT_HISTORY.slice(-100); } });
-    socket.on("wallet",data=>{ if(data && Number.isFinite(Number(data.coins))){ USER.coins=Number(data.coins); saveUserFirebase(); } });
 
     socket.on("userJoined",data=>{
 
@@ -4196,9 +4187,50 @@ const PV_FESTIVAL_GIFTS = [
 ];
 PV_FESTIVAL_GIFTS.forEach(g=>gifts.push(g));
 
-// Separate CP, Friendship, Family, Lucky, VIP and Customize Video collections.
-const PV_EXTRA_GIFTS = [{"category": "cp", "id": "cp_heart", "name": "CP Heart", "emoji": "💗", "price": 5000}, {"category": "cp", "id": "cp_ring", "name": "Couple Ring", "emoji": "💍", "price": 25000}, {"category": "cp", "id": "cp_love_boat", "name": "Love Boat", "emoji": "💘", "price": 100000}, {"category": "cp", "id": "cp_forever", "name": "Forever Love", "emoji": "💕", "price": 500000}, {"category": "friendship", "id": "friend_star", "name": "Best Friend Star", "emoji": "🌟", "price": 1000}, {"category": "friendship", "id": "friend_handshake", "name": "Friendship Bond", "emoji": "🤝", "price": 10000}, {"category": "friendship", "id": "friend_cake", "name": "Friendship Cake", "emoji": "🎂", "price": 50000}, {"category": "friendship", "id": "friend_galaxy", "name": "Friendship Galaxy", "emoji": "🌌", "price": 250000}, {"category": "family", "id": "family_home", "name": "Family Home", "emoji": "🏡", "price": 5000}, {"category": "family", "id": "family_tree", "name": "Family Tree", "emoji": "🌳", "price": 25000}, {"category": "family", "id": "family_feast", "name": "Family Feast", "emoji": "🍱", "price": 100000}, {"category": "family", "id": "family_castle", "name": "Family Castle", "emoji": "🏰", "price": 500000}, {"category": "lucky", "id": "lucky_clover", "name": "Lucky Clover", "emoji": "🍀", "price": 1000}, {"category": "lucky", "id": "lucky_dice", "name": "Lucky Dice", "emoji": "🎲", "price": 10000}, {"category": "lucky", "id": "lucky_chest", "name": "Lucky Chest", "emoji": "🧰", "price": 50000}, {"category": "lucky", "id": "lucky_jackpot", "name": "Lucky Jackpot", "emoji": "🎰", "price": 250000}, {"category": "vip", "id": "vip_crown", "name": "VIP Crown", "emoji": "👑", "price": 100000}, {"category": "vip", "id": "vip_royal_car", "name": "Royal Car", "emoji": "🏎️", "price": 500000}, {"category": "vip", "id": "vip_jet", "name": "VIP Private Jet", "emoji": "🛩️", "price": 2500000}, {"category": "vip", "id": "vip_galaxy", "name": "VIP Galaxy", "emoji": "🌌", "price": 5000000}, {"category": "video", "id": "video_rose", "name": "Video Rose", "emoji": "🌹", "price": 10000}, {"category": "video", "id": "video_dance", "name": "Video Dance", "emoji": "💃", "price": 50000}, {"category": "video", "id": "video_fireworks", "name": "Video Fireworks", "emoji": "🎆", "price": 250000}, {"category": "video", "id": "video_custom", "name": "Custom Video Gift", "emoji": "🎬", "price": 1000000}];
-PV_EXTRA_GIFTS.forEach(g=>gifts.push(g));
+// Separate social/premium categories. IDs and prices match server.js gift catalog.
+const PV_CATEGORY_GIFTS = [
+  {id:"cp_heart",name:"CP Heart",emoji:"💗",price:5000,category:"cp"},
+  {id:"cp_ring",name:"Couple Ring",emoji:"💍",price:25000,category:"cp"},
+  {id:"cp_love_boat",name:"Love Boat",emoji:"💘",price:100000,category:"cp"},
+  {id:"cp_forever",name:"Forever Love",emoji:"💕",price:500000,category:"cp"},
+  {id:"friend_star",name:"Best Friend Star",emoji:"🌟",price:1000,category:"friendship"},
+  {id:"friend_handshake",name:"Friendship Bond",emoji:"🤝",price:10000,category:"friendship"},
+  {id:"friend_cake",name:"Friendship Cake",emoji:"🎂",price:50000,category:"friendship"},
+  {id:"friend_galaxy",name:"Friendship Galaxy",emoji:"🌌",price:250000,category:"friendship"},
+  {id:"family_home",name:"Family Home",emoji:"🏡",price:5000,category:"family"},
+  {id:"family_tree",name:"Family Tree",emoji:"🌳",price:25000,category:"family"},
+  {id:"family_feast",name:"Family Feast",emoji:"🍱",price:100000,category:"family"},
+  {id:"family_castle",name:"Family Castle",emoji:"🏰",price:500000,category:"family"},
+  {id:"lucky_clover",name:"Lucky Clover",emoji:"🍀",price:1000,category:"lucky"},
+  {id:"lucky_dice",name:"Lucky Dice",emoji:"🎲",price:10000,category:"lucky"},
+  {id:"lucky_chest",name:"Lucky Chest",emoji:"🧰",price:50000,category:"lucky"},
+  {id:"lucky_jackpot",name:"Lucky Jackpot",emoji:"🎰",price:250000,category:"lucky"},
+  {id:"vip_crown",name:"VIP Crown",emoji:"👑",price:100000,category:"vip"},
+  {id:"vip_royal_car",name:"Royal Car",emoji:"🏎️",price:500000,category:"vip"},
+  {id:"vip_jet",name:"VIP Private Jet",emoji:"🛩️",price:2500000,category:"vip"},
+  {id:"vip_galaxy",name:"VIP Galaxy",emoji:"🌌",price:5000000,category:"vip"},
+  {id:"video_rose",name:"Video Rose",emoji:"🌹",price:10000,category:"video"},
+  {id:"video_dance",name:"Video Dance",emoji:"💃",price:50000,category:"video"},
+  {id:"video_fireworks",name:"Video Fireworks",emoji:"🎆",price:250000,category:"video"},
+  {id:"video_custom",name:"Custom Video Gift",emoji:"🎬",price:1000000,category:"video"}
+];
+PV_CATEGORY_GIFTS.forEach(g=>{if(!gifts.some(existing=>existing.id===g.id))gifts.push(g);});
+
+window.openFestivalLeaderboard=async function(){
+  const serverBase="https://pawanvoice-1.onrender.com";
+  showFeature("🏆 Diwali × Navratri Top Gifter",`<div class="pv-event-card" style="text-align:center;background:linear-gradient(135deg,#40115f,#9d3b18,#a16c13)"><div style="font-size:30px">🪔 🎆 💃 🌸</div><h3>BIG FESTIVAL DHAMAKA</h3><p>Diwali aur Navratri special gifts bhejein aur leaderboard par rank badhayein.</p><p>⏳ <span id="pvFestivalTime">Ranking load ho rahi hai…</span></p></div><div id="pvFestivalRanking" style="margin-top:12px"><div class="pv-event-card">Live ranking load ho rahi hai…</div></div><div class="pv-event-card" style="margin-top:12px"><h3>🎁 Winner Rewards</h3><p>🪙 1 Crore Coins</p><p>🖼️ 30 din Top Avatar</p><p>🚪 15 din Top Entry</p><p>👑 VIP 10</p><p>🎬 Video Gift Customization</p></div>`);
+  try{
+    const response=await fetch(serverBase+"/api/festival/leaderboard",{cache:"no-store"});
+    if(!response.ok)throw new Error("Leaderboard unavailable");
+    const state=await response.json();
+    const rows=Array.isArray(state.leaderboard)?state.leaderboard:[];
+    const box=document.getElementById("pvFestivalRanking");
+    if(box)box.innerHTML=rows.length?rows.slice(0,10).map((u,i)=>`<div class="pv-event-card" style="display:flex;align-items:center;gap:9px;margin:7px 0;padding:10px"><b style="min-width:28px">#${Number(u.rank||i+1)}</b><img src="${esc(u.dp||"https://i.pravatar.cc/80?img=12")}" style="width:38px;height:38px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'"><div style="flex:1;min-width:0"><b>${esc(u.name||"User")}</b><small style="display:block;opacity:.7">ID: ${esc(u.userId||"—")}</small></div><b>🪙 ${Number(u.coins||0).toLocaleString("en-IN")}</b></div>`).join(""):'<div class="pv-event-card">Abhi tak festival gift nahi bheja gaya. Pehle Top Gifter banne ka mauka aapka hai!</div>';
+    const timer=document.getElementById("pvFestivalTime");
+    if(timer){const ends=Number(state.endsAt||0);const left=Math.max(0,ends-Date.now());timer.textContent=state.active?`${Math.floor(left/86400000)} din ${Math.floor(left%86400000/3600000)} ghante baaki`:(state.winner?"Contest complete — winner announced":"Contest ka status available nahi hai");}
+    if(state.winner&&box){box.insertAdjacentHTML("afterbegin",`<div class="pv-event-card" style="border:1px solid #ffd166;background:linear-gradient(120deg,#59330b,#302044)"><h3>👑 Festival Winner</h3><b>${esc(state.winner.name||"Winner")}</b><p>🪙 ${Number(state.winner.coins||0).toLocaleString("en-IN")} festival gift value</p></div>`);}
+  }catch(e){const box=document.getElementById("pvFestivalRanking");if(box)box.innerHTML='<div class="pv-event-card">Live ranking abhi connect nahi ho pa rahi. Server online hone par yahan ranking dikhegi.</div>';}
+};
 
 /* =====================================================
    OPEN GIFTS
@@ -4238,44 +4270,116 @@ function(targetUserId=""){
 window.showGiftCategory=function(category,button){
   const grid=document.getElementById("giftsGrid");
   if(!grid)return;
-  document.querySelectorAll(".pv-gift-tab").forEach(tab=>tab.classList.toggle("active",tab===button || tab.dataset.giftTab===category));
-  const captions={all:"All 200 regular gifts + special collections",diwali:"🪔 Diwali Special Gifts",navratri:"💃 Navratri Special Gifts",cp:"💕 Gifts for your CP / Couple partner",friendship:"🤝 Friendship gifts and bond points",family:"👨‍👩‍👧 Family gifts and family points",lucky:"🍀 Lucky gifts",vip:"👑 Premium VIP gifts",video:"🎬 Custom video gift collection",history:"📜 Recent gift history for this room"};
+  document.querySelectorAll(".pv-gift-tab[data-gift-tab]").forEach(tab=>tab.classList.toggle("active",tab===button || tab.dataset.giftTab===category));
+  const captions={
+    all:"🎁 All regular + Diwali + Navratri + social + VIP gifts in one place",
+    diwali:"🪔 Diwali Special Gifts — separate festival collection",
+    navratri:"💃 Navratri Special Gifts — separate festival collection",
+    cp:"💑 CP Gifts — send love and couple gifts",
+    friendship:"🤝 Friendship Gifts — best-friend collection",
+    family:"👨‍👩‍👧 Family Gifts — family celebration collection",
+    lucky:"🍀 Lucky Gifts — luck and jackpot collection",
+    vip:"👑 VIP Gifts — premium royal collection",
+    video:"🎬 Customize Video Gifts — video-themed gift collection"
+  };
   const caption=document.getElementById("giftCategoryCaption");
   if(caption)caption.textContent=captions[category]||captions.all;
-  if(category==="history"){
-    const history=window.PV_GIFT_HISTORY||[];
-    grid.innerHTML=history.length?history.slice().reverse().slice(0,50).map(h=>`<div class="gift" style="grid-column:span 2"><div class="gift-icon">${h.giftIcon||h.emoji||"🎁"}</div><div class="gift-name">${esc(h.senderName||"User")} → ${esc(h.receiverName||"User")}</div><div class="gift-price">${esc(h.giftName||"Gift")} · 🪙 ${Number(h.total||h.price||0).toLocaleString("en-IN")}</div></div>`).join(""):`<div class="pv-gift-caption" style="grid-column:1/-1">Abhi koi gift history nahi hai.</div>`;
-    return;
-  }
-  const list=category==="all"?gifts.filter(g=>!g.category || g.category==="all"):gifts.filter(g=>g.category===category);
+  const list=category==="all"?gifts:gifts.filter(g=>g.category===category);
+  if(!list.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:24px;color:#d7c8e9">Is category mein gifts load nahi hue. Page refresh karke dobara try karein.</div>';return;}
   grid.innerHTML=list.map(g=>`
-    <button class="gift ${g.category==="diwali"?"diwali-gift":g.category==="navratri"?"navratri-gift":""}" onclick="sendGift('${g.id}')">
-      <div class="gift-icon">${g.emoji}</div>
+    <button class="gift ${g.category==="diwali"?"diwali-gift":g.category==="navratri"?"navratri-gift":(["cp","friendship","family","lucky","vip","video"].includes(g.category)?"social-gift":"")}" onclick="sendGift('${g.id}')">
+      <div class="gift-icon">${g.emoji||g.icon||"🎁"}</div>
       <div class="gift-name">${esc(g.name)}</div>
       <div class="gift-price">🪙 ${Number(g.price).toLocaleString("en-IN")}</div>
     </button>
-  `).join("") || `<div class="pv-gift-caption" style="grid-column:1/-1">Is category mein gifts nahi mile.</div>`;
+  `).join("");
 };
 
 /* =====================================================
    SEND GIFT
 ===================================================== */
 
-window.PV_GIFT_HISTORY = window.PV_GIFT_HISTORY || [];
-window.sendGift = async function(giftId){
-  const gift=gifts.find(g=>g.id===giftId);
+window.sendGift =
+async function(giftId){
+
+  const gift =
+    gifts.find(
+      g=>g.id === giftId
+    );
+
   if(!gift) return;
-  const price=Number(gift.price)||0;
-  if(Number(USER.coins||0)<price){ showToast("🪙 Coins कम हैं"); return; }
-  const target=selectedProfileUserId || getFirstGiftTarget();
-  if(!target){ showToast("पहले किसी दूसरे user को select करें"); return; }
-  if(!socket || !socket.connected){ showToast("Server connect नहीं है, gift नहीं भेजा गया"); return; }
-  socket.emit("gift",{
-    roomId:ROOM_ID, giftId:gift.id, giftName:gift.name, emoji:gift.emoji,
-    category:gift.category || "all", price:gift.price, quantity:1,
-    senderId:USER.userId, senderName:USER.name, senderDp:USER.dp,
-    receiverId:target, toUserId:target, receiverName:"", fromUserId:USER.userId, fromName:USER.name
-  });
+
+  const price =
+    Number(gift.price);
+
+  if(
+    Number(USER.coins || 0) <
+    price
+  ){
+
+    showToast(
+      "🪙 Coins कम हैं"
+    );
+
+    return;
+
+  }
+
+  USER.coins =
+    Number(USER.coins || 0) -
+    price;
+
+  await saveUserFirebase();
+
+  const target =
+    selectedProfileUserId ||
+    getFirstGiftTarget();
+
+  if(socket){
+
+    socket.emit(
+      "gift",
+      {
+        roomId:ROOM_ID,
+
+        giftId:gift.id,
+
+        giftName:gift.name,
+
+        emoji:gift.emoji,
+
+        price:gift.price,
+
+        fromUserId:USER.userId,
+
+        fromName:USER.name,
+
+        toUserId:target
+      }
+    );
+
+  }
+
+  await addRoomExp(
+    Math.max(
+      1,
+      Math.floor(price/10)
+    )
+  );
+
+  document.getElementById(
+    "giftBalance"
+  ).textContent =
+    "🪙 Coins: "+
+    Number(USER.coins || 0);
+
+  showToast(
+    gift.emoji+
+    " "+
+    gift.name+
+    " sent"
+  );
+
 };
 
 function getFirstGiftTarget(){
