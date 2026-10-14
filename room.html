@@ -862,6 +862,35 @@ button{
 @keyframes pvGiftPop{0%{opacity:0;transform:translateY(35px) scale(.55)}12%,78%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-18px) scale(.92)}}
 @keyframes pvGiftFloat{from{transform:translateY(2px) rotate(-5deg)}to{transform:translateY(-8px) rotate(5deg)}}
 
+
+/* Manager Panel + avatar frame styles */
+.pv-manager-btn{display:none!important;background:linear-gradient(120deg,#f5c451,#9a3412,#6b21a8)!important;color:#fff!important;border:1px solid #ffe5a3!important}
+.pv-manager-btn.visible{display:flex!important}
+.pv-manager-modal{position:fixed;inset:0;z-index:10020;background:#05030bea;display:none;align-items:flex-start;justify-content:center;padding:14px;overflow:auto;color:#fff}
+.pv-manager-modal.open{display:flex}
+.pv-manager-panel{width:min(760px,100%);margin:auto;background:linear-gradient(145deg,#1a1230,#111827 65%,#301442);border:1px solid #d6a94d88;border-radius:20px;padding:16px;box-shadow:0 20px 70px #000a}
+.pv-manager-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.pv-manager-head h2{font-size:18px;margin:0;background:linear-gradient(90deg,#fff0a6,#f9a8d4);color:transparent;background-clip:text}
+.pv-manager-tabs{display:flex;gap:7px;overflow:auto;margin:10px 0;padding-bottom:5px}
+.pv-manager-tabs button,.pv-manager-action{border:1px solid #ffffff28;border-radius:10px;padding:9px 11px;background:#ffffff12;color:#fff;font-weight:800;white-space:nowrap}
+.pv-manager-tabs button.active,.pv-manager-action.primary{background:linear-gradient(120deg,#eab308,#a855f7);color:#160c20}
+.pv-manager-field{display:grid;gap:5px;margin:9px 0;font-size:12px;color:#e8dcf6}
+.pv-manager-field input,.pv-manager-field select,.pv-manager-field textarea{width:100%;padding:11px;border-radius:10px;background:#100d1e;border:1px solid #ffffff2a;color:#fff;outline:none}
+.pv-manager-card{background:#ffffff0a;border:1px solid #ffffff17;border-radius:13px;padding:12px;margin:8px 0;overflow-wrap:anywhere}
+.pv-manager-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.pv-manager-muted{font-size:11px;color:#c9bcd9;line-height:1.45}
+.pv-frame-ring{box-shadow:0 0 0 3px #fbbf24,0 0 0 6px #a855f7,0 0 18px #f59e0b99;border-radius:50%}
+/* Real avatar-frame visuals for seats and profile DPs */
+.pv-avatar-framed{border-radius:50%!important;outline:2px solid #fbbf24;outline-offset:2px;box-shadow:0 0 0 5px #a855f7,0 0 16px #f59e0b99!important;}
+.pv-frame-gold{outline-color:#ffd700!important;box-shadow:0 0 0 5px #b7791f,0 0 18px #ffd700aa!important}
+.pv-frame-peach{outline-color:#ffb4c7!important;box-shadow:0 0 0 5px #f472b6,0 0 18px #fb7185aa!important}
+.pv-frame-neon{outline-color:#22d3ee!important;box-shadow:0 0 0 5px #a855f7,0 0 18px #22d3eeaa!important}
+.pv-frame-dragon{outline-color:#fb923c!important;box-shadow:0 0 0 5px #dc2626,0 0 18px #f97316aa!important}
+.pv-frame-rainbow{outline-color:#f472b6!important;box-shadow:0 0 0 3px #f472b6,0 0 0 6px #38bdf8,0 0 0 9px #facc15!important}
+.pv-frame-diamond{outline-color:#67e8f9!important;box-shadow:0 0 0 5px #e0f2fe,0 0 18px #67e8f9aa!important}
+.pv-frame-staff{outline-color:#facc15!important;box-shadow:0 0 0 4px #facc15,0 0 0 7px #9333ea,0 0 22px #facc15cc!important}
+.pv-staff-label{display:inline-block;margin-top:5px;padding:3px 8px;border-radius:12px;background:linear-gradient(90deg,#713f12,#6b21a8);border:1px solid #facc15;color:#fef3c7;font-size:10px;font-weight:900}
+@media(max-width:460px){.pv-manager-grid{grid-template-columns:1fr}.pv-manager-panel{padding:12px}}
 </style>
 </head>
 
@@ -1185,6 +1214,11 @@ button{
     <button class="feature-item" onclick="openRoomInfo()">
       <div class="ico">ℹ️</div>
       <span>Room Info</span>
+    </button>
+
+    <button class="feature-item pv-manager-btn" id="pvManagerShortcut" onclick="openManagerPanel()">
+      <div class="ico">👑</div>
+      <span>Manager Panel</span>
     </button>
 
   </div>
@@ -1538,6 +1572,21 @@ button{
 
   </div>
 
+</div>
+
+<div id="pvManagerModal" class="pv-manager-modal" onclick="if(event.target===this)closeManagerPanel()">
+  <section class="pv-manager-panel" role="dialog" aria-modal="true" aria-label="PawanVoice Manager Panel">
+    <div class="pv-manager-head"><h2>♛ PAWANVOICE MANAGER</h2><button class="pv-manager-action" onclick="closeManagerPanel()">✕</button></div>
+    <div id="pvManagerLogin">
+      <p class="pv-manager-muted">Manager ID ko Render ke <b>PAWAN_MANAGER_ID</b> aur PIN ko <b>PAWAN_MANAGER_PIN</b> se configure karein. PIN app HTML mein save nahi hota.</p>
+      <label class="pv-manager-field">Manager PIN<input id="pvManagerPin" type="password" autocomplete="current-password" placeholder="Enter Manager PIN"></label>
+      <button class="pv-manager-action primary" onclick="managerLogin()">🔐 Secure Login</button>
+    </div>
+    <div id="pvManagerBody" hidden>
+      <div class="pv-manager-tabs"><button class="active" onclick="managerTab('staff',this)">🛡️ Staff</button><button onclick="managerTab('users',this)">👥 Users</button><button onclick="managerTab('settings',this)">⚙️ Settings</button><button onclick="managerTab('frames',this)">🖼️ Frames</button><button onclick="managerTab('audit',this)">📜 Audit</button></div>
+      <div id="pvManagerContent"></div>
+    </div>
+  </section>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -2427,6 +2476,24 @@ function countOnline(){
    RENDER SEAT
 ===================================================== */
 
+function applyPawanAvatarFrame(element,user){
+  if(!element) return;
+  element.classList.remove("pv-avatar-framed","pv-frame-gold","pv-frame-peach","pv-frame-neon","pv-frame-dragon","pv-frame-rainbow","pv-frame-diamond","pv-frame-staff");
+  element.style.outline=""; element.style.outlineOffset="";
+  const staff=String(user?.staffFrame||"");
+  const role=String(user?.role||"");
+  if(staff || (role && role!=="User")) { element.classList.add("pv-avatar-framed","pv-frame-staff"); return; }
+  const frame=String(user?.avatarFrame||"");
+  if(!frame || (Number(user?.avatarFrameExpiresAt||0)>0 && Number(user.avatarFrameExpiresAt)<=Date.now())) return;
+  element.classList.add("pv-avatar-framed");
+  if(/avatar_(1|3|8|19|30|31)$/.test(frame)) element.classList.add("pv-frame-gold");
+  else if(/avatar_(2|10|14|23)$/.test(frame)) element.classList.add("pv-frame-peach");
+  else if(/avatar_(4|16|22|24)$/.test(frame)) element.classList.add("pv-frame-neon");
+  else if(/avatar_(5|12|28)$/.test(frame)) element.classList.add("pv-frame-dragon");
+  else if(/avatar_(6|20|32)$/.test(frame)) element.classList.add("pv-frame-rainbow");
+  else if(/avatar_(7|29|34|35)$/.test(frame)) element.classList.add("pv-frame-diamond");
+}
+
 function renderSeat(index){
 
   const el =
@@ -2451,6 +2518,7 @@ function renderSeat(index){
     img.src =
       "https://i.pravatar.cc/150?img="+
       ((index%9)+1);
+    applyPawanAvatarFrame(img,null);
 
     el.querySelector(".seat-name")
       .textContent =
@@ -2490,6 +2558,7 @@ function renderSeat(index){
   img.src =
     user.dp ||
     "https://i.pravatar.cc/150?img=12";
+  applyPawanAvatarFrame(img,user);
 
   img.onclick =
     function(event){
@@ -2774,7 +2843,7 @@ async function(userId){
 
       <div class="profile-avatar-wrap">
 
-        <img
+        <img id="pvProfileAvatarImage"
           src="${esc(
             user.dp ||
             "https://i.pravatar.cc/200?img=12"
@@ -2782,6 +2851,7 @@ async function(userId){
           onerror="this.src='https://i.pravatar.cc/200?img=12'">
 
       </div>
+      ${user.role && user.role!=="User" ? `<div class="pv-staff-label">♛ ${esc(user.role)}</div>` : ""}
 
       <div class="profile-name">
         ${esc(user.name || "Guest")}
@@ -3017,6 +3087,8 @@ async function(userId){
 
     </div>
   `;
+  const profileAvatarImage=document.getElementById("pvProfileAvatarImage");
+  applyPawanAvatarFrame(profileAvatarImage,user);
 
   openModal("profileModal");
 
@@ -3126,37 +3198,19 @@ function(){
 
 };
 
-window.profileFrame =
-function(){
-
-  showFeature(
-    "✨ Frames",
-    `
-      <div class="option-grid">
-
-        <div class="option">
-          <div>✨</div>
-          <b>Avatar Frame</b>
-          <small>Current</small>
-        </div>
-
-        <div class="option">
-          <div>🌈</div>
-          <b>Special</b>
-          <small>Locked</small>
-        </div>
-
-        <div class="option">
-          <div>👑</div>
-          <b>VIP Frame</b>
-          <small>VIP</small>
-        </div>
-
-      </div>
-    `
-  );
-
+window.profileFrame = async function(){
+  showFeature("✨ Avatar Frame Store",'<div id="pvFrameStoreLoading" class="pv-event-card">Frame Store load ho raha hai…</div><div id="pvFrameStoreGrid" class="pv-manager-grid"></div>');
+  try{
+    const [catalogRes,ownedRes]=await Promise.all([fetch(PV_SERVER_BASE+"/api/frames"),fetch(PV_SERVER_BASE+"/api/frames/user/"+encodeURIComponent(USER.userId))]);
+    if(!catalogRes.ok||!ownedRes.ok)throw new Error("Frame Store unavailable");
+    const catalog=await catalogRes.json(),owned=await ownedRes.json();
+    const grid=document.getElementById("pvFrameStoreGrid"),loading=document.getElementById("pvFrameStoreLoading");if(loading)loading.remove();if(!grid)return;
+    const active=new Map((owned.owned||[]).map(x=>[x.id,Number(x.until)]));
+    grid.innerHTML=(catalog.avatarFrames||[]).map(f=>{const until=active.get(f.id)||0;const isCurrent=owned.avatarFrame===f.id&&Number(owned.avatarFrameExpiresAt)>Date.now();return `<div class="pv-manager-card"><div style="font-size:25px">${safeHtml(f.icon)}</div><b>${safeHtml(f.name)}</b><div class="pv-manager-muted">🪙 ${Number(f.price).toLocaleString("en-IN")} / 7 days</div>${until>Date.now()?`<div class="pv-manager-muted">Owned until ${new Date(until).toLocaleDateString()}</div>`:""}<label class="pv-manager-field">Duration<select id="pvFrameDays_${safeHtml(f.id)}"><option value="7">7 Days</option><option value="15">15 Days</option><option value="30">30 Days</option></select></label><button class="pv-manager-action primary" onclick="buyAvatarFrame('${safeHtml(f.id)}')">${until>Date.now()?(isCurrent?"Equipped":"Buy Again"):"Buy & Equip"}</button>${until>Date.now()&&!isCurrent?`<button class="pv-manager-action" onclick="equipAvatarFrame('${safeHtml(f.id)}')">Equip</button>`:""}</div>`}).join("");
+  }catch(e){const box=document.getElementById("pvFrameStoreLoading");if(box)box.textContent="Frame Store server se connect nahi ho paaya. Server update/restart check karein.";}
 };
+window.buyAvatarFrame=async function(frameId){try{const days=Number(document.getElementById("pvFrameDays_"+frameId)?.value||7);const r=await fetch(PV_SERVER_BASE+"/api/frames/buy",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userId:USER.userId,frameId,days})});const d=await r.json();if(!r.ok)throw new Error(d.error||"Purchase failed");USER.coins=Number(d.user.coins||USER.coins);USER.avatarFrame=frameId;saveUserFirebase();showToast("Frame bought and equipped!");profileFrame();}catch(e){showToast(e.message);}};
+window.equipAvatarFrame=async function(frameId){try{const r=await fetch(PV_SERVER_BASE+"/api/frames/equip",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userId:USER.userId,frameId})});const d=await r.json();if(!r.ok)throw new Error(d.error||"Equip failed");USER.avatarFrame=frameId;saveUserFirebase();showToast("Avatar frame equipped");profileFrame();}catch(e){showToast(e.message);}};
 
 window.profileBadge =
 function(){
@@ -5019,6 +5073,8 @@ async function init(){
 
   await loadFirebaseUser();
 
+  await checkManagerShortcut();
+
   await loadRoomFirebase();
 
   listenRoom();
@@ -5030,6 +5086,54 @@ async function init(){
   renderRoom();
 
 }
+
+
+// Manager panel uses server-side ID + PIN validation. Do not hard-code the PIN here.
+const PV_SERVER_BASE="https://pawanvoice-1.onrender.com";
+async function checkManagerShortcut(){
+  try{const r=await fetch(PV_SERVER_BASE+"/api/manager/status?userId="+encodeURIComponent(USER.userId),{cache:"no-store"});const d=await r.json();if(d.isManager&&d.configured)document.getElementById("pvManagerShortcut")?.classList.add("visible");}catch(e){}
+}
+let pvManagerPinSession="";
+let pvManagerData=null;
+window.openManagerPanel=async function(){
+  const modal=document.getElementById("pvManagerModal"); if(modal)modal.classList.add("open");
+  try{const r=await fetch(PV_SERVER_BASE+"/api/manager/status?userId="+encodeURIComponent(USER.userId),{cache:"no-store"});const d=await r.json();
+    const btn=document.getElementById("pvManagerShortcut"); if(btn&&d.isManager)btn.classList.add("visible");
+    if(!d.configured){const login=document.getElementById("pvManagerLogin");if(login)login.innerHTML='<p class="pv-manager-muted">Manager system abhi configure nahi hai. Render → Environment mein <b>PAWAN_MANAGER_ID</b> aur <b>PAWAN_MANAGER_PIN</b> set karke service restart karein.</p>';}
+  }catch(e){showToast("Manager server connect nahi hua");}
+};
+window.closeManagerPanel=function(){document.getElementById("pvManagerModal")?.classList.remove("open");};
+async function managerFetch(path,options={}){
+  const headers={"Content-Type":"application/json","X-Manager-ID":String(USER.userId),"X-Manager-PIN":pvManagerPinSession,...(options.headers||{})};
+  const r=await fetch(PV_SERVER_BASE+path,{...options,headers});const d=await r.json().catch(()=>({error:"Invalid server response"}));if(!r.ok)throw new Error(d.error||"Manager request failed");return d;
+}
+window.managerLogin=async function(){
+  pvManagerPinSession=String(document.getElementById("pvManagerPin")?.value||"");
+  try{pvManagerData=await managerFetch("/api/manager/overview");document.getElementById("pvManagerLogin").hidden=true;document.getElementById("pvManagerBody").hidden=false;document.getElementById("pvManagerShortcut")?.classList.add("visible");renderManagerTab("staff");showToast("Manager login successful");}
+  catch(e){pvManagerPinSession="";showToast("Login failed: "+e.message);}
+};
+window.managerTab=function(tab,button){document.querySelectorAll(".pv-manager-tabs button").forEach(b=>b.classList.toggle("active",b===button));renderManagerTab(tab);};
+function safeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function renderManagerTab(tab){
+ const box=document.getElementById("pvManagerContent");if(!box)return;
+ if(tab==="staff"){
+  const roles=["Super Admin","Admin","Official","BD","Customer Service"];
+  box.innerHTML=`<div class="pv-manager-card"><b>➕ Create Staff ID</b><label class="pv-manager-field">Name<input id="pvStaffName" maxlength="40" placeholder="Staff display name"></label><label class="pv-manager-field">Existing ID (optional)<input id="pvStaffId" maxlength="100" placeholder="Blank = generate ID"></label><label class="pv-manager-field">Role<select id="pvStaffRole">${roles.map(r=>`<option>${r}</option>`).join("")}</select></label><button class="pv-manager-action primary" onclick="managerCreateStaff()">Create Staff</button></div><h3>Current Staff</h3>${(pvManagerData?.staff||[]).map(s=>`<div class="pv-manager-card"><b>${safeHtml(s.role)}</b><div>${safeHtml(s.name)} · ID: <b>${safeHtml(s.userId)}</b></div><div class="pv-manager-muted">${(s.frames||[]).map(f=>safeHtml(f.name)).join(" · ")}</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><select id="role_${safeHtml(s.userId)}" class="pv-manager-action">${roles.map(r=>`<option ${r===s.role?"selected":""}>${r}</option>`).join("")}</select><button class="pv-manager-action" onclick="managerChangeRole('${safeHtml(s.userId)}')">Change Role</button><button class="pv-manager-action" onclick="managerRevoke('${safeHtml(s.userId)}')">Revoke</button></div></div>`).join("")||'<p class="pv-manager-muted">Abhi koi staff create nahi hua.</p>'}`;
+ } else if(tab==="users"){
+  box.innerHTML=`<p class="pv-manager-muted">Pehle user app/server se connect kare. User ID se coins, VIP, ban/unban/suspend manage kar sakte hain.</p><label class="pv-manager-field">User ID<input id="pvTargetUser" placeholder="Enter User ID"></label><label class="pv-manager-field">Action<select id="pvTargetAction"><option value="coins">Set Coins</option><option value="vip">Set VIP (0–10)</option><option value="ban">Ban</option><option value="unban">Unban</option><option value="suspend">Suspend 24 hours</option></select></label><label class="pv-manager-field">Amount (coins/VIP)<input id="pvTargetAmount" type="number" min="0" value="0"></label><label class="pv-manager-field">Reason (optional)<input id="pvTargetReason" maxlength="200"></label><button class="pv-manager-action primary" onclick="managerModerateUser()">Apply Action</button><div class="pv-manager-card">Connected users loaded: ${(pvManagerData?.users||[]).length}<div class="pv-manager-muted">${(pvManagerData?.users||[]).slice(0,30).map(u=>`${safeHtml(u.name)} · ${safeHtml(u.userId)} · 🪙 ${Number(u.coins||0).toLocaleString("en-IN")}`).join("<br>")}</div></div>`;
+ } else if(tab==="settings"){
+  box.innerHTML=`<label class="pv-manager-field">Global announcement<textarea id="pvManagerAnnouncement" rows="3" maxlength="500">${safeHtml(pvManagerData?.announcement||"")}</textarea></label><label class="pv-manager-field"><span><input id="pvManagerMaintenance" type="checkbox" ${pvManagerData?.maintenanceMode?"checked":""} style="width:auto"> Maintenance mode (flag only)</span></label><button class="pv-manager-action primary" onclick="managerSaveSettings()">Save Settings</button><p class="pv-manager-muted">Maintenance flag API mein save hota hai; is current app mein yeh abhi users ko automatically block nahi karta.</p>`;
+ } else if(tab==="frames"){
+  box.innerHTML=`<h3>35 Normal Avatar Frames</h3><div class="pv-manager-grid">${Array.from({length:35},(_,i)=>`<div class="pv-manager-card">${["👑","🌸","✨","💠","🐉","🌈","💎","🌙","🌅","🌹","🌊","🔥","🍃","🦋","⭐"][i%15]} <b>Avatar Frame ${i+1}</b><div class="pv-manager-muted">7 / 15 / 30 days · coin store design</div></div>`).join("")}</div><h3>30 Staff Frames</h3>${["Manager","Super Admin","Admin","Official","BD","Customer Service"].map(role=>`<div class="pv-manager-card"><b>${safeHtml(role)}</b><div class="pv-manager-muted">5 exclusive frames · role-assigned only · not purchasable</div></div>`).join("")}`;
+ } else {
+  box.innerHTML=`<h3>Recent Manager Audit</h3>${(pvManagerData?.audit||[]).map(a=>`<div class="pv-manager-card"><b>${safeHtml(a.action)}</b><div class="pv-manager-muted">${new Date(a.at).toLocaleString()} · ${safeHtml(a.actor)} · ${safeHtml(JSON.stringify(a.details))}</div></div>`).join("")||'<p class="pv-manager-muted">No manager actions logged yet.</p>'}`;
+ }
+}
+window.managerCreateStaff=async function(){try{const d=await managerFetch("/api/manager/staff",{method:"POST",body:JSON.stringify({name:document.getElementById("pvStaffName").value,userId:document.getElementById("pvStaffId").value,role:document.getElementById("pvStaffRole").value})});pvManagerData.staff=d.staff;pvManagerData.users=[...(pvManagerData.users||[]),d.user];renderManagerTab("staff");showToast("Staff created: ID "+d.user.userId);}catch(e){showToast(e.message);}};
+window.managerChangeRole=async function(id){try{const role=document.getElementById("role_"+id).value;const d=await managerFetch("/api/manager/staff/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({role})});pvManagerData.staff=d.staff;renderManagerTab("staff");showToast("Staff role updated");}catch(e){showToast(e.message);}};
+window.managerRevoke=async function(id){if(!confirm("Revoke staff role and special frame?"))return;try{const d=await managerFetch("/api/manager/staff/"+encodeURIComponent(id),{method:"DELETE"});pvManagerData.staff=d.staff;renderManagerTab("staff");showToast("Staff role/frame revoked");}catch(e){showToast(e.message);}};
+window.managerModerateUser=async function(){try{const id=document.getElementById("pvTargetUser").value.trim(),action=document.getElementById("pvTargetAction").value,amount=Number(document.getElementById("pvTargetAmount").value||0),reason=document.getElementById("pvTargetReason").value;const d=await managerFetch("/api/manager/users/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({action,amount,reason,hours:24})});pvManagerData.users=(pvManagerData.users||[]).map(u=>u.userId===id?d.user:u);showToast("User updated");}catch(e){showToast(e.message);}};
+window.managerSaveSettings=async function(){try{const d=await managerFetch("/api/manager/settings",{method:"PATCH",body:JSON.stringify({announcement:document.getElementById("pvManagerAnnouncement").value,maintenanceMode:document.getElementById("pvManagerMaintenance").checked})});pvManagerData.announcement=d.announcement;pvManagerData.maintenanceMode=d.maintenanceMode;showToast("Settings saved");}catch(e){showToast(e.message);}};
 
 init();
 
