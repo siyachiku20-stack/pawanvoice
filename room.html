@@ -849,6 +849,19 @@ button{
     gap:4px;
   }
 }
+
+/* PAWANVOICE LIVE GIFT EFFECTS + PREMIUM LEVEL BADGES */
+.pv-live-gift-layer{position:fixed;inset:0;z-index:9998;pointer-events:none;display:flex;align-items:center;justify-content:center;padding:20px}
+.pv-live-gift-card{min-width:220px;max-width:88vw;text-align:center;padding:22px 26px;border-radius:24px;border:1px solid #ffe08a;background:radial-gradient(circle at top,#6b2c87,#190f2b 72%);box-shadow:0 0 0 9999px #0005,0 0 45px #ffb52e88;animation:pvGiftPop 3.2s ease both;color:#fff}
+.pv-live-gift-icon{font-size:68px;filter:drop-shadow(0 0 18px #ffc64b);animation:pvGiftFloat 1s ease-in-out infinite alternate}
+.pv-live-gift-title{font-size:17px;font-weight:900;margin-top:7px;color:#ffe5a1}
+.pv-live-gift-names{font-size:12px;margin-top:8px;color:#fff;overflow-wrap:anywhere}
+.pv-level-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;border:1px solid #ffd16688;background:linear-gradient(110deg,#57308c,#a34a8a,#9a641c);color:#fff4bd;font-size:10px;font-weight:900;box-shadow:0 0 10px #e4a6ff44}
+.pv-ranking-row{display:flex;align-items:center;gap:9px;padding:10px;margin:7px 0;border-radius:13px;background:#ffffff0b;border:1px solid #ffffff18}
+.pv-ranking-row img{width:38px;height:38px;object-fit:cover;border-radius:50%}
+@keyframes pvGiftPop{0%{opacity:0;transform:translateY(35px) scale(.55)}12%,78%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-18px) scale(.92)}}
+@keyframes pvGiftFloat{from{transform:translateY(2px) rotate(-5deg)}to{transform:translateY(-8px) rotate(5deg)}}
+
 </style>
 </head>
 
@@ -2017,6 +2030,10 @@ function connectSocket(){
         }
       );
 
+      // Compatibility with the current Render server event names.
+      socket.emit("register-user",{userId:USER.userId,name:USER.name,dp:USER.dp,level:USER.level,exp:USER.exp});
+      socket.emit("join-room",{roomId:ROOM_ID,userId:USER.userId,name:USER.name,dp:USER.dp,level:USER.level});
+
     });
 
     socket.on("roomState",state=>{
@@ -2039,11 +2056,39 @@ function connectSocket(){
     });
 
     socket.on("gift",data=>{
+      showToast("🎁 "+(data?.giftName || "Gift received"));
+      showLiveGiftEffect(data || {});
+    });
 
-      showToast(
-        "🎁 "+(data?.giftName || "Gift received")
-      );
+    socket.on("gift-sent",data=>{
+      if(data && String(data.senderId)!==String(USER.userId)) showLiveGiftEffect(data);
+      if(data && String(data.senderId)===String(USER.userId) && data.wallet){
+        USER.coins=Number(data.wallet.coins ?? USER.coins);
+        saveUserFirebase();
+        const balance=document.getElementById("giftBalance");
+        if(balance) balance.textContent="🪙 Coins: "+Number(USER.coins||0).toLocaleString("en-IN");
+      }
+    });
 
+    socket.on("gift-received",data=>{
+      if(data && String(data.senderId)!==String(USER.userId)) showLiveGiftEffect(data);
+    });
+
+    socket.on("gift:success",data=>{
+      if(data && data.wallet){
+        USER.coins=Number(data.wallet.coins ?? USER.coins);
+        saveUserFirebase();
+      }
+    });
+
+    socket.on("gift:error",data=>showToast("⚠️ "+(data?.message||"Gift send nahi hua")));
+    socket.on("gift-error",data=>showToast("⚠️ "+(data?.message||"Gift send nahi hua")));
+    socket.on("wallet",data=>{
+      if(data && Number.isFinite(Number(data.coins))){
+        USER.coins=Number(data.coins);
+        const balance=document.getElementById("giftBalance");
+        if(balance) balance.textContent="🪙 Coins: "+USER.coins.toLocaleString("en-IN");
+      }
     });
 
     socket.on("userJoined",data=>{
@@ -3185,17 +3230,27 @@ function(){
     `
       <div class="option-grid">
 
-        <div class="option">
-          <div>👑</div>
-          <b>Rich King</b>
-          <small>View Rank</small>
-        </div>
-
-        <div class="option">
-          <div>💞</div>
-          <b>CP Rank</b>
-          <small>View Rank</small>
-        </div>
+        <button class="option" onclick="openRichKingRanking('daily')">
+          <div>👑</div><b>Daily Rich King</b><small>View Rank</small>
+        </button>
+        <button class="option" onclick="openRichKingRanking('weekly')">
+          <div>🏆</div><b>Weekly Rich King</b><small>View Rank</small>
+        </button>
+        <button class="option" onclick="openRichKingRanking('monthly')">
+          <div>💎</div><b>Monthly Rich King</b><small>View Rank</small>
+        </button>
+        <button class="option" onclick="openRichKingRanking('topgifter')">
+          <div>🎁</div><b>Top Gifter</b><small>View Rank</small>
+        </button>
+        <button class="option" onclick="openRichKingRanking('topreceiver')">
+          <div>🌟</div><b>Top Receiver</b><small>View Rank</small>
+        </button>
+        <button class="option" onclick="openCategoryRanking('cp')">
+          <div>💞</div><b>CP Rank</b><small>View Rank</small>
+        </button>
+        <button class="option" onclick="openCategoryRanking('family')">
+          <div>👨‍👩‍👧</div><b>Family Rank</b><small>View Rank</small>
+        </button>
 
         <div class="option">
           <div>🎤</div>
@@ -3233,6 +3288,27 @@ function(){
     `
   );
 
+};
+
+window.openCategoryRanking=async function(type="cp"){
+  const isFamily=type==="family"; const title=isFamily?"👨‍👩‍👧 Family Gift Ranking":"💞 CP Gift Ranking";
+  showFeature(title,`<div id="pvCategoryRankingRows" class="pv-event-card">Ranking load ho rahi hai…</div>`);
+  try{
+    const r=await fetch("https://pawanvoice-1.onrender.com/api/"+(isFamily?"family":"cp"),{cache:"no-store"}); if(!r.ok)throw new Error("offline");
+    const data=await r.json(); const rows=Array.isArray(data.ranking)?data.ranking:[]; const box=document.getElementById("pvCategoryRankingRows");
+    if(box)box.innerHTML=rows.length?rows.slice(0,20).map((u,i)=>`<div class="pv-ranking-row"><b>#${Number(u.rank||i+1)}</b><img src="${esc(u.dp||"https://i.pravatar.cc/80?img=12")}" onerror="this.style.display='none'"><div style="flex:1"><b>${esc(u.name||"User")}</b><small style="display:block;opacity:.7">ID ${esc(u.userId||"—")}</small></div><b>${Number(u.points||u.coins||0).toLocaleString("en-IN")} pts</b></div>`).join(""):'Abhi points nahi hain. Related gifts bhejkar ranking shuru karein.';
+  }catch(e){const box=document.getElementById("pvCategoryRankingRows");if(box)box.textContent="Ranking server se abhi connect nahi ho rahi.";}
+};
+
+window.openRichKingRanking=async function(type="daily"){
+  const labels={daily:"Daily Rich King",weekly:"Weekly Rich King",monthly:"Monthly Rich King",topgifter:"Top Gifter",topreceiver:"Top Receiver"};
+  showFeature("🏆 "+(labels[type]||"Rich King"),`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${Object.entries(labels).map(([k,v])=>`<button class="pv-gift-tab" onclick="openRichKingRanking('${k}')">${esc(v)}</button>`).join("")}</div><div id="pvRichKingRows"><div class="pv-event-card">Ranking load ho rahi hai…</div></div>`);
+  try{
+    const r=await fetch("https://pawanvoice-1.onrender.com/api/ranking/"+encodeURIComponent(type),{cache:"no-store"});
+    if(!r.ok) throw new Error("Ranking unavailable");
+    const data=await r.json(); const rows=Array.isArray(data)?data:(data.ranking||[]); const box=document.getElementById("pvRichKingRows");
+    if(box)box.innerHTML=rows.length?rows.slice(0,20).map((u,i)=>`<div class="pv-ranking-row"><b>#${Number(u.rank||i+1)}</b><img src="${esc(u.dp||"https://i.pravatar.cc/80?img=12")}" onerror="this.style.display='none'"><div style="flex:1;min-width:0"><b>${esc(u.name||"User")}</b><small style="display:block;opacity:.7">ID: ${esc(u.userId||"—")}</small></div><b>🪙 ${Number(u.coins||u.total||0).toLocaleString("en-IN")}</b></div>`).join(""):'<div class="pv-event-card">Abhi ranking ke liye data nahi hai.</div>';
+  }catch(e){const box=document.getElementById("pvRichKingRows");if(box)box.innerHTML='<div class="pv-event-card">Ranking server se abhi connect nahi ho rahi.</div>';}
 };
 
 window.profileLevel =
@@ -4235,6 +4311,19 @@ window.openFestivalLeaderboard=async function(){
 /* =====================================================
    OPEN GIFTS
 ===================================================== */
+
+window.showLiveGiftEffect=function(data={}){
+  try{
+    const old=document.getElementById("pvLiveGiftLayer"); if(old) old.remove();
+    const layer=document.createElement("div"); layer.id="pvLiveGiftLayer"; layer.className="pv-live-gift-layer";
+    const card=document.createElement("div"); card.className="pv-live-gift-card";
+    const icon=document.createElement("div"); icon.className="pv-live-gift-icon"; icon.textContent=String(data.giftIcon||data.emoji||"🎁");
+    const title=document.createElement("div"); title.className="pv-live-gift-title"; title.textContent=String(data.giftName||"Special Gift");
+    const names=document.createElement("div"); names.className="pv-live-gift-names"; names.textContent=String(data.senderName||data.fromName||USER.name||"Someone")+" ➜ "+String(data.receiverName||"Room");
+    card.append(icon,title,names); layer.appendChild(card); document.body.appendChild(layer);
+    setTimeout(()=>layer.remove(),3300);
+  }catch(e){console.log("gift effect:",e);}
+};
 
 window.openGifts =
 function(targetUserId=""){
