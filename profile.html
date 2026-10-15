@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 
 <title>PawanVoice Profile</title>
 
@@ -10,2706 +10,869 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
-*{
- box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
- margin:0;
- background:#101010;
- color:#fff;
- font-family:Arial,sans-serif;
- padding-bottom:30px;
+ margin:0;background:#101010;color:#fff;
+ font-family:Arial,sans-serif;padding-bottom:30px
 }
 
-button,
-input,
-select{
- font:inherit;
-}
-
+button,input,select{font:inherit}
 button{
- border:0;
- border-radius:12px;
- padding:11px 15px;
- cursor:pointer;
+ border:0;border-radius:12px;padding:11px 15px;
+ cursor:pointer;color:#fff
 }
-
-input,
-select{
- width:100%;
- background:#202020;
- color:#fff;
- border:1px solid #444;
- border-radius:11px;
- padding:12px;
- outline:none;
+input,select{
+ width:100%;background:#202020;color:#fff;
+ border:1px solid #444;border-radius:11px;
+ padding:12px;outline:none
 }
-
-.page{
- max-width:650px;
- margin:auto;
- padding:15px;
-}
-
-.top{
- display:flex;
- align-items:center;
- justify-content:space-between;
- margin-bottom:15px;
-}
-
-.title{
- font-size:24px;
- font-weight:bold;
-}
-
-.back{
- background:#292929;
- color:#fff;
-}
-
+.page{max-width:650px;margin:auto;padding:15px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}
+.title{font-size:24px;font-weight:bold}
+.back,.gray{background:#292929;color:#fff}
 .card{
- background:#1b1b1b;
- border:1px solid #333;
- border-radius:17px;
- padding:16px;
- margin-bottom:13px;
+ background:#1b1b1b;border:1px solid #333;
+ border-radius:17px;padding:16px;margin-bottom:13px
 }
-
 .profileHero{
  background:linear-gradient(135deg,#35106d,#171717);
- border-radius:20px;
- padding:20px;
- margin-bottom:15px;
+ border-radius:20px;padding:20px;margin-bottom:15px;
+ overflow:hidden
 }
-
-.profileTop{
- display:flex;
- gap:15px;
- align-items:center;
-}
-
+.profileTop{display:flex;gap:15px;align-items:center}
 .avatar{
- width:90px;
- height:90px;
- border-radius:50%;
- overflow:hidden;
- background:#292929;
- border:3px solid #8b5cf6;
- display:flex;
- align-items:center;
- justify-content:center;
- font-size:42px;
- flex-shrink:0;
+ --frame-color:#8b5cf6;
+ width:100px;height:100px;position:relative;
+ flex-shrink:0;border-radius:50%;padding:6px;
+ display:flex;align-items:center;justify-content:center;
+ background:linear-gradient(135deg,var(--frame-color),#222);
+ border:3px solid var(--frame-color);
+ box-shadow:0 0 12px var(--frame-color);
+ overflow:visible;isolation:isolate
 }
-
 .avatar img{
- width:100%;
- height:100%;
- object-fit:cover;
+ width:100%;height:100%;object-fit:cover;
+ border-radius:50%;border:2px solid #fff;
+ position:relative;z-index:1
+}
+.avatar:before{
+ content:"";position:absolute;inset:-5px;
+ border-radius:50%;border:2px solid var(--frame-color);
+ pointer-events:none;z-index:2
+}
+.avatar:after{
+ content:attr(data-decoration);
+ position:absolute;top:-15px;left:50%;
+ transform:translateX(-50%);font-size:23px;
+ z-index:4;white-space:nowrap;
+ text-shadow:0 0 9px var(--frame-color);
+ pointer-events:none
 }
 
-.name{
- font-size:23px;
- font-weight:bold;
-}
+/* 35 Frame styles */
 
-.id{
- color:#bbb;
- margin-top:5px;
-}
+.frame-default{--frame-color:#888}
+.frame-bronze{--frame-color:#cd7f32}
+.frame-silver{--frame-color:#d8e1ec}
+.frame-gold{--frame-color:#ffd447}
+.frame-diamond{--frame-color:#73efff}
+.frame-king{--frame-color:#ffc400}
+.frame-neonblue{--frame-color:#00c8ff}
+.frame-neonpurple{--frame-color:#bd53ff}
+.frame-fire{--frame-color:#ff4a14}
+.frame-ice{--frame-color:#9df4ff}
+.frame-emerald{--frame-color:#12e6a0}
+.frame-ruby{--frame-color:#ff2557}
+.frame-sapphire{--frame-color:#347aff}
+.frame-galaxy{--frame-color:#b16aff}
+.frame-stars{--frame-color:#ffe7a0}
+.frame-rainbow{--frame-color:#ff50d5}
+.frame-butterfly{--frame-color:#ff8bdb}
+.frame-rose{--frame-color:#ff668b}
+.frame-cherry{--frame-color:#ffb6d9}
+.frame-lotus{--frame-color:#ff7be9}
+.frame-peacock{--frame-color:#00e3d0}
+.frame-dragon{--frame-color:#ff3e35}
+.frame-phoenix{--frame-color:#ff8a00}
+.frame-angel{--frame-color:#e7f4ff}
+.frame-shadow{--frame-color:#8b66ff}
+.frame-cyber{--frame-color:#00ffda}
+.frame-luxury{--frame-color:#f4cf72}
+.frame-heart{--frame-color:#ff4778}
+.frame-music{--frame-color:#d78aff}
+.frame-clover{--frame-color:#64f584}
+.frame-ocean{--frame-color:#13aaff}
+.frame-sunburst{--frame-color:#ffba32}
+.frame-moon{--frame-color:#b7c8ff}
+.frame-diwali{--frame-color:#ff9c24}
+.frame-navratri{--frame-color:#ff3a8b}
+.frame-legendary{--frame-color:#ffd700}
 
-.gender{
- color:#ddd;
- margin-top:5px;
+.frame-rainbow,.frame-galaxy,.frame-legendary{
+ background:conic-gradient(#ff375b,#ffb52e,#70ff8b,#35d9ff,#b64dff,#ff375b);
 }
-
-.level{
- margin-top:18px;
+.frame-rainbow:before,.frame-galaxy:before,.frame-legendary:before{
+ border:3px dashed #fff;
 }
-
-.levelTop{
- display:flex;
- justify-content:space-between;
- margin-bottom:7px;
+.frame-fire,.frame-phoenix,.frame-dragon{
+ box-shadow:0 0 13px #ff4a14,0 0 25px #ff1717;
 }
-
-.progress{
- width:100%;
- height:10px;
- background:#333;
- border-radius:20px;
- overflow:hidden;
+.frame-neonblue,.frame-neonpurple,.frame-cyber{
+ box-shadow:0 0 12px var(--frame-color),0 0 28px var(--frame-color);
 }
-
-.progress i{
- display:block;
- width:0%;
- height:100%;
- background:#8b5cf6;
+.frame-gold,.frame-king,.frame-luxury,.frame-legendary{
+ border:4px double #fff0a3;
 }
-
-.stats{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:8px;
- margin-top:15px;
+.frame-diamond,.frame-ice,.frame-sapphire{
+ border:4px ridge #d9ffff;
 }
+.frame-shadow{filter:drop-shadow(0 0 7px #8b66ff)}
+.frame-diwali:after{content:"🪔"}
+.frame-navratri:after{content:"🌺"}
+.frame-king:after{content:"👑"}
+.frame-gold:after{content:"✨"}
+.frame-diamond:after{content:"💎"}
+.frame-fire:after{content:"🔥"}
+.frame-dragon:after{content:"🐉"}
+.frame-phoenix:after{content:"🔥"}
+.frame-angel:after{content:"😇"}
+.frame-peacock:after{content:"🦚"}
+.frame-butterfly:after{content:"🦋"}
+.frame-rose:after{content:"🌹"}
+.frame-lotus:after{content:"🪷"}
+.frame-legendary:after{content:"👑"}
 
-.stat{
- background:#151515;
- border-radius:12px;
- padding:12px 5px;
- text-align:center;
-}
-
-.stat b{
- display:block;
- font-size:18px;
- margin-bottom:5px;
-}
-
-.stat small{
- color:#aaa;
-}
-
-.wallet{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:10px;
-}
-
-.walletBox{
- background:#151515;
- border-radius:13px;
- padding:15px;
- text-align:center;
-}
-
-.walletBox b{
- display:block;
- font-size:21px;
- margin-top:5px;
-}
-
-.grid{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:9px;
-}
-
+.name{font-size:23px;font-weight:bold;overflow-wrap:anywhere}
+.id,.gender{color:#ccc;margin-top:5px}
+.level{margin-top:20px}
+.levelTop{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px}
+.progress{width:100%;height:10px;background:#333;border-radius:20px;overflow:hidden}
+.progress i{display:block;width:0;height:100%;background:linear-gradient(90deg,#8b5cf6,#f472b6)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:15px}
+.stat{background:#151515;border-radius:12px;padding:12px 5px;text-align:center}
+.stat b{display:block;font-size:18px;margin-bottom:5px}
+.stat small{color:#aaa}
+.wallet{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.walletBox{background:#151515;border-radius:13px;padding:15px;text-align:center}
+.walletBox b{display:block;font-size:21px;margin-top:5px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
 .item{
- background:#202020;
- border:1px solid #333;
- border-radius:13px;
- padding:15px 5px;
- text-align:center;
- cursor:pointer;
+ background:#202020;border:1px solid #333;border-radius:13px;
+ padding:15px 5px;text-align:center;cursor:pointer
 }
-
-.item span{
- display:block;
- font-size:28px;
- margin-bottom:7px;
-}
-
-.item small{
- color:#ddd;
-}
-
-.btn{
- background:#7c3aed;
- color:#fff;
-}
-
-.green{
- background:#16a34a;
- color:#fff;
-}
-
-.gold{
- background:#d97706;
- color:#fff;
-}
-
-.red{
- background:#dc2626;
- color:#fff;
-}
-
-.gray{
- background:#333;
- color:#fff;
-}
-
-.full{
- width:100%;
-}
-
-.hidden{
- display:none!important;
-}
-
-.status{
- margin-top:10px;
- padding:10px;
- background:#202020;
- color:#bbb;
- border-radius:10px;
-}
-
-.detail{
- display:none;
-}
-
-.detail.active{
- display:block;
-}
-
+.item span{display:block;font-size:28px;margin-bottom:7px}
+.item small{color:#ddd}
+.btn{background:#7c3aed;color:#fff}
+.green{background:#16a34a}
+.gold{background:#d97706}
+.red{background:#dc2626}
+.full{width:100%}
+.hidden{display:none!important}
+.status{margin-top:10px;padding:10px;background:#202020;color:#bbb;border-radius:10px}
+.detail{display:none}
+.detail.active{display:block}
 .option{
- background:#202020;
- border:1px solid #333;
- border-radius:12px;
- padding:13px;
- margin:8px 0;
- cursor:pointer;
+ background:#202020;border:1px solid #333;border-radius:12px;
+ padding:13px;margin:8px 0;cursor:pointer
 }
-
-.option.active{
- border-color:#8b5cf6;
- background:#32186a;
+.option.active{border-color:#8b5cf6;background:#32186a}
+.notice{color:#aaa;font-size:13px;line-height:1.5}
+.small-title{color:#bbb;font-size:13px;margin:12px 0 8px}
+.section-title{font-size:19px;font-weight:bold;margin:18px 0 10px}
+.frameGallery{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px
 }
-
-.modal{
- position:fixed;
- inset:0;
- background:rgba(0,0,0,.75);
- display:none;
- align-items:flex-end;
- justify-content:center;
- z-index:9999;
+.frameCard{
+ background:#202020;border:1px solid #393939;border-radius:14px;
+ padding:12px 4px;text-align:center;cursor:pointer;min-width:0
 }
-
-.modal.show{
- display:flex;
+.frameCard.selected{border:2px solid #a78bfa;background:#32186a}
+.frameCard .avatar{width:70px;height:70px;margin:8px auto 14px}
+.frameCard .avatar:after{font-size:15px;top:-12px}
+.frameCard strong{display:block;font-size:12px;min-height:28px}
+.frameCard small{font-size:11px;color:#bbb}
+.previewArea{
+ background:linear-gradient(135deg,#32105c,#111);
+ border:1px solid #4a2872;border-radius:16px;
+ padding:18px;text-align:center;margin:12px 0
 }
-
-.sheet{
- width:min(650px,100%);
- max-height:90vh;
- overflow:auto;
- background:#151515;
- border-radius:22px 22px 0 0;
- padding:18px;
+.previewArea .avatar{width:115px;height:115px;margin:10px auto 20px}
+.badgeShow{
+ display:inline-block;border:2px solid #ffd66b;
+ border-radius:12px;padding:8px 14px;
+ background:linear-gradient(135deg,#543000,#161616);
+ color:#ffe7a0;font-weight:bold;
+ box-shadow:0 0 12px #b87920
 }
-
-.sheetHead{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin-bottom:15px;
+.badge-bronze{--badge:#cd7f32}
+.badge-silver{--badge:#d8e1ec}
+.badge-gold{--badge:#ffd447}
+.badge-diamond{--badge:#73efff}
+.badge-royal{--badge:#bd53ff}
+.badge-legendary{--badge:#ff9d00}
+.levelBadge{
+ display:inline-block;padding:5px 11px;border-radius:8px;
+ border:2px solid var(--badge,#ffd447);
+ color:var(--badge,#ffd447);
+ background:#171717;font-weight:bold;
+ box-shadow:0 0 9px var(--badge,#ffd447);
+ margin-top:8px
 }
-
-.close{
- width:42px;
- height:42px;
- padding:0;
- background:#292929;
- color:#fff;
- font-size:25px;
+.levelMini{display:flex;gap:9px;flex-wrap:wrap}
+.levelChoice{
+ flex:1;min-width:120px;background:#202020;
+ border:1px solid #444;border-radius:12px;
+ padding:12px;text-align:center
 }
-
-.notice{
- color:#aaa;
- font-size:13px;
- line-height:1.5;
-}
-
-.loading{
- text-align:center;
- padding:25px;
- color:#aaa;
-}
-
-@media(max-width:500px){
-
- .grid{
-  grid-template-columns:repeat(3,1fr);
- }
-
- .item{
-  padding:12px 4px;
- }
-
- .item span{
-  font-size:24px;
- }
-
- .stats{
-  gap:5px;
- }
-
- .avatar{
-  width:78px;
-  height:78px;
- }
+.levelChoice .levelBadge{margin:5px 0}
+@media(max-width:360px){
+ .frameGallery{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .avatar{width:82px;height:82px}
+ .name{font-size:20px}
 }
 </style>
 </head>
 
 <body>
-
 <div class="page">
 
- <!-- TOP -->
-
  <div class="top">
-
-  <div class="title">
-   👤 My Profile
-  </div>
-
-  <button
-   class="back"
-   onclick="goHome()">
-   ← Home
-  </button>
-
+  <div class="title">👤 My Profile</div>
+  <button class="back" onclick="goHome()">← Home</button>
  </div>
-
-
- <!-- PROFILE HERO -->
 
  <div class="profileHero">
-
   <div class="profileTop">
-
-   <div
-    class="avatar"
-    id="profileAvatar">
-    👤
+   <div class="avatar frame-default" id="profileAvatar">👤</div>
+   <div style="flex:1;min-width:0">
+    <div class="name" id="profileName">Loading...</div>
+    <div class="id" id="profileId">ID: --</div>
+    <div class="gender" id="profileGender">Gender: --</div>
+    <div id="levelBadgeArea"></div>
    </div>
-
-   <div style="flex:1">
-
-    <div
-     class="name"
-     id="profileName">
-     Loading...
-    </div>
-
-    <div
-     class="id"
-     id="profileId">
-     ID: --
-    </div>
-
-    <div
-     class="gender"
-     id="profileGender">
-     Gender: --
-    </div>
-
-   </div>
-
   </div>
-
-
-  <!-- LEVEL -->
 
   <div class="level">
-
    <div class="levelTop">
-
-    <span>
-     ⭐ Level
-     <b id="profileLevel">1</b>
-    </span>
-
-    <span id="expText">
-     0 / 100 EXP
-    </span>
-
+    <span>⭐ Level <b id="profileLevel">1</b></span>
+    <span id="expText">0 / 1000 EXP</span>
    </div>
-
-   <div class="progress">
-    <i id="expBar"></i>
-   </div>
-
+   <div class="progress"><i id="expBar"></i></div>
   </div>
-
-
-  <!-- STATS -->
 
   <div class="stats">
-
-   <div class="stat">
-    <b id="following">0</b>
-    <small>Following</small>
-   </div>
-
-   <div class="stat">
-    <b id="followers">0</b>
-    <small>Followers</small>
-   </div>
-
-   <div class="stat">
-    <b id="visitors">0</b>
-    <small>Visitors</small>
-   </div>
-
+   <div class="stat"><b id="following">0</b><small>Following</small></div>
+   <div class="stat"><b id="followers">0</b><small>Followers</small></div>
+   <div class="stat"><b id="visitors">0</b><small>Visitors</small></div>
   </div>
-
  </div>
 
-
- <!-- EDIT PROFILE -->
-
  <div class="card">
-
-  <h3>
-   ✏️ Edit Profile
-  </h3>
-
+  <h3>✏️ Edit Profile</h3>
   <label>Name</label>
-
-  <input
-   id="nameInput"
-   placeholder="Your Name">
-
+  <input id="nameInput" placeholder="Your Name">
   <br><br>
-
   <label>Gender</label>
-
   <select id="genderInput">
-
-   <option value="Male">
-    Male
-   </option>
-
-   <option value="Female">
-    Female
-   </option>
-
-   <option value="Other">
-    Other
-   </option>
-
+   <option value="Male">Male</option>
+   <option value="Female">Female</option>
+   <option value="Other">Other</option>
   </select>
-
   <br><br>
-
   <label>Profile DP</label>
-
-  <input
-   id="dpInput"
-   type="file"
-   accept="image/*">
-
+  <input id="dpInput" type="file" accept="image/*">
   <br><br>
-
-  <button
-   class="btn full"
-   onclick="saveProfile()">
-   💾 Save Profile
-  </button>
-
-  <div
-   id="saveStatus"
-   class="status">
-   Firebase connected data will be saved here.
-  </div>
-
+  <button class="btn full" onclick="saveProfile()">💾 Save Profile</button>
+  <div id="saveStatus" class="status">Profile data will be saved here.</div>
  </div>
 
-
- <!-- WALLET -->
-
  <div class="card">
-
-  <h3>
-   💰 Wallet
-  </h3>
-
+  <h3>💰 Wallet</h3>
   <div class="wallet">
-
-   <div class="walletBox">
-
-    🪙 Coins
-
-    <b id="coins">
-     0
-    </b>
-
-   </div>
-
-   <div class="walletBox">
-
-    💎 Diamonds
-
-    <b id="diamonds">
-     0
-    </b>
-
-   </div>
-
+   <div class="walletBox">🪙 Coins <b id="coins">0</b></div>
+   <div class="walletBox">💎 Diamonds <b id="diamonds">0</b></div>
   </div>
-
  </div>
 
-
- <!-- PROFILE FEATURES -->
-
  <div class="card">
-
-  <h3>
-   ⚡ Profile Features
-  </h3>
-
+  <h3>⚡ Profile Features</h3>
   <div class="grid">
-
-   <div
-    class="item"
-    onclick="openDetail('frame')">
-
-    <span>
-     🖼️
-    </span>
-
-    <small>
-     Frame
-    </small>
-
-   </div>
-
-
-   <div
-    class="item"
-    onclick="openDetail('badge')">
-
-    <span>
-     🏷️
-    </span>
-
-    <small>
-     Badge
-    </small>
-
-   </div>
-
-
-   <div
-    class="item"
-    onclick="openDetail('medal')">
-
-    <span>
-     🏅
-    </span>
-
-    <small>
-     Medal
-    </small>
-
-   </div>
-
-
-   <div
-    class="item"
-    onclick="openDetail('vip')">
-
-    <span>
-     👑
-    </span>
-
-    <small>
-     VIP
-    </small>
-
-   </div>
-
-
-   <div
-    class="item"
-    onclick="openDetail('cp')">
-
-    <span>
-     💞
-    </span>
-
-    <small>
-     CP Space
-    </small>
-
-   </div>
-
-
-   <div
-    class="item"
-    onclick="openDetail('family')">
-
-    <span>
-     👨‍👩‍👧
-    </span>
-
-    <small>
-     Family
-    </small>
-
-   </div>
-
-
-   <div
-    class="item"
-    onclick="openDetail('ranking')">
-
-    <span>
-     🏆
-    </span>
-
-    <small>
-     Ranking
-    </small>
-
-   </div>
-
-
-   <div
-    class="item"
-    onclick="openDetail('level')">
-
-    <span>
-     ⭐
-    </span>
-
-    <small>
-     Level
-    </small>
-
-   </div>
-
-
-   <div
-    class="item"
-    onclick="openDetail('invite')">
-
-    <span>
-     🎁
-    </span>
-
-    <small>
-     Invite
-    </small>
-
-   </div>
-
-
-   <div
-    class="item"
-    onclick="openDetail('gifts')">
-
-    <span>
-     🎁
-    </span>
-
-    <small>
-     Gifts
-    </small>
-
-   </div>
-
-
-   <div
-    class="item"
-    onclick="openDetail('dress')">
-
-    <span>
-     👗
-    </span>
-
-    <small>
-     Dress
-    </small>
-
-   </div>
-
-
-   <div
-    class="item"
-    onclick="openDetail('entry')">
-
-    <span>
-     ✨
-    </span>
-
-    <small>
-     Entry Effect
-    </small>
-
-   </div>
-
+   <div class="item" onclick="openDetail('frame')"><span>🖼️</span><small>Frame</small></div>
+   <div class="item" onclick="openDetail('badge')"><span>🏷️</span><small>Badge</small></div>
+   <div class="item" onclick="openDetail('medal')"><span>🏅</span><small>Medal</small></div>
+   <div class="item" onclick="openDetail('vip')"><span>👑</span><small>VIP</small></div>
+   <div class="item" onclick="openDetail('cp')"><span>💞</span><small>CP Space</small></div>
+   <div class="item" onclick="openDetail('family')"><span>👨‍👩‍👧</span><small>Family</small></div>
+   <div class="item" onclick="openDetail('ranking')"><span>🏆</span><small>Ranking</small></div>
+   <div class="item" onclick="openDetail('level')"><span>⭐</span><small>Level</small></div>
+   <div class="item" onclick="openDetail('invite')"><span>🎁</span><small>Invite</small></div>
+   <div class="item" onclick="openDetail('gifts')"><span>🎁</span><small>Gifts</small></div>
+   <div class="item" onclick="openDetail('dress')"><span>👗</span><small>Dress</small></div>
+   <div class="item" onclick="openDetail('entry')"><span>✨</span><small>Entry Effect</small></div>
   </div>
-
  </div>
 
-
- <!-- DETAILS -->
-
- <div
-  id="detailArea"
-  class="card detail">
-
-  <button
-   class="gray"
-   onclick="closeDetail()">
-   ← Profile
-  </button>
-
+ <div id="detailArea" class="card detail">
+  <button class="gray" onclick="closeDetail()">← Profile</button>
   <div id="detailContent"></div>
-
  </div>
-
-
- <!-- ACCOUNT INFO -->
 
  <div class="card">
-
-  <h3>
-   🆔 Account Information
-  </h3>
-
-  <p>
-   User ID:
-   <b id="accountId">--</b>
-  </p>
-
-  <p>
-   VIP:
-   <b id="accountVip">0</b>
-  </p>
-
-  <p>
-   CP Points:
-   <b id="accountCP">0</b>
-  </p>
-
-  <p>
-   Family:
-   <b id="accountFamily">Not Joined</b>
-  </p>
-
+  <h3>🆔 Account Information</h3>
+  <p>User ID: <b id="accountId">--</b></p>
+  <p>VIP: <b id="accountVip">0</b></p>
+  <p>CP Points: <b id="accountCP">0</b></p>
+  <p>Family: <b id="accountFamily">Not Joined</b></p>
+  <p>Active Frame: <b id="accountFrame">Default Frame</b></p>
  </div>
-
 
  <div class="card">
-
-  <h3>
-   🔥 Firebase Status
-  </h3>
-
-  <div
-   id="firebaseStatus"
-   class="status">
-   Connecting...
-  </div>
-
+  <h3>🔥 Firebase Status</h3>
+  <div id="firebaseStatus" class="status">Connecting...</div>
  </div>
-
 </div>
 
-
-<!-- =====================================================
-     JAVASCRIPT
-===================================================== -->
-
 <script>
-
-/* =====================================================
-   FIREBASE CONFIG
-===================================================== */
-
-const firebaseConfig = {
-
- apiKey:
-  "AIzaSyDnlTdeq5GaPHrUIV6kTYnM521GtbrrE",
-
- authDomain:
-  "pawanvoice-68c5e.firebaseapp.com",
-
- databaseURL:
-  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com/",
-
- projectId:
-  "pawanvoice-68c5e",
-
- storageBucket:
-  "pawanvoice-68c5e.firebasestorage.app",
-
- messagingSenderId:
-  "148446327241",
-
- appId:
-  "1:148446327241:web:6bac9cb9ad0fb530cbb818"
-
+/* Firebase configuration */
+const firebaseConfig={
+ apiKey:"AIzaSyDnlTdeq5GaPHrUIV6kTYnM521GtbrrE",
+ authDomain:"pawanvoice-68c5e.firebaseapp.com",
+ databaseURL:"https://pawanvoice-68c5e-default-rtdb.firebaseio.com/",
+ projectId:"pawanvoice-68c5e",
+ storageBucket:"pawanvoice-68c5e.firebasestorage.app",
+ messagingSenderId:"148446327241",
+ appId:"1:148446327241:web:6bac9cb9ad0fb530cbb818"
 };
-
-
-/* =====================================================
-   FIREBASE START
-===================================================== */
 
 firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
 
-const db =
- firebase.database();
+const params=new URLSearchParams(location.search);
+let USER_ID=String(
+ params.get("userid")||params.get("userId")||params.get("id")||
+ localStorage.getItem("pv_userId")||
+ localStorage.getItem("pawanUserId")||
+ localStorage.getItem("pawanId")||""
+);
 
-
-/* =====================================================
-   USER ID
-===================================================== */
-
-let USER_ID =
- String(
-  localStorage.getItem("pv_userId") ||
-  localStorage.getItem("pawanUserId") ||
-  localStorage.getItem("pawanId") ||
-  ""
- );
-
-
-/*
-   अगर URL में userid है तो
-   उसे भी support करेंगे.
-*/
-
-const params =
- new URLSearchParams(
-  location.search
- );
-
-const urlUserId =
- params.get("userid") ||
- params.get("userId") ||
- params.get("id");
-
-
-if(urlUserId){
-
- USER_ID =
-  String(urlUserId);
-
- localStorage.setItem(
-  "pv_userId",
-  USER_ID
- );
-
- localStorage.setItem(
-  "pawanUserId",
-  USER_ID
- );
-
-}
-
-
-/* =====================================================
-   DEFAULT USER
-===================================================== */
-
-let USER = {
-
- userId:
-  USER_ID || "100052",
-
- name:
-  localStorage.getItem("pv_name") ||
-  localStorage.getItem("pawanName") ||
-  "Pawan User",
-
- dp:
-  localStorage.getItem("pv_dp") ||
-  localStorage.getItem("pawanDP") ||
-  "https://i.pravatar.cc/200?img=12",
-
- gender:
-  localStorage.getItem("pv_gender") ||
-  localStorage.getItem("pawanGender") ||
-  "Male",
-
- level:
-  Number(
-   localStorage.getItem("pv_level") || 1
-  ),
-
- exp:
-  Number(
-   localStorage.getItem("pv_exp") || 0
-  ),
-
- coins:
-  Number(
-   localStorage.getItem("pv_coins") || 100000
-  ),
-
- diamonds:
-  Number(
-   localStorage.getItem("pv_diamonds") || 0
-  ),
-
- following:
-  Number(
-   localStorage.getItem("pv_following") || 0
-  ),
-
- followers:
-  Number(
-   localStorage.getItem("pv_followers") || 0
-  ),
-
- visitors:
-  Number(
-   localStorage.getItem("pv_visitors") || 0
-  ),
-
- vipLevel:
-  Number(
-   localStorage.getItem("pv_vipLevel") || 0
-  ),
-
- cpPoints:
-  Number(
-   localStorage.getItem("pv_cpPoints") || 0
-  ),
-
- friendshipPoints:
-  Number(
-   localStorage.getItem("pv_friendshipPoints") || 0
-  ),
-
- familyId:
-  localStorage.getItem("pv_familyId") || "",
-
- familyName:
-  localStorage.getItem("pv_familyName") || "",
-
- avatarFrame:
-  {
-   id:"default",
-   name:"Default Frame",
-   image:"",
-   active:true
-  },
-
- badge:
-  {
-   id:"default",
-   name:"New User",
-   image:"",
-   active:true
-  },
-
- medal:
-  localStorage.getItem("pv_medal") ||
-  "🥉 Bronze"
-
+const savedFrame=()=>{
+ try{return JSON.parse(localStorage.getItem("pv_avatarFrame")||"null")}
+ catch(e){return null}
 };
 
+let USER={
+ userId:USER_ID||"100052",
+ name:localStorage.getItem("pv_name")||localStorage.getItem("pawanName")||"Pawan User",
+ dp:localStorage.getItem("pv_dp")||localStorage.getItem("pawanDP")||"https://i.pravatar.cc/200?img=12",
+ gender:localStorage.getItem("pv_gender")||localStorage.getItem("pawanGender")||"Male",
+ level:Number(localStorage.getItem("pv_level")||1),
+ exp:Number(localStorage.getItem("pv_exp")||0),
+ coins:Number(localStorage.getItem("pv_coins")||100000),
+ diamonds:Number(localStorage.getItem("pv_diamonds")||0),
+ following:Number(localStorage.getItem("pv_following")||0),
+ followers:Number(localStorage.getItem("pv_followers")||0),
+ visitors:Number(localStorage.getItem("pv_visitors")||0),
+ vipLevel:Number(localStorage.getItem("pv_vipLevel")||0),
+ cpPoints:Number(localStorage.getItem("pv_cpPoints")||0),
+ friendshipPoints:Number(localStorage.getItem("pv_friendshipPoints")||0),
+ familyId:localStorage.getItem("pv_familyId")||"",
+ familyName:localStorage.getItem("pv_familyName")||"",
+ avatarFrame:savedFrame()||{id:"default",name:"Default Frame",className:"frame-default",active:true},
+ badge:{id:"new_user",name:"New User",active:true},
+ medal:localStorage.getItem("pv_medal")||"🥉 Bronze"
+};
 
-/* =====================================================
-   SAVE LOCAL
-===================================================== */
+if(params.get("userid")||params.get("userId")||params.get("id")){
+ localStorage.setItem("pv_userId",USER_ID);
+ localStorage.setItem("pawanUserId",USER_ID);
+ localStorage.setItem("pawanId",USER_ID);
+}
+
+/* 35 frames */
+const FRAMES=[
+ {id:"default",name:"Default Frame",cls:"frame-default",icon:"⭕",dec:""},
+ {id:"bronze",name:"Bronze",cls:"frame-bronze",icon:"🥉",dec:""},
+ {id:"silver",name:"Silver",cls:"frame-silver",icon:"🥈",dec:""},
+ {id:"gold",name:"Gold VIP",cls:"frame-gold",icon:"✨",dec:"✨"},
+ {id:"diamond",name:"Diamond VIP",cls:"frame-diamond",icon:"💎",dec:"💎"},
+ {id:"king",name:"Royal King",cls:"frame-king",icon:"👑",dec:"👑"},
+ {id:"neonblue",name:"Neon Blue",cls:"frame-neonblue",icon:"💙",dec:"⚡"},
+ {id:"neonpurple",name:"Neon Purple",cls:"frame-neonpurple",icon:"💜",dec:"✦"},
+ {id:"fire",name:"Fire Frame",cls:"frame-fire",icon:"🔥",dec:"🔥"},
+ {id:"ice",name:"Ice Crystal",cls:"frame-ice",icon:"❄️",dec:"❄️"},
+ {id:"emerald",name:"Emerald",cls:"frame-emerald",icon:"💚",dec:"✦"},
+ {id:"ruby",name:"Ruby",cls:"frame-ruby",icon:"❤️",dec:"♥"},
+ {id:"sapphire",name:"Sapphire",cls:"frame-sapphire",icon:"💙",dec:"✦"},
+ {id:"galaxy",name:"Galaxy",cls:"frame-galaxy",icon:"🌌",dec:"🌌"},
+ {id:"stars",name:"Starry Night",cls:"frame-stars",icon:"🌟",dec:"⭐"},
+ {id:"rainbow",name:"Rainbow Glow",cls:"frame-rainbow",icon:"🌈",dec:"🌈"},
+ {id:"butterfly",name:"Butterfly",cls:"frame-butterfly",icon:"🦋",dec:"🦋"},
+ {id:"rose",name:"Rose Garden",cls:"frame-rose",icon:"🌹",dec:"🌹"},
+ {id:"cherry",name:"Cherry Blossom",cls:"frame-cherry",icon:"🌸",dec:"🌸"},
+ {id:"lotus",name:"Lotus",cls:"frame-lotus",icon:"🪷",dec:"🪷"},
+ {id:"peacock",name:"Peacock",cls:"frame-peacock",icon:"🦚",dec:"🦚"},
+ {id:"dragon",name:"Dragon",cls:"frame-dragon",icon:"🐉",dec:"🐉"},
+ {id:"phoenix",name:"Phoenix",cls:"frame-phoenix",icon:"🔥",dec:"🔥"},
+ {id:"angel",name:"Angel Wings",cls:"frame-angel",icon:"😇",dec:"😇"},
+ {id:"shadow",name:"Dark Shadow",cls:"frame-shadow",icon:"🌑",dec:"🌑"},
+ {id:"cyber",name:"Cyber Tech",cls:"frame-cyber",icon:"⚡",dec:"⚡"},
+ {id:"luxury",name:"Golden Luxury",cls:"frame-luxury",icon:"✨",dec:"👑"},
+ {id:"heart",name:"Heart Love",cls:"frame-heart",icon:"💖",dec:"💖"},
+ {id:"music",name:"Music Frame",cls:"frame-music",icon:"🎵",dec:"🎵"},
+ {id:"clover",name:"Lucky Clover",cls:"frame-clover",icon:"🍀",dec:"🍀"},
+ {id:"ocean",name:"Ocean Wave",cls:"frame-ocean",icon:"🌊",dec:"🌊"},
+ {id:"sunburst",name:"Sunburst",cls:"frame-sunburst",icon:"☀️",dec:"☀️"},
+ {id:"moon",name:"Moonlight",cls:"frame-moon",icon:"🌙",dec:"🌙"},
+ {id:"diwali",name:"Diwali Special",cls:"frame-diwali",icon:"🪔",dec:"🪔"},
+ {id:"navratri",name:"Navratri Special",cls:"frame-navratri",icon:"🌺",dec:"🌺"}
+];
+
+/* Keep Legendary King as the 35th frame */
+FRAMES.push({
+ id:"legendary",name:"Legendary King",cls:"frame-legendary",icon:"👑",dec:"👑"
+});
+
+function numberValue(v,fallback){
+ const n=Number(v);
+ return Number.isFinite(n)?n:fallback;
+}
+function formatNumber(v){return Number(v||0).toLocaleString("en-IN")}
+function escapeHtml(v){
+ return String(v??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+ })[c]);
+}
+function getNextExp(level){return Math.max(1,Number(level||1))*1000}
 
 function saveLocal(){
-
- localStorage.setItem(
-  "pv_userId",
-  String(USER.userId)
- );
-
- localStorage.setItem(
-  "pawanUserId",
-  String(USER.userId)
- );
-
- localStorage.setItem(
-  "pawanId",
-  String(USER.userId)
- );
-
- localStorage.setItem(
-  "pv_name",
-  USER.name
- );
-
- localStorage.setItem(
-  "pawanName",
-  USER.name
- );
-
- localStorage.setItem(
-  "pv_dp",
-  USER.dp
- );
-
- localStorage.setItem(
-  "pawanDP",
-  USER.dp
- );
-
- localStorage.setItem(
-  "pv_gender",
-  USER.gender
- );
-
- localStorage.setItem(
-  "pawanGender",
-  USER.gender
- );
-
- localStorage.setItem(
-  "pv_level",
-  USER.level
- );
-
- localStorage.setItem(
-  "pv_exp",
-  USER.exp
- );
-
- localStorage.setItem(
-  "pv_coins",
-  USER.coins
- );
-
- localStorage.setItem(
-  "pv_diamonds",
-  USER.diamonds
- );
-
- localStorage.setItem(
-  "pv_following",
-  USER.following
- );
-
- localStorage.setItem(
-  "pv_followers",
-  USER.followers
- );
-
- localStorage.setItem(
-  "pv_visitors",
-  USER.visitors
- );
-
- localStorage.setItem(
-  "pv_vipLevel",
-  USER.vipLevel
- );
-
- localStorage.setItem(
-  "pv_cpPoints",
-  USER.cpPoints
- );
-
- localStorage.setItem(
-  "pv_friendshipPoints",
-  USER.friendshipPoints
- );
-
- localStorage.setItem(
-  "pv_familyId",
-  USER.familyId || ""
- );
-
- localStorage.setItem(
-  "pv_familyName",
-  USER.familyName || ""
- );
-
- localStorage.setItem(
-  "pv_medal",
-  USER.medal || "🥉 Bronze"
- );
-
+ const pairs={
+ pv_userId:USER.userId,pawanUserId:USER.userId,pawanId:USER.userId,
+ pv_name:USER.name,pawanName:USER.name,
+ pv_dp:USER.dp,pawanDP:USER.dp,
+ pv_gender:USER.gender,pawanGender:USER.gender,
+ pv_level:USER.level,pv_exp:USER.exp,
+ pv_coins:USER.coins,pv_diamonds:USER.diamonds,
+ pv_following:USER.following,pv_followers:USER.followers,
+ pv_visitors:USER.visitors,pv_vipLevel:USER.vipLevel,
+ pv_cpPoints:USER.cpPoints,pv_friendshipPoints:USER.friendshipPoints,
+ pv_familyId:USER.familyId||"",pv_familyName:USER.familyName||"",
+ pv_medal:USER.medal||"🥉 Bronze",
+ pv_avatarFrame:JSON.stringify(USER.avatarFrame||FRAMES[0])
+ };
+ Object.entries(pairs).forEach(([k,v])=>localStorage.setItem(k,String(v??"")));
 }
-
-
-/* =====================================================
-   LOAD USER FROM FIREBASE
-===================================================== */
 
 async function loadUser(){
-
  try{
-
   if(!USER_ID){
-
-   /*
-      ID नहीं है तो permanent numeric ID
-      transaction से बनाएंगे.
-   */
-
-   const result =
-    await db
-     .ref("system/nextUserId")
-     .transaction(function(current){
-
-      if(current === null){
-       return 1000031;
-      }
-
-      return Number(current) + 1;
-
-     });
-
-   if(result.committed){
-
-    USER_ID =
-     String(
-      result.snapshot.val()
-     );
-
-    USER.userId =
-     USER_ID;
-
-    saveLocal();
-
-   }
-
+   const result=await db.ref("system/nextUserId").transaction(current=>
+    current===null?100052:Number(current)+1
+   );
+   if(result.committed)USER_ID=String(result.snapshot.val());
+   else USER_ID="100052";
   }
 
+  USER.userId=USER_ID;
+  const snap=await db.ref("users/"+USER_ID).once("value");
 
-  const snapshot =
-   await db
-    .ref(
-     "users/" +
-     USER_ID
-    )
-    .once("value");
-
-
-  if(snapshot.exists()){
-
-   const data =
-    snapshot.val() || {};
-
-
-   USER = {
-
-    ...USER,
-
-    ...data,
-
-    userId:
-     String(
-      data.userId ||
-      data.id ||
-      USER_ID
-     ),
-
-    id:
-     String(
-      data.id ||
-      data.userId ||
-      USER_ID
-     ),
-
-    name:
-     data.name ||
-     USER.name,
-
-    dp:
-     data.dp ||
-     USER.dp,
-
-    gender:
-     data.gender ||
-     USER.gender,
-
-    level:
-     numberValue(
-      data.level,
-      USER.level
-     ),
-
-    exp:
-     numberValue(
-      data.exp,
-      USER.exp
-     ),
-
-    coins:
-     numberValue(
-      data.coins,
-      USER.coins
-     ),
-
-    diamonds:
-     numberValue(
-      data.diamonds ??
-      data.diamond,
-      USER.diamonds
-     ),
-
-    following:
-     numberValue(
-      data.following,
-      USER.following
-     ),
-
-    followers:
-     numberValue(
-      data.followers,
-      USER.followers
-     ),
-
-    visitors:
-     numberValue(
-      data.visitors,
-      USER.visitors
-     ),
-
-    vipLevel:
-     numberValue(
-      data.vipLevel,
-      USER.vipLevel
-     ),
-
-    cpPoints:
-     numberValue(
-      data.cpPoints,
-      USER.cpPoints
-     ),
-
-    friendshipPoints:
-     numberValue(
-      data.friendshipPoints,
-      USER.friendshipPoints
-     ),
-
-    familyId:
-     data.familyId ||
-     USER.familyId,
-
-    familyName:
-     data.familyName ||
-     USER.familyName,
-
-    avatarFrame:
-     data.avatarFrame ||
-     USER.avatarFrame,
-
-    badge:
-     data.badge ||
-     USER.badge,
-
-    medal:
-     data.medal ||
-     USER.medal ||
-     "🥉 Bronze"
-
+  if(snap.exists()){
+   const d=snap.val()||{};
+   USER={
+    ...USER,...d,
+    userId:String(d.userId||d.id||USER_ID),
+    id:String(d.id||d.userId||USER_ID),
+    name:d.name||USER.name,dp:d.dp||USER.dp,
+    gender:d.gender||USER.gender,
+    level:numberValue(d.level,USER.level),
+    exp:numberValue(d.exp,USER.exp),
+    coins:numberValue(d.coins,USER.coins),
+    diamonds:numberValue(d.diamonds??d.diamond,USER.diamonds),
+    following:numberValue(d.following,USER.following),
+    followers:numberValue(d.followers,USER.followers),
+    visitors:numberValue(d.visitors,USER.visitors),
+    vipLevel:numberValue(d.vipLevel,USER.vipLevel),
+    cpPoints:numberValue(d.cpPoints,USER.cpPoints),
+    friendshipPoints:numberValue(d.friendshipPoints,USER.friendshipPoints),
+    familyId:d.familyId||USER.familyId,
+    familyName:d.familyName||USER.familyName,
+    avatarFrame:d.avatarFrame||USER.avatarFrame,
+    badge:d.badge||USER.badge,
+    medal:d.medal||USER.medal
    };
-
-  }
-
-  else{
-
-   /*
-      Firebase में user नहीं है तो
-      पहली बार पूरा user create होगा.
-   */
-
-   USER.userId =
-    String(USER_ID);
-
-   USER.id =
-    String(USER_ID);
-
+  }else{
+   USER.id=USER_ID;
    await saveUserToFirebase();
-
   }
-
 
   saveLocal();
-
   renderProfile();
-
   listenUserRealtime();
-
-
-  document.getElementById(
-   "firebaseStatus"
-  ).innerText =
-   "✅ Firebase Connected • User data loaded";
-
-
- }catch(error){
-
-  console.error(
-   "Firebase user load:",
-   error
-  );
-
-  document.getElementById(
-   "firebaseStatus"
-  ).innerText =
-   "⚠️ Firebase connection error";
-
+  document.getElementById("firebaseStatus").innerText="✅ Firebase connected • User data loaded";
+ }catch(e){
+  console.error(e);
+  document.getElementById("firebaseStatus").innerText="⚠️ Firebase connection error";
   renderProfile();
-
  }
-
 }
-
-
-/* =====================================================
-   NUMBER HELPER
-===================================================== */
-
-function numberValue(
- value,
- fallback
-){
-
- const n =
-  Number(value);
-
- return Number.isFinite(n)
-  ? n
-  : fallback;
-
-}
-
-
-/* =====================================================
-   SAVE USER TO FIREBASE
-===================================================== */
 
 async function saveUserToFirebase(){
+ const id=String(USER.userId||USER.id||USER_ID);
+ USER.userId=id;USER.id=id;
 
- const id =
-  String(
-   USER.userId ||
-   USER.id ||
-   USER_ID
-  );
-
-
- USER.userId =
-  id;
-
- USER.id =
-  id;
-
-
- const data = {
-
-  userId:id,
-
-  id:id,
-
-  name:
-   USER.name,
-
-  dp:
-   USER.dp,
-
-  gender:
-   USER.gender,
-
-  level:
-   Number(USER.level || 1),
-
-  exp:
-   Number(USER.exp || 0),
-
-  coins:
-   Number(USER.coins || 0),
-
-  diamonds:
-   Number(USER.diamonds || 0),
-
-  diamond:
-   Number(USER.diamonds || 0),
-
-  following:
-   Number(USER.following || 0),
-
-  followers:
-   Number(USER.followers || 0),
-
-  visitors:
-   Number(USER.visitors || 0),
-
-  vipLevel:
-   Number(USER.vipLevel || 0),
-
-  vipExp:
-   Number(USER.vipExp || 0),
-
-  cpPoints:
-   Number(USER.cpPoints || 0),
-
-  friendshipPoints:
-   Number(USER.friendshipPoints || 0),
-
-  familyId:
-   USER.familyId || "",
-
-  familyName:
-   USER.familyName || "",
-
-  avatarFrame:
-   USER.avatarFrame || null,
-
-  badge:
-   USER.badge || null,
-
-  medal:
-   USER.medal || "🥉 Bronze",
-
-  updatedAt:
-   Date.now()
-
+ const data={
+  userId:id,id,name:USER.name,dp:USER.dp,gender:USER.gender,
+  level:Number(USER.level||1),exp:Number(USER.exp||0),
+  coins:Number(USER.coins||0),diamonds:Number(USER.diamonds||0),
+  diamond:Number(USER.diamonds||0),
+  following:Number(USER.following||0),followers:Number(USER.followers||0),
+  visitors:Number(USER.visitors||0),vipLevel:Number(USER.vipLevel||0),
+  vipExp:Number(USER.vipExp||0),cpPoints:Number(USER.cpPoints||0),
+  friendshipPoints:Number(USER.friendshipPoints||0),
+  familyId:USER.familyId||"",familyName:USER.familyName||"",
+  avatarFrame:USER.avatarFrame||FRAMES[0],
+  badge:USER.badge||{id:"new_user",name:"New User"},
+  medal:USER.medal||"🥉 Bronze",updatedAt:Date.now()
  };
 
-
- await db
-  .ref(
-   "users/" +
-   id
-  )
-  .update(data);
-
-
+ await db.ref("users/"+id).update(data);
  saveLocal();
-
-
- document.getElementById(
-  "saveStatus"
- ).innerText =
-  "✅ Profile Firebase में save हो गया";
-
-
  renderProfile();
-
+ document.getElementById("saveStatus").innerText="✅ Profile Firebase में save हो गया";
 }
 
-
-/* =====================================================
-   REALTIME USER LISTENER
-===================================================== */
-
+let realtimeStarted=false;
 function listenUserRealtime(){
-
- if(!USER_ID){
-  return;
- }
-
- db
-  .ref(
-   "users/" +
-   USER_ID
-  )
-  .on(
-   "value",
-   function(snapshot){
-
-    if(!snapshot.exists()){
-     return;
-    }
-
-    const data =
-     snapshot.val() || {};
-
-
-    USER = {
-
-     ...USER,
-     ...data,
-
-     userId:
-      String(
-       data.userId ||
-       data.id ||
-       USER_ID
-      ),
-
-     id:
-      String(
-       data.id ||
-       data.userId ||
-       USER_ID
-      )
-
-    };
-
-
-    saveLocal();
-
-    renderProfile();
-
-   }
-  );
-
+ if(!USER_ID||realtimeStarted)return;
+ realtimeStarted=true;
+ db.ref("users/"+USER_ID).on("value",snap=>{
+  if(!snap.exists())return;
+  const d=snap.val()||{};
+  // Keep current selections if older Firebase data has no frame field.
+  USER={...USER,...d,userId:String(d.userId||d.id||USER_ID),id:String(d.id||d.userId||USER_ID)};
+  saveLocal();
+  renderProfile();
+ });
 }
 
-
-/* =====================================================
-   RENDER PROFILE
-===================================================== */
+function getFrame(frame){
+ if(!frame)return FRAMES[0];
+ return FRAMES.find(f=>f.id===frame.id||f.name===frame.name)||
+        FRAMES.find(f=>f.name===frame.name)||FRAMES[0];
+}
+function getLevelBadge(level){
+ level=Number(level||1);
+ if(level>=100)return {name:"LEGENDARY",cls:"badge-legendary",icon:"👑"};
+ if(level>=70)return {name:"ROYAL",cls:"badge-royal",icon:"👑"};
+ if(level>=50)return {name:"DIAMOND",cls:"badge-diamond",icon:"💎"};
+ if(level>=30)return {name:"GOLD",cls:"badge-gold",icon:"🥇"};
+ if(level>=20)return {name:"SILVER",cls:"badge-silver",icon:"🥈"};
+ if(level>=10)return {name:"BRONZE",cls:"badge-bronze",icon:"🥉"};
+ return {name:"ROOKIE",cls:"badge-bronze",icon:"⭐"};
+}
 
 function renderProfile(){
-
- const avatar =
-  document.getElementById(
-   "profileAvatar"
-  );
-
- if(USER.dp){
-
-  avatar.innerHTML =
-   "<img src=\"" +
-   escapeHtml(USER.dp) +
-   "\" alt=\"DP\">";
-
- }
- else{
-
-  avatar.innerText =
-   "👤";
-
- }
-
-
- document.getElementById(
-  "profileName"
- ).innerText =
-  USER.name || "Pawan User";
-
-
- document.getElementById(
-  "profileId"
- ).innerText =
-  "🆔 ID: " +
-  (
-   USER.userId ||
-   USER.id ||
-   "--"
-  );
-
-
- document.getElementById(
-  "profileGender"
- ).innerText =
-  "Gender: " +
-  (
-   USER.gender ||
-   "Male"
-  );
-
-
- document.getElementById(
-  "nameInput"
- ).value =
-  USER.name || "";
-
-
- document.getElementById(
-  "genderInput"
- ).value =
-  USER.gender || "Male";
-
-
- document.getElementById(
-  "following"
- ).innerText =
-  formatNumber(USER.following);
-
-
- document.getElementById(
-  "followers"
- ).innerText =
-  formatNumber(USER.followers);
-
-
- document.getElementById(
-  "visitors"
- ).innerText =
-  formatNumber(USER.visitors);
-
-
- document.getElementById(
-  "coins"
- ).innerText =
-  formatNumber(USER.coins);
-
-
- document.getElementById(
-  "diamonds"
- ).innerText =
-  formatNumber(USER.diamonds);
-
-
- document.getElementById(
-  "profileLevel"
- ).innerText =
-  USER.level || 1;
-
-
- const nextExp =
-  getNextExp(
-   USER.level
-  );
-
-
- document.getElementById(
-  "expText"
- ).innerText =
-  Number(USER.exp || 0).toLocaleString() +
-  " / " +
-  nextExp.toLocaleString() +
-  " EXP";
-
-
- let percent =
-  Math.floor(
-   (
-    Number(USER.exp || 0) /
-    nextExp
-   ) * 100
-  );
-
-
- percent =
-  Math.max(
-   0,
-   Math.min(
-    100,
-    percent
-   )
-  );
-
-
- document.getElementById(
-  "expBar"
- ).style.width =
-  percent + "%";
-
-
- document.getElementById(
-  "accountId"
- ).innerText =
-  USER.userId || USER.id;
-
-
- document.getElementById(
-  "accountVip"
- ).innerText =
-  USER.vipLevel || 0;
-
-
- document.getElementById(
-  "accountCP"
- ).innerText =
-  formatNumber(
-   USER.cpPoints
-  );
-
-
- document.getElementById(
-  "accountFamily"
- ).innerText =
-  USER.familyName ||
-  "Not Joined";
-
-}
-
-
-/* =====================================================
-   LEVEL EXP
-===================================================== */
-
-function getNextExp(level){
-
- level =
-  Number(level || 1);
-
- return level * 1000;
-
-}
-
-
-/* =====================================================
-   FORMAT
-===================================================== */
-
-function formatNumber(value){
-
- return Number(
-  value || 0
- ).toLocaleString();
-
-}
-
-
-/* =====================================================
-   ESCAPE
-===================================================== */
-
-function escapeHtml(value){
-
- return String(
-  value || ""
- )
- .replace(/&/g,"&amp;")
- .replace(/</g,"&lt;")
- .replace(/>/g,"&gt;")
- .replace(/"/g,"&quot;")
- .replace(/'/g,"&#039;");
-
-}
-
-
-/* =====================================================
-   SAVE PROFILE
-===================================================== */
-
-async function saveProfile(){
-
- const name =
-  document
-   .getElementById(
-    "nameInput"
-   )
-   .value
-   .trim();
-
-
- const gender =
-  document
-   .getElementById(
-    "genderInput"
-   )
-   .value;
-
-
- if(!name){
-
-  alert(
-   "Name enter karo."
-  );
-
-  return;
-
- }
-
-
- USER.name =
-  name;
-
- USER.gender =
-  gender;
-
-
- const file =
-  document
-   .getElementById(
-    "dpInput"
-   )
-   .files[0];
-
-
- if(file){
-
-  if(
-   !file.type.startsWith(
-    "image/"
-   )
-  ){
-
-   alert(
-    "Sirf image select karo."
-   );
-
-   return;
-
-  }
-
-
-  if(
-   file.size >
-   5 * 1024 * 1024
-  ){
-
-   alert(
-    "DP 5 MB se chhoti honi chahiye."
-   );
-
-   return;
-
-  }
-
-
-  const reader =
-   new FileReader();
-
-
-  reader.onload =
-   function(event){
-
-    resizeImage(
-     event.target.result,
-     async function(data){
-
-      USER.dp =
-       data;
-
-      await saveUserToFirebase();
-
-     }
-    );
-
-   };
-
-
-  reader.readAsDataURL(
-   file
-  );
-
- }
-
- else{
-
-  await saveUserToFirebase();
-
- }
-
-}
-
-
-/* =====================================================
-   RESIZE DP
-===================================================== */
-
-function resizeImage(
- source,
- callback
-){
-
- const img =
-  new Image();
-
-
- img.onload =
-  function(){
-
-   const max =
-    600;
-
-   const scale =
-    Math.min(
-     1,
-     max / img.width,
-     max / img.height
-    );
-
-
-   const canvas =
-    document.createElement(
-     "canvas"
-    );
-
-
-   canvas.width =
-    Math.max(
-     1,
-     Math.round(
-      img.width * scale
-     )
-    );
-
-
-   canvas.height =
-    Math.max(
-     1,
-     Math.round(
-      img.height * scale
-     )
-    );
-
-
-   const ctx =
-    canvas.getContext(
-     "2d"
-    );
-
-
-   ctx.drawImage(
-    img,
-    0,
-    0,
-    canvas.width,
-    canvas.height
-   );
-
-
-   const data =
-    canvas.toDataURL(
-     "image/jpeg",
-     .78
-    );
-
-
-   callback(data);
-
-  };
-
-
- img.src =
-  source;
-
-}
-
-
-/* =====================================================
-   PROFILE DETAILS
-===================================================== */
-
-function openDetail(type){
-
- const area =
-  document.getElementById(
-   "detailArea"
-  );
-
- const content =
-  document.getElementById(
-   "detailContent"
-  );
-
-
- let html = "";
-
-
- if(type === "frame"){
-
-  html = `
-
-   <h2>🖼️ Avatar Frame</h2>
-
-   <div
-    class="option"
-    onclick="selectFrame('Default Frame')">
-    🖼️ Default Frame
-   </div>
-
-   <div
-    class="option"
-    onclick="selectFrame('Royal Frame')">
-    👑 Royal Frame
-   </div>
-
-   <div
-    class="option"
-    onclick="selectFrame('Diamond Frame')">
-    💎 Diamond Frame
-   </div>
-
-   <p class="notice">
-    Selected Frame:
-    <b id="selectedFrame">
-     ${escapeHtml(
-      USER.avatarFrame?.name ||
-      "Default Frame"
-     )}
-    </b>
-   </p>
-
-  `;
-
- }
-
-
- if(type === "badge"){
-
-  html = `
-
-   <h2>🏷️ Personal Badge</h2>
-
-   <div
-    class="option"
-    onclick="selectBadge('PawanVoice Member')">
-    🎙️ PawanVoice Member
-   </div>
-
-   <div
-    class="option"
-    onclick="selectBadge('Voice Star')">
-    ⭐ Voice Star
-   </div>
-
-   <div
-    class="option"
-    onclick="selectBadge('Super User')">
-    👑 Super User
-   </div>
-
-   <p class="notice">
-    Current Badge:
-    <b>
-     ${escapeHtml(
-      USER.badge?.name ||
-      "New User"
-     )}
-    </b>
-   </p>
-
-  `;
-
- }
-
-
- if(type === "medal"){
-
-  html = `
-
-   <h2>🏅 Level Medal</h2>
-
-   <div class="option">
-    🥉 Level 1–9
-   </div>
-
-   <div class="option">
-    🥈 Level 10–19
-   </div>
-
-   <div class="option">
-    🥇 Level 20–29
-   </div>
-
-   <div class="option">
-    💎 Level 30–39
-   </div>
-
-   <div class="option">
-    👑 Level 40+
-   </div>
-
-   <p>
-    Current Medal:
-    <b>
-     ${escapeHtml(
-      USER.medal ||
-      "🥉 Bronze"
-     )}
-    </b>
-   </p>
-
-  `;
-
- }
-
-
- if(type === "vip"){
-
-  html = `
-
-   <h2>👑 VIP</h2>
-
-   <div class="option">
-    VIP 0 — New User
-   </div>
-
-   <div class="option">
-    VIP 1 — Level 1+
-   </div>
-
-   <div class="option">
-    VIP 2 — Level 25+
-   </div>
-
-   <div class="option">
-    VIP 3 — Level 35+
-   </div>
-
-   <div class="option">
-    VIP 4 — Level 45+
-   </div>
-
-   <p>
-    Current VIP:
-    <b>
-     VIP ${Number(USER.vipLevel || 0)}
-    </b>
-   </p>
-
-  `;
-
- }
-
-
- if(type === "cp"){
-
-  html = `
-
-   <h2>💞 CP Space</h2>
-
-   <div class="card">
-    <h3>
-     CP Points
-    </h3>
-
-    <div style="
-     font-size:35px;
-     text-align:center;
-     margin:15px">
-     💞
-     ${formatNumber(USER.cpPoints)}
-    </div>
-
-    <p>
-     Friendship:
-     ${formatNumber(
-      USER.friendshipPoints
-     )}
-    </p>
-
-    <button
-     class="btn full"
-     onclick="createCPRequest()">
-     💞 Send CP Request
-    </button>
-
-   </div>
-
-  `;
-
- }
-
-
- if(type === "family"){
-
-  html = `
-
-   <h2>👨‍👩‍👧 Family</h2>
-
-   <div class="card">
-
-    <h3>
-     ${escapeHtml(
-      USER.familyName ||
-      "Not Joined"
-     )}
-    </h3>
-
-    <p>
-     Family ID:
-     ${escapeHtml(
-      USER.familyId ||
-      "Not Joined"
-     )}
-    </p>
-
-    <button
-     class="btn full"
-     onclick="createFamily()">
-     👑 Create Family
-    </button>
-
-   </div>
-
-  `;
-
- }
-
-
- if(type === "ranking"){
-
-  html = `
-
-   <h2>🏆 Ranking</h2>
-
-   <div class="option">
-    👑 Rich King Ranking
-   </div>
-
-   <div class="option">
-    💞 CP Ranking
-   </div>
-
-   <div class="option">
-    👨‍👩‍👧 Family Ranking
-   </div>
-
-   <div class="option">
-    ⭐ Level Ranking
-   </div>
-
-   <div class="option">
-    🎁 Gift Ranking
-   </div>
-
-  `;
-
- }
-
-
- if(type === "level"){
-
-  html = `
-
-   <h2>⭐ Level & EXP</h2>
-
-   <div class="card">
-
-    <h3>
-     Current Level:
-     ${USER.level}
-    </h3>
-
-    <p>
-     EXP:
-     ${formatNumber(USER.exp)}
-    </p>
-
-    <div class="progress">
-     <i style="
-      width:${Math.min(
-       100,
-       (USER.exp /
-       getNextExp(USER.level))*100
-      )}%">
-     </i>
-    </div>
-
-   </div>
-
-  `;
-
- }
-
-
- if(type === "invite"){
-
-  html = `
-
-   <h2>🎁 Invite Friend</h2>
-
-   <div class="card">
-
-    <p>
-     Your User ID:
-     <b>${escapeHtml(
-      USER.userId
-     )}</b>
-    </p>
-
-    <p>
-     Invite friends to PawanVoice.
-    </p>
-
-    <button
-     class="btn full"
-     onclick="shareInvite()">
-     📤 Share Invite
-    </button>
-
-   </div>
-
-  `;
-
- }
-
-
- if(type === "gifts"){
-
-  html = `
-
-   <h2>🎁 Gifts</h2>
-
-   <div class="card">
-
-    <p>
-     Gifts received and sent will be
-     connected to the Firebase gift
-     system.
-    </p>
-
-    <p>
-     Coins:
-     <b>
-      ${formatNumber(USER.coins)}
-     </b>
-    </p>
-
-    <button
-     class="btn full"
-     onclick="alert('Gift system room.html se open hoga.')">
-     🎁 Open Gift System
-    </button>
-
-   </div>
-
-  `;
-
- }
-
-
- if(type === "dress"){
-
-  html = `
-
-   <h2>👗 My Dress</h2>
-
-   <div class="option">
-    👕 Default Dress
-   </div>
-
-   <div class="option">
-    👔 Star Dress
-   </div>
-
-   <div class="option">
-    👑 Royal Dress
-   </div>
-
-   <p class="notice">
-    Dress inventory ko later Firebase
-    Bag/Store ke saath connect karenge.
-   </p>
-
-  `;
-
- }
-
-
- if(type === "entry"){
-
-  html = `
-
-   <h2>✨ Entry Effect</h2>
-
-   <div class="option">
-    ✨ Default Entry
-   </div>
-
-   <div class="option">
-    🌟 Star Entry
-   </div>
-
-   <div class="option">
-    👑 Royal Entry
-   </div>
-
-  `;
-
- }
-
-
- content.innerHTML =
-  html;
-
- area.classList.add(
-  "active"
- );
-
- area.scrollIntoView({
-  behavior:"smooth"
+ const avatar=document.getElementById("profileAvatar");
+ const frame=getFrame(USER.avatarFrame);
+ avatar.className="avatar "+frame.cls;
+ avatar.dataset.decoration=frame.dec||"";
+ avatar.innerHTML=USER.dp?
+  '<img src="'+escapeHtml(USER.dp)+'" alt="DP" onerror="this.style.display=\'none\'">':
+  "👤";
+
+ document.getElementById("profileName").innerText=USER.name||"Pawan User";
+ document.getElementById("profileId").innerText="🆔 ID: "+(USER.userId||USER.id||"--");
+ document.getElementById("profileGender").innerText="Gender: "+(USER.gender||"Male");
+ document.getElementById("nameInput").value=USER.name||"";
+ document.getElementById("genderInput").value=USER.gender||"Male";
+
+ ["following","followers","visitors","coins","diamonds"].forEach(k=>{
+  document.getElementById(k).innerText=formatNumber(USER[k]);
  });
 
+ const level=Number(USER.level||1);
+ const exp=Number(USER.exp||0);
+ const next=getNextExp(level);
+ document.getElementById("profileLevel").innerText=level;
+ document.getElementById("expText").innerText=formatNumber(exp)+" / "+formatNumber(next)+" EXP";
+ document.getElementById("expBar").style.width=Math.max(0,Math.min(100,exp/next*100))+"%";
+
+ const badge=getLevelBadge(level);
+ document.getElementById("levelBadgeArea").innerHTML=
+  '<div class="levelBadge '+badge.cls+'">'+badge.icon+' LV '+level+' • '+badge.name+'</div>';
+
+ document.getElementById("accountId").innerText=USER.userId||USER.id||"--";
+ document.getElementById("accountVip").innerText=USER.vipLevel||0;
+ document.getElementById("accountCP").innerText=formatNumber(USER.cpPoints);
+ document.getElementById("accountFamily").innerText=USER.familyName||"Not Joined";
+ document.getElementById("accountFrame").innerText=frame.name;
 }
 
+/* Profile editing */
+async function saveProfile(){
+ const name=document.getElementById("nameInput").value.trim();
+ const gender=document.getElementById("genderInput").value;
+ if(!name){alert("Name enter karo.");return}
+ USER.name=name;USER.gender=gender;
 
-/* =====================================================
-   CLOSE DETAIL
-===================================================== */
+ const file=document.getElementById("dpInput").files[0];
+ if(!file){await saveUserToFirebase();return}
+ if(!file.type.startsWith("image/")){alert("Sirf image select karo.");return}
+ if(file.size>5*1024*1024){alert("DP 5 MB se chhoti honi chahiye.");return}
+
+ const reader=new FileReader();
+ reader.onload=e=>resizeImage(e.target.result,async data=>{
+  USER.dp=data;
+  try{await saveUserToFirebase()}
+  catch(err){alert("Save nahi hua: "+err.message)}
+ });
+ reader.readAsDataURL(file);
+}
+function resizeImage(source,callback){
+ const img=new Image();
+ img.onload=()=>{
+  const max=600,scale=Math.min(1,max/img.width,max/img.height);
+  const canvas=document.createElement("canvas");
+  canvas.width=Math.max(1,Math.round(img.width*scale));
+  canvas.height=Math.max(1,Math.round(img.height*scale));
+  canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
+  callback(canvas.toDataURL("image/jpeg",.78));
+ };
+ img.onerror=()=>alert("Image load nahi hui.");
+ img.src=source;
+}
+
+/* Details */
+function openDetail(type){
+ const area=document.getElementById("detailArea");
+ const content=document.getElementById("detailContent");
+ let html="";
+
+ if(type==="frame"){
+  html=`
+   <h2>🖼️ Profile Frame Gallery</h2>
+   <p class="notice">35 designs देखें। किसी Frame पर टैप करके Preview और Apply करें।</p>
+   <div class="previewArea">
+    <div style="color:#ddd">LIVE PREVIEW</div>
+    <div id="framePreview" class="avatar ${getFrame(USER.avatarFrame).cls}"
+         data-decoration="${getFrame(USER.avatarFrame).dec||""}">
+      <img src="${escapeHtml(USER.dp)}" alt="Preview DP">
+    </div>
+    <b id="previewFrameName">${escapeHtml(getFrame(USER.avatarFrame).name)}</b>
+    <p class="notice">यह Frame आपकी प्रोफाइल DP पर दिखाई देगा।</p>
+    <button class="btn full" onclick="applyPreviewFrame()">✅ Apply & Save Frame</button>
+   </div>
+   <div class="frameGallery" id="frameGallery"></div>
+  `;
+ }
+
+ if(type==="badge"){
+  html=`
+   <h2>🏷️ Personal Badge</h2>
+   <div class="option" onclick="selectBadge('PawanVoice Member')">🎙️ PawanVoice Member</div>
+   <div class="option" onclick="selectBadge('Voice Star')">⭐ Voice Star</div>
+   <div class="option" onclick="selectBadge('Super User')">👑 Super User</div>
+   <p class="notice">Current Badge: <b>${escapeHtml(USER.badge?.name||"New User")}</b></p>
+  `;
+ }
+ if(type==="medal"){
+  html=`<h2>🏅 Level Medal</h2>
+   <div class="option">🥉 Level 1–9</div>
+   <div class="option">🥈 Level 10–19</div>
+   <div class="option">🥇 Level 20–29</div>
+   <div class="option">💎 Level 30–39</div>
+   <div class="option">👑 Level 40+</div>
+   <p>Current Medal: <b>${escapeHtml(USER.medal||"🥉 Bronze")}</b></p>`;
+ }
+ if(type==="vip"){
+  html=`<h2>👑 VIP</h2>
+   <div class="option">VIP 0 — New User</div>
+   <div class="option">VIP 1 — Level 1+</div>
+   <div class="option">VIP 2 — Level 25+</div>
+   <div class="option">VIP 3 — Level 35+</div>
+   <div class="option">VIP 4 — Level 45+</div>
+   <p>Current VIP: <b>VIP ${Number(USER.vipLevel||0)}</b></p>`;
+ }
+ if(type==="cp"){
+  html=`<h2>💞 CP Space</h2><div class="card">
+   <h3>CP Points</h3><div style="font-size:30px;text-align:center;margin:15px">💞 ${formatNumber(USER.cpPoints)}</div>
+   <p>Friendship: ${formatNumber(USER.friendshipPoints)}</p>
+   <button class="btn full" onclick="createCPRequest()">💞 Send CP Request</button></div>`;
+ }
+ if(type==="family"){
+  html=`<h2>👨‍👩‍👧 Family</h2><div class="card">
+   <h3>${escapeHtml(USER.familyName||"Not Joined")}</h3>
+   <p>Family ID: ${escapeHtml(USER.familyId||"Not Joined")}</p>
+   <button class="btn full" onclick="createFamily()">👑 Create Family</button></div>`;
+ }
+ if(type==="ranking"){
+  html=`<h2>🏆 Ranking</h2>
+   <div class="option">👑 Rich King Ranking</div>
+   <div class="option">💞 CP Ranking</div>
+   <div class="option">👨‍👩‍👧 Family Ranking</div>
+   <div class="option">⭐ Level Ranking</div>
+   <div class="option">🎁 Gift Ranking</div>`;
+ }
+ if(type==="level"){
+  const b=getLevelBadge(USER.level);
+  html=`<h2>⭐ Stylish Level & EXP</h2>
+   <div class="previewArea">
+    <div style="font-size:32px;font-weight:bold">LV ${Number(USER.level||1)}</div>
+    <div class="levelBadge ${b.cls}">${b.icon} ${b.name}</div>
+    <p>EXP: ${formatNumber(USER.exp)}</p>
+    <div class="progress"><i style="width:${Math.min(100,Number(USER.exp||0)/getNextExp(USER.level)*100)}%"></i></div>
+   </div>
+   <h3>Level Badge Collection</h3>
+   <div class="levelMini">
+    ${[[1,"ROOKIE","badge-bronze","⭐"],[10,"BRONZE","badge-bronze","🥉"],[20,"SILVER","badge-silver","🥈"],[30,"GOLD","badge-gold","🥇"],[50,"DIAMOND","badge-diamond","💎"],[70,"ROYAL","badge-royal","👑"],[100,"LEGENDARY","badge-legendary","🔥"]].map(x=>`
+     <div class="levelChoice">
+      <div class="levelBadge ${x[2]}">${x[3]} ${x[1]}</div>
+      <div>Level ${x[0]}+</div>
+     </div>`).join("")}
+   </div>
+   <p class="notice">Badge आपकी वर्तमान Level के आधार पर अपने-आप दिखता है। Level बढ़ने पर Badge भी बदलेगा।</p>`;
+ }
+ if(type==="invite"){
+  html=`<h2>🎁 Invite Friend</h2><div class="card">
+   <p>Your User ID: <b>${escapeHtml(USER.userId)}</b></p>
+   <p>Invite friends to PawanVoice.</p>
+   <button class="btn full" onclick="shareInvite()">📤 Share Invite</button></div>`;
+ }
+ if(type==="gifts"){
+  html=`<h2>🎁 Gifts</h2><div class="card">
+   <p>Gifts received and sent will be connected to the Firebase gift system.</p>
+   <p>Coins: <b>${formatNumber(USER.coins)}</b></p>
+   <button class="btn full" onclick="alert('Gift system room.html se open hoga.')">🎁 Open Gift System</button></div>`;
+ }
+ if(type==="dress"){
+  html=`<h2>👗 My Dress</h2>
+   <div class="option">👕 Default Dress</div>
+   <div class="option">👔 Star Dress</div>
+   <div class="option">👑 Royal Dress</div>
+   <p class="notice">Dress inventory को Store के साथ अलग से connect करना होगा।</p>`;
+ }
+ if(type==="entry"){
+  html=`<h2>✨ Entry Effect</h2>
+   <div class="option">✨ Default Entry</div>
+   <div class="option">🌟 Star Entry</div>
+   <div class="option">👑 Royal Entry</div>`;
+ }
+
+ content.innerHTML=html;
+ area.classList.add("active");
+
+ if(type==="frame")renderFrameGallery();
+ area.scrollIntoView({behavior:"smooth"});
+}
+
+function renderFrameGallery(){
+ const gallery=document.getElementById("frameGallery");
+ if(!gallery)return;
+ const selected=getFrame(USER.avatarFrame);
+ gallery.innerHTML=FRAMES.map(f=>`
+  <div class="frameCard ${selected.id===f.id?"selected":""}"
+       id="framecard-${f.id}" onclick="previewFrame('${f.id}')">
+   <div class="avatar ${f.cls}" data-decoration="${f.dec||""}">
+    <img src="${escapeHtml(USER.dp)}" alt="" onerror="this.style.display='none'">
+   </div>
+   <strong>${escapeHtml(f.name)}</strong>
+   <small>${selected.id===f.id?"✓ Active":"Tap to preview"}</small>
+  </div>
+ `).join("");
+}
+
+let pendingFrameId=null;
+function previewFrame(id){
+ const frame=FRAMES.find(f=>f.id===id);
+ if(!frame)return;
+ pendingFrameId=id;
+ const preview=document.getElementById("framePreview");
+ preview.className="avatar "+frame.cls;
+ preview.dataset.decoration=frame.dec||"";
+ preview.innerHTML='<img src="'+escapeHtml(USER.dp)+'" alt="Preview DP">';
+ document.getElementById("previewFrameName").innerText=frame.name;
+
+ document.querySelectorAll(".frameCard").forEach(el=>el.classList.remove("selected"));
+ const card=document.getElementById("framecard-"+id);
+ if(card)card.classList.add("selected");
+}
+async function applyPreviewFrame(){
+ const id=pendingFrameId||getFrame(USER.avatarFrame).id;
+ const frame=FRAMES.find(f=>f.id===id)||FRAMES[0];
+ USER.avatarFrame={
+  id:frame.id,name:frame.name,className:frame.cls,
+  image:"",decoration:frame.dec||"",active:true
+ };
+ try{
+  await saveUserToFirebase();
+  alert("✅ "+frame.name+" आपके Profile Frame के रूप में सेव हो गया।");
+  openDetail("frame");
+ }catch(e){
+  console.error(e);
+  saveLocal();
+  renderProfile();
+  alert("⚠️ Firebase save नहीं हुआ। Frame इस डिवाइस पर सेव किया गया है। Firebase rules जाँचें।");
+ }
+}
 
 function closeDetail(){
-
- document
-  .getElementById(
-   "detailArea"
-  )
-  .classList.remove(
-   "active"
-  );
-
+ document.getElementById("detailArea").classList.remove("active");
 }
 
-
-/* =====================================================
-   SELECT FRAME
-===================================================== */
-
-async function selectFrame(name){
-
- USER.avatarFrame = {
-
-  id:
-   name
-    .toLowerCase()
-    .replace(/\s+/g,"_"),
-
-  name:name,
-
-  image:"",
-
-  active:true
-
- };
-
-
- await saveUserToFirebase();
-
- alert(
-  name +
-  " selected and saved."
- );
-
-}
-
-
-/* =====================================================
-   SELECT BADGE
-===================================================== */
-
+/* Badge */
 async function selectBadge(name){
-
- USER.badge = {
-
-  id:
-   name
-    .toLowerCase()
-    .replace(/\s+/g,"_"),
-
-  name:name,
-
-  image:"",
-
-  active:true
-
- };
-
-
- await saveUserToFirebase();
-
- alert(
-  name +
-  " selected and saved."
- );
-
+ USER.badge={id:name.toLowerCase().replace(/\s+/g,"_"),name,active:true};
+ try{await saveUserToFirebase();alert(name+" selected and saved.");}
+ catch(e){alert("Badge save nahi hua. Firebase rules check karein.");}
 }
 
-
-/* =====================================================
-   CP REQUEST
-===================================================== */
-
+/* CP request */
 async function createCPRequest(){
-
- const target =
-  prompt(
-   "Jis user ko CP request bhejni hai uska User ID:"
-  );
-
- if(!target){
-  return;
- }
-
- await db
-  .ref(
-   "cpRequests/" +
-   target +
-   "/" +
-   USER.userId
-  )
-  .set({
-
-   fromUserId:
-    USER.userId,
-
-   fromName:
-    USER.name,
-
-   fromDp:
-    USER.dp,
-
-   status:
-    "pending",
-
-   createdAt:
-    Date.now()
-
+ const target=prompt("Jis user ko CP request bhejni hai uska User ID:");
+ if(!target)return;
+ try{
+  await db.ref("cpRequests/"+target+"/"+USER.userId).set({
+   fromUserId:USER.userId,fromName:USER.name,fromDp:USER.dp,
+   status:"pending",createdAt:Date.now()
   });
-
- alert(
-  "💞 CP request sent."
- );
-
+  alert("💞 CP request sent.");
+ }catch(e){alert("CP request send nahi hui. Firebase rules check karein.");}
 }
 
-
-/* =====================================================
-   FAMILY
-===================================================== */
-
+/* Family */
 async function createFamily(){
-
- const name =
-  prompt(
-   "Family ka naam:"
-  );
-
- if(!name){
-  return;
- }
-
-
- const familyId =
-  "F" +
-  Date.now();
-
-
- const family = {
-
-  id:
-   familyId,
-
-  name:
-   name,
-
-  ownerId:
-   USER.userId,
-
-  level:
-   1,
-
-  exp:
-   0,
-
-  createdAt:
-   Date.now(),
-
-  members:{
-
-   [USER.userId]:{
-
-    userId:
-     USER.userId,
-
-    name:
-     USER.name,
-
-    dp:
-     USER.dp
-
-   }
-
-  }
-
+ const name=prompt("Family ka naam:");
+ if(!name)return;
+ const familyId="F"+Date.now();
+ const family={
+  id:familyId,name,ownerId:USER.userId,level:1,exp:0,
+  createdAt:Date.now(),
+  members:{[USER.userId]:{userId:USER.userId,name:USER.name,dp:USER.dp}}
  };
-
-
- await db
-  .ref(
-   "families/" +
-   familyId
-  )
-  .set(
-   family
-  );
-
-
- USER.familyId =
-  familyId;
-
- USER.familyName =
-  name;
-
-
- await saveUserToFirebase();
-
-
- alert(
-  "👨‍👩‍👧 Family created."
- );
-
+ try{
+  await db.ref("families/"+familyId).set(family);
+  USER.familyId=familyId;USER.familyName=name;
+  await saveUserToFirebase();
+  alert("👨‍👩‍👧 Family created.");
+ }catch(e){alert("Family create nahi hui. Firebase rules check karein.");}
 }
 
-
-/* =====================================================
-   SHARE INVITE
-===================================================== */
-
+/* Invite */
 async function shareInvite(){
-
- const link =
-  location.origin +
-  location.pathname +
-  "?userid=" +
-  encodeURIComponent(
-   USER.userId
-  );
-
-
- if(
-  navigator.share
- ){
-
+ const link=location.origin+location.pathname+"?userid="+encodeURIComponent(USER.userId);
+ if(navigator.share){
+  try{await navigator.share({title:"Join PawanVoice",text:"Join me on PawanVoice",url:link})}catch(e){}
+ }else{
   try{
-
-   await navigator.share({
-
-    title:
-     "Join PawanVoice",
-
-    text:
-     "Join me on PawanVoice",
-
-    url:
-     link
-
-   });
-
-  }catch(e){}
-
+   await navigator.clipboard.writeText(link);
+   alert("Invite link copied.");
+  }catch(e){prompt("Invite link copy karein:",link)}
  }
-
- else{
-
-  await navigator.clipboard
-   .writeText(
-    link
-   );
-
-  alert(
-   "Invite link copied."
-  );
-
- }
-
 }
 
-
-/* =====================================================
-   HOME
-===================================================== */
-
-function goHome(){
-
- location.href =
-  "index.html";
-
-}
-
-
-/* =====================================================
-   START
-===================================================== */
+function goHome(){location.href="index.html"}
 
 loadUser();
-
 </script>
-
 </body>
-  </html>
+</html>
