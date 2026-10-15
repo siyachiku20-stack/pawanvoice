@@ -258,74 +258,115 @@ const ROOM_FESTIVAL_GIFTS = [
 const giftCatalogById = new Map(ALL_GIFT_CATALOG.map(g => [g.id, g]));
 for (const g of ROOM_FESTIVAL_GIFTS) giftCatalogById.set(g.id, g);
 
-const festivalScores = new Map();
-const festivalStartedAt = now();
 const FESTIVAL_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
-let festivalWinner = null;
-let festivalWinnerBannerUntil = 0;
-let festivalRewardIssued = false;
+const festivalStartedAt = now();
+const festivalStates = new Map(["Diwali", "Navratri"].map(festival => [festival, {
+  festival,
+  startedAt: festivalStartedAt,
+  endsAt: festivalStartedAt + FESTIVAL_DURATION_MS,
+  scores: new Map(),
+  winner: null,
+  winnerBannerUntil: 0,
+  rewardIssued: false
+}]));
 
-function festivalLeaderboard() {
-  return Array.from(festivalScores.values())
+function festivalLeaderboard(festival = "all") {
+  const names = festival === "all" ? ["Diwali", "Navratri"] : [festival];
+  const totals = new Map();
+  for (const name of names) {
+    const state = festivalStates.get(name);
+    if (!state) continue;
+    for (const score of state.scores.values()) {
+      const row = totals.get(score.userId) || { ...score, coins: 0, festivals: [] };
+      row.coins += Number(score.coins || 0);
+      row.festivals.push(name);
+      row.name = score.name || row.name;
+      row.dp = score.dp || row.dp;
+      totals.set(score.userId, row);
+    }
+  }
+  return Array.from(totals.values())
     .sort((a, b) => b.coins - a.coins || a.firstAt - b.firstAt)
     .slice(0, 50)
     .map((x, i) => ({ ...x, rank: i + 1 }));
 }
 
-function publicFestivalState() {
+function publicFestivalState(festival = "all") {
+  const state = festivalStates.get(festival);
+  if (state) {
+    return {
+      title: festival + " SPECIAL EVENT",
+      festival,
+      gifts: FESTIVAL_GIFTS.filter(g => g.festival === festival),
+            startedAt: state.startedAt,
+      endsAt: state.endsAt,
+      active: now() < state.endsAt && !state.rewardIssued,
+      leaderboard: festivalLeaderboard(festival),
+      winner: state.winner && now() < state.winnerBannerUntil
+        ? { ...state.winner, bannerUntil: state.winnerBannerUntil }
+        : state.winner
+    };
+  }
   return {
     title: "BIG FESTIVAL UPDATE",
+    festival: "all",
     gifts: FESTIVAL_GIFTS,
     startedAt: festivalStartedAt,
     endsAt: festivalStartedAt + FESTIVAL_DURATION_MS,
-    active: now() < festivalStartedAt + FESTIVAL_DURATION_MS && !festivalRewardIssued,
-    leaderboard: festivalLeaderboard(),
-    winner: festivalWinner && now() < festivalWinnerBannerUntil
-      ? { ...festivalWinner, bannerUntil: festivalWinnerBannerUntil }
-      : null
+    active: ["Diwali", "Navratri"].some(name => {
+      const s = festivalStates.get(name);
+      return s && now() < s.endsAt && !s.rewardIssued;
+    }),
+    leaderboard: festivalLeaderboard("all"),
+    winner: null,
+    festivals: ["Diwali", "Navratri"].map(name => {
+      const s = festivalStates.get(name);
+      return { festival: name, winner: s.winner, active: now() < s.endsAt && !s.rewardIssued, endsAt: s.endsAt };
+    })
   };
 }
 
 function settleFestivalIfDue() {
-  if (festivalRewardIssued || now() < festivalStartedAt + FESTIVAL_DURATION_MS) return;
+  for (const [festival, state] of festivalStates) {
+    if (state.rewardIssued || now() < state.endsAt) continue;
+    state.rewardIssued = true;
+    const top = festivalLeaderboard(festival)[0];
+    if (!top) continue;
 
-  festivalRewardIssued = true;
-  const top = festivalLeaderboard()[0];
-  if (!top) return;
+    const u = getUser(top.userId, top.name, top.dp);
+    u.coins += 10000000;
+    u.topAvatarFrameUntil = now() + 30 * 24 * 60 * 60 * 1000;
+    u.topEntryUntil = now() + 15 * 24 * 60 * 60 * 1000;
+    u.vip = 10;
+    u.vip10Until = now() + 15 * 24 * 60 * 60 * 1000;
+    u.videoGiftCustomization = true;
 
-  const u = getUser(top.userId, top.name, top.dp);
-  u.coins += 10000000;
-  u.topAvatarFrameUntil = now() + 30 * 24 * 60 * 60 * 1000;
-  u.topEntryUntil = now() + 15 * 24 * 60 * 60 * 1000;
-  u.vip = 10;
-  u.vip10Until = now() + 15 * 24 * 60 * 60 * 1000;
-  u.videoGiftCustomization = true;
+    state.winner = {
+      festival,
+      userId: u.userId,
+      name: u.name,
+      dp: u.dp,
+      coins: top.coins,
+      awardedAt: now()
+    };
+    state.winnerBannerUntil = now() + 7 * 24 * 60 * 60 * 1000;
 
-  festivalWinner = {
-    userId: u.userId,
-    name: u.name,
-    dp: u.dp,
-    coins: top.coins,
-    awardedAt: now()
-  };
-
-  festivalWinnerBannerUntil = now() + 7 * 24 * 60 * 60 * 1000;
-
-  io.emit("festival:winner", {
-    winner: festivalWinner,
-    rewards: {
-      coins: 10000000,
-      topAvatarFrameDays: 30,
-      topEntryDays: 15,
-      vip: 10,
-      vipDays: 15,
-      videoGiftCustomization: true
-    },
-    bannerUntil: festivalWinnerBannerUntil
-  });
-
-  const sock = findSocketForUser(u.userId);
-  if (sock) sock.emit("wallet", { coins: u.coins, diamonds: u.diamonds });
+    io.emit("festival:winner", {
+      festival,
+      winner: state.winner,
+      rewards: {
+        coins: 10000000,
+        topAvatarFrameDays: 30,
+        topEntryDays: 15,
+        vip: 10,
+        vipDays: 15,
+        videoGiftCustomization: true
+      },
+      bannerUntil: state.winnerBannerUntil
+    });
+    const sock = findSocketForUser(u.userId);
+    if (sock) sock.emit("wallet", { coins: u.coins, diamonds: u.diamonds });
+  }
 }
 
 setInterval(settleFestivalIfDue, 15000).unref();
@@ -383,15 +424,42 @@ function cleanId(v, fallback = "") {
   return String(v || fallback).trim().slice(0, 100);
 }
 
+function levelDetails(expValue) {
+  const exp = Math.max(0, Number(expValue || 0));
+  const level = Math.max(1, Math.floor(exp / 1000) + 1);
+  const currentLevelExp = exp % 1000;
+  const badges = [
+    { min: 1, name: "New Star", icon: "🌟" },
+    { min: 5, name: "Rising Star", icon: "✨" },
+    { min: 10, name: "Silver Star", icon: "🥈" },
+    { min: 20, name: "Gold Star", icon: "🥇" },
+    { min: 35, name: "Royal Star", icon: "👑" },
+    { min: 50, name: "Legend", icon: "🏆" },
+    { min: 75, name: "Mythic", icon: "💎" },
+    { min: 100, name: "Pawan Legend", icon: "🔥" }
+  ];
+  const badge = [...badges].reverse().find(x => level >= x.min) || badges[0];
+  return {
+    level,
+    exp,
+    levelBadge: badge.name,
+    levelBadgeIcon: badge.icon,
+    expInLevel: currentLevelExp,
+    expToNextLevel: 1000 - currentLevelExp,
+    levelProgress: currentLevelExp / 10
+  };
+}
+
 function publicUser(u) {
+  const levelInfo = levelDetails(u.exp);
+  u.level = levelInfo.level;
   return {
     userId: u.userId,
     name: u.name,
     dp: u.dp,
     coins: u.coins,
     diamonds: u.diamonds,
-    level: u.level,
-    exp: u.exp,
+    ...levelInfo,
     vip: u.vip,
     topAvatarFrameUntil: u.topAvatarFrameUntil || 0,
     topEntryUntil: u.topEntryUntil || 0,
@@ -830,7 +898,7 @@ app.get("/", (req, res) => {
         socketIO: true,
         seats: 9,
         rooms: rooms.size
-      });
+       });
     }
   });
 });
@@ -847,7 +915,8 @@ app.get("/health", (req, res) => res.json({
 
 app.get("/api/festival", (req, res) => {
   settleFestivalIfDue();
-  res.json(publicFestivalState());
+  const festival = String(req.query.festival || "all");
+  res.json(publicFestivalState(["Diwali", "Navratri"].includes(festival) ? festival : "all"));
 });
 
 app.get("/api/festival/gifts", (req, res) => res.json(FESTIVAL_GIFTS));
@@ -884,12 +953,10 @@ app.get("/api/gifts/points/:userId", (req, res) => {
 });
 
 app.get("/api/festival/leaderboard", (req, res) => {
-  res.json({
-    leaderboard: festivalLeaderboard(),
-    winner: festivalWinner && now() < festivalWinnerBannerUntil
-      ? festivalWinner
-      : null
-  });
+  settleFestivalIfDue();
+  const festival = String(req.query.festival || "all");
+  const validFestival = ["Diwali", "Navratri"].includes(festival) ? festival : "all";
+  res.json(publicFestivalState(validFestival));
 });
 
 app.get("/api/games", (req, res) => {
@@ -907,6 +974,12 @@ app.get("/api/users/:id", (req, res) => {
   if (!u) return res.status(404).json({ error: "User not found" });
 
   res.json(publicUser(u));
+});
+
+app.get("/api/level/:id", (req, res) => {
+  const u = users.get(cleanId(req.params.id));
+  if (!u) return res.status(404).json({ error: "User not found" });
+  res.json({ userId: u.userId, ...levelDetails(u.exp) });
 });
 
 app.get("/api/rooms", (req, res) => {
@@ -933,48 +1006,25 @@ app.get("/api/ranking", (req, res) => {
 app.get("/api/ranking/:type", (req, res) => {
   const type = String(req.params.type || "daily").toLowerCase();
   const t = now();
-
   const windowMs = type === "daily" ? 24 * 60 * 60 * 1000 :
     type === "weekly" ? 7 * 24 * 60 * 60 * 1000 :
     type === "monthly" ? 30 * 24 * 60 * 60 * 1000 : 0;
-
   if (["daily", "weekly", "monthly", "topgifter", "topreceiver", "richking"].includes(type)) {
-    const rows = giftHistory.filter(g =>
-      !windowMs || Number(g.createdAt || 0) >= t - windowMs
-    );
-
+    const rows = giftHistory.filter(g => !windowMs || Number(g.createdAt || 0) >= t - windowMs);
+    const isReceiver = type === "topreceiver";
     const totals = new Map();
-
     for (const g of rows) {
-      const isReceiver = type === "topreceiver";
       const id = isReceiver ? g.receiverId : g.senderId;
       if (!id) continue;
-
-      const row = totals.get(id) || {
-        userId: id,
-        name: isReceiver ? (g.receiverName || "User") : (g.senderName || "User"),
-        dp: isReceiver ? (g.receiverDp || "") : (g.senderDp || ""),
-        coins: 0,
-        total: 0,
-        gifts: 0
-      };
-
+      const row = totals.get(id) || { userId: id, name: isReceiver ? (g.receiverName || "User") : (g.senderName || "User"), dp: isReceiver ? (g.receiverDp || "") : (g.senderDp || ""), coins: 0, total: 0, gifts: 0 };
       row.coins += Number(g.total || g.price || 0);
       row.total = row.coins;
       row.gifts += Number(g.quantity || 1);
       totals.set(id, row);
     }
-
-    return res.json(Array.from(totals.values())
-      .sort((a, b) => b.coins - a.coins)
-      .slice(0, 100)
-      .map((x, i) => ({ ...x, rank: i + 1 })));
+    return res.json(Array.from(totals.values()).sort((a, b) => b.coins - a.coins).slice(0, 100).map((x, i) => ({ ...x, rank: i + 1 })));
   }
-
-  res.json(Array.from(users.values())
-    .sort((a, b) => b.coins - a.coins)
-    .slice(0, 100)
-    .map((u, i) => ({ ...publicUser(u), rank: i + 1 })));
+  res.json(Array.from(users.values()).sort((a, b) => b.coins - a.coins).slice(0, 100).map((u, i) => ({ ...publicUser(u), rank: i + 1 })));
 });
 
 app.get("/api/family", (req, res) => {
@@ -1147,8 +1197,8 @@ app.post("/api/frames/equip", (req, res) => {
     u.avatarFrameExpiresAt = 0;
 
     return res.json({
-      ok: true,
-      user: publicUser(u)
+      ok: true,    
+           user: publicUser(u)
     });
   }
 
@@ -1446,391 +1496,4 @@ app.get("/api/manager/settings", (req, res) => {
     maintenanceMode,
     announcement
   });
-});
-
-io.on("connection", socket => {
-  socket.emit("server:ready", { status: "running" });
-
-  socket.on("register-user", data => {
-    data = data || {};
-
-    const u = getUser(
-      data.userId || data.userid,
-      data.name,
-      data.dp
-    );
-
-    if (blockedAccount(u.userId)) {
-      socket.emit("account:blocked", {
-        message: "This account is banned or temporarily suspended."
-      });
-      socket.disconnect(true);
-      return;
-    }
-
-    socketUser.set(socket.id, u.userId);
-
-    if (!userSockets.has(u.userId)) {
-      userSockets.set(u.userId, new Set());
-    }
-
-    userSockets.get(u.userId).add(socket.id);
-
-    socket.emit("registered", {
-      ...publicUser(u),
-      user: publicUser(u),
-      wallet: u.coins,
-      coins: u.coins
-    });
-
-    socket.emit("wallet", {
-      coins: u.coins,
-      diamonds: u.diamonds
-    });
-  });
-
-  socket.on("register", data => {
-    data = data || {};
-
-    const u = getUser(
-      data.userId || data.userid,
-      data.name,
-      data.dp
-    );
-
-    if (blockedAccount(u.userId)) {
-      socket.emit("account:blocked", {
-        message: "This account is banned or temporarily suspended."
-      });
-      socket.disconnect(true);
-      return;
-    }
-
-    socketUser.set(socket.id, u.userId);
-
-    if (!userSockets.has(u.userId)) {
-      userSockets.set(u.userId, new Set());
-    }
-
-    userSockets.get(u.userId).add(socket.id);
-
-    socket.emit("registered", {
-      ...publicUser(u),
-      user: publicUser(u),
-      wallet: u.coins,
-      coins: u.coins
-    });
-
-    socket.emit("wallet", {
-      coins: u.coins,
-      diamonds: u.diamonds
-    });
-  });
-
-  socket.on("gift", data => {
-    data = data || {};
-
-    const authenticatedId = cleanId(socketUser.get(socket.id));
-    const senderId = authenticatedId ||
-      cleanId(data.senderId || data.userId || data.fromUserId);
-    const receiverId = cleanId(data.receiverId || data.toUserId);
-
-    if (!senderId || !receiverId || senderId === receiverId) {
-      const error = {
-        message: "Select another user to receive the gift."
-      };
-
-      socket.emit("gift:error", error);
-      socket.emit("gift-error", error);
-      return;
-    }
-
-    if (blockedAccount(senderId)) {
-      const error = {
-        message: "This account is banned or suspended."
-      };
-
-      socket.emit("gift:error", error);
-      return;
-    }
-
-    const sender = getUser(
-      senderId,
-      data.senderName || data.fromName,
-      data.senderDp || data.dp
-    );
-
-    const receiver = getUser(
-      receiverId,
-      data.receiverName,
-      data.receiverDp || ""
-    );
-
-    const giftId = cleanId(data.giftId);
-    const gift = giftCatalogById.get(giftId);
-
-    if (!gift) {
-      const error = {
-        message: "Unknown gift. Please refresh the room."
-      };
-
-      socket.emit("gift:error", error);
-      socket.emit("gift-error", error);
-      return;
-    }
-
-    const quantity = Math.max(
-      1,
-      Math.min(99, Math.floor(Number(data.quantity) || 1))
-    );
-
-    const total = gift.price * quantity;
-
-    if (!Number.isSafeInteger(total) || sender.coins < total) {
-      const error = {
-        message: "Not enough server-side coins."
-      };
-
-      socket.emit("gift:error", error);
-      socket.emit("gift-error", error);
-      return;
-    }
-
-    sender.coins -= total;
-
-    const category = String(
-      gift.category || data.category || "all"
-    ).toLowerCase();
-
-    const points = giftCategoryPoints.get(senderId) || {
-      userId: senderId,
-      cp: 0,
-      friendship: 0,
-      family: 0,
-      lucky: 0,
-      vip: 0,
-      video: 0,
-      diwali: 0,
-      navratri: 0
-    };
-
-    if (
-      ["cp", "friendship", "family", "lucky", "vip", "video", "diwali", "navratri"].includes(category)
-    ) {
-      points[category] = (points[category] || 0) + total;
-    }
-
-    giftCategoryPoints.set(senderId, points);
-
-    if (category === "diwali" || category === "navratri" || gift.festival) {
-      const prev = festivalScores.get(senderId) || {
-        userId: senderId,
-        name: sender.name,
-        dp: sender.dp,
-        coins: 0,
-        firstAt: now()
-      };
-
-      prev.name = sender.name;
-      prev.dp = sender.dp;
-      prev.coins += total;
-
-      festivalScores.set(senderId, prev);
-    }
-
-    const roomId = cleanId(data.roomId, "PV100");
-
-    const event = {
-      roomId,
-      senderId,
-      senderName: sender.name,
-      senderDp: sender.dp,
-      receiverId,
-      receiverName: receiver.name,
-      giftId: gift.id,
-      giftName: gift.name,
-      giftIcon: gift.icon || gift.emoji || "🎁",
-      price: gift.price,
-      quantity,
-      total,
-      category,
-      festival: gift.festival ||
-        (category === "diwali" ? "Diwali" :
-          category === "navratri" ? "Navratri" : null),
-      createdAt: now()
-    };
-
-    giftHistory.push(event);
-
-    if (giftHistory.length > 5000) {
-      giftHistory.splice(0, giftHistory.length - 5000);
-    }
-
-    io.to(roomId).emit("gift-sent", {
-      ...event,
-      wallet: {
-        coins: sender.coins,
-        diamonds: sender.diamonds
-      }
-    });
-
-    io.to(roomId).emit("gift-received", event);
-
-    const senderSocket = findSocketForUser(senderId);
-
-    if (senderSocket) {
-      senderSocket.emit("wallet", {
-        coins: sender.coins,
-        diamonds: sender.diamonds
-      });
-    }
-
-    const receiverSocket = findSocketForUser(receiverId);
-
-    if (receiverSocket) {
-      receiverSocket.emit("gift-received", event);
-    }
-
-    io.emit("festival:leaderboard", {
-      leaderboard: festivalLeaderboard()
-    });
-
-    socket.emit("gift:success", {
-      ...event,
-      wallet: {
-        coins: sender.coins,
-        diamonds: sender.diamonds
-      },
-      points
-    });
-  });
-
-  socket.on("game:open", data => joinGame(socket, data || {}));
-  socket.on("game-start", data => joinGame(socket, data || {}));
-  socket.on("game:join", data => handleBet(socket, data || {}));
-
-  socket.on("join-room", data => {
-    data = data || {};
-
-    const roomId = cleanId(data.roomId || data.room, "main");
-    const u = getUser(
-      data.userId || socketUser.get(socket.id),
-      data.name,
-      data.dp
-    );
-
-    if (blockedAccount(u.userId)) {
-      socket.emit("account:blocked", {
-        message: "This account is banned or temporarily suspended."
-      });
-      socket.disconnect(true);
-      return;
-    }
-
-    socketUser.set(socket.id, u.userId);
-
-    if (!userSockets.has(u.userId)) {
-      userSockets.set(u.userId, new Set());
-    }
-
-    userSockets.get(u.userId).add(socket.id);
-
-    const room = getRoom(roomId);
-    socket.join(roomId);
-
-    room.members.set(u.userId, {
-      userId: u.userId,
-      name: u.name,
-      dp: u.dp
-    });
-
-    socket.emit("room:joined", {
-      roomId,
-      members: Array.from(room.members.values()),
-      seats: room.seats
-    });
-
-    socket.to(roomId).emit(
-      "room:users",
-      Array.from(room.members.values())
-    );
-  });
-
-  socket.on("room:chat", data => {
-    data = data || {};
-
-    const roomId = cleanId(data.roomId || data.room, "main");
-    const u = getUser(
-      data.userId || socketUser.get(socket.id),
-      data.name,
-      data.dp
-    );
-
-    if (blockedAccount(u.userId)) {
-      socket.emit("account:blocked", {
-        message: "This account is banned or temporarily suspended."
-      });
-      return;
-    }
-
-    const message = String(data.message || data.text || "").slice(0, 500);
-    if (!message.trim()) return;
-
-    const payload = {
-      roomId,
-      userId: u.userId,
-      name: u.name,
-      dp: u.dp,
-      message,
-      text: message,
-      createdAt: now()
-    };
-
-    getRoom(roomId).chat.push(payload);
-    getRoom(roomId).chat = getRoom(roomId).chat.slice(-100);
-
-    io.to(roomId).emit("room:chat", payload);
-  });
-
-  socket.on("disconnect", () => {
-    const userId = socketUser.get(socket.id);
-    socketUser.delete(socket.id);
-
-    if (userId && userSockets.has(userId)) {
-      userSockets.get(userId).delete(socket.id);
-
-      if (!userSockets.get(userId).size) {
-        userSockets.delete(userId);
-      }
-    }
-
-    for (const room of rooms.values()) {
-      if (userId) room.members.delete(userId);
-    }
-
-    for (const [key, state] of gameStates) {
-      if (userId && state.players.has(userId)) {
-        // Bets stay in the round until settlement.
-        emitGameState(state.roomId, state.gameId);
-      }
-    }
-  });
-});
-
-setInterval(() => {
-  const cutoff = now() - 24 * 60 * 60 * 1000;
-
-  for (const [id, room] of rooms) {
-    if (
-      id !== "PV100" &&
-      room.members.size === 0 &&
-      room.createdAt < cutoff
-    ) {
-      rooms.delete(id);
-    }
-  }
-}, 5 * 60 * 1000).unref();
-
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`PawanVoice server running on port ${PORT}`);
-});
+}); 
