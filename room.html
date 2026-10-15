@@ -1562,7 +1562,7 @@ button{
       <button class="pv-gift-tab" data-gift-tab="vip" onclick="showGiftCategory('vip',this)">👑 VIP</button>
       <button class="pv-gift-tab" data-gift-tab="video" onclick="showGiftCategory('video',this)">🎬 Video Gifts</button>
     </div>
-    <button type="button" class="pv-gift-tab" style="width:100%;margin:0 0 9px;background:linear-gradient(100deg,#6c2bd9,#e84c9a);border-color:#e8aaff" onclick="openFestivalLeaderboard()">🏆 Diwali × Navratri Top Gifter & Winner Rewards</button>
+    <button type="button" class="pv-gift-tab" style="width:100%;margin:0 0 9px;background:linear-gradient(100deg,#6c2bd9,#e84c9a);border-color:#e8aaff" onclick="openFestivalLeaderboard()">🏆 Separate Diwali / Navratri Leaderboards & Rewards</button>
 
     <div id="giftCategoryCaption" class="pv-gift-caption">All gifts in one place</div>
     <div
@@ -3367,43 +3367,19 @@ window.openRichKingRanking=async function(type="daily"){
 
 window.profileLevel =
 function(){
-
-  showFeature(
-    "⭐ Level & EXP",
-    `
-      <div style="padding:10px">
-
-        <h2>
-          Level ${Number(USER.level || 1)}
-        </h2>
-
-        <p>
-          EXP: ${Number(USER.exp || 0)}
-        </p>
-
-        <div class="exp-bar">
-
-          <div
-            class="exp-fill"
-            style="
-              width:${Math.min(
-                100,
-                Number(USER.exp || 0)%1000/10
-              )}%
-            ">
-          </div>
-
-        </div>
-
-        <p style="color:#bbb">
-          Level बढ़ाने के लिए chat, voice,
-          gifts और daily activities करें।
-        </p>
-
-      </div>
-    `
-  );
-
+  const exp=Math.max(0,Number(USER.exp||0));
+  const level=Math.max(1,Math.floor(exp/1000)+1);
+  const progress=exp%1000;
+  const badges=[{min:100,icon:"🔥",name:"Pawan Legend"},{min:75,icon:"💎",name:"Mythic"},{min:50,icon:"🏆",name:"Legend"},{min:35,icon:"👑",name:"Royal Star"},{min:20,icon:"🥇",name:"Gold Star"},{min:10,icon:"🥈",name:"Silver Star"},{min:5,icon:"✨",name:"Rising Star"},{min:1,icon:"🌟",name:"New Star"}];
+  const badge=badges.find(x=>level>=x.min)||badges[badges.length-1];
+  showFeature("⭐ Level & EXP",`
+    <div style="padding:12px;border-radius:18px;background:linear-gradient(135deg,#24113f,#60245f,#8c4c18);border:1px solid #ffd16688;color:#fff">
+      <div style="display:flex;align-items:center;gap:12px"><div style="font-size:42px;filter:drop-shadow(0 0 10px #ffd166)">${badge.icon}</div><div><div style="font-size:12px;opacity:.8">LEVEL ${level}</div><h2 style="margin:3px 0">${badge.name}</h2><span class="pv-level-pill">${badge.icon} ${badge.name} Badge</span></div></div>
+      <div style="display:flex;justify-content:space-between;margin:16px 0 6px;font-size:12px"><b>EXP Progress</b><b>${progress.toLocaleString("en-IN")} / 1,000</b></div>
+      <div style="height:12px;background:#ffffff24;border-radius:99px;overflow:hidden;border:1px solid #ffffff30"><div style="height:100%;width:${progress/10}%;background:linear-gradient(90deg,#ffe066,#ff8a00,#ff4fd8);border-radius:99px;box-shadow:0 0 12px #ffd166"></div></div>
+      <p style="margin:10px 0;color:#ffe9b0;font-size:12px">अगले लेवल के लिए ${1000-progress} EXP बाकी</p>
+      <p style="color:#ddd;font-size:12px">Chat, voice, gifts और activities से EXP कमाएँ। यह progress server के user EXP पर आधारित है।</p>
+    </div>`);
 };
 
 window.sendCPRequest =
@@ -4346,19 +4322,21 @@ const PV_CATEGORY_GIFTS = [
 ];
 PV_CATEGORY_GIFTS.forEach(g=>{if(!gifts.some(existing=>existing.id===g.id))gifts.push(g);});
 
-window.openFestivalLeaderboard=async function(){
+window.openFestivalLeaderboard=async function(selectedFestival="Diwali"){
   const serverBase="https://pawanvoice-1.onrender.com";
-  showFeature("🏆 Diwali × Navratri Top Gifter",`<div class="pv-event-card" style="text-align:center;background:linear-gradient(135deg,#40115f,#9d3b18,#a16c13)"><div style="font-size:30px">🪔 🎆 💃 🌸</div><h3>BIG FESTIVAL DHAMAKA</h3><p>Diwali aur Navratri special gifts bhejein aur leaderboard par rank badhayein.</p><p>⏳ <span id="pvFestivalTime">Ranking load ho rahi hai…</span></p></div><div id="pvFestivalRanking" style="margin-top:12px"><div class="pv-event-card">Live ranking load ho rahi hai…</div></div><div class="pv-event-card" style="margin-top:12px"><h3>🎁 Winner Rewards</h3><p>🪙 1 Crore Coins</p><p>🖼️ 30 din Top Avatar</p><p>🚪 15 din Top Entry</p><p>👑 VIP 10</p><p>🎬 Video Gift Customization</p></div>`);
+  const festival=["Diwali","Navratri"].includes(selectedFestival)?selectedFestival:"Diwali";
+  const tabs=`<div style="display:flex;gap:7px;margin:10px 0"><button class="pv-gift-tab ${festival==="Diwali"?"active":""}" onclick="openFestivalLeaderboard('Diwali')">🪔 Diwali Ranking</button><button class="pv-gift-tab ${festival==="Navratri"?"active":""}" onclick="openFestivalLeaderboard('Navratri')">💃 Navratri Ranking</button></div>`;
+  showFeature("🏆 "+festival+" Special Leaderboard",`${tabs}<div class="pv-event-card" style="text-align:center;background:linear-gradient(135deg,#40115f,#9d3b18,#a16c13)"><div style="font-size:30px">${festival==="Diwali"?"🪔 🎆 🏮":"💃 🌸 🥁 🔱"}</div><h3>${festival.toUpperCase()} BIG DHAMAKA</h3><p>${festival} special gifts bhejein aur apni ranking badhayein.</p><p>⏳ <span id="pvFestivalTime">Ranking load ho rahi hai…</span></p></div><div id="pvFestivalRanking" style="margin-top:12px"><div class="pv-event-card">Live ranking load ho rahi hai…</div></div><div class="pv-event-card" style="margin-top:12px"><h3>🎁 Winner Rewards</h3><p>🪙 1 Crore Coins</p><p>🖼️ 30 din Top Avatar</p><p>🚪 15 din Top Entry</p><p>👑 VIP 10 — 15 din</p><p>🎬 Video Gift Customization</p></div>`);
   try{
-    const response=await fetch(serverBase+"/api/festival/leaderboard",{cache:"no-store"});
+    const response=await fetch(serverBase+"/api/festival/leaderboard?festival="+encodeURIComponent(festival),{cache:"no-store"});
     if(!response.ok)throw new Error("Leaderboard unavailable");
     const state=await response.json();
     const rows=Array.isArray(state.leaderboard)?state.leaderboard:[];
     const box=document.getElementById("pvFestivalRanking");
-    if(box)box.innerHTML=rows.length?rows.slice(0,10).map((u,i)=>`<div class="pv-event-card" style="display:flex;align-items:center;gap:9px;margin:7px 0;padding:10px"><b style="min-width:28px">#${Number(u.rank||i+1)}</b><img src="${esc(u.dp||"https://i.pravatar.cc/80?img=12")}" style="width:38px;height:38px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'"><div style="flex:1;min-width:0"><b>${esc(u.name||"User")}</b><small style="display:block;opacity:.7">ID: ${esc(u.userId||"—")}</small></div><b>🪙 ${Number(u.coins||0).toLocaleString("en-IN")}</b></div>`).join(""):'<div class="pv-event-card">Abhi tak festival gift nahi bheja gaya. Pehle Top Gifter banne ka mauka aapka hai!</div>';
+    if(box)box.innerHTML=rows.length?rows.slice(0,10).map((u,i)=>`<div class="pv-event-card" style="display:flex;align-items:center;gap:9px;margin:7px 0;padding:10px"><b style="min-width:28px">#${Number(u.rank||i+1)}</b><img src="${esc(u.dp||"https://i.pravatar.cc/80?img=12")}" style="width:38px;height:38px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'"><div style="flex:1;min-width:0"><b>${esc(u.name||"User")}</b><small style="display:block;opacity:.7">ID: ${esc(u.userId||"—")}</small></div><b>🪙 ${Number(u.coins||0).toLocaleString("en-IN")}</b></div>`).join(""):'<div class="pv-event-card">Is festival ke gifts bhejkar pehli ranking aap shuru kar sakte hain!</div>';
     const timer=document.getElementById("pvFestivalTime");
-    if(timer){const ends=Number(state.endsAt||0);const left=Math.max(0,ends-Date.now());timer.textContent=state.active?`${Math.floor(left/86400000)} din ${Math.floor(left%86400000/3600000)} ghante baaki`:(state.winner?"Contest complete — winner announced":"Contest ka status available nahi hai");}
-    if(state.winner&&box){box.insertAdjacentHTML("afterbegin",`<div class="pv-event-card" style="border:1px solid #ffd166;background:linear-gradient(120deg,#59330b,#302044)"><h3>👑 Festival Winner</h3><b>${esc(state.winner.name||"Winner")}</b><p>🪙 ${Number(state.winner.coins||0).toLocaleString("en-IN")} festival gift value</p></div>`);}
+    if(timer){const left=Math.max(0,Number(state.endsAt||0)-Date.now());timer.textContent=state.active?`${Math.floor(left/86400000)} din ${Math.floor(left%86400000/3600000)} ghante baaki`:(state.winner?"Contest complete — winner announced":"Contest ka status available nahi hai");}
+    if(state.winner&&box)box.insertAdjacentHTML("afterbegin",`<div class="pv-event-card" style="border:1px solid #ffd166;background:linear-gradient(120deg,#59330b,#302044)"><h3>👑 ${esc(festival)} Winner</h3><b>${esc(state.winner.name||"Winner")}</b><p>🪙 ${Number(state.winner.coins||0).toLocaleString("en-IN")} festival gift value</p></div>`);
   }catch(e){const box=document.getElementById("pvFestivalRanking");if(box)box.innerHTML='<div class="pv-event-card">Live ranking abhi connect nahi ho pa rahi. Server online hone par yahan ranking dikhegi.</div>';}
 };
 
