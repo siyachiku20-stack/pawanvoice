@@ -1,747 +1,4067 @@
-```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#10072b">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>PawanVoice</title>
 
 <style>
-:root{
-  --bg:#08051b;
-  --panel:#151039;
-  --panel2:#201451;
-  --purple:#812cff;
-  --pink:#ff35c8;
-  --text:#fff;
-  --muted:#aaa3d0;
-  --border:#443078;
-}
 *{box-sizing:border-box}
 body{
-  margin:0;background:var(--bg);color:var(--text);
-  font-family:Arial,Helvetica,sans-serif;
+  margin:0;background:#09090f;color:#fff;
+  font-family:Arial,sans-serif;
 }
-button,input{font:inherit}
-button{cursor:pointer;color:white}
-.app{
-  max-width:480px;min-height:100vh;margin:auto;
-  padding-bottom:82px;
-  background:
-  radial-gradient(ellipse at top,#27105a 0%,#0a061e 48%,#08051b 100%);
-}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:78px}
+
 header{
-  position:sticky;top:0;z-index:10;
+  height:58px;position:sticky;top:0;z-index:20;
+  background:#12121b;border-bottom:1px solid #292936;
   display:flex;align-items:center;justify-content:space-between;
-  gap:8px;padding:13px 14px;
-  background:rgba(12,7,32,.96);
-  border-bottom:1px solid var(--border);
+  padding:0 13px
 }
-.brand{display:flex;align-items:center;gap:9px}
-.logo{
-  width:40px;height:40px;border-radius:13px;
-  display:grid;place-items:center;font-size:23px;
-  background:linear-gradient(135deg,#ff35c8,#702aff);
-  box-shadow:0 0 18px #a32cff77;
+.logo{font-size:20px;font-weight:800}
+.icon{
+  background:#272733;color:#fff;border:0;
+  border-radius:11px;padding:9px 12px
 }
-.brand-name{font-size:19px;font-weight:900}
-.brand-sub{font-size:10px;color:#c9b8ff;margin-top:3px}
-.money{display:flex;gap:6px}
-.money span{
-  background:#24164c;border:1px solid #5936a4;
-  padding:8px;border-radius:20px;font-size:12px;
-}
-.page{display:none;padding:14px}
+
+.page{display:none;padding:10px}
 .page.active{display:block}
-h2{font-size:19px;margin:7px 0 13px}
-h3{font-size:15px;margin:0}
-.muted{color:var(--muted);font-size:12px}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.section{margin-top:21px}
-.see{color:#d8a7ff;font-size:12px;cursor:pointer}
-.banner{
-  min-height:155px;border-radius:19px;padding:18px;
-  position:relative;overflow:hidden;
-  background:linear-gradient(115deg,#4d119a,#b522c8 60%,#ff489c);
-  border:1px solid #d77bff;
-  box-shadow:0 0 22px #a72cff44;
-}
-.banner:after{
-  content:"🎁";position:absolute;right:15px;bottom:12px;
-  font-size:76px;filter:drop-shadow(0 0 12px #ffda7a);
-}
-.banner h2{font-size:22px;color:#ffe979;margin:4px 0 9px}
-.banner p{font-size:12px;max-width:65%;line-height:1.5}
-.pill,.btn{
-  border:0;border-radius:22px;padding:10px 15px;
-  background:linear-gradient(100deg,#8d30ff,#f52ac5);
-  color:#fff;font-weight:bold;font-size:12px;
-  box-shadow:0 3px 13px #a52aff33;
-}
-.btn.small{padding:8px 13px}
-.btn.outline{background:#1b1040;border:1px solid #7043b9}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:13px 8px}
-.shortcut{text-align:center;cursor:pointer}
-.shortcut .icon{
-  width:53px;height:53px;border-radius:17px;margin:0 auto 7px;
-  display:grid;place-items:center;font-size:25px;
-  background:linear-gradient(145deg,#321b70,#151035);
-  border:1px solid #6543aa;
-  box-shadow:inset 0 0 12px #a333ff20;
-}
-.shortcut label{font-size:11px;display:block}
-.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+
 .card{
-  min-width:0;background:linear-gradient(145deg,#21144b,#100b2c);
-  border:1px solid var(--border);border-radius:15px;padding:12px;
+  background:#171720;border:1px solid #292936;
+  border-radius:16px;padding:12px;margin-bottom:11px
 }
-.room-card{cursor:pointer}
-.room-art{
-  height:90px;border-radius:11px;display:grid;place-items:center;
-  font-size:43px;margin-bottom:9px;
-  background:linear-gradient(135deg,#40177e,#d22da7,#311c7c);
+.title{font-size:16px;font-weight:800;margin-bottom:10px}
+
+.banner{
+  border-radius:18px;padding:16px;
+  background:linear-gradient(135deg,#6d28d9,#db2777);
+  margin-bottom:11px
 }
-.online{font-size:11px;color:#6dffcb;margin-top:6px}
-.avatar{
-  width:46px;height:46px;flex-shrink:0;border-radius:50%;
-  display:grid;place-items:center;font-size:25px;
-  background:linear-gradient(135deg,#ff43cf,#5b42ff);
-  border:2px solid #f5baff;box-shadow:0 0 12px #b32cff66;
+.banner h2{margin:0 0 5px}
+.banner .sub{font-size:12px;opacity:.92}
+.bannerBtns{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:7px;margin-top:13px
 }
-.avatar.big{width:86px;height:86px;font-size:43px;border-width:3px}
-.user-list{display:flex;gap:15px;overflow-x:auto;padding:7px 1px}
-.user{text-align:center;min-width:55px}
-.user .avatar{margin:auto}
-.user small{display:block;font-size:11px;margin-top:7px}
-.tabs{display:flex;gap:7px;overflow:auto;margin:13px 0}
+.bannerBtns button{
+  background:#ffffff22;color:#fff;
+  border:1px solid #ffffff35;
+  padding:10px 3px;border-radius:11px
+}
+
+.eventGrid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:8px
+}
+.event{
+  min-height:105px;border-radius:14px;
+  padding:12px;background:#22222d;
+  border:1px solid #30303b
+}
+.event .big{font-size:28px}
+.event b{display:block;margin-top:5px}
+.event small{color:#aaa}
+
+.tabs{
+  display:flex;gap:7px;overflow:auto;padding-bottom:2px
+}
 .tab{
-  white-space:nowrap;background:#1b1243;border:1px solid #463077;
-  padding:9px 15px;border-radius:20px;font-size:12px;
+  white-space:nowrap;background:#242431;color:#ccc;
+  border:0;border-radius:20px;padding:9px 13px
 }
-.tab.active{background:linear-gradient(100deg,#812cff,#ee2bbd);border-color:transparent}
+.tab.active{background:#7c3aed;color:#fff}
+
 .search{
-  width:100%;background:#120d30;border:1px solid var(--border);
-  padding:12px;border-radius:12px;color:white;outline:none;
+  width:100%;background:#101017;color:#fff;
+  border:1px solid #343442;border-radius:12px;
+  padding:12px;outline:none
 }
-.room-list{display:grid;gap:11px}
-.room-line{display:flex;align-items:center;gap:11px}
-.room-line .room-art{width:68px;height:68px;flex-shrink:0;margin:0;font-size:32px}
-.room-info{flex:1;min-width:0}
-.room-info p{font-size:11px;color:var(--muted);margin:6px 0}
-.room-line .btn{padding:8px 12px}
-.room-head{
-  margin:-14px -14px 14px;padding:20px 14px 25px;
-  background:linear-gradient(135deg,#33106b,#8d1ca5,#24104e);
-  border-bottom:1px solid #8541bd;
+
+.room{
+  display:flex;align-items:center;gap:10px;
+  background:#20202a;border-radius:13px;
+  padding:9px;margin:7px 0
 }
-.room-head .row{margin-bottom:18px}
-.seats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 8px;margin:22px 0}
-.seat{text-align:center;cursor:pointer;min-width:0}
-.seat-circle{
-  position:relative;width:67px;height:67px;border-radius:50%;
-  margin:0 auto 7px;display:grid;place-items:center;
-  background:linear-gradient(145deg,#211749,#100a2c);
-  border:2px solid #6c4db0;font-size:28px;
+.room img{
+  width:56px;height:56px;border-radius:14px;
+  object-fit:cover;background:#30303b
 }
-.seat.host .seat-circle{border-color:#ffd66e;box-shadow:0 0 15px #ffb52b77}
-.seat .seat-name{font-size:11px}
-.seat .seat-id{font-size:9px;color:var(--muted);margin-top:4px}
-.seat-badge{
-  position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);
-  background:#f7b82c;color:#261035;padding:3px 7px;
-  border-radius:10px;font-size:9px;font-weight:bold;white-space:nowrap;
+.roomInfo{flex:1;min-width:0}
+.roomInfo strong{
+  display:block;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis
 }
-.room-box{
-  background:#120d30;border:1px solid var(--border);
-  border-radius:13px;padding:12px;margin:12px 0;
+.muted{font-size:12px;color:#a8a8b5}
+.join{
+  background:#7c3aed;color:#fff;border:0;
+  border-radius:10px;padding:9px 12px;font-weight:700
 }
-.rank-line{display:flex;align-items:center;gap:9px;padding:8px 0}
-.rank-line .avatar{width:34px;height:34px;font-size:18px}
-.rank-line .grow{flex:1}
-.chat-line{font-size:12px;line-height:1.6;margin:6px 0;color:#e9dcff}
-.chat-line b{color:#ff8ce7}
-.chat-controls{display:flex;gap:7px;margin-top:10px}
-.chat-controls input{flex:1;min-width:0}
-.chat-controls .btn{padding:10px}
-.gift-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.gift{
-  text-align:center;padding:12px 5px;border-radius:13px;
-  background:#18113b;border:1px solid #382565;cursor:pointer;
+
+.btn{
+  background:#7c3aed;color:#fff;border:0;
+  border-radius:11px;padding:11px 14px;font-weight:700
 }
-.gift .emoji{font-size:34px;display:block;margin-bottom:8px}
-.gift small{color:#ffdb67;font-size:11px;display:block;margin-top:6px}
-.balance{
-  padding:20px;border-radius:18px;
-  background:linear-gradient(135deg,#6815cb,#b523d4,#4222b7);
-  border:1px solid #cf9bff;margin-bottom:16px;
+.green{background:#16a34a}
+.danger{background:#dc2626}
+.dark{background:#292936}
+.full{width:100%}
+
+.profileTop{
+  display:flex;gap:12px;align-items:center
 }
-.balance .amount{font-size:26px;font-weight:bold;margin:13px 0}
-.profile-card{text-align:center;padding:22px 12px}
-.profile-card .avatar{margin:0 auto 10px}
-.profile-line{
-  padding:14px 5px;border-bottom:1px solid #332459;
-  display:flex;justify-content:space-between;align-items:center;
-  font-size:13px;cursor:pointer;
+.profileTop img{
+  width:78px;height:78px;border-radius:21px;
+  object-fit:cover;background:#333
 }
-.progress{height:9px;background:#35275b;border-radius:10px;overflow:hidden;margin:10px 0}
-.progress span{display:block;width:48%;height:100%;background:linear-gradient(90deg,#8432ff,#ff35c8)}
-.game-card{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.game-icon{
-  width:77px;height:77px;border-radius:15px;display:grid;place-items:center;
-  font-size:42px;background:linear-gradient(135deg,#5025bb,#d22dba);
+.profileTop h2{margin:0 0 4px}
+
+.stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:7px
 }
-.game-card .grow{flex:1}
-.bottom-nav{
-  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
-  z-index:20;width:100%;max-width:480px;display:grid;
-  grid-template-columns:repeat(5,1fr);
-  background:rgba(12,7,31,.97);border-top:1px solid #392663;
-  padding:9px 4px calc(9px + env(safe-area-inset-bottom));
+.stat{
+  background:#23232d;border-radius:11px;
+  text-align:center;padding:10px
 }
-.nav-item{text-align:center;font-size:10px;color:#aaa1d0;cursor:pointer}
-.nav-item .nav-icon{display:block;font-size:21px;margin-bottom:4px}
-.nav-item.active{color:#ff63df}
-.modal-bg{
-  display:none;position:fixed;inset:0;background:#000b;
-  z-index:50;align-items:flex-end;justify-content:center;
+.stat b{font-size:16px}
+
+.wallet{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px
 }
-.modal-bg.show{display:flex}
+.walletBox{
+  background:#23232d;border-radius:12px;
+  padding:13px;text-align:center
+}
+.walletBox b{display:block;margin-top:5px}
+
+.grid3{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:7px
+}
+.feature{
+  background:#23232d;color:#fff;border:0;
+  border-radius:12px;padding:11px 5px;min-height:72px
+}
+.feature .ico{font-size:23px}
+.feature b{display:block;font-size:11px;margin-top:5px}
+
+.reward{
+  display:flex;justify-content:space-between;
+  align-items:center;gap:8px;
+  background:#22222d;padding:10px;
+  border-radius:10px;margin:6px 0
+}
+.reward.lock{opacity:.45}
+
+.input{
+  width:100%;padding:11px;
+  background:#101017;color:#fff;
+  border:1px solid #363643;
+  border-radius:11px;margin-bottom:8px
+}
+
+.task{
+  background:#22222d;border-radius:12px;
+  padding:11px;margin:7px 0
+}
+.taskTop{
+  display:flex;justify-content:space-between;
+  align-items:center
+}
+.progress{
+  height:7px;background:#33333e;
+  border-radius:10px;overflow:hidden;margin-top:8px
+}
+.progress i{
+  display:block;height:100%;background:#8b5cf6
+}
+
+.bottom{
+  position:fixed;z-index:30;bottom:0;left:50%;
+  transform:translateX(-50%);
+  width:min(520px,100%);height:65px;
+  background:#15151e;border-top:1px solid #292936;
+  display:grid;grid-template-columns:repeat(4,1fr)
+}
+.bottom button{
+  background:none;color:#999;border:0;font-size:12px
+}
+.bottom button.active{color:#fff}
+
+.empty{
+  text-align:center;color:#999;padding:20px
+}
+
 .modal{
-  width:100%;max-width:480px;max-height:85vh;overflow:auto;
-  background:#130b32;border:1px solid #7140aa;border-radius:23px 23px 0 0;
-  padding:20px;
+  display:none;position:fixed;z-index:100;
+  inset:0;background:#000b;
+  align-items:flex-end
 }
-.modal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.close{background:#30204f;border:0;border-radius:50%;width:34px;height:34px}
+.modal.show{display:flex}
+.sheet{
+  width:100%;max-width:520px;margin:auto;
+  background:#171720;border-radius:22px 22px 0 0;
+  padding:16px;max-height:90vh;overflow:auto
+}
+.sheet h2{margin-top:0}
+.close{
+  float:right;background:#292936;color:#fff;
+  border:0;border-radius:9px;padding:7px 10px
+}
+
+.toast{
+  position:fixed;left:50%;bottom:82px;
+  transform:translateX(-50%);
+  background:#fff;color:#111;
+  padding:10px 15px;border-radius:12px;
+  z-index:300;display:none;font-size:13px
+}
+.toast.show{display:block}
+
+.rankRow{
+  display:flex;align-items:center;gap:10px;
+  background:#22222d;border-radius:12px;
+  padding:9px;margin:6px 0
+}
+.rankNo{
+  width:30px;text-align:center;font-weight:800
+}
+.rankRow img{
+  width:45px;height:45px;border-radius:50%;
+  object-fit:cover
+}
+.rankInfo{flex:1}
+.rankValue{font-weight:800}
+
 .notice{
-  position:fixed;top:75px;left:50%;transform:translateX(-50%);
-  z-index:80;background:#25124e;border:1px solid #b95cff;
-  padding:12px 16px;border-radius:14px;display:none;
-  width:max-content;max-width:90%;font-size:13px;
+  background:#211a35;border:1px solid #51349a;
+  padding:10px;border-radius:12px;
+  font-size:12px;color:#ddd;margin-bottom:10px
 }
-.notice.show{display:block}
-.empty{padding:25px;text-align:center;color:var(--muted)}
-@media(min-width:600px){
-  body{padding:20px 0}
-  .app{border:1px solid #493073;border-radius:24px;overflow:hidden}
-  .bottom-nav{bottom:0}
-}
+
+
+/* ===== PAWANVOICE PREMIUM FUN-STYLE ADDITIONS ===== */
+body{background:radial-gradient(ellipse at top,#30204f 0%,#121020 44%,#09090f 100%);color:#fff}
+header{background:rgba(18,15,34,.96);border-bottom:1px solid #49336b;backdrop-filter:blur(14px)}
+.logo{background:linear-gradient(90deg,#fff,#d9b8ff,#ff9fdf);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.2px}
+.icon{background:linear-gradient(135deg,#342450,#242039);border:1px solid #514071}
+.card{background:linear-gradient(145deg,#1d192d,#151521);border:1px solid #37304e;box-shadow:0 5px 18px #00000020;border-radius:19px}
+.banner{background:linear-gradient(120deg,#5125b7,#963bd0 52%,#e34598);border:1px solid #bd83ff77;box-shadow:0 8px 24px #7c3aed30}
+.bannerBtns button{background:#ffffff19;border:1px solid #ffffff45;border-radius:12px;font-weight:700}
+.event{background:linear-gradient(145deg,#29213d,#1a1929);border:1px solid #45365e;border-radius:16px;transition:transform .18s,border-color .18s}
+.event .big{filter:drop-shadow(0 2px 7px #b17cff55)}
+.room{background:linear-gradient(110deg,#29213d,#1c1a2a);border:1px solid #403451;border-radius:15px}
+.room img{border:1px solid #8062b3;box-shadow:0 0 10px #8b5cf622}
+.join,.btn{background:linear-gradient(110deg,#793ee6,#ad3ecb);box-shadow:0 3px 10px #7c3aed25}
+.green{background:linear-gradient(110deg,#119b76,#16a34a)}
+.feature{background:linear-gradient(145deg,#302444,#201d30);border:1px solid #413450;border-radius:15px;transition:transform .18s,border-color .18s}
+.profileTop img{border:2px solid #a77bff;box-shadow:0 0 15px #8b5cf640}
+.stat,.walletBox{background:linear-gradient(145deg,#302642,#211e30);border:1px solid #433551}
+.tab{border:1px solid #3b334e;background:#252135}
+.tab.active{background:linear-gradient(100deg,#7138dc,#b43cc8);border-color:#b28aff}
+.search,.input{background:#11101b;border-color:#443753}
+.bottom{background:rgba(21,18,32,.97);border-top:1px solid #40314f;backdrop-filter:blur(12px)}
+.bottom button.active{color:#d7b5ff;font-weight:800}
+.sheet{background:linear-gradient(160deg,#211a32,#14131f);border:1px solid #49365d}
+.reward,.task,.rankRow{background:linear-gradient(110deg,#2b233b,#201d2e);border:1px solid #3c304d}
+
+/* Rotating hero banner: new component, old banner remains below */
+.pv-slider{position:relative;overflow:hidden;border-radius:22px;margin:4px 0 13px;border:1px solid #a879ff70;background:#171225;box-shadow:0 8px 28px #0004;touch-action:pan-y}
+.pv-slides{display:flex;transition:transform .5s ease;will-change:transform}
+.pv-slide{min-width:100%;min-height:178px;box-sizing:border-box;padding:20px 17px 27px;position:relative;overflow:hidden;display:flex;align-items:center}
+.pv-slide:after{content:attr(data-icon);position:absolute;right:10px;bottom:10px;font-size:78px;opacity:.24;pointer-events:none}
+.pv-slide-content{position:relative;z-index:1;max-width:79%}
+.pv-slide-tag{display:inline-block;padding:5px 9px;border-radius:20px;background:#ffffff24;border:1px solid #ffffff40;font-size:10px;font-weight:900;letter-spacing:1px;margin-bottom:9px}
+.pv-slide h2{margin:0 0 7px;font-size:23px;line-height:1.15;font-weight:900}
+.pv-slide p{margin:0 0 12px;font-size:12px;line-height:1.5;color:#ffffffdf}
+.pv-slide button{border:1px solid #ffffff70;border-radius:12px;padding:10px 14px;background:#ffffff25;color:#fff;font-size:12px;font-weight:900;cursor:pointer}
+.pv-dots{position:absolute;left:0;right:0;bottom:9px;display:flex;justify-content:center;gap:6px;z-index:3}
+.pv-dot{width:7px;height:7px;padding:0;border:0;border-radius:20px;background:#ffffff70;transition:all .25s}
+.pv-dot.active{width:22px;background:#fff}
+.pv-events-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:17px 0 10px}
+.pv-events-title h3{margin:0;font-size:17px;font-weight:900}
+.pv-live-label{font-size:10px;color:#ffd58b;font-weight:900}
+.pv-event-slider{display:flex;gap:11px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:2px 1px 10px;overscroll-behavior-x:contain}
+.pv-event-slider::-webkit-scrollbar{display:none}
+.pv-event-card{flex:0 0 78%;min-width:0;min-height:132px;padding:15px;box-sizing:border-box;border-radius:18px;border:1px solid #ffffff25;scroll-snap-align:start;position:relative;overflow:hidden;color:#fff;box-shadow:0 6px 16px #0002}
+.pv-event-card:after{content:attr(data-icon);position:absolute;right:8px;top:10px;font-size:48px;opacity:.3;pointer-events:none}
+.pv-event-card h4{margin:0 0 6px;font-size:16px;font-weight:900}
+.pv-event-card p{max-width:78%;font-size:11px;line-height:1.5;margin:0 0 12px;color:#ffffffdf}
+.pv-event-card button{position:relative;z-index:1;border:1px solid #ffffff55;border-radius:10px;padding:8px 11px;background:#ffffff20;color:#fff;font-weight:800;font-size:11px}
+.pv-event-purple{background:linear-gradient(130deg,#5727b9,#a53bcb)}
+.pv-event-pink{background:linear-gradient(130deg,#9d286e,#e34c91)}
+.pv-event-orange{background:linear-gradient(130deg,#a54a17,#ed9b35)}
+.pv-event-blue{background:linear-gradient(130deg,#164c9b,#347de5)}
+.pv-event-green{background:linear-gradient(130deg,#116b59,#20a886)}
+@media(min-width:480px){.pv-event-card{flex-basis:65%}}
+@media(hover:hover){.feature:hover,.event:hover,.room:hover,.pv-event-card:hover{border-color:#a879ff;transform:translateY(-2px)}}
+@media(prefers-reduced-motion:reduce){.pv-slides{transition:none}.feature,.event,.room{transition:none}}
+
+
+/* Expanded all-banner catalogue: premium purple/pink, responsive and collapsible */
+.pv-all-banners{margin:16px 0;padding:14px;border-radius:19px;background:linear-gradient(145deg,#20152f,#151522);border:1px solid #5b3c78;box-shadow:0 8px 22px #0003}
+.pv-all-banners>summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:900;font-size:15px;color:#fff}
+.pv-all-banners>summary::-webkit-details-marker{display:none}
+.pv-all-banners>summary span{font-size:10px;padding:5px 8px;border-radius:99px;background:linear-gradient(100deg,#7c3aed,#e34598);white-space:nowrap}
+.pv-all-note{font-size:11px;line-height:1.55;color:#cfc5df;margin:10px 0 14px}
+.pv-banner-category{margin:15px 0 19px}
+.pv-banner-category h4{font-size:13px;margin:0 0 9px;color:#f4d8ff}
+.pv-banner-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pv-extra-banner{min-width:0;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:11px 10px;border-radius:13px;border:1px solid #62477a;background:linear-gradient(135deg,#332047,#202033);color:#fff;cursor:pointer;min-height:88px}
+.pv-extra-banner span{font-size:20px}
+.pv-extra-banner b{font-size:11px;line-height:1.3;overflow-wrap:anywhere}
+.pv-extra-banner small{font-size:10px;color:#f0a9e2;margin-top:auto}
+.pv-extra-banner:active{transform:scale(.98)}
+@media(min-width:480px){.pv-banner-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+
+
+/* ===== DIWALI + NAVRATRI SPECIAL FESTIVAL EVENT ===== */
+.pv-festival{margin:12px 0 15px;padding:13px;border-radius:22px;background:linear-gradient(145deg,#211128,#171222);border:1px solid #8a5b72;box-shadow:0 8px 24px #0004;overflow:hidden}
+.pv-festival-hero{position:relative;overflow:hidden;padding:19px 14px;border-radius:17px;text-align:center;border:1px solid #ffd777;background:radial-gradient(circle at 50% 0,#a64b36 0,transparent 62%),linear-gradient(135deg,#3c164a,#6b1e42 53%,#30182c)}
+.pv-festival-tag{display:inline-block;padding:5px 9px;border-radius:30px;background:#ffe6a8;color:#562039;font-size:10px;font-weight:900;letter-spacing:.8px}
+.pv-festival-hero h2{margin:11px 0 4px;color:#ffe6a8;font-size:25px;text-shadow:0 2px 13px #ff9f39}
+.pv-festival-hero h3{margin:0;font-size:18px;color:#fff}
+.pv-festival-hero p{margin:8px 0 12px;font-size:11px;line-height:1.5;color:#ffe8ef}
+.pv-festival-decor{font-size:25px;letter-spacing:3px;margin:11px 0}
+.pv-festival-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pv-festival-actions button{border:1px solid #ffe5a2;border-radius:12px;padding:11px 7px;background:linear-gradient(100deg,#ffe7a5,#ffb54b);color:#4c1c2e;font-size:11px;font-weight:900}
+.pv-festival-section{margin-top:12px;padding:12px;border-radius:15px;background:linear-gradient(145deg,#2a1d35,#1c1728);border:1px solid #59415f}
+.pv-festival-heading{margin:0 0 10px;font-size:14px;color:#ffe3a0;font-weight:900}
+.pv-festival-gifts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.pv-festival-gift{min-width:0;min-height:86px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;border-radius:12px;background:linear-gradient(145deg,#45263e,#282035);border:1px solid #76516e}
+.pv-festival-gift span{font-size:27px;filter:drop-shadow(0 2px 7px #ffb95a55)}
+.pv-festival-gift b{font-size:10px;line-height:1.25;color:#fff0cf}
+.pv-festival-hint{font-size:10px;line-height:1.5;color:#cdbbd4;margin:9px 0 0}
+.pv-festival-rank{display:flex;align-items:center;gap:8px;margin:7px 0;padding:9px;border-radius:11px;background:#ffffff09;border:1px solid #ffffff10;font-size:11px}
+.pv-festival-rank .medal{font-size:20px}
+.pv-festival-rank .rank-user{flex:1;min-width:0}
+.pv-festival-rank small{display:block;color:#c7b9d0;margin-top:3px}
+.pv-festival-rank strong{color:#ffe3a0;white-space:nowrap}
+.pv-festival-rewards{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.pv-festival-prize{padding:11px 7px;text-align:center;border-radius:11px;background:linear-gradient(145deg,#42233d,#292036);border:1px solid #8c684e}
+.pv-festival-prize span{display:block;font-size:23px;margin-bottom:5px}
+.pv-festival-prize b{display:block;font-size:11px;color:#ffe6a8;line-height:1.35}
+.pv-festival-prize small{display:block;font-size:9px;color:#d8c6d9;margin-top:4px}
+.pv-festival-open{width:100%;margin-top:10px;padding:12px;border:1px solid #d9a1ff;border-radius:12px;background:linear-gradient(100deg,#793ee6,#c03e9b);color:#fff;font-weight:900}
+@media(max-width:360px){.pv-festival-hero h2{font-size:21px}.pv-festival-gifts{gap:5px}.pv-festival-gift b{font-size:9px}}
+
+/* Festival home banner styled like a polished live voice-app event */
+.pv-festival{padding:0;border:0;background:transparent;box-shadow:none;overflow:visible}
+.pv-festival-home{position:relative;display:flex;width:100%;min-height:244px;flex-direction:column;align-items:center;justify-content:center;gap:8px;overflow:hidden;text-align:center;padding:17px 13px;border-radius:22px;border:1px solid #ffd777;background:radial-gradient(ellipse at 50% 0%,#ffb83e66 0,transparent 48%),radial-gradient(ellipse at 100% 100%,#f33c8055 0,transparent 45%),linear-gradient(130deg,#24103f 0%,#6b1748 48%,#b94b24 100%);box-shadow:0 8px 25px #f59e0b20;color:#fff}
+.pv-festival-home:before,.pv-festival-home:after{content:"✦  ·  ✧  ·  ✦";position:absolute;color:#ffe6a0;opacity:.45;letter-spacing:8px;font-size:13px;pointer-events:none}
+.pv-festival-home:before{top:8px;left:4px}.pv-festival-home:after{bottom:8px;right:4px}
+.pv-festival-lights{font-size:19px;color:#ffe9a8;letter-spacing:3px;text-shadow:0 0 13px #ffb02e}
+.pv-festival-home .pv-festival-tag{font-size:9px;padding:5px 9px;box-shadow:0 2px 10px #0002}
+.pv-festival-main-title{font-size:clamp(21px,6vw,29px);font-weight:1000;line-height:1.05;color:#ffe9a3;text-shadow:0 2px 0 #8e3a22,0 0 17px #ffb72e88;letter-spacing:.2px}
+.pv-festival-sub-title{font-size:19px;font-weight:1000;letter-spacing:1.3px;color:#fff}.pv-festival-sub-title i{color:#ffd66e;font-style:normal}
+.pv-festival-caption{font-size:9px;letter-spacing:.65px;font-weight:900;color:#ffe8e8}
+.pv-festival-win{font-size:11px;font-weight:900;color:#fff1bc;background:#ffffff16;border:1px solid #ffdc8c88;border-radius:20px;padding:7px 10px;line-height:1.35}
+.pv-festival-cta{display:inline-flex;align-items:center;gap:12px;background:linear-gradient(100deg,#ffe9a4,#ffb73e);color:#5c1936;border-radius:11px;padding:9px 17px;font-size:11px;font-weight:1000;box-shadow:0 4px 14px #0003}.pv-festival-cta b{font-size:17px;line-height:10px}
+.pv-festival-art{position:absolute;right:7px;bottom:39px;font-size:19px;opacity:.68;filter:drop-shadow(0 2px 6px #ffb83f);pointer-events:none}
+.pv-festival-winner{display:flex;align-items:center;gap:9px;margin-top:9px;padding:10px;border:1px solid #8060a0;border-radius:14px;background:linear-gradient(100deg,#2c2042,#1c1829)}
+.pv-festival-winner img{width:43px;height:43px;border-radius:50%;object-fit:cover;border:2px solid #ffdc8a;background:#30243b}
+.pv-festival-winner-info{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px;text-align:left}.pv-festival-winner-info small{font-size:9px;color:#ffdf91;font-weight:900}.pv-festival-winner-info b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pv-festival-winner-info span{font-size:10px;color:#cbbdd8}
+.pv-festival-winner button{border:1px solid #d7b3ff;background:linear-gradient(100deg,#773bdb,#b43d9b);color:#fff;border-radius:9px;padding:8px;font-size:9px;font-weight:900}
+.pv-festival-modal-hero{position:relative;overflow:hidden;padding:18px 12px;text-align:center;border-radius:17px;border:1px solid #ffd777;background:radial-gradient(circle at 50% 0,#a64b36 0,transparent 62%),linear-gradient(135deg,#3c164a,#6b1e42 53%,#30182c)}
+.pv-festival-modal-hero h3{margin:8px 0 4px;color:#ffe6a8;font-size:22px}.pv-festival-modal-hero p{font-size:11px;line-height:1.5;color:#ffe8ef;margin:6px 0}
+.pv-festival-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:11px 0}.pv-festival-tabs button{padding:10px;border-radius:10px;border:1px solid #63486f;background:#292038;color:#e6d9ef;font-weight:900}.pv-festival-tabs button.active{background:linear-gradient(100deg,#e5a83c,#ffe6a0);color:#4a1d34;border-color:#ffe6a0}
+.pv-festival-gift-price{font-size:9px;color:#ffda8a}
+@media(max-width:360px){.pv-festival-home{min-height:230px;padding:15px 8px}.pv-festival-main-title{font-size:21px}.pv-festival-art{font-size:15px;right:4px}}
+
+
+
+
+/* ===== PAWANVOICE PREMIUM ID FRAMES + LEVEL STYLE ===== */
+#homeDP,#myDP{border:3px solid transparent;background:linear-gradient(#171323,#171323) padding-box,conic-gradient(from 0deg,#ffe08a,#ff56b8,#8b5cff,#49e6ff,#ffe08a) border-box;box-shadow:0 0 0 3px #8b5cf633,0 0 20px #bd70ff55;animation:pvFrameGlow 5s linear infinite}
+@keyframes pvFrameGlow{0%,100%{filter:drop-shadow(0 0 3px #a855f7)}50%{filter:drop-shadow(0 0 9px #f472b6)}}
+.profileTop .muted{display:inline-flex;align-items:center;gap:5px;margin-top:3px;padding:4px 8px;border-radius:8px;background:linear-gradient(100deg,#332047,#202039);border:1px solid #9565c7;color:#f2d8ff;font-size:11px;font-weight:900;box-shadow:inset 0 0 8px #bd70ff1a}
+#homeID,#myID{color:#ffe29a;letter-spacing:1px;text-shadow:0 0 8px #f59e0b66;font-weight:1000}
+#homeLevel,#homeVIP{display:inline-block;min-width:22px;text-align:center;padding:3px 6px;border-radius:7px;background:linear-gradient(135deg,#4c1d95,#b832a4);border:1px solid #d8a5ff;color:#fff;font-size:11px;box-shadow:0 0 9px #a855f755}
+.pv-feature-ribbon{position:relative;overflow:hidden;border-radius:16px;padding:13px;margin:8px 0;background:linear-gradient(120deg,#1f1642,#592a80,#9b286e);border:1px solid #a879ff;box-shadow:0 7px 22px #0003}
+.pv-feature-ribbon:after{content:'✦ ✧ ✦';position:absolute;right:9px;top:8px;color:#ffe5a5;opacity:.55;letter-spacing:4px}
+.pv-feature-ribbon h3{margin:0 0 5px;font-size:15px;color:#ffe8aa}.pv-feature-ribbon p{margin:0;font-size:11px;line-height:1.5;color:#eee0ff}
+.pv-social-gift-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0}
+.pv-social-gift{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:105px;padding:8px 4px;border:1px solid #624b82;border-radius:13px;background:linear-gradient(145deg,#352044,#201b30);color:#fff;text-align:center}
+.pv-social-gift span{font-size:27px;filter:drop-shadow(0 0 6px #f0abfc55)}.pv-social-gift b{font-size:10px;line-height:1.25}.pv-social-gift small{font-size:9px;color:#ffe29a}
+.pv-stat-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0}.pv-stat-chip{padding:10px 5px;text-align:center;border:1px solid #634b82;border-radius:12px;background:linear-gradient(145deg,#33213f,#201c2d)}.pv-stat-chip b{display:block;font-size:15px;color:#ffe29a}.pv-stat-chip small{font-size:9px;color:#d8c8e8}
+.pv-rocket-scene{position:relative;overflow:hidden;text-align:center;padding:18px 12px;border-radius:18px;background:radial-gradient(ellipse at 50% 100%,#ed7b3555,transparent 50%),linear-gradient(145deg,#101d46,#34206a 55%,#8e2c67);border:1px solid #a4aaff}
+.pv-rocket-emoji{display:block;font-size:58px;filter:drop-shadow(0 0 12px #ffb45b);transform:rotate(-28deg)}.pv-rocket-fly{animation:pvRocketFly 1.5s ease-in forwards}@keyframes pvRocketFly{0%{transform:translateY(0) rotate(-28deg);opacity:1}100%{transform:translate(45px,-180px) rotate(-28deg);opacity:0}}
+.pv-weekly-banner{padding:14px;border-radius:16px;background:linear-gradient(120deg,#154e70,#4f2b8a,#9a2d7b);border:1px solid #7dd3fc;margin:10px 0}.pv-weekly-banner h3{margin:0 0 5px}.pv-weekly-banner p{margin:0;font-size:11px;line-height:1.5;color:#e8e7ff}
+
 </style>
 </head>
 
 <body>
+
 <div class="app">
 
 <header>
-  <div class="brand">
-    <div class="logo">🎙️</div>
-    <div>
-      <div class="brand-name">PawanVoice</div>
-      <div class="brand-sub">Talk • Meet • Enjoy</div>
-    </div>
-  </div>
-  <div class="money">
-    <span>🪙 <b id="coinHeader">1M</b></span>
-    <span>💎 <b id="diamondHeader">0</b></span>
-  </div>
+  <div class="logo">🎙️ PawanVoice</div>
+  <button class="icon" onclick="showPage('inbox')">
+    📥 <span id="inboxDot"></span>
+  </button>
 </header>
 
-<!-- HOME -->
+<!-- ================= HOME ================= -->
+
 <section id="home" class="page active">
-  <div class="banner">
-    <div class="muted">✨ PAWANVOICE SPECIAL</div>
-    <h2>Mega Gift Festival</h2>
-    <p>Send gifts, meet friends and enjoy the party!</p>
-    <p>🏆 Daily rewards • VIP • Rankings</p>
-    <button class="btn" onclick="showPage('gifts')">Explore Gifts</button>
-  </div>
 
-  <div class="section grid4">
-    <div class="shortcut" onclick="showPage('profile')"><div class="icon">👤</div><label>Profile</label></div>
-    <div class="shortcut" onclick="notify('Family feature needs server setup.')"><div class="icon">💞</div><label>Family</label></div>
-    <div class="shortcut" onclick="notify('CP Space demo')"><div class="icon">💗</div><label>CP Space</label></div>
-    <div class="shortcut" onclick="showPage('rankings')"><div class="icon">👑</div><label>Rich King</label></div>
-    <div class="shortcut" onclick="showPage('vip')"><div class="icon">👑</div><label>VIP</label></div>
-    <div class="shortcut" onclick="showPage('vip')"><div class="icon">🏅</div><label>Level</label></div>
-    <div class="shortcut" onclick="showPage('wallet')"><div class="icon">🎁</div><label>Store</label></div>
-    <div class="shortcut" onclick="notify('Rewards demo')"><div class="icon">🎯</div><label>Rewards</label></div>
-  </div>
 
-  <div class="section">
-    <div class="row"><h2>🔥 Popular Rooms</h2><span class="see" onclick="showPage('rooms')">See All ›</span></div>
-    <div class="cards" id="homeRooms"></div>
-  </div>
-
-  <div class="section">
-    <div class="row"><h2>🟢 Online Users</h2><span class="see" onclick="showPage('rooms')">Meet people</span></div>
-    <div class="user-list">
-      <div class="user"><div class="avatar">👩🏻</div><small>Riya</small></div>
-      <div class="user"><div class="avatar">👨🏽</div><small>Rocky</small></div>
-      <div class="user"><div class="avatar">👩🏽</div><small>Angel</small></div>
-      <div class="user"><div class="avatar">🧑🏻</div><small>King</small></div>
-      <div class="user"><div class="avatar">👸🏻</div><small>Priya</small></div>
-    </div>
-  </div>
-
-  <div class="section card">
-    <div class="row"><h3>🎮 Play Games</h3><button class="btn small" onclick="showPage('games')">Play Now</button></div>
-    <p class="muted">Greedy Baby • Animal Party • Lucky Spin</p>
-  </div>
-</section>
-
-<!-- ROOMS -->
-<section id="rooms" class="page">
-  <h2>🎙️ Voice Rooms</h2>
-  <input class="search" id="roomSearch" placeholder="🔍 Search rooms..." oninput="renderRooms()">
-  <div class="tabs">
-    <button class="tab active" onclick="roomTab('Popular',this)">Popular</button>
-    <button class="tab" onclick="roomTab('New',this)">New</button>
-    <button class="tab" onclick="roomTab('My Room',this)">My Room</button>
-    <button class="tab" onclick="roomTab('Ranking',this)">Ranking</button>
-  </div>
-  <div id="roomList" class="room-list"></div>
-  <button class="btn" style="width:100%;margin-top:16px" onclick="createRoom()">＋ Create Room</button>
-</section>
-
-<!-- VOICE ROOM -->
-<section id="voice" class="page" style="padding-top:0">
-  <div class="room-head">
-    <div class="row">
-      <button class="btn outline small" onclick="showPage('rooms')">‹ Back</button>
-      <span class="muted">ROOM ID: <b id="currentRoomId">PV100</b></span>
-      <button class="btn outline small" onclick="notify('Room settings demo')">⚙️</button>
-    </div>
-    <div class="row">
-      <div>
-        <h2 id="currentRoomName">Music Zone 🎵</h2>
-        <div class="muted">🎙️ PawanVoice Room</div>
+  <!-- PAWANVOICE PREMIUM AUTO-ROTATING BANNERS -->
+  <div class="pv-slider" id="pvBannerSlider" aria-label="PawanVoice featured banners">
+    <div class="pv-slides" id="pvBannerSlides">
+      <div class="pv-slide" data-icon="👑" style="background:linear-gradient(120deg,#31116f,#7c32cb 52%,#f0b34b)">
+        <div class="pv-slide-content">
+          <span class="pv-slide-tag">👑 VIP • RICH KING</span>
+          <h2>VIP &amp; Rich King</h2>
+          <p>Explore VIP benefits, profile badges and user rankings.</p>
+          <button onclick="openVIP()">👑 Explore VIP</button>
+          <button onclick="openRanking('Rich King')">🏆 Rich King</button>
+        </div>
       </div>
-      <div style="text-align:right"><div>🟢 <b id="roomOnline">77</b> Online</div><div class="muted">👑 Host Room</div></div>
+      <div class="pv-slide" data-icon="🎁" style="background:linear-gradient(120deg,#74134f,#c52e91 55%,#ff8fba)">
+        <div class="pv-slide-content">
+          <span class="pv-slide-tag">🎁 MEGA GIFT FESTIVAL</span>
+          <h2>Mega Gift Festival</h2>
+          <p>Visit the Gift Center and explore available gifts and events.</p>
+          <button onclick="openStore()">🎁 Gift Center</button>
+          <button onclick="openEvent('Mega Gift Festival')">✨ Explore Event</button>
+        </div>
+      </div>
+      <div class="pv-slide" data-icon="💕" style="background:linear-gradient(120deg,#771c60,#d63e9a 55%,#ff6f91)">
+        <div class="pv-slide-content">
+          <span class="pv-slide-tag">💕 CP LOVE SPACE</span>
+          <h2>CP Love Space</h2>
+          <p>Explore CP features, couple space and couple rankings.</p>
+          <button onclick="openCP()">💕 Open CP Space</button>
+          <button onclick="openRanking('CP')">🏆 Couple Ranking</button>
+        </div>
+      </div>
+      <div class="pv-slide" data-icon="🎉" style="background:linear-gradient(120deg,#163f94,#6036c8 55%,#d642a3)">
+        <div class="pv-slide-content">
+          <span class="pv-slide-tag">🎉 DAILY REWARDS</span>
+          <h2>Daily Rewards &amp; Tasks</h2>
+          <p>Check daily missions, login rewards and available activities.</p>
+          <button onclick="openRewards()">🎁 View Rewards</button>
+          <button onclick="openTasks()">📋 Daily Tasks</button>
+        </div>
+      </div>
+      <div class="pv-slide" data-icon="🪔" style="background:linear-gradient(120deg,#391052,#a52d55 48%,#f2a735)">
+        <div class="pv-slide-content">
+          <span class="pv-slide-tag">🪔 DIWALI × NAVRATRI SPECIAL</span>
+          <h2>Big Festival Dhamaka</h2>
+          <p>Special gifts • Top Gifter Ranking • Win 1 Crore Coins &amp; exclusive rewards!</p>
+          <button onclick="pvOpenFestivalEvent()">🎁 View Festival</button>
+        </div>
+      </div>
     </div>
-    <div class="muted">💜 Welcome! Enjoy the party and respect everyone.</div>
-  </div>
-
-  <div class="row"><h3>🎙️ Voice Seats</h3><span class="muted">9 Seats</span></div>
-  <div class="seats" id="seats"></div>
-
-  <div class="room-box">
-    <div class="row"><h3>🏆 Top Users</h3><span class="see" onclick="showPage('rankings')">View All ›</span></div>
-    <div class="rank-line"><div class="avatar">👩🏻</div><div class="grow">Riya</div><b>🪙 12.5M</b></div>
-    <div class="rank-line"><div class="avatar">🧑🏽</div><div class="grow">Rocky</div><b>🪙 10.2M</b></div>
-    <div class="rank-line"><div class="avatar">👼</div><div class="grow">Angel</div><b>🪙 8.6M</b></div>
-  </div>
-
-  <div class="room-box">
-    <h3>💬 Room Chat</h3>
-    <div id="chatMessages">
-      <div class="chat-line"><b>Riya:</b> Welcome everyone! 💜</div>
-      <div class="chat-line"><b>Rocky:</b> Nice room! 🎉</div>
-      <div class="chat-line"><b>Angel:</b> Let's have fun! 😊</div>
-    </div>
-    <div class="chat-controls">
-      <input class="search" id="chatInput" placeholder="Type a message...">
-      <button class="btn" onclick="sendChat()">➤</button>
+    <div class="pv-dots" id="pvBannerDots" aria-label="Choose banner">
+      <button class="pv-dot active" type="button" aria-label="Banner 1"></button>
+      <button class="pv-dot" type="button" aria-label="Banner 2"></button>
+      <button class="pv-dot" type="button" aria-label="Banner 3"></button>
+      <button class="pv-dot" type="button" aria-label="Banner 4"></button>
+      <button class="pv-dot" type="button" aria-label="Festival banner"></button>
     </div>
   </div>
 
-  <div class="grid4">
-    <div class="shortcut" onclick="toggleMic()"><div class="icon" id="micIcon">🎙️</div><label id="micLabel">Mic Off</label></div>
-    <div class="shortcut" onclick="notify('Speaker demo')"><div class="icon">🔊</div><label>Speaker</label></div>
-    <div class="shortcut" onclick="showPage('gifts')"><div class="icon">🎁</div><label>Gifts</label></div>
-    <div class="shortcut" onclick="notify('Invite feature needs backend')"><div class="icon">📨</div><label>Invite</label></div>
+  <div class="banner">
+    <h2>🎉 PawanVoice Events</h2>
+    <div class="sub">
+      Family • CP Ranking • Rich King Ranking
+    </div>
+
+    <div class="bannerBtns">
+      <button onclick="openRanking('Family')">👨‍👩‍👧 Family</button>
+      <button onclick="openRanking('CP')">💎 CP</button>
+      <button onclick="openRanking('Rich King')">👑 Wealth</button>
+    </div>
   </div>
+
+
+
+  <!-- PAWANVOICE DIWALI + NAVRATRI SPECIAL EVENT: compact home banner; details open on tap -->
+  <section class="pv-festival" id="pvFestivalEvent">
+    <button type="button" class="pv-festival-home" onclick="pvOpenFestivalEvent()" aria-label="Open Diwali and Navratri special event">
+      <span class="pv-festival-lights">✦ ✧ 🪔 ✧ ✦</span>
+      <span class="pv-festival-tag">✨ LIMITED-TIME SPECIAL EVENT ✨</span>
+      <strong class="pv-festival-main-title">BIG FESTIVAL DHAMAKA</strong>
+      <strong class="pv-festival-sub-title">DIWALI <i>×</i> NAVRATRI</strong>
+      <span class="pv-festival-caption">SEND SPECIAL GIFTS • CLIMB THE LEADERBOARD</span>
+      <span class="pv-festival-win">🏆 WIN 1 CRORE COINS + EXCLUSIVE REWARDS</span>
+      <span class="pv-festival-cta">EXPLORE EVENT <b>›</b></span>
+      <span class="pv-festival-art" aria-hidden="true">🪔 🎆 💃 🌸 🪔</span>
+    </button>
+    <div class="pv-festival-winner" id="pvFestivalWinner" style="display:none">
+      <img id="pvFestivalWinnerDP" src="" alt="Festival winner" onerror="this.style.visibility='hidden'">
+      <div class="pv-festival-winner-info"><small>👑 TOP GIFTER WINNER</small><b id="pvFestivalWinnerName">Festival Winner</b><span id="pvFestivalWinnerID">ID: —</span></div>
+      <button type="button" onclick="pvOpenFestivalEvent()">VIEW DETAILS</button>
+    </div>
+  </section>
+  <!-- END PAWANVOICE DIWALI + NAVRATRI SPECIAL EVENT -->
+
+
+  <!-- USER MINI CARD -->
+
+  <div class="card">
+    <div class="profileTop">
+      <img id="homeDP" src="">
+      <div style="flex:1">
+        <h2 id="homeName">Guest</h2>
+        <div class="muted">
+          ID: <span id="homeID"></span>
+        </div>
+        <div>
+          ⭐ Level <b id="homeLevel">1</b>
+          • 👑 VIP <b id="homeVIP">1</b>
+        </div>
+      </div>
+      <button class="btn" onclick="showPage('profile')">Profile</button>
+    </div>
+  </div>
+
+  <!-- QUICK MENU -->
+
+  <div class="card">
+    <div class="title">✨ Explore</div>
+
+    <div class="grid3">
+
+      <button class="feature" onclick="showPage('profile')">
+        <span class="ico">👤</span>
+        <b>Profile</b>
+      </button>
+
+      <button class="feature" onclick="openFamily()">
+        <span class="ico">👨‍👩‍👧</span>
+        <b>Family</b>
+      </button>
+
+      <button class="feature" onclick="openCP()">
+        <span class="ico">💎</span>
+        <b>CP Space</b>
+      </button>
+
+      <button class="feature" onclick="openRanking('Rich King')">
+        <span class="ico">👑</span>
+        <b>Rich King</b>
+      </button>
+
+      <button class="feature" onclick="openVIP()">
+        <span class="ico">👑</span>
+        <b>VIP</b>
+      </button>
+
+      <button class="feature" onclick="openLevel()">
+        <span class="ico">🆙</span>
+        <b>Level</b>
+      </button>
+
+      <button class="feature" onclick="openStore()">
+        <span class="ico">🛍️</span>
+        <b>Store</b>
+      </button>
+
+      <button class="feature" onclick="openRewards()">
+        <span class="ico">🎁</span>
+        <b>Rewards</b>
+      </button>
+
+      <button class="feature" onclick="openTasks()">
+        <span class="ico">📋</span>
+        <b>Daily Tasks</b>
+      </button>
+
+      <button class="feature" onclick="location.href='games.html'">
+        <span class="ico">🎮</span>
+        <b>Games</b>
+      </button>
+
+      <button class="feature" onclick="pvOpenRocketEvent()"><span class="ico">🚀</span><b>Rocket Launch</b></button>
+      <button class="feature" onclick="pvOpenWeeklyEvent()"><span class="ico">🏆</span><b>Weekly Event</b></button>
+      <button class="feature" onclick="pvClaimWelcomeReward()"><span class="ico">🎁</span><b>Welcome Gift</b></button>
+      <button class="feature" onclick="pvOpenSocialGifts('CP')"><span class="ico">💞</span><b>CP Gifts</b></button>
+      <button class="feature" onclick="pvOpenSocialGifts('Friendship')"><span class="ico">🫂</span><b>Friendship Gifts</b></button>
+      <button class="feature" onclick="pvOpenSocialGifts('Family')"><span class="ico">👨‍👩‍👧‍👦</span><b>Family Gifts</b></button>
+      
+    </div>
+  </div>
+
+
+  <!-- NEW ROTATING / SWIPEABLE EVENT CARDS (existing Events grid is preserved) -->
+  <div class="pv-events-title">
+    <h3>🎉 Events & Activities</h3>
+    <span class="pv-live-label">✦ DISCOVER</span>
+  </div>
+  <div class="pv-event-slider" id="pvEventSlider">
+    <div class="pv-event-card pv-event-purple" data-icon="🎡">
+      <h4>Lucky Wheel</h4><p>Explore the Lucky Wheel event in PawanVoice.</p>
+      <button onclick="openEvent('Lucky Wheel')">Explore →</button>
+    </div>
+    <div class="pv-event-card pv-event-pink" data-icon="👨‍👩‍👧‍👦">
+      <h4>Family Event</h4><p>Discover Family features and activities.</p>
+      <button onclick="openRanking('Family')">Explore →</button>
+    </div>
+    <div class="pv-event-card pv-event-orange" data-icon="🚀">
+      <h4>Rocket Event</h4><p>Discover room events and rocket activities.</p>
+      <button onclick="openEvent('Rocket Event')">Explore →</button>
+    </div>
+    <div class="pv-event-card pv-event-blue" data-icon="🏆">
+      <h4>Rich King</h4><p>Explore rankings and the Rich King section.</p>
+      <button onclick="openRanking('Rich King')">Explore →</button>
+    </div>
+    <div class="pv-event-card pv-event-green" data-icon="🎁">
+      <h4>Daily Rewards</h4><p>Check daily tasks and reward features.</p>
+      <button onclick="openRewards()">Explore →</button>
+    </div>
+    <div class="pv-event-card pv-event-pink" data-icon="💕">
+      <h4>CP Love Space</h4><p>Explore couple features and CP ranking.</p>
+      <button onclick="openCP()">Explore →</button>
+    </div>
+    <div class="pv-event-card pv-event-purple" data-icon="🎤">
+      <h4>Singing Competition</h4><p>Open this event section to explore the activity.</p>
+      <button onclick="openEvent('Singing Competition')">Explore →</button>
+    </div>
+    <div class="pv-event-card pv-event-blue" data-icon="🏆">
+      <h4>Top Hosts</h4><p>Explore the host and room ranking section.</p>
+      <button onclick="openRanking('Top Hosts')">Explore →</button>
+    </div>
+    <div class="pv-event-card pv-event-orange" data-icon="🪽">
+      <h4>Avatar Frames</h4><p>Visit the store to explore profile decorations.</p>
+      <button onclick="openStore()">Explore →</button>
+    </div>
+    <div class="pv-event-card pv-event-green" data-icon="🎉">
+      <h4>Limited-Time Events</h4><p>Explore currently available PawanVoice activities.</p>
+      <button onclick="openEvent('Limited-Time Events')">Explore →</button>
+    </div>
+  </div>
+
+  <!-- ALL EXTRA BANNERS / EVENTS requested for PawanVoice -->
+  <details class="pv-all-banners" id="pvAllBanners">
+    <summary>🌟 Explore All Events &amp; Banners <span>98+ ideas</span></summary>
+    <p class="pv-all-note">किसी भी कार्ड पर टैप करके उसका Event खोलें। जिन फीचर्स का अलग सिस्टम अभी नहीं बना है, वे फिलहाल Event information के रूप में खुलेंगे।</p>
+    <div class="pv-banner-category"><h4>👑 VIP & Rich Users</h4><div class="pv-banner-grid">
+      <button class="pv-extra-banner" type="button" onclick="openEvent('VIP Level Upgrade')"><span>👑</span><b>VIP Level Upgrade</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Super VIP Membership')"><span>💎</span><b>Super VIP Membership</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Dragon King Event')"><span>🐉</span><b>Dragon King Event</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRanking('Rich King')"><span>🦁</span><b>Rich King Competition</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRanking('Rich King')"><span>👸</span><b>Queen of the Week</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRanking('Rich King')"><span>🏆</span><b>Top Spender Ranking</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRanking('Rich King')"><span>💰</span><b>Weekly Coins Ranking</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Exclusive VIP Benefits')"><span>🌟</span><b>Exclusive VIP Benefits</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openStore()"><span>🎖️</span><b>Special Medal Collection</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openStore()"><span>👑</span><b>Royal Avatar Frame</b><small>Explore event →</small></button>
+    </div></div>
+    <div class="pv-banner-category"><h4>🎁 Coins & Gifts</h4><div class="pv-banner-grid">
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Recharge Bonus')"><span>💎</span><b>Recharge Bonus</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('First Recharge Reward')"><span>🎁</span><b>First Recharge Reward</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Double Coins Event')"><span>🎉</span><b>Double Coins Event</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openTasks()"><span>💰</span><b>Daily Coins Bonus</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Send Gifts, Get Rewards')"><span>🎁</span><b>Send Gifts, Get Rewards</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Limited Edition Gifts')"><span>🎀</span><b>Limited Edition Gifts</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Super Gift Festival')"><span>🚀</span><b>Super Gift Festival</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Birthday Gift Event')"><span>🎂</span><b>Birthday Gift Event</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Lucky Wheel')"><span>🎡</span><b>Lucky Wheel</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Mystery Box')"><span>🎁</span><b>Mystery Box</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Diamond Exchange Event')"><span>💎</span><b>Diamond Exchange Event</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openTasks()"><span>🪙</span><b>Free Coins Mission</b><small>Explore event →</small></button>
+    </div></div>
+    <div class="pv-banner-category"><h4>💕 Love & CP</h4><div class="pv-banner-grid">
+      <button class="pv-extra-banner" type="button" onclick="openCP()"><span>💕</span><b>Find Your CP</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openCP()"><span>💑</span><b>CP Matching Event</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openCP()"><span>💖</span><b>Couple Level Upgrade</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openCP()"><span>💍</span><b>Couple Ring Collection</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openCP()"><span>🏠</span><b>Exclusive CP Space</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Valentines Love Event')"><span>💘</span><b>Valentines Love Event</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRanking('CP')"><span>❤️</span><b>Couple Ranking</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRanking('CP')"><span>👩‍❤️‍👨</span><b>Best Couple of the Week</b><small>Explore event →</small></button>
+    </div></div>
+    <div class="pv-banner-category"><h4>🎤 Voice Room Events</h4><div class="pv-banner-grid">
+      <button class="pv-extra-banner" type="button" onclick="showPage('home')"><span>🎙️</span><b>Join Popular Rooms</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Voice Room Party')"><span>🎉</span><b>Voice Room Party</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Singing Competition')"><span>🎤</span><b>Singing Competition</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Karaoke Night')"><span>🎵</span><b>Karaoke Night</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Funny Talk Show')"><span>😂</span><b>Funny Talk Show</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Late Night Party')"><span>🌙</span><b>Late Night Party</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Room Battle')"><span>🔥</span><b>Room Battle</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRanking('Top Hosts')"><span>👑</span><b>Best Host Competition</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Room Gift Festival')"><span>🎁</span><b>Room Gift Festival</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Room EXP Boost')"><span>🚀</span><b>Room EXP Boost</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="createRoomPrompt()"><span>🎊</span><b>Create Your Own Room</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Featured Room of the Day')"><span>🌟</span><b>Featured Room of the Day</b><small>Explore event →</small></button>
+    </div></div>
+    <div class="pv-banner-category"><h4>👨‍👩‍👧‍👦 Family</h4><div class="pv-banner-grid">
+      <button class="pv-extra-banner" type="button" onclick="openFamily()"><span>🏡</span><b>Join a Family</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRanking('Family')"><span>👑</span><b>Family Leader Ranking</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Family Battle')"><span>⚔️</span><b>Family Battle</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRanking('Family')"><span>🏆</span><b>Best Family Competition</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openFamily()"><span>🎁</span><b>Family Rewards</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openFamily()"><span>💜</span><b>Family Recruitment</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openFamily()"><span>🌟</span><b>Family Level Upgrade</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openFamily()"><span>🎉</span><b>Family Party Event</b><small>Explore event →</small></button>
+    </div></div>
+    <div class="pv-banner-category"><h4>🎮 Games & Entertainment</h4><div class="pv-banner-grid">
+      <button class="pv-extra-banner" type="button" onclick="location.href='games.html'"><span>🎡</span><b>Lucky Spin</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="location.href='games.html'"><span>🎯</span><b>Target Challenge</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="location.href='games.html'"><span>🃏</span><b>Card Game Event</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="location.href='games.html'"><span>🎲</span><b>Daily Game Challenge</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRanking('Rich King')"><span>🏆</span><b>Weekly Game Ranking</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="location.href='games.html'"><span>🎁</span><b>Game Rewards</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="location.href='games.html'"><span>🥇</span><b>Win the Competition</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="location.href='games.html'"><span>🎉</span><b>Weekend Game Festival</b><small>Explore event →</small></button>
+    </div></div>
+    <div class="pv-banner-category"><h4>🎉 Daily Tasks & Rewards</h4><div class="pv-banner-grid">
+      <button class="pv-extra-banner" type="button" onclick="openRewards()"><span>🎁</span><b>Daily Login Reward</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRewards()"><span>📅</span><b>7-Day Login Challenge</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRewards()"><span>🗓️</span><b>Monthly Check-in</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openTasks()"><span>🏆</span><b>Complete Daily Tasks</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openTasks()"><span>🎯</span><b>Invite Friends Reward</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Reach a New Level')"><span>💎</span><b>Reach a New Level</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRewards()"><span>🎁</span><b>New User Welcome Gift</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRewards()"><span>🔥</span><b>Comeback Rewards</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openTasks()"><span>🌟</span><b>Daily Mission Challenge</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openTasks()"><span>🥇</span><b>Achievement Rewards</b><small>Explore event →</small></button>
+    </div></div>
+    <div class="pv-banner-category"><h4>🖼️ Profile & Fashion</h4><div class="pv-banner-grid">
+      <button class="pv-extra-banner" type="button" onclick="openStore()"><span>👑</span><b>New Avatar Frames</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openStore()"><span>🪽</span><b>Angel Wings Collection</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openStore()"><span>🐉</span><b>Dragon Avatar Frame</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openStore()"><span>✨</span><b>Glowing Profile Effects</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openStore()"><span>🎖️</span><b>New Medal Collection</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openStore()"><span>👗</span><b>My Dress Fashion Event</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openStore()"><span>💫</span><b>Special Name Effects</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openStore()"><span>🌈</span><b>Profile Decoration</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openStore()"><span>👑</span><b>Exclusive Badges</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openStore()"><span>🏅</span><b>Level-Up Medal Event</b><small>Explore event →</small></button>
+    </div></div>
+    <div class="pv-banner-category"><h4>📢 Special Events</h4><div class="pv-banner-grid">
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Birthday Celebration')"><span>🎂</span><b>Birthday Celebration</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('New Year Festival')"><span>🎆</span><b>New Year Festival</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Holi Color Festival')"><span>🎨</span><b>Holi Color Festival</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Diwali Celebration')"><span>🪔</span><b>Diwali Celebration</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Valentines Day')"><span>❤️</span><b>Valentines Day</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Halloween Party')"><span>🎃</span><b>Halloween Party</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Christmas Festival')"><span>🎄</span><b>Christmas Festival</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Anniversary Celebration')"><span>🎊</span><b>Anniversary Celebration</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Limited-Time Offers')"><span>🔥</span><b>Limited-Time Offers</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('New Features Announcement')"><span>🌟</span><b>New Features Announcement</b><small>Explore event →</small></button>
+    </div></div>
+    <div class="pv-banner-category"><h4>🏆 Rankings & Competition</h4><div class="pv-banner-grid">
+      <button class="pv-extra-banner" type="button" onclick="openRanking('Rich King')"><span>👑</span><b>Top 10 Rich Users</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRanking('Top Hosts')"><span>🎤</span><b>Top 10 Hosts</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Top Gift Senders')"><span>🎁</span><b>Top Gift Senders</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Top Gift Receivers')"><span>💎</span><b>Top Gift Receivers</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Top Couples')"><span>💕</span><b>Top Couples</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Top Families')"><span>🏡</span><b>Top Families</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Most Active Users')"><span>🎙️</span><b>Most Active Users</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openEvent('Rising Stars')"><span>🌟</span><b>Rising Stars</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRanking('Rich King')"><span>🥇</span><b>Weekly Champions</b><small>Explore event →</small></button>
+      <button class="pv-extra-banner" type="button" onclick="openRanking('Rich King')"><span>🏆</span><b>Monthly Hall of Fame</b><small>Explore event →</small></button>
+    </div></div>
+  </details>
+
+  <!-- EVENTS -->
+
+  <div class="card">
+    <div class="title">🎊 Events</div>
+
+    <div id="eventList" class="eventGrid">
+
+      <div class="event" onclick="openEvent('Daily Login')">
+        <div class="big">🎁</div>
+        <b>Daily Login</b>
+        <small>Login & collect reward</small>
+      </div>
+
+      <div class="event" onclick="openEvent('Lucky Wheel')">
+        <div class="big">🎡</div>
+        <b>Lucky Wheel</b>
+        <small>Try your luck</small>
+      </div>
+
+      <div class="event" onclick="openEvent('Family Event')">
+        <div class="big">👨‍👩‍👧</div>
+        <b>Family Event</b>
+        <small>Family activity</small>
+      </div>
+
+      <div class="event" onclick="openEvent('Rich King')">
+        <div class="big">👑</div>
+        <b>Rich King</b>
+        <small>Top wealth users</small>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ROOMS -->
+
+  <div class="card">
+    <div class="title">🎙️ Voice Rooms</div>
+
+    <div class="tabs">
+
+      <button class="tab active"
+              data-tab="popular"
+              onclick="setTab('popular')">
+        🔥 Popular
+      </button>
+
+      <button class="tab"
+              data-tab="new"
+              onclick="setTab('new')">
+        ✨ New
+      </button>
+
+      <button class="tab"
+              data-tab="my"
+              onclick="setTab('my')">
+        🏠 My Room
+      </button>
+
+      <button class="tab"
+              onclick="openRanking('Room Ranking')">
+        🏆 Room Ranking
+      </button>
+
+    </div>
+  </div>
+
+  <div class="card">
+    <input id="roomSearch"
+           class="search"
+           placeholder="🔎 Search room..."
+           oninput="renderRooms()">
+  </div>
+
+  <div class="card">
+    <div class="title">🌍 Live Rooms</div>
+    <div id="roomList">
+      <div class="empty">Loading rooms...</div>
+    </div>
+  </div>
+
+  <!-- CREATE ROOM -->
+
+  <div class="card">
+    <div class="title">➕ Create Voice Room</div>
+
+    <input id="newRoomName"
+           class="input"
+           placeholder="Room Name">
+
+    <input id="newRoomDP"
+           class="input"
+           placeholder="Room DP image URL (optional)">
+
+    <select id="newRoomCategory" class="input">
+      <option>General</option>
+      <option>Music</option>
+      <option>Friends</option>
+      <option>Gaming</option>
+      <option>Event</option>
+      <option>Chat</option>
+    </select>
+
+    <button class="btn green full"
+            onclick="createRoom()">
+      Create Voice Room
+    </button>
+  </div>
+
 </section>
 
-<!-- GIFTS -->
-<section id="gifts" class="page">
-  <h2>🎁 Gifts</h2>
-  <p class="muted">Choose a gift to preview the demo action.</p>
-  <div class="tabs">
-    <button class="tab active" onclick="giftTab('All',this)">All</button>
-    <button class="tab" onclick="giftTab('CP',this)">CP</button>
-    <button class="tab" onclick="giftTab('Friendship',this)">Friendship</button>
-    <button class="tab" onclick="giftTab('Family',this)">Family</button>
-    <button class="tab" onclick="giftTab('Lucky',this)">Lucky</button>
-    <button class="tab" onclick="giftTab('VIP',this)">VIP</button>
-    <button class="tab" onclick="giftTab('Festival',this)">Festival</button>
+
+<!-- ================= INBOX ================= -->
+
+<section id="inbox" class="page">
+
+  <div class="card">
+    <div class="title">📥 Inbox</div>
+
+    <div id="inboxList">
+      <div class="empty">No messages</div>
+    </div>
   </div>
-  <div class="banner" style="min-height:105px;margin-bottom:17px">
-    <h2>Send Love 💖</h2><p>Choose a gift and make someone's day!</p>
-  </div>
-  <div class="gift-grid" id="giftGrid"></div>
+
 </section>
 
-<!-- WALLET -->
-<section id="wallet" class="page">
-  <h2>💎 My Wallet</h2>
-  <div class="balance">
-    <div class="muted">AVAILABLE COINS</div>
-    <div class="amount">🪙 <span id="coinBalance">1,000,000</span></div>
-    <div class="row"><span>💎 <span id="diamondBalance">0</span> Diamonds</span><button class="btn small" onclick="notify('Payment system is not connected yet.')">＋ Add</button></div>
-  </div>
-  <h3>Coin Packages</h3>
-  <div class="card" style="margin-top:12px">
-    <div class="profile-line"><span>🪙 100,000 Coins</span><button class="btn small" onclick="notify('Real payments are not enabled.')">Select</button></div>
-    <div class="profile-line"><span>🪙 500,000 Coins</span><button class="btn small" onclick="notify('Real payments are not enabled.')">Select</button></div>
-    <div class="profile-line"><span>🪙 1,000,000 Coins</span><button class="btn small" onclick="notify('Real payments are not enabled.')">Select</button></div>
-    <div class="profile-line"><span>🪙 5,000,000 Coins</span><button class="btn small" onclick="notify('Real payments are not enabled.')">Select</button></div>
-  </div>
-  <p class="muted">Demo wallet only. No real purchase or payment is made.</p>
-</section>
 
-<!-- PROFILE -->
+<!-- ================= PROFILE ================= -->
+
 <section id="profile" class="page">
-  <div class="row"><h2>👤 My Profile</h2><button class="btn outline small" onclick="notify('Settings demo')">⚙️</button></div>
-  <div class="card profile-card">
-    <div class="avatar big">🧑🏻</div>
-    <h2 id="profileName">Pawan</h2>
-    <div class="muted">ID: 100052</div>
-    <p><span class="pill">👑 VIP 1</span> <span class="pill">🏅 Level 15</span></p>
-    <button class="btn" onclick="editName()">✏️ Edit Name</button>
-  </div>
-  <div class="cards section">
-    <div class="card"><div class="muted">🪙 Coins</div><h3 id="profileCoins">1,000,000</h3></div>
-    <div class="card"><div class="muted">💎 Diamonds</div><h3>0</h3></div>
-    <div class="card"><div class="muted">💗 CP Space</div><h3>Not linked</h3></div>
-    <div class="card"><div class="muted">👨‍👩‍👧 Family</div><h3>Not joined</h3></div>
-  </div>
-  <div class="section card">
-    <div class="profile-line" onclick="showPage('vip')">👑 VIP Membership <span>›</span></div>
-    <div class="profile-line" onclick="showPage('rankings')">🏆 Rankings <span>›</span></div>
-    <div class="profile-line" onclick="showPage('gifts')">🎁 My Gifts <span>›</span></div>
-    <div class="profile-line" onclick="notify('Frame gallery will be added next.')">🖼️ Profile Frames <span>›</span></div>
-    <div class="profile-line" onclick="notify('Settings demo')">⚙️ Settings <span>›</span></div>
-  </div>
-</section>
 
-<!-- VIP -->
-<section id="vip" class="page">
-  <h2>👑 VIP & Levels</h2>
-  <div class="banner">
-    <h2>VIP 1</h2><p>Unlock exclusive privileges, special frames and gifts.</p>
-    <button class="btn" onclick="notify('VIP purchase system is not connected.')">Upgrade Now</button>
-  </div>
-  <div class="card section">
-    <div class="row"><h3>🏅 Level 15</h3><span class="muted">EXP 2,500/5,000</span></div>
-    <div class="progress"><span></span></div>
-    <p class="muted">Keep participating to progress in this demo.</p>
-  </div>
-  <h3 class="section">VIP Benefits</h3>
-  <div class="grid4 section">
-    <div class="shortcut"><div class="icon">🖼️</div><label>Special Frame</label></div>
-    <div class="shortcut"><div class="icon">🎁</div><label>Exclusive Gifts</label></div>
-    <div class="shortcut"><div class="icon">🪙</div><label>More Coins</label></div>
-    <div class="shortcut"><div class="icon">💬</div><label>VIP Chat</label></div>
-  </div>
-  <h3 class="section">Level Rewards</h3>
-  <div class="cards section">
-    <div class="card">🏆 Level 1–9</div>
-    <div class="card">💗 Level 10–19</div>
-    <div class="card">🎉 Level 20–29</div>
-    <div class="card">🎁 Level 30–39</div>
-  </div>
-</section>
+  <div class="card">
 
-<!-- GAMES -->
-<section id="games" class="page">
-  <h2>🎮 Games</h2>
-  <div class="banner">
-    <h2>Play Games</h2><p>Fun games with friends in PawanVoice.</p>
-  </div>
-  <div class="section">
-    <div class="card game-card">
-      <div class="game-icon">🐼</div>
-      <div class="grow"><h3>Greedy Baby</h3><p class="muted">Multiplayer • Win Coins</p><span class="muted">Demo preview</span></div>
-      <button class="btn small" onclick="playGame('Greedy Baby')">Play</button>
+    <div class="profileTop">
+
+      <img id="myDP" src="">
+
+      <div style="flex:1">
+
+        <h2 id="myName">Guest</h2>
+
+        <div class="muted">
+          ID: <span id="myID"></span>
+        </div>
+
+        <div>
+          ⭐ Level <b id="myLevel">1</b>
+          • 👑 VIP <b id="myVIP">1</b>
+        </div>
+
+      </div>
+
+      <button class="btn"
+              onclick="editProfile()">
+        Edit
+      </button>
+
     </div>
-    <div class="card game-card">
-      <div class="game-icon">🎡</div>
-      <div class="grow"><h3>Animal Party</h3><p class="muted">Fun • Multiplayer</p><span class="muted">Demo preview</span></div>
-      <button class="btn small" onclick="playGame('Animal Party')">Play</button>
-    </div>
-    <div class="card game-card">
-      <div class="game-icon">🎯</div>
-      <div class="grow"><h3>Lucky Spin</h3><p class="muted">Spin & enjoy</p><span class="muted">Demo preview</span></div>
-      <button class="btn small" onclick="playGame('Lucky Spin')">Play</button>
-    </div>
+
   </div>
-  <p class="muted">Games are interface previews. Shared rounds and real rewards need server logic.</p>
+
+
+  <div class="card">
+
+    <div class="stats">
+
+      <div class="stat">
+        <b id="following">0</b><br>
+        <span class="muted">Following</span>
+      </div>
+
+      <div class="stat">
+        <b id="followers">0</b><br>
+        <span class="muted">Followers</span>
+      </div>
+
+      <div class="stat">
+        <b id="visitors">0</b><br>
+        <span class="muted">Visitors</span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="title">💰 Wallet</div>
+
+    <div class="wallet">
+
+      <div class="walletBox">
+        🪙
+        <b id="coins">0 Coins</b>
+      </div>
+
+      <div class="walletBox">
+        💎
+        <b id="diamonds">0 Diamond</b>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="title">🎁 Invite Friend</div>
+
+    <div style="display:flex;gap:7px">
+
+      <input id="inviteCode"
+             class="input"
+             readonly>
+
+      <button class="btn"
+              onclick="copyInvite()">
+        Copy
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- LEVEL -->
+
+  <div class="card">
+
+    <div class="title">🆙 Level & EXP</div>
+
+    <div class="reward">
+      <span>Current Level</span>
+      <b id="levelBig">1</b>
+    </div>
+
+    <div class="reward">
+      <span>EXP</span>
+      <b id="expBig">0</b>
+    </div>
+
+    <div id="levelRewards"></div>
+
+  </div>
+
+
+  <!-- VIP -->
+
+  <div class="card">
+
+    <div class="title">👑 VIP</div>
+
+    <div id="vipRewards"></div>
+
+    <button class="btn full"
+            onclick="buyNextVip()">
+      Buy Next VIP
+    </button>
+
+  </div>
+
+
+  <!-- PROFILE FEATURES -->
+
+  <div class="card">
+
+    <div class="title">🧰 Profile</div>
+
+    <div class="grid3">
+
+      <button class="feature" onclick="showMedals()">
+        <span class="ico">🏅</span>
+        <b>Medal</b>
+      </button>
+
+      <button class="feature" onclick="showCP()">
+        <span class="ico">💎</span>
+        <b>CP Space</b>
+      </button>
+
+      <button class="feature" onclick="showFamilyProfile()">
+        <span class="ico">👨‍👩‍👧</span>
+        <b>Family</b>
+      </button>
+
+      <button class="feature" onclick="showBag()">
+        <span class="ico">🎒</span>
+        <b>Bag</b>
+      </button>
+
+      <button class="feature" onclick="showDress()">
+        <span class="ico">👗</span>
+        <b>My Dress</b>
+      </button>
+
+      <button class="feature" onclick="openVIP()">
+        <span class="ico">👑</span>
+        <b>VIP</b>
+      </button>
+
+      <button class="feature" onclick="showReward('🎖️ Personal Badge',BADGE_LEVELS)">
+        <span class="ico">🎖️</span>
+        <b>Badge</b>
+      </button>
+
+      <button class="feature" onclick="showReward('🖼️ Avatar Frame',FRAME_LEVELS)">
+        <span class="ico">🖼️</span>
+        <b>Frame</b>
+      </button>
+
+      <button class="feature" onclick="showReward('🚗 Vehicle',VEHICLE_LEVELS)">
+        <span class="ico">🚗</span>
+        <b>Vehicle</b>
+      </button>
+
+      <button class="feature" onclick="showReward('🆔 Custom ID',CUSTOM_ID_LEVELS)">
+        <span class="ico">🆔</span>
+        <b>Custom ID</b>
+      </button>
+
+      <button class="feature" onclick="openRanking('Ranking')">
+        <span class="ico">🏆</span>
+        <b>Ranking</b>
+      </button>
+
+      <button class="feature" onclick="openStore()">
+        <span class="ico">🛍️</span>
+        <b>Store</b>
+      </button>
+
+      <button class="feature" onclick="showSettings()">
+        <span class="ico">⚙️</span>
+        <b>Settings</b>
+      </button>
+
+      <button class="feature" onclick="showHelp()">
+        <span class="ico">🆘</span>
+        <b>Help</b>
+      </button>
+
+      <button class="feature" onclick="showLanguage()">
+        <span class="ico">🌐</span>
+        <b>Language</b>
+      </button>
+
+    </div>
+
+  </div>
+
 </section>
 
-<!-- RANKINGS -->
-<section id="rankings" class="page">
-  <h2>👑 Rankings</h2>
-  <div class="tabs">
-    <button class="tab active" onclick="rankTab('Daily',this)">Daily</button>
-    <button class="tab" onclick="rankTab('Weekly',this)">Weekly</button>
-    <button class="tab" onclick="rankTab('Monthly',this)">Monthly</button>
-  </div>
-  <div class="banner" style="text-align:center">
-    <div style="font-size:45px">👑</div>
-    <h2>Rich King</h2><p style="max-width:none">Top Rich Users</p>
-  </div>
-  <div class="section card" id="rankList"></div>
-</section>
 
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-  <div class="nav-item active" data-page="home" onclick="showPage('home')"><span class="nav-icon">⌂</span>Home</div>
-  <div class="nav-item" data-page="rooms" onclick="showPage('rooms')"><span class="nav-icon">🎙️</span>Rooms</div>
-  <div class="nav-item" data-page="games" onclick="showPage('games')"><span class="nav-icon">🎮</span>Games</div>
-  <div class="nav-item" onclick="notify('Inbox will be connected in the next stage.')"><span class="nav-icon">✉️</span>Inbox</div>
-  <div class="nav-item" data-page="profile" onclick="showPage('profile')"><span class="nav-icon">♙</span>Profile</div>
+<!-- ================= BOTTOM NAV ================= -->
+
+<nav class="bottom">
+
+  <button id="navHome"
+          class="active"
+          onclick="showPage('home')">
+    🏠<br>Home
+  </button>
+
+  <button id="navInbox"
+          onclick="showPage('inbox')">
+    📥<br>Inbox
+  </button>
+
+  <button onclick="createRoomPrompt()">
+    🎙️<br>Room
+  </button>
+
+  <button id="navProfile"
+          onclick="showPage('profile')">
+    👤<br>Profile
+  </button>
+
 </nav>
+
 </div>
 
-<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <div class="modal-top"><h2 id="modalTitle">Details</h2><button class="close" onclick="closeModal()">✕</button></div>
-    <div id="modalContent"></div>
-  </div>
+
+<!-- ================= MODAL ================= -->
+
+<div id="modal"
+     class="modal"
+     onclick="if(event.target===this)closeModal()">
+
+  <div class="sheet" id="sheet"></div>
+
 </div>
-<div class="notice" id="notice"></div>
+
+<div id="toast" class="toast"></div>
+
+
+<!-- ================= FIREBASE ================= -->
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
 
 <script>
-const rooms=[
- {id:"PV100",name:"Music Zone 🎵",art:"🎤",online:77,category:"Popular"},
- {id:"PV102",name:"Friends Forever 💗",art:"💞",online:42,category:"Popular"},
- {id:"PV106",name:"Gaming Zone 🎮",art:"🎮",online:28,category:"Popular"},
- {id:"PV108",name:"Night Vibes ✨",art:"🌙",online:19,category:"New"},
- {id:"PV110",name:"Love & Chat 💕",art:"💖",online:16,category:"New"}
+
+/* =========================================================
+   PAWANVOICE FIREBASE
+========================================================= */
+
+const firebaseConfig = {
+
+  apiKey:
+  "AIzaSyDnlTdeq5GaPHrUIV6kTYnM521GtbrrE",
+
+  authDomain:
+  "pawanvoice-68c5e.firebaseapp.com",
+
+  databaseURL:
+  "https://pawanvoice-68c5e-default-rtdb.firebaseio.com",
+
+  projectId:
+  "pawanvoice-68c5e",
+
+  storageBucket:
+  "pawanvoice-68c5e.firebasestorage.app",
+
+  messagingSenderId:
+  "148446327241",
+
+  appId:
+  "1:148446327241:web:6bac9cb9ad0fb530cbb818"
+
+};
+
+
+/* =========================================================
+   DEFAULT
+========================================================= */
+
+const DEFAULT_DP =
+"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect width='100%25' height='100%25' fill='%2330303b'/%3E%3Ctext x='50%25' y='60%25' text-anchor='middle' font-size='80' fill='white'%3EP%3C/text%3E%3C/svg%3E";
+
+
+/* =========================================================
+   USER ID — FIXED
+========================================================= */
+
+const USER_ID = "100052";
+
+localStorage.setItem("pv_user_id", USER_ID);
+localStorage.setItem("pv_userId", USER_ID);
+localStorage.setItem("pawanUserId", USER_ID);
+localStorage.setItem("pawanId", USER_ID);
+
+/* =========================================================
+   DATABASE
+========================================================= */
+
+let db = null;
+
+let rooms = {};
+
+let roomTab = "popular";
+
+
+/* =========================================================
+   USER
+========================================================= */
+
+let user =
+JSON.parse(
+  localStorage.getItem("pv_user") || "null"
+) || {
+
+  name:"Guest",
+
+  gender:"Male",
+
+  dp:DEFAULT_DP,
+
+  level:1,
+
+  exp:0,
+
+  coins:0,
+
+  diamonds:0,
+
+  following:0,
+
+  followers:0,
+
+  visitors:0,
+
+  vip:1,
+
+  cpPoints:0,
+
+  friendshipPoints:0,
+
+  familyId:"",
+
+  familyName:"",
+
+  avatarFrame:"",
+
+  badge:"",
+
+  medal:"",
+
+  inviteCode:
+  "PV"+USER_ID.slice(-8)
+
+};
+
+
+/* =========================================================
+   LEVEL / VIP
+========================================================= */
+
+const BADGE_LEVELS =
+[10,20,30,40,50,60,70,80,90,100];
+
+const FRAME_LEVELS =
+[1,10,20,30,40,50,60,70,80,90,100];
+
+const VEHICLE_LEVELS =
+[2,15,25,35,45,55,65,75,85,95,105];
+
+const CUSTOM_ID_LEVELS =
+[3,6,9,12,15,19,28,37,47,57,67,77,87,97,107];
+
+const VIP_LEVELS = {
+
+  1:1,
+  5:1,
+  10:1,
+  15:1,
+  20:1,
+
+  25:2,
+  30:2,
+
+  35:3,
+  40:3,
+
+  45:4,
+  50:4,
+
+  55:5,
+  60:5,
+
+  65:6,
+  70:6,
+
+  75:7,
+  80:7,
+
+  85:8,
+  90:8,
+
+  95:9,
+
+  100:10
+
+};
+
+
+function maxVIP(level){
+
+  let v = 1;
+
+  Object.keys(VIP_LEVELS)
+  .forEach(x=>{
+
+    if(level >= Number(x)){
+      v = VIP_LEVELS[x];
+    }
+
+  });
+
+  return v;
+}
+
+
+/* =========================================================
+   7 DAY REWARD
+========================================================= */
+
+const WEEKLY_REWARDS = [
+
+  {
+    day:1,
+    icon:"🪙",
+    title:"1 Lakh Coins",
+    coins:100000
+  },
+
+  {
+    day:2,
+    icon:"🪙",
+    title:"2 Lakh Coins",
+    coins:200000
+  },
+
+  {
+    day:3,
+    icon:"🖼️",
+    title:"Frame + 3 Lakh Coins",
+    coins:300000,
+    frame:true
+  },
+
+  {
+    day:4,
+    icon:"🪙",
+    title:"4 Lakh Coins",
+    coins:400000
+  },
+
+  {
+    day:5,
+    icon:"🎁",
+    title:"Special Gift + 5 Lakh Coins",
+    coins:500000
+  },
+
+  {
+    day:6,
+    icon:"💎",
+    title:"Diamonds + 6 Lakh Coins",
+    coins:600000,
+    diamonds:1000
+  },
+
+  {
+    day:7,
+    icon:"👑",
+    title:"VIP Reward + 7 Lakh Coins",
+    coins:700000,
+    vip:true
+  }
+
 ];
 
-const gifts=[
- {name:"Rose",emoji:"🌹",cost:10,cat:"Friendship"},
- {name:"Heart",emoji:"💗",cost:50,cat:"CP"},
- {name:"Car",emoji:"🏎️",cost:100,cat:"Lucky"},
- {name:"Rocket",emoji:"🚀",cost:500,cat:"VIP"},
- {name:"Crown",emoji:"👑",cost:1000,cat:"VIP"},
- {name:"Diamond",emoji:"💎",cost:5000,cat:"Lucky"},
- {name:"Panda",emoji:"🐼",cost:200,cat:"Friendship"},
- {name:"Motorcycle",emoji:"🏍️",cost:300,cat:"Family"},
- {name:"Ferris Wheel",emoji:"🎡",cost:500,cat:"Festival"},
- {name:"Love Bear",emoji:"🧸",cost:150,cat:"CP"},
- {name:"Galaxy",emoji:"🌌",cost:2000,cat:"VIP"},
- {name:"Festival Box",emoji:"🎁",cost:800,cat:"Festival"}
+
+/* =========================================================
+   10 DAILY TASKS
+========================================================= */
+
+const DAILY_TASKS = [
+
+  {
+    id:"login",
+    title:"Daily Login",
+    icon:"📅",
+    target:1,
+    reward:10000
+  },
+
+  {
+    id:"room",
+    title:"Join Voice Room",
+    icon:"🎙️",
+    target:1,
+    reward:15000
+  },
+
+  {
+    id:"chat",
+    title:"Send Chat Message",
+    icon:"💬",
+    target:5,
+    reward:20000
+  },
+
+  {
+    id:"gift",
+    title:"Send Gift",
+    icon:"🎁",
+    target:1,
+    reward:30000
+  },
+
+  {
+    id:"follow",
+    title:"Follow User",
+    icon:"❤️",
+    target:1,
+    reward:10000
+  },
+
+  {
+    id:"visitor",
+    title:"Visit Profiles",
+    icon:"👀",
+    target:3,
+    reward:15000
+  },
+
+  {
+    id:"mic",
+    title:"Use Voice Mic",
+    icon:"🎤",
+    target:10,
+    reward:25000
+  },
+
+  {
+    id:"family",
+    title:"Family Activity",
+    icon:"👨‍👩‍👧",
+    target:1,
+    reward:30000
+  },
+
+  {
+    id:"cp",
+    title:"CP Interaction",
+    icon:"💎",
+    target:1,
+    reward:30000
+  },
+
+  {
+    id:"share",
+    title:"Share Room",
+    icon:"📤",
+    target:1,
+    reward:15000
+  }
+
 ];
 
-let coins=1000000;
-let diamonds=0;
-let currentRoom=rooms[0];
-let currentRoomTab="Popular";
-let currentGiftTab="All";
-let micOn=false;
-let noticeTimer;
 
-function showPage(id){
- document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
- const page=document.getElementById(id);
- if(page)page.classList.add("active");
- document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.page===id));
- if(id==="rooms")renderRooms();
- if(id==="gifts")renderGifts();
- if(id==="rankings")renderRanks("Daily");
- window.scrollTo(0,0);
+/* =========================================================
+   200 GIFTS
+========================================================= */
+
+const GIFTS = [];
+
+for(let i=1;i<=200;i++){
+
+  let price;
+
+  if(i<=20)
+    price=i*100;
+  else if(i<=50)
+    price=i*500;
+  else if(i<=100)
+    price=i*1000;
+  else if(i<=150)
+    price=i*5000;
+  else
+    price=i*10000;
+
+  GIFTS.push({
+
+    id:i,
+
+    name:
+    "Gift "+i,
+
+    icon:
+    i%10===0 ? "🚀" :
+    i%9===0 ? "👑" :
+    i%8===0 ? "💎" :
+    i%7===0 ? "🌹" :
+    i%6===0 ? "🎂" :
+    i%5===0 ? "🎁" :
+    "❤️",
+
+    price:price
+
+  });
+
 }
 
-function notify(message){
- const el=document.getElementById("notice");
- el.textContent=message;el.classList.add("show");
- clearTimeout(noticeTimer);
- noticeTimer=setTimeout(()=>el.classList.remove("show"),2400);
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function money(n){
+
+  return Number(n||0)
+  .toLocaleString("en-IN");
+
 }
 
-function updateCoins(){
- document.getElementById("coinHeader").textContent=coins>=1000000?(coins/1000000).toFixed(coins%1000000===0?0:1)+"M":coins.toLocaleString("en-IN");
- document.getElementById("coinBalance").textContent=coins.toLocaleString("en-IN");
- document.getElementById("profileCoins").textContent=coins.toLocaleString("en-IN");
- document.getElementById("diamondHeader").textContent=diamonds;
- document.getElementById("diamondBalance").textContent=diamonds;
+
+function esc(v){
+
+  return String(v ?? "")
+  .replace(/[&<>"']/g,m=>({
+
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+
+  }[m]));
+
 }
 
-function renderHomeRooms(){
- document.getElementById("homeRooms").innerHTML=rooms.slice(0,4).map(r=>`
- <div class="card room-card" onclick="openRoom('${r.id}')">
-   <div class="room-art">${r.art}</div>
-   <h3>${r.name}</h3>
-   <div class="online">🟢 ${r.online} Online</div>
-   <div class="muted" style="margin-top:5px">ID: ${r.id}</div>
- </div>`).join("");
+
+function toast(message){
+
+  const t =
+  document.getElementById("toast");
+
+  t.textContent = message;
+
+  t.classList.add("show");
+
+  setTimeout(
+    ()=>t.classList.remove("show"),
+    2200
+  );
+
 }
 
-function roomTab(tab,button){
- currentRoomTab=tab;
- document.querySelectorAll("#rooms .tab").forEach(t=>t.classList.remove("active"));
- button.classList.add("active");renderRooms();
+
+/* =========================================================
+   SAVE USER
+========================================================= */
+
+function saveUser(){
+
+  localStorage.setItem(
+    "pv_user",
+    JSON.stringify(user)
+  );
+
+  if(db){
+
+    db.ref(
+      "users/"+USER_ID
+    ).update({
+
+      ...user,
+
+      userId:USER_ID,
+
+      id:USER_ID,
+
+      updatedAt:Date.now()
+
+    });
+
+  }
+
 }
+
+
+/* =========================================================
+   RENDER USER
+========================================================= */
+
+function renderUser(){
+
+  const dp =
+  user.dp || DEFAULT_DP;
+
+  homeDP.src = dp;
+
+  myDP.src = dp;
+
+  homeName.textContent =
+  user.name || "Guest";
+
+  myName.textContent =
+  user.name || "Guest";
+
+  homeID.textContent =
+  USER_ID;
+
+  myID.textContent =
+  USER_ID;
+
+  homeLevel.textContent =
+  user.level || 1;
+
+  myLevel.textContent =
+  user.level || 1;
+
+  homeVIP.textContent =
+  maxVIP(user.level || 1);
+
+  myVIP.textContent =
+  maxVIP(user.level || 1);
+
+  following.textContent =
+  user.following || 0;
+
+  followers.textContent =
+  user.followers || 0;
+
+  visitors.textContent =
+  user.visitors || 0;
+
+  coins.textContent =
+  money(user.coins)+" Coins";
+
+  diamonds.textContent =
+  money(user.diamonds)+" Diamond";
+
+  levelBig.textContent =
+  user.level || 1;
+
+  expBig.textContent =
+  money(user.exp || 0);
+
+  inviteCode.value =
+  user.inviteCode ||
+  "PV"+USER_ID.slice(-8);
+
+  renderLevelRewards();
+
+  renderVIP();
+
+}
+
+
+/* =========================================================
+   FIREBASE START
+========================================================= */
+
+function startFirebase(){
+
+  try{
+
+    if(!firebase.apps.length){
+
+      firebase.initializeApp(
+        firebaseConfig
+      );
+
+    }
+
+    db =
+    firebase.database();
+
+
+    /* USER LISTENER */
+
+    db.ref(
+      "users/"+USER_ID
+    ).on(
+      "value",
+      snap=>{
+
+        if(snap.exists()){
+
+          user = {
+
+            ...user,
+
+            ...snap.val()
+
+          };
+
+          localStorage.setItem(
+            "pv_user",
+            JSON.stringify(user)
+          );
+
+        }
+        else{
+
+          saveUser();
+
+        }
+
+        renderUser();
+
+      }
+    );
+
+
+    rooms = JSON.parse(localStorage.getItem("pv_rooms") || "{}");
+    renderRooms();
+
+    /* ROOMS LISTENER — live Firebase rooms + local cache */
+    db.ref("rooms").on(
+      "value",
+      snap=>{
+        const remoteRooms = snap.val() || {};
+        const cachedRooms = JSON.parse(localStorage.getItem("pv_rooms") || "{}");
+        // Firebase is the shared source; cached rooms fill gaps if a write was made offline.
+        rooms = { ...cachedRooms, ...remoteRooms };
+        localStorage.setItem("pv_rooms", JSON.stringify(rooms));
+        renderRooms();
+      },
+      error=>{
+        console.error("Firebase rooms read failed:", error);
+        rooms = JSON.parse(localStorage.getItem("pv_rooms") || "{}");
+        renderRooms();
+        toast("Rooms Firebase se load nahi hue: " + (error && error.code ? error.code : "permission/network error"));
+      }
+    );
+
+
+    /* EVENTS */
+
+    db.ref("events").on(
+      "value",
+      snap=>{
+
+        if(
+          snap.exists()
+        ){
+
+          renderFirebaseEvents(
+            snap.val()
+          );
+
+        }
+
+      }
+    );
+
+
+    /* INBOX */
+
+    db.ref(
+      "users/"+USER_ID+"/inbox"
+    ).on(
+      "value",
+      snap=>{
+
+        let list=[];
+
+        snap.forEach(
+          x=>list.unshift(
+            x.val()
+          )
+        );
+
+        renderInbox(list);
+
+      }
+    );
+
+
+    console.log(
+      "PawanVoice Firebase Connected"
+    );
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    toast(
+      "Firebase connection error"
+    );
+
+    rooms =
+    JSON.parse(
+      localStorage.getItem(
+        "pv_rooms"
+      ) || "{}"
+    );
+
+    renderRooms();
+
+  }
+
+}
+
+
+/* =========================================================
+   EVENTS FROM FIREBASE
+========================================================= */
+
+function renderFirebaseEvents(data){
+
+  const list =
+  Object.values(data || {});
+
+  if(!list.length)
+    return;
+
+  eventList.innerHTML =
+  list.slice(0,8)
+  .map(e=>`
+
+    <div class="event"
+         onclick="openEvent('${esc(e.title||"Event")}')">
+
+      <div class="big">
+        ${esc(e.icon||"🎉")}
+      </div>
+
+      <b>${esc(e.title||"Event")}</b>
+
+      <small>
+        ${esc(e.description||"Join now")}
+      </small>
+
+    </div>
+
+  `).join("");
+
+}
+
+
+/* =========================================================
+   ROOMS
+========================================================= */
+
+function normalizeRoom(id,r){
+
+  r = r || {};
+
+  let count =
+  Number(
+    r.usersCount ||
+    r.onlineCount ||
+    0
+  );
+
+  if(r.users){
+
+    count =
+    Object.keys(
+      r.users
+    ).length;
+
+  }
+
+  if(r.members){
+
+    count =
+    Math.max(
+      count,
+      Object.keys(
+        r.members
+      ).length
+    );
+
+  }
+
+  return {
+
+    id:id,
+
+    name:
+    r.name ||
+    r.roomName ||
+    "Voice Room",
+
+    dp:
+    r.dp ||
+    r.roomDp ||
+    r.roomDP ||
+    DEFAULT_DP,
+
+    category:
+    r.category ||
+    "General",
+
+    hostId:
+    r.hostId ||
+    r.ownerId ||
+    r.owner ||
+    "",
+
+    hostName:
+    r.hostName ||
+    r.ownerName ||
+    "Guest",
+
+    usersCount:
+    Math.min(
+      9,
+      count
+    ),
+
+    createdAt:
+    r.createdAt ||
+    0,
+
+    users:
+    r.users ||
+    r.members ||
+    {}
+
+  };
+
+}
+
 
 function renderRooms(){
- const query=(document.getElementById("roomSearch")?.value||"").toLowerCase();
- let list=rooms.filter(r=>r.name.toLowerCase().includes(query)||r.id.toLowerCase().includes(query));
- if(currentRoomTab==="New")list=list.filter(r=>r.category==="New");
- if(currentRoomTab==="My Room")list=list.filter(r=>r.id==="PV100");
- document.getElementById("roomList").innerHTML=list.length?list.map(r=>`
- <div class="card room-line">
-   <div class="room-art">${r.art}</div>
-   <div class="room-info"><h3>${r.name}</h3><p>🎵 Chat • Music • Friends</p>
-   <div class="online">🟢 ${r.online} Online</div><div class="muted">ID: ${r.id}</div></div>
-   <button class="btn" onclick="openRoom('${r.id}')">Join</button>
- </div>`).join(""):'<div class="empty">No rooms found.</div>';
+  const listEl = document.getElementById("roomList");
+  if(!listEl) return;
+
+  // Combine live Firebase data with this device's cache so rooms remain visible during a brief outage.
+  const cachedRooms = JSON.parse(localStorage.getItem("pv_rooms") || "{}");
+  const allRooms = { ...cachedRooms, ...(rooms || {}) };
+  rooms = allRooms;
+
+  let arr = Object.entries(allRooms).map(([id,r]) => normalizeRoom(id,r));
+  const searchEl = document.getElementById("roomSearch");
+  const q = (searchEl ? searchEl.value : "").trim().toLowerCase();
+
+  arr = arr.filter(r => !q || String(r.name).toLowerCase().includes(q) || String(r.id).toLowerCase().includes(q));
+
+  if(roomTab === "my") arr = arr.filter(r => String(r.hostId) === String(USER_ID));
+
+  if(roomTab === "popular") arr.sort((a,b) => b.usersCount-a.usersCount);
+  else arr.sort((a,b) => b.createdAt-a.createdAt);
+
+  if(!arr.length){
+    listEl.innerHTML = `<div class="empty">🎙️ अभी कोई live room नहीं है। नीचे से <b>Create Voice Room</b> बनाइए।</div>`;
+    return;
+  }
+
+  listEl.innerHTML = arr.map(r => `
+    <div class="room">
+      <img src="${esc(r.dp)}" onerror="this.onerror=null;this.src='${DEFAULT_DP}'" alt="Room DP">
+      <div class="roomInfo">
+        <strong>${esc(r.name)}</strong>
+        <span class="muted">👤 ${r.usersCount}/9 • ${esc(r.category)}<br>ID: ${esc(r.id)}<br>Host: ${esc(r.hostName)}</span>
+      </div>
+      <button class="join" onclick="joinRoom('${esc(r.id)}')">Join</button>
+    </div>
+  `).join("");
 }
 
-function openRoom(id){
- currentRoom=rooms.find(r=>r.id===id)||rooms[0];
- document.getElementById("currentRoomId").textContent=currentRoom.id;
- document.getElementById("currentRoomName").textContent=currentRoom.name;
- document.getElementById("roomOnline").textContent=currentRoom.online;
- const seats=document.getElementById("seats");
- seats.innerHTML="";
- for(let i=0;i<9;i++){
-   const host=i===0;
-   seats.innerHTML+=`<div class="seat ${host?'host':''}" onclick="seatAction(${i})">
-    <div class="seat-circle">${host?'🧑🏻':'＋'}${host?'<span class="seat-badge">Host</span>':''}</div>
-    <div class="seat-name">${host?'Pawan':'Seat '+(i+1)}</div>
-    <div class="seat-id">${host?'ID: 100052':'Empty'}</div>
-   </div>`;
- }
- showPage("voice");
+function setTab(tab){
+
+  roomTab=tab;
+
+  document
+  .querySelectorAll(".tab")
+  .forEach(
+    x=>
+    x.classList.toggle(
+      "active",
+      x.dataset.tab===tab
+    )
+  );
+
+  renderRooms();
+
 }
 
-function seatAction(index){
- if(index===0){notify("You are viewing the demo host seat.");return}
- openModal("Seat "+(index+1),`
- <p class="muted">This seat is empty in the demo.</p>
- <button class="btn" onclick="closeModal();notify('Real seat joining needs a connected server.')">Join Seat</button>`);
-}
 
-function toggleMic(){
- micOn=!micOn;
- document.getElementById("micIcon").textContent=micOn?"🎙️":"🔇";
- document.getElementById("micLabel").textContent=micOn?"Mic On (Demo)":"Mic Off";
- notify(micOn?"Demo mic button enabled. Real audio is not connected.":"Mic turned off.");
-}
-
-function sendChat(){
- const input=document.getElementById("chatInput");
- const value=input.value.trim();if(!value)return;
- const line=document.createElement("div");line.className="chat-line";
- const b=document.createElement("b");b.textContent="Pawan: ";
- line.appendChild(b);line.appendChild(document.createTextNode(value));
- document.getElementById("chatMessages").appendChild(line);
- input.value="";
-}
-
-function giftTab(tab,button){
- currentGiftTab=tab;
- document.querySelectorAll("#gifts .tab").forEach(t=>t.classList.remove("active"));
- button.classList.add("active");renderGifts();
-}
-
-function renderGifts(){
- const list=gifts.filter(g=>currentGiftTab==="All"||g.cat===currentGiftTab);
- document.getElementById("giftGrid").innerHTML=list.map(g=>`
- <div class="gift" onclick="sendGift('${g.name}',${g.cost},'${g.emoji}')">
- <span class="emoji">${g.emoji}</span><b>${g.name}</b><small>🪙 ${g.cost.toLocaleString("en-IN")}</small>
- </div>`).join("");
-}
-
-function sendGift(name,cost,emoji){
- openModal("Send "+name,`
- <div style="text-align:center;padding:10px">
- <div style="font-size:65px">${emoji}</div><h2>${name}</h2>
- <p>Cost: 🪙 ${cost.toLocaleString("en-IN")}</p>
- <p class="muted">This is a local UI demo. It does not send a real gift to another user.</p>
- <button class="btn" onclick="confirmGift('${name}',${cost},'${emoji}')">Send Demo Gift</button>
- </div>`);
-}
-
-function confirmGift(name,cost,emoji){
- if(coins<cost){closeModal();notify("Not enough demo coins.");return}
- coins-=cost;updateCoins();closeModal();
- openModal("🎉 Gift Preview",`
- <div style="text-align:center;padding:20px 0">
- <div style="font-size:90px;animation:pop .6s ease">${emoji}</div>
- <h2>${name} sent!</h2><p class="muted">Demo animation only — no online user received a gift.</p>
- </div>`);
-}
+/* =========================================================
+   CREATE ROOM
+========================================================= */
 
 function createRoom(){
- openModal("Create Room",`
- <p class="muted">Create a temporary room preview.</p>
- <input class="search" id="newRoomName" placeholder="Enter room name">
- <br><br><button class="btn" onclick="saveRoom()">Create Demo Room</button>`);
+  const nameEl = document.getElementById("newRoomName");
+  const dpEl = document.getElementById("newRoomDP");
+  const categoryEl = document.getElementById("newRoomCategory");
+  const name = nameEl ? nameEl.value.trim() : "";
+
+  if(!name){ toast("Room Name डालें"); if(nameEl) nameEl.focus(); return; }
+
+  // Generate an ID that does not collide with a currently cached room.
+  let roomId;
+  do { roomId = "PV" + Math.floor(100000 + Math.random()*900000); }
+  while((rooms && rooms[roomId]) || JSON.parse(localStorage.getItem("pv_rooms") || "{}")[roomId]);
+
+  const roomDP = (dpEl ? dpEl.value.trim() : "") || user.dp || DEFAULT_DP;
+  const roomData = {
+    id: roomId,
+    name,
+    roomName: name,
+    dp: roomDP,
+    roomDp: roomDP,
+    category: categoryEl ? categoryEl.value : "General",
+    hostId: USER_ID,
+    ownerId: USER_ID,
+    hostName: user.name || "Guest",
+    ownerName: user.name || "Guest",
+    createdAt: Date.now(),
+    usersCount: 1,
+    maxSeats: 9,
+    roomExp: 0,
+    users: {
+      [USER_ID]: {
+        id: USER_ID, userId: USER_ID, name: user.name || "Guest",
+        dp: user.dp || DEFAULT_DP, level: user.level || 1,
+        vip: maxVIP(user.level || 1), seat: 1,
+        isHost: true, isAdmin: true, micOn: true
+      }
+    },
+    seats: {
+      1: { userId: USER_ID, name: user.name || "Guest", dp: user.dp || DEFAULT_DP, isHost: true }
+    }
+  };
+
+  // Save locally first so the room is not lost if Firebase rejects a write or the network drops.
+  const cached = JSON.parse(localStorage.getItem("pv_rooms") || "{}");
+  cached[roomId] = roomData;
+  localStorage.setItem("pv_rooms", JSON.stringify(cached));
+  rooms = { ...(rooms || {}), [roomId]: roomData };
+  renderRooms();
+
+  const openRoom = (localOnly) => {
+    if(localOnly) toast("Room is device par save hua. Firebase rules/network theek karne par doosre phones par bhi dikhega.");
+    else toast("Room created!");
+    setTimeout(() => {
+      // Never put a base64/gallery image into the URL: it can trigger HTTP 414.
+      const roomUrl = new URL("room.html", location.href);
+      roomUrl.searchParams.set("room", roomId);
+      roomUrl.searchParams.set("userid", USER_ID);
+      roomUrl.searchParams.set("name", user.name || "Guest");
+      const safeDp = user.dp || DEFAULT_DP;
+      if (safeDp && !String(safeDp).startsWith("data:")) {
+        roomUrl.searchParams.set("dp", safeDp);
+      }
+      location.href = roomUrl.toString();
+    }, 650);
+  };
+
+  if(!db){ openRoom(true); return; }
+
+  db.ref("rooms/" + roomId).set(roomData)
+    .then(() => {
+      // Refresh cache after a confirmed shared write.
+      const latest = JSON.parse(localStorage.getItem("pv_rooms") || "{}");
+      latest[roomId] = roomData;
+      localStorage.setItem("pv_rooms", JSON.stringify(latest));
+      openRoom(false);
+    })
+    .catch(error => {
+      console.error("Room creation failed:", error);
+      // Keep the room usable on this device, but explain why it may not appear on other devices.
+      openRoom(true);
+    });
 }
 
-function saveRoom(){
- const name=document.getElementById("newRoomName").value.trim();
- if(!name){notify("Please enter a room name.");return}
- const id="PV"+Math.floor(100000+Math.random()*899999);
- const r={id,name,art:"🎙️",online:1,category:"New"};
- rooms.unshift(r);closeModal();renderRooms();renderHomeRooms();
- notify("Demo room created: "+id);
+function createRoomPrompt(){
+
+  showPage("home");
+
+  setTimeout(()=>{
+
+    newRoomName.focus();
+
+    window.scrollTo({
+      top:
+      document.body.scrollHeight,
+      behavior:"smooth"
+    });
+
+  },100);
+
 }
 
-function editName(){
- openModal("Edit Profile",`
- <p class="muted">Change the name shown on this device.</p>
- <input class="search" id="newProfileName" maxlength="24" value="${document.getElementById("profileName").textContent}">
- <br><br><button class="btn" onclick="saveName()">Save Name</button>`);
+
+/* =========================================================
+   JOIN ROOM
+========================================================= */
+
+function joinRoom(id){
+  // Use URLSearchParams and omit data-URL photos to prevent HTTP 414.
+  const roomUrl = new URL("room.html", location.href);
+  roomUrl.searchParams.set("room", id);
+  roomUrl.searchParams.set("userid", USER_ID);
+  roomUrl.searchParams.set("name", user.name || "Guest");
+  const safeDp = user.dp || DEFAULT_DP;
+  if (safeDp && !String(safeDp).startsWith("data:")) {
+    roomUrl.searchParams.set("dp", safeDp);
+  }
+  location.href = roomUrl.toString();
 }
 
-function saveName(){
- const name=document.getElementById("newProfileName").value.trim();
- if(!name){notify("Name cannot be empty.");return}
- document.getElementById("profileName").textContent=name;
- closeModal();notify("Profile name updated on this device.");
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+function showPage(page){
+
+  document
+  .querySelectorAll(".page")
+  .forEach(
+    x=>x.classList.remove(
+      "active"
+    )
+  );
+
+
+  document
+  .getElementById(page)
+  .classList.add("active");
+
+
+  navHome.classList.toggle(
+    "active",
+    page==="home"
+  );
+
+  navInbox.classList.toggle(
+    "active",
+    page==="inbox"
+  );
+
+  navProfile.classList.toggle(
+    "active",
+    page==="profile"
+  );
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
 }
 
-function playGame(name){
- openModal(name,`
- <div style="text-align:center;padding:15px 0">
- <div style="font-size:65px">${name==="Greedy Baby"?"🐼":name==="Animal Party"?"🎡":"🎯"}</div>
- <h3>${name}</h3><p class="muted">Game preview only. No betting, coins or shared game rounds are active.</p>
- <button class="btn" onclick="closeModal();notify('${name} preview opened!')">Open Preview</button>
- </div>`);
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+function openModal(title,body){
+
+  sheet.innerHTML = `
+
+    <button
+      class="close"
+      onclick="closeModal()">
+      ✕
+    </button>
+
+    <h2>${title}</h2>
+
+    ${body}
+
+  `;
+
+  modal.classList.add("show");
+
 }
 
-function rankTab(tab,button){
- document.querySelectorAll("#rankings .tab").forEach(t=>t.classList.remove("active"));
- button.classList.add("active");renderRanks(tab);
+
+function closeModal(){
+
+  modal.classList.remove(
+    "show"
+  );
+
 }
 
-function renderRanks(period){
- const people=[
-  ["🧑🏻","Pawan","12.5M"],["👩🏻","Riya","10.8M"],["🧑🏽","Rocky","8.6M"],
-  ["👼","Angel","6.2M"],["👑","King","5.4M"]
- ];
- document.getElementById("rankList").innerHTML=
- `<div class="muted" style="padding-bottom:8px">${period} Rich Ranking • Demo Data</div>`+
- people.map((p,i)=>`<div class="rank-line"><b style="width:20px">${i+1}</b>
- <div class="avatar">${p[0]}</div><div class="grow">${p[1]}</div><b>🪙 ${p[2]}</b></div>`).join("");
+
+/* =========================================================
+   EDIT PROFILE — GALLERY DP
+========================================================= */
+
+let selectedGalleryDP = "";
+
+function editProfile(){
+  selectedGalleryDP = "";
+
+  openModal("👤 Edit Profile", `
+    <div class="notice">
+      Gallery से फोटो चुनें या DP का URL डालें।
+    </div>
+
+    <div style="text-align:center;margin-bottom:12px">
+      <img id="editDPPreview"
+        src="${esc(user.dp || DEFAULT_DP)}"
+        style="width:100px;height:100px;border-radius:22px;object-fit:cover;border:2px solid #7c3aed">
+    </div>
+
+    <label for="editDPFile"
+      class="btn full"
+      style="display:block;text-align:center;margin-bottom:10px">
+      🖼️ Gallery से फोटो चुनें
+    </label>
+
+    <input
+      id="editDPFile"
+      type="file"
+      accept="image/*"
+      style="display:block;width:100%;margin-bottom:12px;color:white"
+      onchange="previewGalleryDP(event)">
+
+    <input
+      id="editName"
+      class="input"
+      value="${esc(user.name || "Guest")}"
+      placeholder="Your Name"
+      maxlength="40">
+
+    <select id="editGender" class="input">
+      <option value="Male" ${user.gender==="Male"?"selected":""}>Male</option>
+      <option value="Female" ${user.gender==="Female"?"selected":""}>Female</option>
+      <option value="Other" ${user.gender==="Other"?"selected":""}>Other</option>
+    </select>
+
+    <input
+      id="editDP"
+      class="input"
+      placeholder="या DP image URL डालें">
+
+    <button
+      id="saveProfileButton"
+      class="btn green full"
+      onclick="saveProfile()">
+      💾 Save Profile
+    </button>
+  `);
 }
 
-function openModal(title,content){
- document.getElementById("modalTitle").textContent=title;
- document.getElementById("modalContent").innerHTML=content;
- document.getElementById("modalBg").classList.add("show");
-}
-function closeModal(){document.getElementById("modalBg").classList.remove("show")}
+function previewGalleryDP(event){
+  const file = event.target.files && event.target.files[0];
+  if(!file) return;
 
-renderHomeRooms();
-renderRooms();
-renderGifts();
-renderRanks("Daily");
-updateCoins();
+  if(!file.type.startsWith("image/")){
+    toast("कृपया image चुनें");
+    return;
+  }
+
+  if(file.size > 15 * 1024 * 1024){
+    toast("15 MB से छोटी फोटो चुनें");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(e){
+    const img = new Image();
+
+    img.onload = function(){
+      const maxSize = 500;
+      let width = img.width;
+      let height = img.height;
+
+      if(width > height && width > maxSize){
+        height = Math.round(height * maxSize / width);
+        width = maxSize;
+      } else if(height > maxSize){
+        width = Math.round(width * maxSize / height);
+        height = maxSize;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+
+      selectedGalleryDP = canvas.toDataURL("image/jpeg", 0.8);
+
+      const preview = document.getElementById("editDPPreview");
+      if(preview) preview.src = selectedGalleryDP;
+
+      toast("फोटो चुन ली गई है");
+    };
+
+    img.onerror = function(){
+      toast("फोटो खुल नहीं सकी");
+    };
+
+    img.src = e.target.result;
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function saveProfile(){
+  const nameInput = document.getElementById("editName");
+  const genderInput = document.getElementById("editGender");
+  const dpInput = document.getElementById("editDP");
+  const saveButton = document.getElementById("saveProfileButton");
+
+  if(!nameInput || !genderInput || !dpInput){
+    toast("Profile form नहीं मिला");
+    return;
+  }
+
+  user.name = nameInput.value.trim() || "Guest";
+  user.gender = genderInput.value || "Male";
+
+  const dpURL = dpInput.value.trim();
+
+  if(selectedGalleryDP){
+    user.dp = selectedGalleryDP;
+  } else if(dpURL){
+    user.dp = dpURL;
+  }
+
+  user.userId = USER_ID;
+  user.id = USER_ID;
+
+  if(saveButton){
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+  }
+
+  localStorage.setItem("pv_user", JSON.stringify(user));
+  renderUser();
+
+  if(db){
+    db.ref("users/" + USER_ID)
+      .update({
+        ...user,
+        userId: USER_ID,
+        id: USER_ID,
+        updatedAt: Date.now()
+      })
+      .then(function(){
+        selectedGalleryDP = "";
+        closeModal();
+        renderUser();
+        toast("Profile Firebase में सेव हो गई");
+      })
+      .catch(function(error){
+        console.error(error);
+
+        if(saveButton){
+          saveButton.disabled = false;
+          saveButton.textContent = "💾 Save Profile";
+        }
+
+        toast("Firebase में सेव नहीं हुई");
+      });
+  } else {
+    selectedGalleryDP = "";
+    closeModal();
+    renderUser();
+    toast("Profile फोन में सेव हो गई");
+  }
+}
+
+/* =========================================================
+   LEVEL
+========================================================= */
+
+function renderLevelRewards(){
+
+  let html="";
+
+  for(
+    let level=1;
+    level<=109;
+    level++
+  ){
+
+    let rewards=[];
+
+    if(
+      level%10===0
+    ){
+
+      rewards.push(
+        "🎖️ Level Medal"
+      );
+
+    }
+
+    if(
+      FRAME_LEVELS.includes(level)
+    ){
+
+      rewards.push(
+        "🖼️ Avatar Frame"
+      );
+
+    }
+
+    if(
+      BADGE_LEVELS.includes(level)
+    ){
+
+      rewards.push(
+        "🎖️ Personal Badge"
+      );
+
+    }
+
+    if(
+      VEHICLE_LEVELS.includes(level)
+    ){
+
+      rewards.push(
+        "🚗 Vehicle"
+      );
+
+    }
+
+    if(
+      CUSTOM_ID_LEVELS.includes(level)
+    ){
+
+      rewards.push(
+        "🆔 Custom ID"
+      );
+
+    }
+
+    if(level===50){
+
+      rewards.push(
+        "🏠 Room Theme"
+      );
+
+    }
+
+    if(level===55){
+
+      rewards.push(
+        "🎨 Profile Background"
+      );
+
+    }
+
+    if(!rewards.length)
+      continue;
+
+
+    html += `
+
+      <div class="reward
+        ${level>(user.level||1)?"lock":""}">
+
+        <span>
+          Level ${level}
+        </span>
+
+        <small>
+          ${rewards.join(" • ")}
+        </small>
+
+      </div>
+
+    `;
+
+  }
+
+  levelRewards.innerHTML =
+  html;
+
+}
+
+
+function openLevel(){
+
+  openModal(
+    "🆙 Level & EXP",
+    `
+
+      <div class="reward">
+
+        <span>
+          Current Level
+        </span>
+
+        <b>
+          ${user.level||1}
+        </b>
+
+      </div>
+
+      <div class="reward">
+
+        <span>
+          Current EXP
+        </span>
+
+        <b>
+          ${money(user.exp||0)}
+        </b>
+
+      </div>
+
+      <p class="muted">
+        Level rewards में
+        Frame, Medal, Badge,
+        Vehicle और Custom ID
+        unlock होंगे।
+      </p>
+
+      ${levelRewards.innerHTML}
+
+    `
+  );
+
+}
+
+
+/* =========================================================
+   VIP
+========================================================= */
+
+function renderVIP(){
+
+  let html="";
+
+  Object.keys(VIP_LEVELS)
+  .forEach(level=>{
+
+    html += `
+
+      <div class="reward
+      ${Number(level)>(user.level||1)?"lock":""}">
+
+        <span>
+          Level ${level}
+        </span>
+
+        <b>
+          VIP ${VIP_LEVELS[level]}
+        </b>
+
+      </div>
+
+    `;
+
+  });
+
+  vipRewards.innerHTML =
+  html;
+
+}
+
+
+function openVIP(){
+
+  openModal(
+    "👑 VIP",
+    `
+
+      <div class="notice">
+        Level के साथ VIP progression
+        unlock होगा।
+      </div>
+
+      ${vipRewards.innerHTML}
+
+      <button
+        class="btn full"
+        onclick="buyNextVip()">
+
+        Buy Next VIP
+
+      </button>
+
+    `
+  );
+
+}
+
+
+function buyNextVip(){
+
+  const current =
+  maxVIP(
+    user.level || 1
+  );
+
+  const next =
+  Math.min(
+    10,
+    current+1
+  );
+
+
+  if(current>=10){
+
+    toast(
+      "VIP 10 already reached"
+    );
+
+    return;
+
+  }
+
+
+  const cost =
+  next*100000;
+
+
+  if(
+    Number(user.coins||0)
+    < cost
+  ){
+
+    toast(
+      "Coins कम हैं. Required: "+
+      money(cost)
+    );
+
+    return;
+
+  }
+
+
+  user.coins -= cost;
+
+  user.vip = next;
+
+  saveUser();
+
+  renderUser();
+
+  closeModal();
+
+  toast(
+    "VIP "+next+" purchased"
+  );
+
+}
+
+
+/* =========================================================
+   RANKING
+========================================================= */
+
+function openRanking(type){
+
+  if(!db){
+
+    showRankingLocal(type);
+
+    return;
+
+  }
+
+
+  db.ref("users")
+  .once("value")
+  .then(snapshot=>{
+
+    let list=[];
+
+    snapshot.forEach(child=>{
+
+      const u =
+      child.val() || {};
+
+      let value=0;
+
+
+      if(type==="CP"){
+
+        value =
+        Number(
+          u.cpPoints ||
+          u.cp ||
+          0
+        );
+
+      }
+      else if(
+        type==="Rich King" ||
+        type==="Wealth"
+      ){
+
+        value =
+        Number(
+          u.coins ||
+          0
+        )+
+        Number(
+          u.diamonds ||
+          0
+        )*100;
+
+      }
+      else{
+
+        value =
+        Number(
+          u.level ||
+          1
+        )+
+        Number(
+          u.exp ||
+          0
+        )/10000;
+
+      }
+
+
+      list.push({
+
+        id:
+        child.key,
+
+        name:
+        u.name || "Guest",
+
+        dp:
+        u.dp || DEFAULT_DP,
+
+        value:value
+
+      });
+
+    });
+
+
+    list.sort(
+      (a,b)=>
+      b.value-a.value
+    );
+
+
+    if(type==="Family"){
+
+      showFamilyRanking();
+
+      return;
+
+    }
+
+
+    openModal(
+      "🏆 "+type+" Ranking",
+
+      list.slice(0,20)
+      .map((x,i)=>`
+
+        <div class="rankRow">
+
+          <div class="rankNo">
+            ${i+1}
+          </div>
+
+          <img
+            src="${esc(x.dp)}"
+            onerror="this.src='${DEFAULT_DP}'">
+
+          <div class="rankInfo">
+
+            <b>
+              ${esc(x.name)}
+            </b>
+
+            <div class="muted">
+              ID: ${esc(x.id)}
+            </div>
+
+          </div>
+
+          <div class="rankValue">
+            ${money(
+              Math.floor(x.value)
+            )}
+          </div>
+
+        </div>
+
+      `).join("") ||
+
+      "<div class='empty'>No ranking data</div>"
+
+    );
+
+  });
+
+}
+
+
+function showRankingLocal(type){
+
+  openModal(
+    "🏆 "+type,
+    `
+
+      <div class="empty">
+        Ranking data Firebase में
+        आने के बाद यहाँ realtime
+        ranking दिखेगी।
+      </div>
+
+    `
+  );
+
+}
+
+
+/* =========================================================
+   FAMILY
+========================================================= */
+
+function openFamily(){
+
+  showFamilyRanking();
+
+}
+
+
+function showFamilyRanking(){
+
+  const familyName =
+  user.familyName ||
+  "No Family";
+
+  openModal(
+    "👨‍👩‍👧 Family Ranking",
+    `
+
+      <div class="reward">
+
+        <span>
+          Family
+        </span>
+
+        <b>
+          ${esc(familyName)}
+        </b>
+
+      </div>
+
+      <div class="reward">
+
+        <span>
+          Family ID
+        </span>
+
+        <b>
+          ${esc(user.familyId||"-")}
+        </b>
+
+      </div>
+
+      <div class="reward">
+
+        <span>
+          Family EXP
+        </span>
+
+        <b>
+          ${money(
+            user.familyExp || 0
+          )}
+        </b>
+
+      </div>
+
+      <p class="muted">
+        Family members और Family
+        ranking Firebase data के
+        साथ यहाँ sync होंगे।
+      </p>
+
+    `
+  );
+
+}
+
+
+function showFamilyProfile(){
+
+  openFamily();
+
+}
+
+
+/* =========================================================
+   CP
+========================================================= */
+
+function openCP(){
+
+  showCP();
+
+}
+
+
+function showCP(){
+
+  openModal(
+    "💎 CP Space",
+    `
+
+      <div class="reward">
+
+        <span>
+          CP Points
+        </span>
+
+        <b>
+          ${money(
+            user.cpPoints || 0
+          )}
+        </b>
+
+      </div>
+
+      <div class="reward">
+
+        <span>
+          Friendship Points
+        </span>
+
+        <b>
+          ${money(
+            user.friendshipPoints || 0
+          )}
+        </b>
+
+      </div>
+
+      <div class="reward">
+
+        <span>
+          CP Level
+        </span>
+
+        <b>
+          ${Math.max(
+            1,
+            Math.floor(
+              Number(
+                user.cpPoints||0
+              )/100
+            )+1
+          )}
+        </b>
+
+      </div>
+
+      <p class="muted">
+        CP data Firebase में save
+        होने पर ranking और CP
+        progress यहाँ दिखाई देगा।
+      </p>
+
+    `
+  );
+
+}
+
+
+/* =========================================================
+   REWARDS
+========================================================= */
+
+function openRewards(){
+
+  let claimed =
+  JSON.parse(
+    localStorage.getItem(
+      "pv_weekly_rewards"
+    ) || "{}"
+  );
+
+
+  openModal(
+    "🎁 7 Day Rewards",
+
+    WEEKLY_REWARDS
+    .map(r=>`
+
+      <div class="reward">
+
+        <span>
+
+          ${r.icon}
+          Day ${r.day}
+
+          <br>
+
+          <small>
+            ${r.title}
+          </small>
+
+        </span>
+
+        <button
+          class="btn
+          ${claimed[r.day]?"dark":"green"}"
+          onclick="claimWeekly(${r.day})">
+
+          ${claimed[r.day]?
+            "Claimed":
+            "Claim"}
+
+        </button>
+
+      </div>
+
+    `).join("")
+
+  );
+
+}
+
+
+function claimWeekly(day){
+
+  let claimed =
+  JSON.parse(
+    localStorage.getItem(
+      "pv_weekly_rewards"
+    ) || "{}"
+  );
+
+
+  if(claimed[day]){
+
+    toast(
+      "Already claimed"
+    );
+
+    return;
+
+  }
+
+
+  const reward =
+  WEEKLY_REWARDS
+  .find(x=>x.day===day);
+
+
+  if(!reward)
+    return;
+
+
+  user.coins =
+  Number(user.coins||0)
+  +
+  Number(reward.coins||0);
+
+
+  if(reward.diamonds){
+
+    user.diamonds =
+    Number(user.diamonds||0)
+    +
+    reward.diamonds;
+
+  }
+
+
+  if(reward.frame){
+
+    user.avatarFrame =
+    "Weekly Reward Frame";
+
+  }
+
+
+  if(reward.vip){
+
+    user.vip =
+    Math.max(
+      Number(user.vip||1),
+      2
+    );
+
+  }
+
+
+  claimed[day]=true;
+
+  localStorage.setItem(
+    "pv_weekly_rewards",
+    JSON.stringify(claimed)
+  );
+
+
+  saveUser();
+
+  renderUser();
+
+  openRewards();
+
+  toast(
+    "Day "+day+" reward claimed"
+  );
+
+}
+
+
+/* =========================================================
+   DAILY TASKS
+========================================================= */
+
+function openTasks(){
+
+  const today =
+  new Date()
+  .toISOString()
+  .slice(0,10);
+
+
+  let data =
+  JSON.parse(
+    localStorage.getItem(
+      "pv_daily_tasks_"+today
+    ) || "{}"
+  );
+
+
+  openModal(
+    "📋 Daily Tasks",
+
+    DAILY_TASKS
+    .map(t=>{
+
+      const progress =
+      Math.min(
+        t.target,
+        Number(
+          data[t.id] || 0
+        )
+      );
+
+      const done =
+      progress>=t.target;
+
+
+      return `
+
+        <div class="task">
+
+          <div class="taskTop">
+
+            <span>
+              ${t.icon}
+              ${t.title}
+            </span>
+
+            <b>
+              ${progress}/${t.target}
+            </b>
+
+          </div>
+
+          <div class="progress">
+
+            <i style="
+              width:${(
+                progress/t.target
+              )*100}%;
+            "></i>
+
+          </div>
+
+          <div class="muted"
+               style="margin-top:7px">
+
+            Reward:
+            🪙 ${money(t.reward)}
+
+            ${done?
+              " • ✅ Completed":
+              ""}
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("")
+
+  );
+
+}
+
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+function openEvent(name){
+
+  openModal(
+    "🎉 "+name,
+
+    `
+
+      <div class="notice">
+        PawanVoice Event
+      </div>
+
+      <div class="reward">
+        <span>Event Status</span>
+        <b>Active</b>
+      </div>
+
+      <p>
+        इस event में participate
+        करके Coins, Diamonds,
+        Frames और दूसरे rewards
+        मिल सकते हैं।
+      </p>
+
+      <button
+        class="btn green full"
+        onclick="toast('Event joined');closeModal()">
+
+        Join Event
+
+      </button>
+
+    `
+  );
+
+}
+
+
+/* =========================================================
+   STORE
+========================================================= */
+
+function openStore(){
+
+  openModal(
+    "🛍️ PawanVoice Store",
+
+    `
+
+      <div class="notice">
+        Coins से Gifts और
+        profile items खरीदें।
+      </div>
+
+      <div class="grid3">
+
+        <button class="feature"
+                onclick="openGiftStore()">
+
+          <span class="ico">🎁</span>
+          <b>200 Gifts</b>
+
+        </button>
+
+        <button class="feature"
+                onclick="showReward('🖼️ Frames',FRAME_LEVELS)">
+
+          <span class="ico">🖼️</span>
+          <b>Frames</b>
+
+        </button>
+
+        <button class="feature"
+                onclick="showDress()">
+
+          <span class="ico">👗</span>
+          <b>Dress</b>
+
+        </button>
+
+      </div>
+
+    `
+  );
+
+}
+
+
+/* =========================================================
+   GIFT STORE
+========================================================= */
+
+function openGiftStore(){
+
+  openModal(
+    "🎁 200 Gifts",
+
+    `
+
+      <div class="notice">
+        आपके पास:
+        🪙 ${money(user.coins)}
+        Coins
+      </div>
+
+      <div class="grid3">
+
+        ${GIFTS.map(g=>`
+
+          <button
+            class="feature"
+            onclick="buyGift(${g.id})">
+
+            <span class="ico">
+              ${g.icon}
+            </span>
+
+            <b>
+              ${esc(g.name)}
+            </b>
+
+            <small>
+              🪙 ${money(g.price)}
+            </small>
+
+          </button>
+
+        `).join("")}
+
+      </div>
+
+    `
+  );
+
+}
+
+
+function buyGift(id){
+
+  const gift =
+  GIFTS.find(
+    g=>g.id===id
+  );
+
+  if(!gift)
+    return;
+
+
+  if(
+    Number(user.coins||0)
+    < gift.price
+  ){
+
+    toast(
+      "Coins कम हैं"
+    );
+
+    return;
+
+  }
+
+
+  user.coins -=
+  gift.price;
+
+
+  if(!user.gifts)
+    user.gifts={};
+
+
+  user.gifts[gift.id] =
+  Number(
+    user.gifts[gift.id] || 0
+  )+1;
+
+
+  saveUser();
+
+  renderUser();
+
+  toast(
+    gift.name+
+    " purchased"
+  );
+
+}
+
+
+/* =========================================================
+   MEDALS
+========================================================= */
+
+function showMedals(){
+
+  let html="";
+
+  for(
+    let start=1;
+    start<=100;
+    start+=10
+  ){
+
+    const end =
+    start+8;
+
+    html += `
+
+      <div class="reward
+      ${(
+        user.level||1
+      )<start?"lock":""}">
+
+        <span>
+          🏅 Level
+          ${start}-${end}
+        </span>
+
+        <b>
+          ${
+            (user.level||1)>=start
+            ?"Unlocked":
+            "Locked"
+          }
+        </b>
+
+      </div>
+
+    `;
+
+  }
+
+
+  openModal(
+    "🏅 Medal",
+    html
+  );
+
+}
+
+
+/* =========================================================
+   FRAME / BADGE / VEHICLE
+========================================================= */
+
+function showReward(title,levels){
+
+  openModal(
+    title,
+
+    levels
+    .map(level=>`
+
+      <div class="reward
+      ${level>(user.level||1)?"lock":""}">
+
+        <span>
+          Level ${level}
+        </span>
+
+        <b>
+          ${level<=(user.level||1)?
+            "Unlocked":
+            "Locked"}
+        </b>
+
+      </div>
+
+    `).join("")
+
+  );
+
+}
+
+
+/* =========================================================
+   BAG
+========================================================= */
+
+function showBag(){
+
+  const gifts =
+  Object.keys(
+    user.gifts || {}
+  );
+
+
+  openModal(
+    "🎒 My Bag",
+
+    `
+
+      <div class="reward">
+        <span>Frames</span>
+        <b>
+          ${user.avatarFrame||"None"}
+        </b>
+      </div>
+
+      <div class="reward">
+        <span>Badge</span>
+        <b>
+          ${user.badge||"None"}
+        </b>
+      </div>
+
+      <div class="reward">
+        <span>Medal</span>
+        <b>
+          ${user.medal||"Level Based"}
+        </b>
+      </div>
+
+      <div class="reward">
+        <span>Gifts Owned</span>
+        <b>
+          ${gifts.length}
+        </b>
+      </div>
+
+    `
+  );
+
+}
+
+
+/* =========================================================
+   DRESS
+========================================================= */
+
+function showDress(){
+
+  openModal(
+    "👗 My Dress",
+
+    `
+
+      <div class="empty">
+        👗 Your Dress Collection
+      </div>
+
+      <div class="reward">
+        <span>Default Dress</span>
+        <b>Equipped</b>
+      </div>
+
+      <p class="muted">
+        Store से खरीदे गए dress
+        यहाँ दिखाई देंगे।
+      </p>
+
+    `
+  );
+
+}
+
+
+/* =========================================================
+   INBOX
+========================================================= */
+
+function renderInbox(list){
+
+  inboxList.innerHTML =
+  list.length ?
+
+  list.map(x=>`
+
+    <div class="reward">
+
+      <span>
+        📩
+        ${esc(
+          x.text ||
+          x.message ||
+          "Message"
+        )}
+      </span>
+
+      <small>
+        ${x.createdAt?
+          new Date(
+            x.createdAt
+          ).toLocaleString():
+          ""}
+      </small>
+
+    </div>
+
+  `).join("") :
+
+  "<div class='empty'>No messages</div>";
+
+
+  inboxDot.textContent =
+  list.length ? "•" : "";
+
+}
+
+
+/* =========================================================
+   INVITE
+========================================================= */
+
+function copyInvite(){
+
+  const code =
+  user.inviteCode ||
+  "PV"+USER_ID.slice(-8);
+
+
+  if(
+    navigator.clipboard
+  ){
+
+    navigator.clipboard
+    .writeText(code);
+
+  }
+
+
+  toast(
+    "Invite Code copied"
+  );
+
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+function showSettings(){
+
+  openModal(
+    "⚙️ Settings",
+
+    `
+
+      <div class="reward">
+        <span>Account</span>
+        <b>Active</b>
+      </div>
+
+      <div class="reward">
+        <span>Privacy</span>
+        <b>Settings</b>
+      </div>
+
+      <div class="reward">
+        <span>Notifications</span>
+        <b>ON</b>
+      </div>
+
+      <div class="reward">
+        <span>Sound</span>
+        <b>ON</b>
+      </div>
+
+      <button
+        class="btn danger full"
+        onclick="logoutUser()">
+
+        Logout / Reset
+
+      </button>
+
+    `
+  );
+
+}
+
+
+function logoutUser(){
+
+  localStorage.removeItem(
+    "pv_user"
+  );
+
+  localStorage.removeItem(
+    "pv_user_id"
+  );
+
+  location.reload();
+
+}
+
+
+/* =========================================================
+   LANGUAGE
+========================================================= */
+
+function showLanguage(){
+
+  openModal(
+    "🌐 Language",
+
+    `
+
+      <button
+        class="btn dark full"
+        onclick="chooseLanguage('Hindi')">
+
+        🇮🇳 Hindi
+
+      </button>
+
+      <br>
+
+      <button
+        class="btn dark full"
+        onclick="chooseLanguage('English')">
+
+        🇬🇧 English
+
+      </button>
+
+      <br>
+
+      <button
+        class="btn dark full"
+        onclick="chooseLanguage('Indonesian')">
+
+        🇮🇩 Indonesian
+
+      </button>
+
+    `
+  );
+
+}
+
+
+function chooseLanguage(language){
+
+  localStorage.setItem(
+    "pv_language",
+    language
+  );
+
+  toast(
+    "Language: "+language
+  );
+
+  closeModal();
+
+}
+
+
+/* =========================================================
+   HELP
+========================================================= */
+
+function showHelp(){
+
+  openModal(
+    "🆘 Help & Feedback",
+
+    `
+
+      <textarea
+        id="feedback"
+        class="input"
+        rows="5"
+        placeholder="अपना feedback लिखें">
+      </textarea>
+
+      <button
+        class="btn full"
+        onclick="sendFeedback()">
+
+        Send Feedback
+
+      </button>
+
+    `
+  );
+
+}
+
+
+function sendFeedback(){
+
+  const text =
+  feedback.value.trim();
+
+
+  if(!text){
+
+    toast(
+      "Feedback लिखें"
+    );
+
+    return;
+
+  }
+
+
+  if(db){
+
+    db.ref(
+      "feedback/"+USER_ID
+    ).push({
+
+      userId:USER_ID,
+
+      name:
+      user.name || "Guest",
+
+      text:text,
+
+      createdAt:
+      Date.now()
+
+    });
+
+  }
+
+
+  toast(
+    "Feedback sent"
+  );
+
+  closeModal();
+
+}
+
+
+
+
+/* =========================================================
+   PREMIUM BANNER ROTATION + EVENT CAROUSEL
+   Added without removing existing app functions.
+========================================================= */
+(function initPawanVoiceCarousels(){
+  const slider = document.getElementById('pvBannerSlider');
+  const slides = document.getElementById('pvBannerSlides');
+  const dotsBox = document.getElementById('pvBannerDots');
+  if(slider && slides && dotsBox){
+    const dots = Array.from(dotsBox.querySelectorAll('.pv-dot'));
+    const total = slides.children.length;
+    let current = 0;
+    let timer = null;
+    let startX = 0;
+    function showBanner(index){
+      current = (index + total) % total;
+      slides.style.transform = 'translateX(-' + (current * 100) + '%)';
+      dots.forEach((dot,i)=>dot.classList.toggle('active', i === current));
+    }
+    function startRotation(){
+      clearInterval(timer);
+      timer = setInterval(()=>showBanner(current + 1), 4500);
+    }
+    dots.forEach((dot,index)=>dot.addEventListener('click',()=>{
+      showBanner(index); startRotation();
+    }));
+    slider.addEventListener('touchstart',event=>{
+      startX = event.changedTouches[0].clientX;
+    },{passive:true});
+    slider.addEventListener('touchend',event=>{
+      const difference = event.changedTouches[0].clientX - startX;
+      if(Math.abs(difference) > 45){
+        showBanner(current + (difference < 0 ? 1 : -1));
+        startRotation();
+      }
+    },{passive:true});
+    slider.addEventListener('mouseenter',()=>clearInterval(timer));
+    slider.addEventListener('mouseleave',startRotation);
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden) clearInterval(timer); else startRotation();
+    });
+    showBanner(0); startRotation();
+  }
+
+  /* Events can be swiped manually; auto-advance gently on its own. */
+  const eventSlider = document.getElementById('pvEventSlider');
+  if(eventSlider){
+    let eventTimer = null;
+    function startEventRotation(){
+      clearInterval(eventTimer);
+      eventTimer = setInterval(()=>{
+        if(document.hidden || eventSlider.matches(':hover')) return;
+        const max = eventSlider.scrollWidth - eventSlider.clientWidth;
+        if(max <= 5) return;
+        if(eventSlider.scrollLeft >= max - 8){
+          eventSlider.scrollTo({left:0,behavior:'smooth'});
+        }else{
+          const card = eventSlider.querySelector('.pv-event-card');
+          const step = card ? card.getBoundingClientRect().width + 11 : 220;
+          eventSlider.scrollBy({left:step,behavior:'smooth'});
+        }
+      }, 3600);
+    }
+    eventSlider.addEventListener('touchstart',()=>clearInterval(eventTimer),{passive:true});
+    eventSlider.addEventListener('touchend',()=>setTimeout(startEventRotation,5000),{passive:true});
+    startEventRotation();
+  }
+})();
+
+
+
+
+/* =========================================================
+   DIWALI + NAVRATRI FESTIVAL EVENT PANEL
+   UI only; live rankings and automatic prizes require server integration.
+========================================================= */
+function pvOpenFestivalEvent(){
+  const giftRows = [
+    ["🪔","Golden Diya","Diwali"],["🌸","Navratri Lotus","Navratri"],["🎆","Diwali Blast","Diwali"],
+    ["💃","Dandiya Queen","Navratri"],["🐘","Royal Ganesh","Diwali"],["👑","Festival Crown","Both"],
+    ["🪷","Divine Lotus","Navratri"],["🏮","Sky Lantern","Diwali"],["🥁","Dandiya Beats","Navratri"],
+    ["✨","Golden Spark","Both"],["🦚","Royal Peacock","Navratri"],["🎇","Firework Show","Diwali"],
+    ["💐","Festival Bouquet","Both"],["🧿","Lucky Charm","Both"],["🪕","Garba Night","Navratri"],
+    ["🛕","Temple Blessing","Navratri"],["🎁","Royal Gift Box","Both"],["🌙","Moonlight Diya","Diwali"],
+    ["💎","Divine Jewel","Both"],["🌟","Festival Star","Both"]
+  ];
+  const giftHtml = giftRows.map(g=>`<div class="pv-festival-gift" data-festival="${g[2]}"><span>${g[0]}</span><b>${g[1]}</b><small class="pv-festival-gift-price">Special Gift</small></div>`).join('');
+  openModal(
+    "🪔 Diwali × Navratri Special",
+    `
+      <div class="pv-festival-modal-hero">
+        <span class="pv-festival-tag">PAWANVOICE • FESTIVAL SPECIAL</span>
+        <h3>🪔 DIWALI × NAVRATRI 💃</h3>
+        <p>Two festivals • One celebration<br>Send special gifts and climb the Festival Top Gifter ranking.</p>
+        <div class="pv-festival-decor">🪔 🎆 🌸 💃 ✨</div>
+      </div>
+      <div class="pv-festival-section">
+        <h3 class="pv-festival-heading">🎁 20 SPECIAL FESTIVAL GIFTS</h3>
+        <div class="pv-festival-tabs"><button class="active" type="button" onclick="pvFilterFestivalGifts('All',this)">✨ All</button><button type="button" onclick="pvFilterFestivalGifts('Diwali',this)">🪔 Diwali</button><button type="button" onclick="pvFilterFestivalGifts('Navratri',this)">💃 Navratri</button></div>
+        <div class="pv-festival-gifts" id="pvFestivalGiftGrid">${giftHtml}</div>
+        <p class="pv-festival-hint">Gift icons are event artwork placeholders. Coin prices and sending these gifts must be connected to the existing gift system before they can be purchased or sent.</p>
+      </div>
+      <div class="pv-festival-section">
+        <h3 class="pv-festival-heading">🏆 FESTIVAL TOP GIFTER RANKING</h3>
+        <div id="pvFestivalModalRanking"><div class="pv-festival-rank"><span class="medal">🥇</span><div class="rank-user"><b>1st Place — Top Gifter</b><small>Highest total of eligible festival gifts</small></div><strong>TOP 1</strong></div><div class="pv-festival-rank"><span class="medal">🥈</span><div class="rank-user"><b>2nd Place</b><small>Second-highest eligible total</small></div><strong>TOP 2</strong></div><div class="pv-festival-rank"><span class="medal">🥉</span><div class="rank-user"><b>3rd Place</b><small>Third-highest eligible total</small></div><strong>TOP 3</strong></div><p class="pv-festival-hint">Live names and totals will appear when festival gift tracking is connected in server.js.</p></div>
+      </div>
+      <div class="pv-festival-section">
+        <h3 class="pv-festival-heading">👑 WINNER REWARDS</h3>
+        <div class="pv-festival-rewards">
+          <div class="pv-festival-prize"><span>🪙</span><b>1 CRORE COINS</b><small>Top eligible gifter</small></div>
+          <div class="pv-festival-prize"><span>👑</span><b>TOP AVATAR</b><small>30 days</small></div>
+          <div class="pv-festival-prize"><span>✨</span><b>TOP ENTRY</b><small>15 days</small></div>
+          <div class="pv-festival-prize"><span>💎</span><b>VIP 10</b><small>Winner reward</small></div>
+        </div>
+        <p class="pv-festival-hint">These are the announced prize details. Automatic ranking, contest closing and prize delivery require server-side implementation; this page alone does not grant rewards.</p>
+      </div>
+      <div class="pv-festival-section">
+        <h3 class="pv-festival-heading">📜 EVENT RULES</h3>
+        <div class="pv-festival-rank"><span class="medal">🎁</span><div class="rank-user"><b>Eligible gifts count toward ranking</b><small>Only event gifts should be counted once gift tracking is enabled.</small></div></div>
+        <div class="pv-festival-rank"><span class="medal">⚖️</span><div class="rank-user"><b>One final leaderboard</b><small>Top position is based on eligible festival-gift value.</small></div></div>
+        <div class="pv-festival-rank"><span class="medal">🏆</span><div class="rank-user"><b>Winner rewards</b><small>Rewards are delivered after the event is finalized by the server.</small></div></div>
+      </div>
+      <button class="btn full" onclick="openStore()">🛍️ OPEN GIFT CENTER</button>
+    `
+  );
+}
+
+function pvFilterFestivalGifts(category,button){
+  const grid=document.getElementById('pvFestivalGiftGrid');
+  if(!grid)return;
+  grid.querySelectorAll('.pv-festival-gift').forEach(card=>{
+    const type=card.getAttribute('data-festival')||'Both';
+    card.style.display=(category==='All'||type===category||type==='Both')?'flex':'none';
+  });
+  button.parentElement.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===button));
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+renderUser();
+
+startFirebase();
+
+
+
+/* =========================================================
+   PAWANVOICE PREMIUM SOCIAL + WEEKLY + ROCKET ADD-ON
+   Preserves existing app functions. Current local actions use
+   the existing saveUser() routine; live multi-user rankings,
+   shared gifts and real rocket broadcasts need server.js events.
+========================================================= */
+const PV_SOCIAL_GIFTS = {
+  CP:[['💍','Couple Ring',5000],['💖','Heart Explosion',12000],['🌹','Love Rose',1000],['💑','Royal Couple',25000],['💘','Cupid Arrow',8000],['💎','Love Diamond',50000]],
+  Friendship:[['🤝','Bestie Bond',1000],['🧸','Friendship Teddy',2500],['🌈','Rainbow Bestie',5000],['🎁','Surprise Box',3000],['💐','Friendship Bouquet',7000],['🏆','Best Friend Trophy',15000]],
+  Family:[['🏰','Family Castle',25000],['👑','Family Crown',12000],['🚀','Family Rocket',50000],['🐉','Family Dragon',100000],['🎆','Family Celebration',8000],['💎','Family Prestige',75000]]
+};
+function pvOpenSocialGifts(type){
+  const gifts=PV_SOCIAL_GIFTS[type]||PV_SOCIAL_GIFTS.Friendship;
+  const pointsLabel=type==='CP'?'CP Points':type==='Family'?'Family EXP':'Friendship Points';
+  const current=type==='CP'?(user.cpPoints||0):type==='Family'?(user.familyExp||0):(user.friendshipPoints||0);
+  openModal((type==='CP'?'💞 CP':type==='Family'?'👨‍👩‍👧‍👦 Family':'🫂 Friendship')+' Gifts',`
+    <div class="pv-feature-ribbon"><h3>✨ Premium ${esc(type)} Gifts</h3><p>Choose a gift. Coins are deducted from this user's current wallet and the matching points are added to the local profile.</p></div>
+    <div class="pv-stat-strip"><div class="pv-stat-chip"><b>${money(user.coins||0)}</b><small>Available Coins</small></div><div class="pv-stat-chip"><b>${money(current)}</b><small>${pointsLabel}</small></div><div class="pv-stat-chip"><b>${esc(type)}</b><small>Gift Category</small></div></div>
+    <div class="pv-social-gift-grid">${gifts.map((g,i)=>`<button class="pv-social-gift" onclick="pvSendSocialGift('${type}',${i})"><span>${g[0]}</span><b>${g[1]}</b><small>🪙 ${money(g[2])}</small></button>`).join('')}</div>
+    <p class="pv-festival-hint">Note: This screen records the gift to this browser profile. To deliver gifts to another user and update everyone's rankings live, connect these actions to the Socket.IO server.</p>
+  `);
+}
+function pvSendSocialGift(type,index){
+  const g=(PV_SOCIAL_GIFTS[type]||[])[index];if(!g)return;
+  if(Number(user.coins||0)<g[2]){toast('Coins कम हैं');return;}
+  user.coins=Number(user.coins||0)-g[2];
+  if(type==='CP')user.cpPoints=Number(user.cpPoints||0)+g[2];
+  else if(type==='Family')user.familyExp=Number(user.familyExp||0)+g[2];
+  else user.friendshipPoints=Number(user.friendshipPoints||0)+g[2];
+  user.socialGiftHistory=user.socialGiftHistory||[];
+  user.socialGiftHistory.unshift({type,name:g[1],icon:g[0],price:g[2],at:Date.now()});
+  user.socialGiftHistory=user.socialGiftHistory.slice(0,50);
+  saveUser();renderUser();pvOpenSocialGifts(type);toast(g[1]+' gift sent');
+}
+function pvClaimWelcomeReward(){
+  const key='pv_welcome_reward_'+USER_ID;
+  if(localStorage.getItem(key)){openModal('🎁 Welcome Reward',`<div class="pv-feature-ribbon"><h3>Welcome to PawanVoice!</h3><p>आपका welcome reward पहले ही claim हो चुका है।</p></div><div class="reward"><span>Claim Status</span><b>✅ Claimed</b></div>`);return;}
+  user.coins=Number(user.coins||0)+50000;
+  user.avatarFrame=user.avatarFrame||'Welcome Glow Frame';
+  user.welcomeRewardClaimed=true;
+  localStorage.setItem(key,'1');saveUser();renderUser();
+  openModal('🎁 Welcome Reward',`<div class="pv-feature-ribbon"><h3>🎉 Welcome to PAWANVOICE!</h3><p>आपका starter reward आपके profile में जोड़ दिया गया है।</p></div><div class="pv-stat-strip"><div class="pv-stat-chip"><b>🪙 50,000</b><small>Welcome Coins</small></div><div class="pv-stat-chip"><b>✨ Glow Frame</b><small>Profile Frame</small></div><div class="pv-stat-chip"><b>✅ Claimed</b><small>One-time reward</small></div></div><p class="pv-festival-hint">यह reward इस browser/profile पर एक बार claim होता है। Production में इसे server-side one-time claim बनाना चाहिए।</p>`);
+}
+function pvOpenWeeklyEvent(){
+  const weekKey='pv_weekly_event_'+new Date().getFullYear()+'_'+Math.ceil((((Date.now()-new Date(new Date().getFullYear(),0,1).getTime())/86400000)+new Date(new Date().getFullYear(),0,1).getDay())/7);
+  const data=JSON.parse(localStorage.getItem(weekKey)||'{}');
+  const pts=Number(data.points||0);
+  openModal('🏆 Weekly Star Event',`<div class="pv-weekly-banner"><h3>🌟 WEEKLY STAR CHALLENGE</h3><p>Complete your weekly activities, collect points and unlock the weekly reward. The score shown here is local to this browser.</p></div><div class="pv-stat-strip"><div class="pv-stat-chip"><b>${money(pts)}</b><small>Your Event Points</small></div><div class="pv-stat-chip"><b>🪙 25,000</b><small>Claim Reward</small></div><div class="pv-stat-chip"><b>7 Days</b><small>Weekly Cycle</small></div></div><div class="reward"><span>🎁 Weekly participation reward<br><small>One claim per week</small></span><button class="btn green" onclick="pvClaimWeeklyEvent('${weekKey}')">${data.claimed?'Claimed':'Claim'}</button></div><div class="reward"><span>🎯 Add activity points<br><small>Demo action; server tracking needed for real rankings</small></span><button class="btn" onclick="pvAddWeeklyPoints('${weekKey}')">+100 Points</button></div><p class="pv-festival-hint">Live weekly leaderboard and automatic end-of-week prizes require server.js + shared database integration.</p>`);
+}
+function pvClaimWeeklyEvent(key){let d=JSON.parse(localStorage.getItem(key)||'{}');if(d.claimed){toast('Weekly reward already claimed');return;}d.claimed=true;user.coins=Number(user.coins||0)+25000;localStorage.setItem(key,JSON.stringify(d));saveUser();renderUser();pvOpenWeeklyEvent();toast('Weekly reward claimed');}
+function pvAddWeeklyPoints(key){let d=JSON.parse(localStorage.getItem(key)||'{}');d.points=Number(d.points||0)+100;localStorage.setItem(key,JSON.stringify(d));pvOpenWeeklyEvent();toast('+100 weekly points');}
+function pvOpenRocketEvent(){
+  openModal('🚀 Rocket Launch Event',`<div class="pv-rocket-scene"><span class="pv-rocket-emoji" id="pvRocketEmoji">🚀</span><h3>ROCKET LAUNCH</h3><p>Launch celebration • Room party • Special event ranking</p><button class="btn" onclick="pvLaunchRocket()">🚀 LAUNCH NOW</button></div><div class="pv-stat-strip"><div class="pv-stat-chip"><b>🎆</b><small>Launch Effects</small></div><div class="pv-stat-chip"><b>🏆</b><small>Event Ranking</small></div><div class="pv-stat-chip"><b>🎁</b><small>Rewards</small></div></div><p class="pv-festival-hint">यह अभी visual launch animation है। दूसरे users के room में live rocket broadcast करने के लिए server.js में event broadcast जोड़ना होगा।</p>`);
+}
+function pvLaunchRocket(){const r=document.getElementById('pvRocketEmoji');if(!r)return;r.classList.remove('pv-rocket-fly');void r.offsetWidth;r.classList.add('pv-rocket-fly');setTimeout(()=>{if(document.getElementById('pvRocketEmoji')){document.getElementById('pvRocketEmoji').classList.remove('pv-rocket-fly');toast('🚀 Rocket launch animation complete');}},1650);}
+
 </script>
-
-<style>
-@keyframes pop{
-  0%{transform:scale(.2);opacity:0}
-  70%{transform:scale(1.2);opacity:1}
-  100%{transform:scale(1)}
-}
-</style>
+  
 </body>
-</html>
-```
+            </html>
