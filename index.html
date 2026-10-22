@@ -3,578 +3,745 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="theme-color" content="#100a20">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10072b">
 <title>PawanVoice</title>
 
 <style>
-:root {
-  --bg:#100a20;
-  --panel:#211536;
-  --purple:#9955ff;
-  --pink:#ff55b8;
-  --muted:#b9afcb;
-  --gold:#ffd05b;
+:root{
+  --bg:#08051b;
+  --panel:#151039;
+  --panel2:#201451;
+  --purple:#812cff;
+  --pink:#ff35c8;
+  --text:#fff;
+  --muted:#aaa3d0;
+  --border:#443078;
 }
-* { box-sizing:border-box; }
-body {
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:var(--bg);
-  color:white;
-  padding-bottom:80px;
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
 }
-button,input { font:inherit; }
-button { cursor:pointer; }
-.page { display:none; padding:16px; }
-.page.active { display:block; }
-.header {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:20px;
+button,input{font:inherit}
+button{cursor:pointer;color:white}
+.app{
+  max-width:480px;min-height:100vh;margin:auto;
+  padding-bottom:82px;
+  background:
+  radial-gradient(ellipse at top,#27105a 0%,#0a061e 48%,#08051b 100%);
 }
-.logo {
-  width:45px;height:45px;
-  border-radius:15px;
-  display:grid;place-items:center;
-  background:linear-gradient(135deg,var(--purple),var(--pink));
-  font-size:26px;
+header{
+  position:sticky;top:0;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:8px;padding:13px 14px;
+  background:rgba(12,7,32,.96);
+  border-bottom:1px solid var(--border);
 }
-.brand { flex:1; }
-.brand h2 { margin:0 0 4px;font-size:21px; }
-.small { color:var(--muted);font-size:11px; }
-.balance {
-  background:var(--panel);
-  padding:9px;
-  border-radius:22px;
-  font-size:12px;
-  white-space:nowrap;
+.brand{display:flex;align-items:center;gap:9px}
+.logo{
+  width:40px;height:40px;border-radius:13px;
+  display:grid;place-items:center;font-size:23px;
+  background:linear-gradient(135deg,#ff35c8,#702aff);
+  box-shadow:0 0 18px #a32cff77;
 }
-.hero {
-  min-height:175px;
-  padding:20px;
-  border-radius:24px;
-  background:linear-gradient(130deg,#793de0,#3a1c69,#241238);
-  border:1px solid #ffffff20;
-  position:relative;
-  overflow:hidden;
+.brand-name{font-size:19px;font-weight:900}
+.brand-sub{font-size:10px;color:#c9b8ff;margin-top:3px}
+.money{display:flex;gap:6px}
+.money span{
+  background:#24164c;border:1px solid #5936a4;
+  padding:8px;border-radius:20px;font-size:12px;
 }
-.hero:after {
-  content:"🎙️";
-  position:absolute;right:12px;top:35px;
-  font-size:72px;opacity:.25;
+.page{display:none;padding:14px}
+.page.active{display:block}
+h2{font-size:19px;margin:7px 0 13px}
+h3{font-size:15px;margin:0}
+.muted{color:var(--muted);font-size:12px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.section{margin-top:21px}
+.see{color:#d8a7ff;font-size:12px;cursor:pointer}
+.banner{
+  min-height:155px;border-radius:19px;padding:18px;
+  position:relative;overflow:hidden;
+  background:linear-gradient(115deg,#4d119a,#b522c8 60%,#ff489c);
+  border:1px solid #d77bff;
+  box-shadow:0 0 22px #a72cff44;
 }
-.tag {
-  display:inline-block;
-  padding:6px 10px;
-  border-radius:20px;
-  background:#ffffff22;
-  font-size:10px;
+.banner:after{
+  content:"🎁";position:absolute;right:15px;bottom:12px;
+  font-size:76px;filter:drop-shadow(0 0 12px #ffda7a);
 }
-.hero h1 { font-size:27px;line-height:1.15;margin:12px 0; }
-.primary {
-  border:0;border-radius:22px;padding:11px 17px;
-  background:white;color:#50218c;font-weight:bold;
+.banner h2{font-size:22px;color:#ffe979;margin:4px 0 9px}
+.banner p{font-size:12px;max-width:65%;line-height:1.5}
+.pill,.btn{
+  border:0;border-radius:22px;padding:10px 15px;
+  background:linear-gradient(100deg,#8d30ff,#f52ac5);
+  color:#fff;font-weight:bold;font-size:12px;
+  box-shadow:0 3px 13px #a52aff33;
 }
-.section-title {
-  margin:24px 0 13px;
-  font-size:18px;font-weight:bold;
-}
-.section-title:before {
-  content:"";display:inline-block;
-  height:20px;width:4px;
-  background:var(--purple);
-  border-radius:5px;margin-right:9px;
-  vertical-align:middle;
-}
-.explore {
-  display:flex;gap:10px;overflow-x:auto;
-  padding-bottom:4px;
-}
-.explore-item {
-  min-width:70px;text-align:center;
-  color:var(--muted);font-size:11px;
-}
-.explore-icon {
-  width:56px;height:56px;margin:0 auto 7px;
-  border-radius:18px;background:var(--panel);
-  border:1px solid #ffffff12;
+.btn.small{padding:8px 13px}
+.btn.outline{background:#1b1040;border:1px solid #7043b9}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:13px 8px}
+.shortcut{text-align:center;cursor:pointer}
+.shortcut .icon{
+  width:53px;height:53px;border-radius:17px;margin:0 auto 7px;
   display:grid;place-items:center;font-size:25px;
+  background:linear-gradient(145deg,#321b70,#151035);
+  border:1px solid #6543aa;
+  box-shadow:inset 0 0 12px #a333ff20;
 }
-.room-card {
-  display:flex;align-items:center;gap:12px;
-  background:var(--panel);padding:12px;
-  border:1px solid #ffffff10;
-  border-radius:19px;margin-bottom:12px;
+.shortcut label{font-size:11px;display:block}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.card{
+  min-width:0;background:linear-gradient(145deg,#21144b,#100b2c);
+  border:1px solid var(--border);border-radius:15px;padding:12px;
 }
-.room-cover {
-  width:65px;height:65px;flex-shrink:0;
-  display:grid;place-items:center;
-  border-radius:17px;font-size:30px;
-  background:linear-gradient(135deg,#7541d4,#321d56);
+.room-card{cursor:pointer}
+.room-art{
+  height:90px;border-radius:11px;display:grid;place-items:center;
+  font-size:43px;margin-bottom:9px;
+  background:linear-gradient(135deg,#40177e,#d22da7,#311c7c);
 }
-.room-info { flex:1;min-width:0; }
-.room-info h3 { margin:0 0 6px;font-size:14px; }
-.room-info p { margin:0 0 7px;color:var(--muted);font-size:11px; }
-.join {
-  border:0;background:var(--purple);color:white;
-  padding:10px 12px;border-radius:14px;
+.online{font-size:11px;color:#6dffcb;margin-top:6px}
+.avatar{
+  width:46px;height:46px;flex-shrink:0;border-radius:50%;
+  display:grid;place-items:center;font-size:25px;
+  background:linear-gradient(135deg,#ff43cf,#5b42ff);
+  border:2px solid #f5baff;box-shadow:0 0 12px #b32cff66;
 }
-.online-row { display:flex;justify-content:space-between;gap:8px; }
-.online-user { text-align:center;font-size:11px; }
-.avatar {
-  width:49px;height:49px;border-radius:50%;
-  background:linear-gradient(135deg,#583080,#a25cff);
-  display:grid;place-items:center;font-size:26px;
-  border:2px solid var(--purple);margin-bottom:6px;
+.avatar.big{width:86px;height:86px;font-size:43px;border-width:3px}
+.user-list{display:flex;gap:15px;overflow-x:auto;padding:7px 1px}
+.user{text-align:center;min-width:55px}
+.user .avatar{margin:auto}
+.user small{display:block;font-size:11px;margin-top:7px}
+.tabs{display:flex;gap:7px;overflow:auto;margin:13px 0}
+.tab{
+  white-space:nowrap;background:#1b1243;border:1px solid #463077;
+  padding:9px 15px;border-radius:20px;font-size:12px;
 }
-.bottom-nav {
-  position:fixed;bottom:0;left:0;right:0;
-  height:68px;background:#1a1029;
-  border-top:1px solid #ffffff12;
-  display:flex;justify-content:space-around;z-index:10;
+.tab.active{background:linear-gradient(100deg,#812cff,#ee2bbd);border-color:transparent}
+.search{
+  width:100%;background:#120d30;border:1px solid var(--border);
+  padding:12px;border-radius:12px;color:white;outline:none;
 }
-.nav-btn {
-  flex:1;border:0;background:transparent;
-  color:var(--muted);font-size:11px;
+.room-list{display:grid;gap:11px}
+.room-line{display:flex;align-items:center;gap:11px}
+.room-line .room-art{width:68px;height:68px;flex-shrink:0;margin:0;font-size:32px}
+.room-info{flex:1;min-width:0}
+.room-info p{font-size:11px;color:var(--muted);margin:6px 0}
+.room-line .btn{padding:8px 12px}
+.room-head{
+  margin:-14px -14px 14px;padding:20px 14px 25px;
+  background:linear-gradient(135deg,#33106b,#8d1ca5,#24104e);
+  border-bottom:1px solid #8541bd;
 }
-.nav-btn span { display:block;font-size:23px;margin-bottom:4px; }
-.nav-btn.active { color:#c49bff; }
-
-/* Room */
-.room-page {
-  min-height:calc(100vh - 68px);
-  margin:-16px;padding:0 12px 12px;
-  background:radial-gradient(ellipse at top,#35204f,#100a20 70%);
+.room-head .row{margin-bottom:18px}
+.seats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 8px;margin:22px 0}
+.seat{text-align:center;cursor:pointer;min-width:0}
+.seat-circle{
+  position:relative;width:67px;height:67px;border-radius:50%;
+  margin:0 auto 7px;display:grid;place-items:center;
+  background:linear-gradient(145deg,#211749,#100a2c);
+  border:2px solid #6c4db0;font-size:28px;
 }
-.room-header {
-  padding:15px 4px;display:flex;align-items:center;gap:10px;
+.seat.host .seat-circle{border-color:#ffd66e;box-shadow:0 0 15px #ffb52b77}
+.seat .seat-name{font-size:11px}
+.seat .seat-id{font-size:9px;color:var(--muted);margin-top:4px}
+.seat-badge{
+  position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);
+  background:#f7b82c;color:#261035;padding:3px 7px;
+  border-radius:10px;font-size:9px;font-weight:bold;white-space:nowrap;
 }
-.room-header button {
-  border:0;border-radius:12px;background:var(--panel);
-  color:white;padding:10px;
+.room-box{
+  background:#120d30;border:1px solid var(--border);
+  border-radius:13px;padding:12px;margin:12px 0;
 }
-.room-name { flex:1;font-weight:bold; }
-.announcement {
-  background:#ffffff0d;border-radius:14px;
-  padding:12px;font-size:12px;color:#e6d9fa;
-  margin-bottom:12px;
+.rank-line{display:flex;align-items:center;gap:9px;padding:8px 0}
+.rank-line .avatar{width:34px;height:34px;font-size:18px}
+.rank-line .grow{flex:1}
+.chat-line{font-size:12px;line-height:1.6;margin:6px 0;color:#e9dcff}
+.chat-line b{color:#ff8ce7}
+.chat-controls{display:flex;gap:7px;margin-top:10px}
+.chat-controls input{flex:1;min-width:0}
+.chat-controls .btn{padding:10px}
+.gift-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.gift{
+  text-align:center;padding:12px 5px;border-radius:13px;
+  background:#18113b;border:1px solid #382565;cursor:pointer;
 }
-.seats {
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:20px 8px;padding:12px 0;
+.gift .emoji{font-size:34px;display:block;margin-bottom:8px}
+.gift small{color:#ffdb67;font-size:11px;display:block;margin-top:6px}
+.balance{
+  padding:20px;border-radius:18px;
+  background:linear-gradient(135deg,#6815cb,#b523d4,#4222b7);
+  border:1px solid #cf9bff;margin-bottom:16px;
 }
-.seat { text-align:center;min-width:0; }
-.seat-avatar {
-  height:63px;width:63px;max-width:100%;
-  margin:auto auto 7px;border-radius:50%;
-  border:2px solid var(--purple);
-  background:linear-gradient(135deg,#583080,#302044);
-  display:grid;place-items:center;font-size:27px;
+.balance .amount{font-size:26px;font-weight:bold;margin:13px 0}
+.profile-card{text-align:center;padding:22px 12px}
+.profile-card .avatar{margin:0 auto 10px}
+.profile-line{
+  padding:14px 5px;border-bottom:1px solid #332459;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:13px;cursor:pointer;
 }
-.seat.host .seat-avatar {
-  border-color:var(--gold);
-  background:linear-gradient(135deg,#ffca60,#db5f9c);
+.progress{height:9px;background:#35275b;border-radius:10px;overflow:hidden;margin:10px 0}
+.progress span{display:block;width:48%;height:100%;background:linear-gradient(90deg,#8432ff,#ff35c8)}
+.game-card{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.game-icon{
+  width:77px;height:77px;border-radius:15px;display:grid;place-items:center;
+  font-size:42px;background:linear-gradient(135deg,#5025bb,#d22dba);
 }
-.seat-name { font-size:12px;font-weight:bold; }
-.seat-status {
-  margin-top:5px;display:inline-block;
-  background:var(--panel);padding:4px 8px;
-  border-radius:12px;font-size:9px;color:var(--muted);
+.game-card .grow{flex:1}
+.bottom-nav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  z-index:20;width:100%;max-width:480px;display:grid;
+  grid-template-columns:repeat(5,1fr);
+  background:rgba(12,7,31,.97);border-top:1px solid #392663;
+  padding:9px 4px calc(9px + env(safe-area-inset-bottom));
 }
-.chat-box {
-  height:155px;overflow:auto;background:#00000022;
-  border-radius:15px;padding:12px;margin:10px 0;
+.nav-item{text-align:center;font-size:10px;color:#aaa1d0;cursor:pointer}
+.nav-item .nav-icon{display:block;font-size:21px;margin-bottom:4px}
+.nav-item.active{color:#ff63df}
+.modal-bg{
+  display:none;position:fixed;inset:0;background:#000b;
+  z-index:50;align-items:flex-end;justify-content:center;
 }
-.chat-title { font-size:13px;font-weight:bold;margin-bottom:9px; }
-.chat-line { font-size:12px;margin:7px 0;overflow-wrap:anywhere; }
-.chat-controls {
-  display:flex;gap:7px;align-items:center;
-  background:#1b102b;padding:10px 0;
+.modal-bg.show{display:flex}
+.modal{
+  width:100%;max-width:480px;max-height:85vh;overflow:auto;
+  background:#130b32;border:1px solid #7140aa;border-radius:23px 23px 0 0;
+  padding:20px;
 }
-.circle-btn {
-  width:42px;height:42px;border:0;border-radius:50%;
-  background:var(--panel);color:white;font-size:19px;
+.modal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.close{background:#30204f;border:0;border-radius:50%;width:34px;height:34px}
+.notice{
+  position:fixed;top:75px;left:50%;transform:translateX(-50%);
+  z-index:80;background:#25124e;border:1px solid #b95cff;
+  padding:12px 16px;border-radius:14px;display:none;
+  width:max-content;max-width:90%;font-size:13px;
 }
-.chat-input {
-  flex:1;min-width:0;border:0;outline:0;
-  background:var(--panel);color:white;
-  padding:12px;border-radius:24px;
+.notice.show{display:block}
+.empty{padding:25px;text-align:center;color:var(--muted)}
+@media(min-width:600px){
+  body{padding:20px 0}
+  .app{border:1px solid #493073;border-radius:24px;overflow:hidden}
+  .bottom-nav{bottom:0}
 }
-.send-btn {
-  border:0;border-radius:50%;width:42px;height:42px;
-  background:var(--purple);color:white;
-}
-.room-tools {
-  display:flex;justify-content:space-around;
-  margin:10px 0;gap:7px;
-}
-.tool-btn {
-  flex:1;border:1px solid #ffffff14;
-  background:var(--panel);color:white;
-  padding:10px 3px;border-radius:13px;font-size:11px;
-}
-.panel {
-  background:var(--panel);padding:18px;
-  border-radius:20px;margin-bottom:13px;
-}
-.profile-top { text-align:center;padding:25px; }
-.profile-avatar {
-  width:100px;height:100px;margin:auto auto 12px;
-  border-radius:50%;border:4px solid var(--gold);
-  background:linear-gradient(135deg,#7942cf,#ff55b8);
-  display:grid;place-items:center;font-size:49px;
-}
-.profile-row {
-  display:flex;justify-content:space-between;
-  padding:15px 2px;border-bottom:1px solid #ffffff12;
-  font-size:14px;
-}
-.wallet-card {
-  background:linear-gradient(130deg,#783ed0,#351c5c);
-  padding:23px;border-radius:23px;margin:20px 0;
-}
-.wallet-card h1 { font-size:30px;margin:10px 0; }
-.package {
-  background:var(--panel);padding:16px;
-  border-radius:15px;margin:10px 0;
-  display:flex;justify-content:space-between;
-}
-input,button { -webkit-tap-highlight-color:transparent; }
 </style>
 </head>
 
 <body>
+<div class="app">
+
+<header>
+  <div class="brand">
+    <div class="logo">🎙️</div>
+    <div>
+      <div class="brand-name">PawanVoice</div>
+      <div class="brand-sub">Talk • Meet • Enjoy</div>
+    </div>
+  </div>
+  <div class="money">
+    <span>🪙 <b id="coinHeader">1M</b></span>
+    <span>💎 <b id="diamondHeader">0</b></span>
+  </div>
+</header>
 
 <!-- HOME -->
 <section id="home" class="page active">
-  <header class="header">
-    <div class="logo">🎙️</div>
-    <div class="brand">
-      <h2>PawanVoice</h2>
-      <div class="small">Talk • Meet • Enjoy</div>
-    </div>
-    <div class="balance">🪙 1M</div>
-    <div class="balance">💎 0</div>
-  </header>
-
-  <div class="hero">
-    <span class="tag">✦ LIVE VOICE PARTY</span>
-    <h1>Your Voice,<br>Your World!</h1>
-    <button class="primary" onclick="openRoom('PawanVoice Party','PV100')">
-      Join Party →
-    </button>
+  <div class="banner">
+    <div class="muted">✨ PAWANVOICE SPECIAL</div>
+    <h2>Mega Gift Festival</h2>
+    <p>Send gifts, meet friends and enjoy the party!</p>
+    <p>🏆 Daily rewards • VIP • Rankings</p>
+    <button class="btn" onclick="showPage('gifts')">Explore Gifts</button>
   </div>
 
-  <div class="section-title">Explore</div>
-  <div class="explore">
-    <div class="explore-item" onclick="showPage('rooms')">
-      <div class="explore-icon">🎙️</div>Voice Rooms
-    </div>
-    <div class="explore-item" onclick="showGifts()">
-      <div class="explore-icon">🎁</div>Gifts
-    </div>
-    <div class="explore-item" onclick="showRankings()">
-      <div class="explore-icon">🏆</div>Rankings
-    </div>
-    <div class="explore-item" onclick="showVip()">
-      <div class="explore-icon">👑</div>VIP
-    </div>
-    <div class="explore-item" onclick="showGames()">
-      <div class="explore-icon">🎮</div>Games
+  <div class="section grid4">
+    <div class="shortcut" onclick="showPage('profile')"><div class="icon">👤</div><label>Profile</label></div>
+    <div class="shortcut" onclick="notify('Family feature needs server setup.')"><div class="icon">💞</div><label>Family</label></div>
+    <div class="shortcut" onclick="notify('CP Space demo')"><div class="icon">💗</div><label>CP Space</label></div>
+    <div class="shortcut" onclick="showPage('rankings')"><div class="icon">👑</div><label>Rich King</label></div>
+    <div class="shortcut" onclick="showPage('vip')"><div class="icon">👑</div><label>VIP</label></div>
+    <div class="shortcut" onclick="showPage('vip')"><div class="icon">🏅</div><label>Level</label></div>
+    <div class="shortcut" onclick="showPage('wallet')"><div class="icon">🎁</div><label>Store</label></div>
+    <div class="shortcut" onclick="notify('Rewards demo')"><div class="icon">🎯</div><label>Rewards</label></div>
+  </div>
+
+  <div class="section">
+    <div class="row"><h2>🔥 Popular Rooms</h2><span class="see" onclick="showPage('rooms')">See All ›</span></div>
+    <div class="cards" id="homeRooms"></div>
+  </div>
+
+  <div class="section">
+    <div class="row"><h2>🟢 Online Users</h2><span class="see" onclick="showPage('rooms')">Meet people</span></div>
+    <div class="user-list">
+      <div class="user"><div class="avatar">👩🏻</div><small>Riya</small></div>
+      <div class="user"><div class="avatar">👨🏽</div><small>Rocky</small></div>
+      <div class="user"><div class="avatar">👩🏽</div><small>Angel</small></div>
+      <div class="user"><div class="avatar">🧑🏻</div><small>King</small></div>
+      <div class="user"><div class="avatar">👸🏻</div><small>Priya</small></div>
     </div>
   </div>
 
-  <div class="section-title">Popular Rooms <span class="small"> · Live</span></div>
-  <div id="homeRooms"></div>
-
-  <div class="section-title">Online Users</div>
-  <div class="online-row">
-    <div class="online-user"><div class="avatar">😊</div>Riya</div>
-    <div class="online-user"><div class="avatar">😎</div>Rocky</div>
-    <div class="online-user"><div class="avatar">🦋</div>Angel</div>
-    <div class="online-user"><div class="avatar">👑</div>King</div>
-    <div class="online-user"><div class="avatar">🌸</div>Priya</div>
+  <div class="section card">
+    <div class="row"><h3>🎮 Play Games</h3><button class="btn small" onclick="showPage('games')">Play Now</button></div>
+    <p class="muted">Greedy Baby • Animal Party • Lucky Spin</p>
   </div>
 </section>
 
 <!-- ROOMS -->
 <section id="rooms" class="page">
   <h2>🎙️ Voice Rooms</h2>
-  <p class="small">Join a room and meet new friends.</p>
-  <input id="roomSearch" class="chat-input" style="width:100%;margin:12px 0"
-         placeholder="Search rooms..." oninput="renderRooms()">
-  <div id="allRooms"></div>
-  <button class="primary" onclick="createRoom()">＋ Create Room</button>
+  <input class="search" id="roomSearch" placeholder="🔍 Search rooms..." oninput="renderRooms()">
+  <div class="tabs">
+    <button class="tab active" onclick="roomTab('Popular',this)">Popular</button>
+    <button class="tab" onclick="roomTab('New',this)">New</button>
+    <button class="tab" onclick="roomTab('My Room',this)">My Room</button>
+    <button class="tab" onclick="roomTab('Ranking',this)">Ranking</button>
+  </div>
+  <div id="roomList" class="room-list"></div>
+  <button class="btn" style="width:100%;margin-top:16px" onclick="createRoom()">＋ Create Room</button>
 </section>
 
 <!-- VOICE ROOM -->
-<section id="voiceRoom" class="page">
-  <div class="room-page">
-    <div class="room-header">
-      <button onclick="showPage('rooms')">‹</button>
-      <div class="room-name">
-        <div id="currentRoomName">PawanVoice Party</div>
-        <div class="small">ID: <span id="currentRoomId">PV100</span> · 9 Seats</div>
+<section id="voice" class="page" style="padding-top:0">
+  <div class="room-head">
+    <div class="row">
+      <button class="btn outline small" onclick="showPage('rooms')">‹ Back</button>
+      <span class="muted">ROOM ID: <b id="currentRoomId">PV100</b></span>
+      <button class="btn outline small" onclick="notify('Room settings demo')">⚙️</button>
+    </div>
+    <div class="row">
+      <div>
+        <h2 id="currentRoomName">Music Zone 🎵</h2>
+        <div class="muted">🎙️ PawanVoice Room</div>
       </div>
-      <button onclick="alert('Room settings demo')">⋯</button>
+      <div style="text-align:right"><div>🟢 <b id="roomOnline">77</b> Online</div><div class="muted">👑 Host Room</div></div>
     </div>
+    <div class="muted">💜 Welcome! Enjoy the party and respect everyone.</div>
+  </div>
 
-    <div class="announcement">📢 Welcome! Be friendly and enjoy the party. 💜</div>
-    <div id="seats" class="seats"></div>
+  <div class="row"><h3>🎙️ Voice Seats</h3><span class="muted">9 Seats</span></div>
+  <div class="seats" id="seats"></div>
 
-    <div class="room-tools">
-      <button class="tool-btn" onclick="showGifts()">🎁 Gifts</button>
-      <button class="tool-btn" onclick="alert('Room effects demo')">✨ Effects</button>
-      <button class="tool-btn" onclick="alert('Invite link feature needs backend')">👥 Invite</button>
+  <div class="room-box">
+    <div class="row"><h3>🏆 Top Users</h3><span class="see" onclick="showPage('rankings')">View All ›</span></div>
+    <div class="rank-line"><div class="avatar">👩🏻</div><div class="grow">Riya</div><b>🪙 12.5M</b></div>
+    <div class="rank-line"><div class="avatar">🧑🏽</div><div class="grow">Rocky</div><b>🪙 10.2M</b></div>
+    <div class="rank-line"><div class="avatar">👼</div><div class="grow">Angel</div><b>🪙 8.6M</b></div>
+  </div>
+
+  <div class="room-box">
+    <h3>💬 Room Chat</h3>
+    <div id="chatMessages">
+      <div class="chat-line"><b>Riya:</b> Welcome everyone! 💜</div>
+      <div class="chat-line"><b>Rocky:</b> Nice room! 🎉</div>
+      <div class="chat-line"><b>Angel:</b> Let's have fun! 😊</div>
     </div>
-
-    <div class="chat-box" id="chatBox">
-      <div class="chat-title">Room Chat</div>
-      <div id="messages">
-        <div class="chat-line">💜 Welcome to PawanVoice!</div>
-      </div>
-    </div>
-
     <div class="chat-controls">
-      <button class="circle-btn" id="micBtn" onclick="toggleMic()">🎙️</button>
-      <button class="circle-btn" onclick="showGifts()">🎁</button>
-      <input id="chatInput" class="chat-input" placeholder="Say something..."
-             onkeydown="if(event.key==='Enter')sendMessage()">
-      <button class="send-btn" onclick="sendMessage()">➤</button>
-    </div>
-    <div class="small" style="padding:8px">
-      Mic button is a visual demo; live voice requires a voice server.
+      <input class="search" id="chatInput" placeholder="Type a message...">
+      <button class="btn" onclick="sendChat()">➤</button>
     </div>
   </div>
+
+  <div class="grid4">
+    <div class="shortcut" onclick="toggleMic()"><div class="icon" id="micIcon">🎙️</div><label id="micLabel">Mic Off</label></div>
+    <div class="shortcut" onclick="notify('Speaker demo')"><div class="icon">🔊</div><label>Speaker</label></div>
+    <div class="shortcut" onclick="showPage('gifts')"><div class="icon">🎁</div><label>Gifts</label></div>
+    <div class="shortcut" onclick="notify('Invite feature needs backend')"><div class="icon">📨</div><label>Invite</label></div>
+  </div>
+</section>
+
+<!-- GIFTS -->
+<section id="gifts" class="page">
+  <h2>🎁 Gifts</h2>
+  <p class="muted">Choose a gift to preview the demo action.</p>
+  <div class="tabs">
+    <button class="tab active" onclick="giftTab('All',this)">All</button>
+    <button class="tab" onclick="giftTab('CP',this)">CP</button>
+    <button class="tab" onclick="giftTab('Friendship',this)">Friendship</button>
+    <button class="tab" onclick="giftTab('Family',this)">Family</button>
+    <button class="tab" onclick="giftTab('Lucky',this)">Lucky</button>
+    <button class="tab" onclick="giftTab('VIP',this)">VIP</button>
+    <button class="tab" onclick="giftTab('Festival',this)">Festival</button>
+  </div>
+  <div class="banner" style="min-height:105px;margin-bottom:17px">
+    <h2>Send Love 💖</h2><p>Choose a gift and make someone's day!</p>
+  </div>
+  <div class="gift-grid" id="giftGrid"></div>
 </section>
 
 <!-- WALLET -->
 <section id="wallet" class="page">
-  <h2>💰 My Wallet</h2>
-  <div class="wallet-card">
-    <div>Available Coins</div>
-    <h1>🪙 1,000,000</h1>
-    <div>💎 0 Diamonds</div>
+  <h2>💎 My Wallet</h2>
+  <div class="balance">
+    <div class="muted">AVAILABLE COINS</div>
+    <div class="amount">🪙 <span id="coinBalance">1,000,000</span></div>
+    <div class="row"><span>💎 <span id="diamondBalance">0</span> Diamonds</span><button class="btn small" onclick="notify('Payment system is not connected yet.')">＋ Add</button></div>
   </div>
-  <div class="section-title">Coin Packages</div>
-  <div class="package"><span>🪙 100,000 Coins</span><b>Starter</b></div>
-  <div class="package"><span>🪙 500,000 Coins</span><b>Popular</b></div>
-  <div class="package"><span>🪙 1,000,000 Coins</span><b>Premium</b></div>
-  <p class="small">Demo wallet. Real purchases are not connected.</p>
+  <h3>Coin Packages</h3>
+  <div class="card" style="margin-top:12px">
+    <div class="profile-line"><span>🪙 100,000 Coins</span><button class="btn small" onclick="notify('Real payments are not enabled.')">Select</button></div>
+    <div class="profile-line"><span>🪙 500,000 Coins</span><button class="btn small" onclick="notify('Real payments are not enabled.')">Select</button></div>
+    <div class="profile-line"><span>🪙 1,000,000 Coins</span><button class="btn small" onclick="notify('Real payments are not enabled.')">Select</button></div>
+    <div class="profile-line"><span>🪙 5,000,000 Coins</span><button class="btn small" onclick="notify('Real payments are not enabled.')">Select</button></div>
+  </div>
+  <p class="muted">Demo wallet only. No real purchase or payment is made.</p>
 </section>
 
 <!-- PROFILE -->
 <section id="profile" class="page">
-  <h2>👤 My Profile</h2>
-  <div class="panel profile-top">
-    <div class="profile-avatar">👤</div>
+  <div class="row"><h2>👤 My Profile</h2><button class="btn outline small" onclick="notify('Settings demo')">⚙️</button></div>
+  <div class="card profile-card">
+    <div class="avatar big">🧑🏻</div>
     <h2 id="profileName">Pawan</h2>
-    <div class="small">ID: 100052</div>
-    <p>
-      <span class="tag">LEVEL 1</span>
-      <span class="tag">NEW USER</span>
-    </p>
-    <button class="primary" onclick="editProfile()">Edit Profile</button>
+    <div class="muted">ID: 100052</div>
+    <p><span class="pill">👑 VIP 1</span> <span class="pill">🏅 Level 15</span></p>
+    <button class="btn" onclick="editName()">✏️ Edit Name</button>
   </div>
-  <div class="panel">
-    <div class="profile-row"><span>🪙 Coins</span><b>1,000,000</b></div>
-    <div class="profile-row"><span>💎 Diamonds</span><b>0</b></div>
-    <div class="profile-row"><span>👑 VIP</span><b>VIP 0</b></div>
-    <div class="profile-row"><span>💞 CP Space</span><b>Not linked</b></div>
-    <div class="profile-row"><span>👨‍👩‍👧 Family</span><b>Not joined</b></div>
+  <div class="cards section">
+    <div class="card"><div class="muted">🪙 Coins</div><h3 id="profileCoins">1,000,000</h3></div>
+    <div class="card"><div class="muted">💎 Diamonds</div><h3>0</h3></div>
+    <div class="card"><div class="muted">💗 CP Space</div><h3>Not linked</h3></div>
+    <div class="card"><div class="muted">👨‍👩‍👧 Family</div><h3>Not joined</h3></div>
   </div>
-  <div class="panel">
-    <div class="profile-row" onclick="showVip()">👑 VIP Membership <span>›</span></div>
-    <div class="profile-row" onclick="showRankings()">🏆 Rankings <span>›</span></div>
-    <div class="profile-row" onclick="showGifts()">🎁 My Gifts <span>›</span></div>
-    <div class="profile-row" onclick="alert('Settings demo')">⚙️ Settings <span>›</span></div>
+  <div class="section card">
+    <div class="profile-line" onclick="showPage('vip')">👑 VIP Membership <span>›</span></div>
+    <div class="profile-line" onclick="showPage('rankings')">🏆 Rankings <span>›</span></div>
+    <div class="profile-line" onclick="showPage('gifts')">🎁 My Gifts <span>›</span></div>
+    <div class="profile-line" onclick="notify('Frame gallery will be added next.')">🖼️ Profile Frames <span>›</span></div>
+    <div class="profile-line" onclick="notify('Settings demo')">⚙️ Settings <span>›</span></div>
   </div>
 </section>
 
-<!-- EXTRA FEATURE PAGE -->
-<section id="extras" class="page">
-  <button class="primary" onclick="goBack()">← Back</button>
-  <h2 id="extraTitle">Features</h2>
-  <div id="extraContent"></div>
+<!-- VIP -->
+<section id="vip" class="page">
+  <h2>👑 VIP & Levels</h2>
+  <div class="banner">
+    <h2>VIP 1</h2><p>Unlock exclusive privileges, special frames and gifts.</p>
+    <button class="btn" onclick="notify('VIP purchase system is not connected.')">Upgrade Now</button>
+  </div>
+  <div class="card section">
+    <div class="row"><h3>🏅 Level 15</h3><span class="muted">EXP 2,500/5,000</span></div>
+    <div class="progress"><span></span></div>
+    <p class="muted">Keep participating to progress in this demo.</p>
+  </div>
+  <h3 class="section">VIP Benefits</h3>
+  <div class="grid4 section">
+    <div class="shortcut"><div class="icon">🖼️</div><label>Special Frame</label></div>
+    <div class="shortcut"><div class="icon">🎁</div><label>Exclusive Gifts</label></div>
+    <div class="shortcut"><div class="icon">🪙</div><label>More Coins</label></div>
+    <div class="shortcut"><div class="icon">💬</div><label>VIP Chat</label></div>
+  </div>
+  <h3 class="section">Level Rewards</h3>
+  <div class="cards section">
+    <div class="card">🏆 Level 1–9</div>
+    <div class="card">💗 Level 10–19</div>
+    <div class="card">🎉 Level 20–29</div>
+    <div class="card">🎁 Level 30–39</div>
+  </div>
 </section>
 
+<!-- GAMES -->
+<section id="games" class="page">
+  <h2>🎮 Games</h2>
+  <div class="banner">
+    <h2>Play Games</h2><p>Fun games with friends in PawanVoice.</p>
+  </div>
+  <div class="section">
+    <div class="card game-card">
+      <div class="game-icon">🐼</div>
+      <div class="grow"><h3>Greedy Baby</h3><p class="muted">Multiplayer • Win Coins</p><span class="muted">Demo preview</span></div>
+      <button class="btn small" onclick="playGame('Greedy Baby')">Play</button>
+    </div>
+    <div class="card game-card">
+      <div class="game-icon">🎡</div>
+      <div class="grow"><h3>Animal Party</h3><p class="muted">Fun • Multiplayer</p><span class="muted">Demo preview</span></div>
+      <button class="btn small" onclick="playGame('Animal Party')">Play</button>
+    </div>
+    <div class="card game-card">
+      <div class="game-icon">🎯</div>
+      <div class="grow"><h3>Lucky Spin</h3><p class="muted">Spin & enjoy</p><span class="muted">Demo preview</span></div>
+      <button class="btn small" onclick="playGame('Lucky Spin')">Play</button>
+    </div>
+  </div>
+  <p class="muted">Games are interface previews. Shared rounds and real rewards need server logic.</p>
+</section>
+
+<!-- RANKINGS -->
+<section id="rankings" class="page">
+  <h2>👑 Rankings</h2>
+  <div class="tabs">
+    <button class="tab active" onclick="rankTab('Daily',this)">Daily</button>
+    <button class="tab" onclick="rankTab('Weekly',this)">Weekly</button>
+    <button class="tab" onclick="rankTab('Monthly',this)">Monthly</button>
+  </div>
+  <div class="banner" style="text-align:center">
+    <div style="font-size:45px">👑</div>
+    <h2>Rich King</h2><p style="max-width:none">Top Rich Users</p>
+  </div>
+  <div class="section card" id="rankList"></div>
+</section>
+
+<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <button class="nav-btn active" onclick="showPage('home',this)">
-    <span>⌂</span>Home
-  </button>
-  <button class="nav-btn" onclick="showPage('rooms',this)">
-    <span>🎙️</span>Rooms
-  </button>
-  <button class="nav-btn" onclick="showPage('wallet',this)">
-    <span>💰</span>Wallet
-  </button>
-  <button class="nav-btn" onclick="showPage('profile',this)">
-    <span>👤</span>Profile
-  </button>
+  <div class="nav-item active" data-page="home" onclick="showPage('home')"><span class="nav-icon">⌂</span>Home</div>
+  <div class="nav-item" data-page="rooms" onclick="showPage('rooms')"><span class="nav-icon">🎙️</span>Rooms</div>
+  <div class="nav-item" data-page="games" onclick="showPage('games')"><span class="nav-icon">🎮</span>Games</div>
+  <div class="nav-item" onclick="notify('Inbox will be connected in the next stage.')"><span class="nav-icon">✉️</span>Inbox</div>
+  <div class="nav-item" data-page="profile" onclick="showPage('profile')"><span class="nav-icon">♙</span>Profile</div>
 </nav>
+</div>
+
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-top"><h2 id="modalTitle">Details</h2><button class="close" onclick="closeModal()">✕</button></div>
+    <div id="modalContent"></div>
+  </div>
+</div>
+<div class="notice" id="notice"></div>
 
 <script>
-const roomData = [
-  {name:'Friends Forever 💜',id:'PV100',subtitle:'Music • Friends • Fun',people:77,icon:'💜'},
-  {name:'Night Music 🎵',id:'PV102',subtitle:'Relax and enjoy music',people:42,icon:'🎵'},
-  {name:'New Friends ✨',id:'PV103',subtitle:'Meet new people',people:28,icon:'🦋'},
-  {name:'Gaming Zone 🎮',id:'PV104',subtitle:'Games and challenges',people:19,icon:'🎮'}
+const rooms=[
+ {id:"PV100",name:"Music Zone 🎵",art:"🎤",online:77,category:"Popular"},
+ {id:"PV102",name:"Friends Forever 💗",art:"💞",online:42,category:"Popular"},
+ {id:"PV106",name:"Gaming Zone 🎮",art:"🎮",online:28,category:"Popular"},
+ {id:"PV108",name:"Night Vibes ✨",art:"🌙",online:19,category:"New"},
+ {id:"PV110",name:"Love & Chat 💕",art:"💖",online:16,category:"New"}
 ];
 
-let previousPage = 'home';
-let micOn = false;
+const gifts=[
+ {name:"Rose",emoji:"🌹",cost:10,cat:"Friendship"},
+ {name:"Heart",emoji:"💗",cost:50,cat:"CP"},
+ {name:"Car",emoji:"🏎️",cost:100,cat:"Lucky"},
+ {name:"Rocket",emoji:"🚀",cost:500,cat:"VIP"},
+ {name:"Crown",emoji:"👑",cost:1000,cat:"VIP"},
+ {name:"Diamond",emoji:"💎",cost:5000,cat:"Lucky"},
+ {name:"Panda",emoji:"🐼",cost:200,cat:"Friendship"},
+ {name:"Motorcycle",emoji:"🏍️",cost:300,cat:"Family"},
+ {name:"Ferris Wheel",emoji:"🎡",cost:500,cat:"Festival"},
+ {name:"Love Bear",emoji:"🧸",cost:150,cat:"CP"},
+ {name:"Galaxy",emoji:"🌌",cost:2000,cat:"VIP"},
+ {name:"Festival Box",emoji:"🎁",cost:800,cat:"Festival"}
+];
 
-function roomCard(room) {
-  return `<div class="room-card">
-    <div class="room-cover">${room.icon}</div>
-    <div class="room-info">
-      <h3>${room.name}</h3>
-      <p>${room.subtitle}</p>
-      <div class="small">🟢 ${room.people} online · ID: ${room.id}</div>
-    </div>
-    <button class="join" onclick="openRoom('${room.name.replace(/'/g,"\\'")}','${room.id}')">Join</button>
-  </div>`;
+let coins=1000000;
+let diamonds=0;
+let currentRoom=rooms[0];
+let currentRoomTab="Popular";
+let currentGiftTab="All";
+let micOn=false;
+let noticeTimer;
+
+function showPage(id){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ const page=document.getElementById(id);
+ if(page)page.classList.add("active");
+ document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.page===id));
+ if(id==="rooms")renderRooms();
+ if(id==="gifts")renderGifts();
+ if(id==="rankings")renderRanks("Daily");
+ window.scrollTo(0,0);
 }
 
-function renderRooms() {
-  const query = (document.getElementById('roomSearch')?.value || '').toLowerCase();
-  const filtered = roomData.filter(r =>
-    (r.name + ' ' + r.id + ' ' + r.subtitle).toLowerCase().includes(query)
-  );
-  document.getElementById('allRooms').innerHTML =
-    filtered.map(roomCard).join('') || '<p class="small">No rooms found.</p>';
+function notify(message){
+ const el=document.getElementById("notice");
+ el.textContent=message;el.classList.add("show");
+ clearTimeout(noticeTimer);
+ noticeTimer=setTimeout(()=>el.classList.remove("show"),2400);
 }
 
-document.getElementById('homeRooms').innerHTML =
-  roomData.slice(0,3).map(roomCard).join('');
+function updateCoins(){
+ document.getElementById("coinHeader").textContent=coins>=1000000?(coins/1000000).toFixed(coins%1000000===0?0:1)+"M":coins.toLocaleString("en-IN");
+ document.getElementById("coinBalance").textContent=coins.toLocaleString("en-IN");
+ document.getElementById("profileCoins").textContent=coins.toLocaleString("en-IN");
+ document.getElementById("diamondHeader").textContent=diamonds;
+ document.getElementById("diamondBalance").textContent=diamonds;
+}
+
+function renderHomeRooms(){
+ document.getElementById("homeRooms").innerHTML=rooms.slice(0,4).map(r=>`
+ <div class="card room-card" onclick="openRoom('${r.id}')">
+   <div class="room-art">${r.art}</div>
+   <h3>${r.name}</h3>
+   <div class="online">🟢 ${r.online} Online</div>
+   <div class="muted" style="margin-top:5px">ID: ${r.id}</div>
+ </div>`).join("");
+}
+
+function roomTab(tab,button){
+ currentRoomTab=tab;
+ document.querySelectorAll("#rooms .tab").forEach(t=>t.classList.remove("active"));
+ button.classList.add("active");renderRooms();
+}
+
+function renderRooms(){
+ const query=(document.getElementById("roomSearch")?.value||"").toLowerCase();
+ let list=rooms.filter(r=>r.name.toLowerCase().includes(query)||r.id.toLowerCase().includes(query));
+ if(currentRoomTab==="New")list=list.filter(r=>r.category==="New");
+ if(currentRoomTab==="My Room")list=list.filter(r=>r.id==="PV100");
+ document.getElementById("roomList").innerHTML=list.length?list.map(r=>`
+ <div class="card room-line">
+   <div class="room-art">${r.art}</div>
+   <div class="room-info"><h3>${r.name}</h3><p>🎵 Chat • Music • Friends</p>
+   <div class="online">🟢 ${r.online} Online</div><div class="muted">ID: ${r.id}</div></div>
+   <button class="btn" onclick="openRoom('${r.id}')">Join</button>
+ </div>`).join(""):'<div class="empty">No rooms found.</div>';
+}
+
+function openRoom(id){
+ currentRoom=rooms.find(r=>r.id===id)||rooms[0];
+ document.getElementById("currentRoomId").textContent=currentRoom.id;
+ document.getElementById("currentRoomName").textContent=currentRoom.name;
+ document.getElementById("roomOnline").textContent=currentRoom.online;
+ const seats=document.getElementById("seats");
+ seats.innerHTML="";
+ for(let i=0;i<9;i++){
+   const host=i===0;
+   seats.innerHTML+=`<div class="seat ${host?'host':''}" onclick="seatAction(${i})">
+    <div class="seat-circle">${host?'🧑🏻':'＋'}${host?'<span class="seat-badge">Host</span>':''}</div>
+    <div class="seat-name">${host?'Pawan':'Seat '+(i+1)}</div>
+    <div class="seat-id">${host?'ID: 100052':'Empty'}</div>
+   </div>`;
+ }
+ showPage("voice");
+}
+
+function seatAction(index){
+ if(index===0){notify("You are viewing the demo host seat.");return}
+ openModal("Seat "+(index+1),`
+ <p class="muted">This seat is empty in the demo.</p>
+ <button class="btn" onclick="closeModal();notify('Real seat joining needs a connected server.')">Join Seat</button>`);
+}
+
+function toggleMic(){
+ micOn=!micOn;
+ document.getElementById("micIcon").textContent=micOn?"🎙️":"🔇";
+ document.getElementById("micLabel").textContent=micOn?"Mic On (Demo)":"Mic Off";
+ notify(micOn?"Demo mic button enabled. Real audio is not connected.":"Mic turned off.");
+}
+
+function sendChat(){
+ const input=document.getElementById("chatInput");
+ const value=input.value.trim();if(!value)return;
+ const line=document.createElement("div");line.className="chat-line";
+ const b=document.createElement("b");b.textContent="Pawan: ";
+ line.appendChild(b);line.appendChild(document.createTextNode(value));
+ document.getElementById("chatMessages").appendChild(line);
+ input.value="";
+}
+
+function giftTab(tab,button){
+ currentGiftTab=tab;
+ document.querySelectorAll("#gifts .tab").forEach(t=>t.classList.remove("active"));
+ button.classList.add("active");renderGifts();
+}
+
+function renderGifts(){
+ const list=gifts.filter(g=>currentGiftTab==="All"||g.cat===currentGiftTab);
+ document.getElementById("giftGrid").innerHTML=list.map(g=>`
+ <div class="gift" onclick="sendGift('${g.name}',${g.cost},'${g.emoji}')">
+ <span class="emoji">${g.emoji}</span><b>${g.name}</b><small>🪙 ${g.cost.toLocaleString("en-IN")}</small>
+ </div>`).join("");
+}
+
+function sendGift(name,cost,emoji){
+ openModal("Send "+name,`
+ <div style="text-align:center;padding:10px">
+ <div style="font-size:65px">${emoji}</div><h2>${name}</h2>
+ <p>Cost: 🪙 ${cost.toLocaleString("en-IN")}</p>
+ <p class="muted">This is a local UI demo. It does not send a real gift to another user.</p>
+ <button class="btn" onclick="confirmGift('${name}',${cost},'${emoji}')">Send Demo Gift</button>
+ </div>`);
+}
+
+function confirmGift(name,cost,emoji){
+ if(coins<cost){closeModal();notify("Not enough demo coins.");return}
+ coins-=cost;updateCoins();closeModal();
+ openModal("🎉 Gift Preview",`
+ <div style="text-align:center;padding:20px 0">
+ <div style="font-size:90px;animation:pop .6s ease">${emoji}</div>
+ <h2>${name} sent!</h2><p class="muted">Demo animation only — no online user received a gift.</p>
+ </div>`);
+}
+
+function createRoom(){
+ openModal("Create Room",`
+ <p class="muted">Create a temporary room preview.</p>
+ <input class="search" id="newRoomName" placeholder="Enter room name">
+ <br><br><button class="btn" onclick="saveRoom()">Create Demo Room</button>`);
+}
+
+function saveRoom(){
+ const name=document.getElementById("newRoomName").value.trim();
+ if(!name){notify("Please enter a room name.");return}
+ const id="PV"+Math.floor(100000+Math.random()*899999);
+ const r={id,name,art:"🎙️",online:1,category:"New"};
+ rooms.unshift(r);closeModal();renderRooms();renderHomeRooms();
+ notify("Demo room created: "+id);
+}
+
+function editName(){
+ openModal("Edit Profile",`
+ <p class="muted">Change the name shown on this device.</p>
+ <input class="search" id="newProfileName" maxlength="24" value="${document.getElementById("profileName").textContent}">
+ <br><br><button class="btn" onclick="saveName()">Save Name</button>`);
+}
+
+function saveName(){
+ const name=document.getElementById("newProfileName").value.trim();
+ if(!name){notify("Name cannot be empty.");return}
+ document.getElementById("profileName").textContent=name;
+ closeModal();notify("Profile name updated on this device.");
+}
+
+function playGame(name){
+ openModal(name,`
+ <div style="text-align:center;padding:15px 0">
+ <div style="font-size:65px">${name==="Greedy Baby"?"🐼":name==="Animal Party"?"🎡":"🎯"}</div>
+ <h3>${name}</h3><p class="muted">Game preview only. No betting, coins or shared game rounds are active.</p>
+ <button class="btn" onclick="closeModal();notify('${name} preview opened!')">Open Preview</button>
+ </div>`);
+}
+
+function rankTab(tab,button){
+ document.querySelectorAll("#rankings .tab").forEach(t=>t.classList.remove("active"));
+ button.classList.add("active");renderRanks(tab);
+}
+
+function renderRanks(period){
+ const people=[
+  ["🧑🏻","Pawan","12.5M"],["👩🏻","Riya","10.8M"],["🧑🏽","Rocky","8.6M"],
+  ["👼","Angel","6.2M"],["👑","King","5.4M"]
+ ];
+ document.getElementById("rankList").innerHTML=
+ `<div class="muted" style="padding-bottom:8px">${period} Rich Ranking • Demo Data</div>`+
+ people.map((p,i)=>`<div class="rank-line"><b style="width:20px">${i+1}</b>
+ <div class="avatar">${p[0]}</div><div class="grow">${p[1]}</div><b>🪙 ${p[2]}</b></div>`).join("");
+}
+
+function openModal(title,content){
+ document.getElementById("modalTitle").textContent=title;
+ document.getElementById("modalContent").innerHTML=content;
+ document.getElementById("modalBg").classList.add("show");
+}
+function closeModal(){document.getElementById("modalBg").classList.remove("show")}
+
+renderHomeRooms();
 renderRooms();
-
-function showPage(id, button) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  if (button) button.classList.add('active');
-
-  if (id === 'home') document.querySelectorAll('.nav-btn')[0].classList.add('active');
-  if (id === 'rooms') document.querySelectorAll('.nav-btn')[1].classList.add('active');
-  if (id === 'wallet') document.querySelectorAll('.nav-btn')[2].classList.add('active');
-  if (id === 'profile') document.querySelectorAll('.nav-btn')[3].classList.add('active');
-  window.scrollTo(0,0);
-}
-
-function openRoom(name,id) {
-  previousPage = document.querySelector('.page.active')?.id || 'home';
-  document.getElementById('currentRoomName').textContent = name;
-  document.getElementById('currentRoomId').textContent = id;
-
-  const seats = document.getElementById('seats');
-  seats.innerHTML = '';
-  for (let i=0;i<9;i++) {
-    const host = i===0;
-    seats.innerHTML += `<div class="seat ${host?'host':''}">
-      <div class="seat-avatar">${host?'👑':'＋'}</div>
-      <div class="seat-name">${host?'Pawan':'Seat '+(i+1)}</div>
-      <span class="seat-status">${host?'HOST':'Empty'}</span>
-    </div>`;
-  }
-  showPage('voiceRoom');
-}
-
-function goBack() {
-  showPage(previousPage);
-}
-
-function toggleMic() {
-  micOn = !micOn;
-  document.getElementById('micBtn').textContent = micOn ? '🎤' : '🎙️';
-  alert(micOn
-    ? 'Demo only: real microphone voice is not connected yet.'
-    : 'Microphone demo switched off.');
-}
-
-function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const value = input.value.trim();
-  if (!value) return;
-  const line = document.createElement('div');
-  line.className = 'chat-line';
-  line.textContent = 'Pawan: ' + value;
-  document.getElementById('messages').appendChild(line);
-  input.value = '';
-  const box = document.getElementById('chatBox');
-  box.scrollTop = box.scrollHeight;
-}
-
-function showExtra(title,content) {
-  previousPage = document.querySelector('.page.active')?.id || 'home';
-  document.getElementById('extraTitle').textContent = title;
-  document.getElementById('extraContent').innerHTML = content;
-  showPage('extras');
-}
-
-function showGifts() {
-  showExtra('🎁 Gifts', `
-    <div class="panel">
-      <h3>Popular Gifts</h3>
-      <div class="explore">
-        <div class="online-user">🌹<p>Rose</p></div>
-        <div class="online-user">❤️<p>Heart</p></div>
-        <div class="online-user">🚗<p>Car</p></div>
-        <div class="online-user">🚀<p>Rocket</p></div>
-        <div class="online-user">👑<p>King</p></div>
-      </div>
-      <p class="small">Gift sending and animations need backend integration.</p>
-    </div>`);
-}
-
-function showRankings() {
-  showExtra('🏆 Rankings', `
-    <div class="panel"><h3>Daily Rankings</h3><p>🥇 1. Pawan</p><p>🥈 2. Riya</p><p>🥉 3. Rocky</p></div>
-    <div class="panel"><h3>Weekly Rankings</h3><p>Leaderboard demo</p></div>
-    <div class="panel"><h3>Monthly Rankings</h3><p>Leaderboard demo</p></div>`);
-}
-
-function showVip() {
-  showExtra('👑 VIP Membership', `
-    <div class="panel"><h2>VIP Benefits</h2><p>✨ Stylish profile badge</p><p>💫 Special frames</p><p>🎁 Exclusive gifts</p><p class="small">VIP purchases are not connected.</p></div>`);
-}
-
-function showGames() {
-  showExtra('🎮 Games', `
-    <div class="panel"><h3>🎡 Lucky Spin</h3><p>Lucky wheel game interface</p><button class="primary" onclick="alert('Game backend is not connected')">Play Demo</button></div>
-    <div class="panel"><h3>🐼 Greedy Baby</h3><p>Multiplayer game coming next</p></div>
-    <div class="panel"><h3>🐯 Animal Party</h3><p>Game interface coming next</p></div>`);
-}
-
-function createRoom() {
-  const name = prompt('Enter room name:');
-  if (!name || !name.trim()) return;
-  const id = 'PV' + Math.floor(100000 + Math.random()*900000);
-  const room = {
-    name:name.trim(),
-    id:id,
-    subtitle:'New voice room',
-    people:1,
-    icon:'🎙️'
-  };
-  roomData.unshift(room);
-  renderRooms();
-  document.getElementById('homeRooms').innerHTML =
-    roomData.slice(0,3).map(roomCard).join('');
-  openRoom(room.name,room.id);
-}
-
-function editProfile() {
-  const name = prompt('Enter your display name:',
-    document.getElementById('profileName').textContent);
-  if (name && name.trim()) {
-    document.getElementById('profileName').textContent = name.trim();
-  }
-}
+renderGifts();
+renderRanks("Daily");
+updateCoins();
 </script>
+
+<style>
+@keyframes pop{
+  0%{transform:scale(.2);opacity:0}
+  70%{transform:scale(1.2);opacity:1}
+  100%{transform:scale(1)}
+}
+</style>
 </body>
 </html>
 ```
